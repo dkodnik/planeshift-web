@@ -1,0 +1,27 @@
+try to avoid the use of "..... " for displaing string , as php will parse the string to find a variable
+if you use '.....' it will not try , you ll gain some speed
+this cause problems when using things like $_POST['question']  for solving it glue strings toghether using a dot
+$text = 'hi my name is orogor can i ask you if'.$_POST['question'].'?';
+
+i dont know is echo is as fast as printf , but echo is surely more easy to read.
+
+same for mysql_fetch_array:
+array mysql_fetch_array ( resource result [, int result_type])
+result_type can be MYSQL_ASSOC or MYSQL_NUM if you do not use this parameter the result is 2 time slower than if you use one
+but  MYSQL_ASSOC is only 1% slower than  MYSQL_NUM but far more easy to read.
+
+when using mysql_query()   always add a "or die(mysql_error())" a the end , it make the script stop and display the errorif there is one
+$result = mysql_query( $a) or die(mysql_error());
+that s the reason why i use mysql_query2() instead of mysql_query();
+
+using some recent html normes you should write the tag into lowercase 
+and the values of the parameters between simple or doubles quotes, i think 
+than highercase wasn t mandatory before but it was more easy to read.
+
+also , php is nice it support errors but it s better to not make ones like 
+$_POST[question] is bad but it can works , if you  don t have a static who already have this name ,
+ well in fact i think it doesn t work for $_POST vars but it works for normal arrays.
+so use $_POST['question']
+
+having all pages called from index.php allow to check than the user is at less logged for viewing the pages ,(you can t type an url and do something )
+it also prevent to make massive includes while coding , this help to make more modular code.
