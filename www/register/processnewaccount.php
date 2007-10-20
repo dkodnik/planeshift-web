@@ -21,10 +21,8 @@
  *               an email with a validation link.
  */
 ?>
-
 <?PHP include "db_setup.php" ?>
 <?PHP include "randString.php" ?>
-
 <?PHP
 $db_link = mysql_pconnect($db_hostname,
                           $db_username,
@@ -41,11 +39,7 @@ $result = ExecQuery($query);
 
 if (mysql_num_rows($result) > 0)
 {
-    ?>
-         <script language=javascript>
-         document.location='newaccount.php?error=username';
-         </script>
-    <?PHP
+    Header("Location:newaccount.php?error=username");
     exit();
 }
 					 
@@ -58,8 +52,10 @@ $verificationid = randString();
 
 $age = $_POST['age'];
 if ($age=="N")
-	$age="''";
-	
+{
+    $age="''";
+}
+
 $query = "Insert into accounts (realname, username, verificationid, " .
                                "created_date, status, country, gender, birth)" .
 	 "values('" . addslashes(strtolower($_POST['realname'])) . "', ".
@@ -68,8 +64,6 @@ $query = "Insert into accounts (realname, username, verificationid, " .
 		"'" . date('Y/m/d', mktime()) . "', 'U'," .
 		"'" . addslashes($_POST['country']) . 
 		"','" . $_POST['gender'] . "'," . $age. ")";
-
-		echo $query;
 
 ExecQuery($query);
 						    
@@ -80,10 +74,5 @@ ExecQuery($query);
 include 'sendverificationemail.php';
 sendVerificationEmail( $_POST['email'], $verificationid);
 
+Header("Location:index.php?action=reg");
 ?>
-
-<HTML>
-<SCRIPT language=javascript>
-document.location="index.php?action=reg";
-</SCRIPT>
-</HTML>

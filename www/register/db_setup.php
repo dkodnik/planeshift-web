@@ -20,7 +20,6 @@
  * Description : This page provides the db info to pages that need to access it.
  */
 ?>
-
 <?PHP
 include("../secure/db_config.php");
 
