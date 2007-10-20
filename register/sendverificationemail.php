@@ -20,7 +20,6 @@
  * Description : This page creates and sends out a verification e-mail.
  */
 ?>
-
 <?PHP
 // send email
 
@@ -31,8 +30,9 @@ $path = "http://" . $_SERVER['HTTP_HOST'];
 $path = $path . substr($_SERVER['REQUEST_URI'],0,strrpos($_SERVER['REQUEST_URI'],"/")+1);
 $path = $path . "verifyaccount.php?username=" . $email . "&verificationid=" . $verificationid;
 
-if ($forgot=="yes") {
-$path = $path . "&forgot=yes";
+if ($forgot=="yes") 
+{
+    $path = $path . "&forgot=yes";
 }
 
 $messagebody = "Welcome to the PlaneShift Crystal Blue internal testing!\r\n" .
@@ -43,9 +43,12 @@ $messagebody = "Welcome to the PlaneShift Crystal Blue internal testing!\r\n" .
 	       "link below, it's only for evidence that you got this mail and that you own this account\r\n" .
 	       "\r\n";
 
-if ($forgot=="yes") {
+if ($forgot=="yes") 
+{
         $messagebody = $messagebody . "Use the link to reset your password.\r\n";
-} else {
+} 
+else 
+{
   $messagebody = $messagebody . "Use the link to verify your account so you can begin playing.\r\n";
 }
 	       $messagebody = $messagebody . "\r\n" .
@@ -60,4 +63,3 @@ $subject = "PlaneShift Account Verification";
 mail($email, $subject, $messagebody, $headers, "-fbounce_verify");
 }
 ?>
-

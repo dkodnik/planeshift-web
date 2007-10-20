@@ -20,7 +20,6 @@
  * Description : This page creates random stings of a specified length
  */
 ?>
-
 <?PHP
 function randString($length=32)
 {
