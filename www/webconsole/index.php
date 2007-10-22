@@ -318,6 +318,21 @@ if ($_SESSION['loggedin'] == 'yes' && (
 			case 'skill_actions':
 				include('./skills/skill_actions.php');
 				skill_actions();
+
+                break;
+                       case 'listfactions':
+                               include('./factions/listfactions.php');
+                               listfactions();
+
+                break;
+                       case 'faction_actions':
+                               include('./factions/faction_actions.php');
+                               faction_actions();
+                break;
+
+                        case 'listnatural_resources':
+                                include('./natural_resources/listnatural_resources.php');
+
                 break;
 
 			case 'listnatural_resources':

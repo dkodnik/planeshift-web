@@ -53,6 +53,7 @@ function main_menu(){
 	<p><a href="index.php?category=Rules_Functions&page=listlocations">List/Edit Locations</a> (SettingMember)</p>
 	<hr>
 	<p><a href="index.php?category=Rules_Functions&page=listskills">Change skills</a> (RulesAdmin)</p>
+	<p><a href="index.php?category=Rules_Functions&page=listfactions">Change factions</a> (RulesAdmin)</p>
 	<p><a href="index.php?category=Rules_Functions&page=maincharcreate">Change Race starting location or CP points</a></p>
 <?PHP }
         if ($_GET['category'] == 'Items')
