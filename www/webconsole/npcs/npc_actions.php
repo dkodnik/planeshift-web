@@ -77,7 +77,7 @@ function viewmain(){
     echo '<TR><TD>&nbsp;</TD><TD></TD></TR>'; 
     // get race and gender list
     echo '<TR><TD>Race and gender:</TD><TD><SELECT name=raceid>';
-    $query3 = 'select race_id, name, sex from race_info order by name, sex';
+    $query3 = 'select id, name, sex from race_info order by name, sex';
     $result3 = mysql_query2($query3);
     while ($line3 = mysql_fetch_array($result3, MYSQL_NUM)){
         if ($line3[0] == $raceid){

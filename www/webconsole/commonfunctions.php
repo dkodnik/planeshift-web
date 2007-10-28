@@ -352,4 +352,30 @@ function outputHtmlFooter(){
  * }
  */
 
+
+function getNextQuarterPeriod($groupid) {
+
+    $query = "select max(periodname) from statistics where groupid=".$groupid;
+    $result = mysql_query2($query);
+
+    while ($line = mysql_fetch_array($result, MYSQL_NUM))
+    {
+        $periodname = $line[0];
+    }
+    
+	if ($periodname=="")
+		$periodname="2004 Q3"; // we start from this date
+
+	$year = substr($periodname,0,4);
+	$quarter = substr($periodname,6,6);
+	
+	if ($quarter=="4") {
+		$year = $year +1;
+		$quarter = "1";
+	} else
+		$quarter = $quarter + 1;
+
+	return $year." Q".$quarter;
+}
+
 ?>
