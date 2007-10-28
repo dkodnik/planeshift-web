@@ -509,6 +509,16 @@ if ($_SESSION['loggedin'] == 'yes' && (
 				commonstring_actions();
                 break;
 
+            case 'list_stat_group':
+				include('./other/list_stats.php');
+				show_stats();
+                break;
+
+			case 'view_statistic':
+				include('./other/view_stats.php');
+				view_stats();	
+	            break;
+
 			default:
 				include('main_menu.php');
 				main_menu();

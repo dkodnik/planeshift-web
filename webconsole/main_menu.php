@@ -12,6 +12,7 @@ function main_menu(){
 	<p ><a class="yellowtitlebig" href="index.php?category=Rules_Functions">Rules Functions</a></p>
 	<p ><a class="yellowtitlebig" href="index.php?category=Trade_Skills">Trade Skills</a></p>
 	<p ><a class="yellowtitlebig" href="index.php?category=Other">Other</a></p>
+	<p ><a class="yellowtitlebig" href="index.php?category=Statistics">Statistics</a></p>
 	<p ><br><br><a class="yellowtitlebig" href="index.php?page=logout">Logout</a></p>
 	</td><td valign='top'>
 
@@ -152,6 +153,14 @@ function main_menu(){
 	<p><a href="index.php?page=list_commonstrings">List/Edit Common Strings</a> (AnyMember)</p>
 <?PHP }
 	?>	
+
+<?PHP
+	if ($_GET['category'] == 'Statistics'){
+		?>
+	<p><a href="index.php?page=list_stat_group&groupid=1">View Total Accounts Statistics</a> (AnyMember)</p>
+<?PHP }
+	?>
+
 </td></tr></table>
 <?
 }
