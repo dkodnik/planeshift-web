@@ -376,76 +376,91 @@ function getDataFromArea($area) {
       $data[1] = 535;
       $data[2] = 180;
       $data[3] = 2.2;
+      $data[4] = 2.2;
   } else if ($area=="hydlaa_jayose") {
       $data[0] = "(loc_sector_id=49 or loc_sector_id=40)";
       $data[1] = -250;
       $data[2] = -150;
       $data[3] = 3.2;
+      $data[4] = 3.2;
   } else if ($area=="hydlaa_winch") {
       $data[0] = "(loc_sector_id=72)";
       $data[1] = 200;
       $data[2] = -430;
       $data[3] = 2.2;
+      $data[4] = 2.2;
   } else if ($area=="sewers") {
       $data[0] = "(loc_sector_id>26 and loc_sector_id<38)";
       $data[1] = 645;
       $data[2] = 175;
       $data[3] = 2.5;
+      $data[4] = 2.5;
   } else if ($area=="laanxdungeon") {
       $data[0] = "(loc_sector_id>43 and loc_sector_id<49)";
       $data[1] = 1452;
       $data[2] = 815;
       $data[3] = 6.73;
+      $data[4] = 6.73;
   } else if ($area=="arena") {
       $data[0] = "(loc_sector_id>3 and loc_sector_id<15)";
       $data[1] = 470;
       $data[2] = 456;
       $data[3] = 4.43;
+      $data[4] = 4.43;
   } else if ($area=="ojaroad1") {
       $data[0] = "(loc_sector_id=22)";
       $data[1] = 603;
       $data[2] = 600;
       $data[3] = 0.9;
+      $data[4] = 0.9;
   } else if ($area=="ojaroad2") {
       $data[0] = "(loc_sector_id=59)";
       $data[1] = 632;
       $data[2] = 625;
       $data[3] = 1;
+      $data[4] = 1;
   } else if ($area=="akkaio") {
       $data[0] = "(loc_sector_id>16 and loc_sector_id<20)";
       $data[1] = 445;
       $data[2] = 465;
       $data[3] = 5.3;
+      $data[4] = 5.3;
   } else if ($area=="bdroad1") {
       $data[0] = "(loc_sector_id=60)";
       $data[1] = 491;
       $data[2] = 493;
       $data[3] = 0.76;
+      $data[4] = 0.76;
   } else if ($area=="bdroad2") {
       $data[0] = "(loc_sector_id=61)";
       $data[1] = 669;
       $data[2] = 667;
       $data[3] = 1.07;
+      $data[4] = 1.07;
   } else if ($area=="bdoorsout") {
       $data[0] = "(loc_sector_id=67)";
       $data[1] = 832;
       $data[2] = -749;
       $data[3] = 0.55;
+      $data[4] = 0.55;
   } else if ($area=="bdoorsin") {
       $data[0] = "(loc_sector_id=66)";
       $data[1] = 656;
       $data[2] = -977;
       $data[3] = 2.2;
+      $data[4] = 2.2;
   } else if ($area=="npcroom1") {
       $data[0] = "(loc_sector_id=3)";
-      $data[1] = 387;
-      $data[2] = -453;
-      $data[3] = 3.8;
+      $data[1] =  321.94;
+      $data[2] = -371.05;
+      $data[3] =    3.22;
+      $data[4] =    3.26;
   } else if ($area=="npcroom2") {
       $data[0] = "(loc_sector_id=6 or loc_sector_id=7)";
       $data[1] = 460;
       $data[2] = 318;
       $data[3] = 4;
+      $data[4] = 4;
   }
 
   return $data;
@@ -460,7 +475,7 @@ function myquery ($query){
 }
 
 
-function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$bg_color){
+function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
     $query = " select id,loc_x,loc_y,loc_z,radius,visible_radius from natural_resources where " . $sectors;
     $res = mysql_query2($query);
 
@@ -478,18 +493,18 @@ function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactor,$fg_
         $radius      = $line[4];
         $vis_radius  = $line[5];
 
-	$ix = $centerx+($x*$scalefactor);
-	$iy = $centery-($z*$scalefactor);
-        $ir = $radius*$scalefactor;
+	$ix = $centerx+($x*$scalefactorx);
+	$iy = $centery-($z*$scalefactory);
+        $ir = $radius*$scalefactorx;
         imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
 
-        $ivr = $vis_radius*$scalefactor;
+        $ivr = $vis_radius*$scalefactorx;
         imagearc($im,$ix,$iy,$ivr,$ivr,0,360,$bg_color);
 
     }
 }
 
-function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$fg_color_no_wander){
+function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$fg_color_no_wander){
     $query = $query . " select id,x,y,z,radius from sc_waypoints where " . $sectors;
     //echo $query;
     $res = mysql_query2($query);
@@ -507,9 +522,9 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$f
         $z       = $line[3];
         $radius  = $line[4];
 
-	$ix = $centerx+($x*$scalefactor);
-	$iy = $centery-($z*$scalefactor);
-        $ir = $radius*$scalefactor;
+	$ix = $centerx+($x*$scalefactorx);
+	$iy = $centery-($z*$scalefactory);
+        $ir = $radius*$scalefactorx;
         imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
 
         $query2 = "select wp1.x,wp1.y,wp1.z,wp2.x,wp2.y,wp2.z,l.flags,wp1.id,wp2.id from sc_waypoint_links l, sc_waypoints wp1, sc_waypoints wp2 where l.wp1 = wp1.id and l.wp2 = wp2.id and wp1.id = ".$id;
@@ -525,10 +540,10 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$f
             $id1 = $line2[7];
             $id2 = $line2[8];
 
-            $ix1 = $centerx+($x1*$scalefactor);
-            $iy1 = $centery-($z1*$scalefactor);
-            $ix2 = $centerx+($x2*$scalefactor);
-            $iy2 = $centery-($z2*$scalefactor);
+            $ix1 = $centerx+($x1*$scalefactorx);
+            $iy1 = $centery-($z1*$scalefactory);
+            $ix2 = $centerx+($x2*$scalefactorx);
+            $iy2 = $centery-($z2*$scalefactory);
 
             if (stristr($flags, 'NO_WANDER'))
             {
@@ -563,7 +578,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$f
     }
 }
 
-function draw_paths($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$fg_color_no_wander){
+function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$fg_color_no_wander){
     $query = $query . " select id,x,y,z,prev_point from sc_path_points where " . $sectors;
     //echo $query;
     $res = mysql_query2($query);
@@ -581,8 +596,8 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$fg_co
         $z       = $line[3];
         $radius  = 5;
 
-	$ix = $centerx+($x*$scalefactor);
-	$iy = $centery-($z*$scalefactor);
+	$ix = $centerx+($x*$scalefactorx);
+	$iy = $centery-($z*$scalefactory);
         $ir = $radius;
         imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
 
@@ -598,10 +613,10 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$fg_co
                 $y2 = $line2[4];
                 $z2 = $line2[5];
 
-                $ix1 = $centerx+($x1*$scalefactor);
-                $iy1 = $centery-($z1*$scalefactor);
-                $ix2 = $centerx+($x2*$scalefactor);
-                $iy2 = $centery-($z2*$scalefactor);
+                $ix1 = $centerx+($x1*$scalefactorx);
+                $iy1 = $centery-($z1*$scalefactory);
+                $ix2 = $centerx+($x2*$scalefactorx);
+                $iy2 = $centery-($z2*$scalefactory);
 
                 $line_color = $fg_color;
  
@@ -612,7 +627,7 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactor,$fg_color,$fg_co
     }
 }
 
-function draw_locations($im,$sectors,$centerx,$centery,$scalefactor,$fg_color){
+function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color){
     $query = "select id,x,y,z,radius,id_prev_loc_in_region from sc_locations where " . $sectors;
     $res = mysql_query2($query);
 
@@ -630,9 +645,9 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactor,$fg_color){
         $radius  = $line[4];
         $id_prev = $line[5];
 
-	$ix1 = $centerx+($x*$scalefactor);
-	$iy1 = $centery-($z*$scalefactor);
-        $ir = $radius*$scalefactor;
+	$ix1 = $centerx+($x*$scalefactorx);
+	$iy1 = $centery-($z*$scalefactory);
+        $ir = $radius*$scalefactorx;
         imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
 
 	if ( $id_prev > 0 )
@@ -644,8 +659,8 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactor,$fg_color){
                $y2       = $line2[1];
                $z2       = $line2[2];
  
-	       $ix2 = $centerx+($x2*$scalefactor);
-               $iy2 = $centery-($z2*$scalefactor);
+	       $ix2 = $centerx+($x2*$scalefactorx);
+               $iy2 = $centery-($z2*$scalefactory);
                imageline($im,$ix1,$iy1,$ix2,$iy2,$fg_color);
 	    }
         }
@@ -663,7 +678,8 @@ function draw_map($sector){
     $sectors = $data[0];
     $centerx = $data[1];
     $centery = $data[2];
-    $scalefactor = $data[3];
+    $scalefactorx = $data[3];
+    $scalefactory = $data[4];
 
     #Open gif and copy into truecolor png.
     $gifim     = imagecreatefromgif($image_name);
@@ -679,10 +695,10 @@ function draw_map($sector){
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
 
-    draw_locations($im,$sectors,$centerx,$centery,$scalefactor,$red);
-    draw_waypoints($im,$sectors,$centerx,$centery,$scalefactor,$orange,$blue);
-    draw_paths($im,$sectors,$centerx,$centery,$scalefactor,$gray,$blue);
-    draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactor,$green,$dark_green);
+    draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$red);
+    draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$orange,$blue);
+    draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
+    draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
 
     imagepng($im);
     imagedestroy($im);

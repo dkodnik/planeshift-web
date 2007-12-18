@@ -165,10 +165,11 @@ foreach( $peoples as $people ) {
 
     $centerx = $data[1];
     $centery = $data[2];
-    $scalefactor = $data[3];
+    $scalefactorx = $data[3];
+    $scalefactory = $data[4];
 
-     $x= $centerx+($infos[4]*$scalefactor);
-     $y= $centery-($infos[5]*$scalefactor);
+     $x= $centerx+($infos[4]*$scalefactorx);
+     $y= $centery-($infos[5]*$scalefactory);
      
      if ($infos[6]=="Y") {
       $ball = "ball01m.gif";
