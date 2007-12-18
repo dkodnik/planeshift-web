@@ -161,10 +161,11 @@ document.onmousemove=positiontip;
 
         $centerx = $data[1];
         $centery = $data[2];
-        $scalefactor = $data[3];
+        $scalefactorx = $data[3];
+        $scalefactory = $data[4];
 
-        $x= $centerx+($infos[4]*$scalefactor)-4;
-        $y= $centery-($infos[6]*$scalefactor)-4;
+        $x= $centerx+($infos[4]*$scalefactorx)-4;
+        $y= $centery-($infos[6]*$scalefactory)-4;
 
         if ($infos[7]=="-1" || $infos[7]=="0") {
           $ball = "ball01m.gif";
