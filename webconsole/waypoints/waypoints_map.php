@@ -4,7 +4,7 @@ function waypoints_map(){
 
   checkAccess('listnpc', '', 'read');
 
-  $sector = $_POST['sector'];
+  $sector = $_REQUEST['sector'];
 
   if ($sector!=null and $sector!="") {
 
@@ -175,12 +175,12 @@ document.onmousemove=positiontip;
         if ($infos[7]=="ALLOW_RETURN") {
           $ball = "ball04m.gif";
           echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?page=listwaypoints&selected=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
+          echo "<A HREF=index.php?page=listwaypoints&selected=$infos[1]&sector=$sector><img border=0 src=$ball width=8 height=8></a></div>\n";
 
         } else {
           $ball = "ball01m.gif";
           echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?page=listwaypoints&selected=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
+          echo "<A HREF=index.php?page=listwaypoints&selected=$infos[1]&sector=$sector><img border=0 src=$ball width=10 height=10></a></div>\n";
         }
 
       }
@@ -191,12 +191,14 @@ document.onmousemove=positiontip;
 
 }
 
-    echo "  <FORM action=\"index.php?page=waypoints_map&category={$_GET['category']}\" METHOD=POST>";
-    echo "  <b>Select one area:</b> <br><br> Area: ";
-    SelectAreas("","sector");
+    echo "<FORM action=\"index.php?page=waypoints_map&category={$_GET['category']}\" METHOD=POST>";
+    echo "<b>Select one area:</b> <br><br> Area: ";
+    SelectAreas($sector,"sector");
     echo " <br><br><INPUT type=submit value=view><br><br>";
-  
     echo "</FORM>";
+
+    echo '<P><A HREF="index.php?page=listwaypoints&sector='.$sector.'">List/Edit All Waypoints</A></P>';
+
 }
 ?>
 
