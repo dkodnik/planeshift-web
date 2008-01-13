@@ -352,7 +352,7 @@ if ($_SESSION['loggedin'] == 'yes' && (
 
 			case 'listwaypoints':
 				include('./waypoints/listwaypoints.php');
-				listwaypoints($_GET['selected']);
+				listwaypoints($_GET['selected'],$_REQUEST['sector']);
                 break;
 
 			case 'waypoints_actions':

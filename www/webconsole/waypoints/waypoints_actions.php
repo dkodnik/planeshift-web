@@ -10,6 +10,7 @@ function waypoints_actions(){
 
 // gets operation to perform
 $operation = $_GET['operation'];
+$area= $_REQUEST['area'];
 
     /**
      * update script
@@ -22,12 +23,13 @@ if ($operation == 'update'){
     $loc_y = $_POST['y'];
     $loc_z = $_POST['z'];
     $radius = $_POST['radius'];
+    $wp_group = $_POST['wp_group'];
     // insert script
-    $query = "update sc_waypoints set loc_sector_id=$sector, x='$loc_x',y='$loc_y',z='$loc_z',radius='$radius',name='$name' where id='$id'";
+    $query = "update sc_waypoints set loc_sector_id=$sector, x='$loc_x',y='$loc_y',z='$loc_z',radius='$radius',name='$name',wp_group='$wp_group' where id='$id'";
     $result = mysql_query2($query); 
     // redirect
     ?><SCRIPT language="javascript">
-          document.location = "index.php?page=listwaypoints";
+          document.location = "index.php?page=listwaypoints&sector=<?PHP echo $area; ?>";
        </script>
     <?PHP
 
@@ -39,12 +41,13 @@ if ($operation == 'update'){
     $loc_y = $_POST['y'];
     $loc_z = $_POST['z'];
     $radius = $_POST['radius'];
+    $wp_group = $_POST['wp_group'];
     // insert script
-    $query = "insert into waypoints set loc_sector_id=$sector, x='$loc_x',y='$loc_y',z='$loc_z',radius='$radius',name='$name'";
+    $query = "insert into waypoints set loc_sector_id=$sector, x='$loc_x',y='$loc_y',z='$loc_z',radius='$radius',name='$name',wp_group='$wp_group'";
     $result = mysql_query2($query); 
     // redirect
     ?><SCRIPT language="javascript">
-          document.location = "index.php?page=listwaypointss";
+          document.location = "index.php?page=listwaypoints&sector=<?PHP echo $area; ?>";
        </script>
     <?PHP
 } elseif ($operation == 'delete'){
@@ -54,7 +57,7 @@ if ($operation == 'update'){
     $result = mysql_query2($query); 
     // redirect
     ?><SCRIPT language="javascript">
-          document.location = "index.php?page=listwaypoints";
+          document.location = "index.php?page=listwaypoints&sector=<?PHP echo $area; ?>";
        </script>
     <?PHP
 }else{ 
