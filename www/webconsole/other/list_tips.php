@@ -8,9 +8,10 @@ function list_tips(){
 	while ($result = mysql_fetch_array($query)){
 		echo"<tr><td>
 		<form action='index.php?page=tips_actions' method='post'>
-		<input type='text' size='70' name ='tip' value='".$result['tip']."'></td><td>
+		<textarea cols='50' rows='2' name='tip'>".$result['tip']."</textarea>
 		<input type='hidden' value ='edit' name='operation'>
 		<input type='hidden' value ='".$result['id']."' name='id'>
+		</td><td>
 		<input type='submit' value='Save'></form>
 		<form action='index.php?page=tips_actions' method='post'>
 		<input type='hidden' value ='delete' name='operation'>
@@ -18,13 +19,14 @@ function list_tips(){
 		<input type='submit' value='Delete'></form>
 		</td></tr> ";
 	}
-	echo'</table>';
-	echo'
+	echo'<tr><td>
 	<form action="index.php?page=tips_actions" method="post">
 	<input type="hidden" value ="add" name="operation">
-	<input type="text" name ="tip">
+	<textarea cols="50" rows="2" name="tip"></textarea>
+	</td><td>
 	<input type="submit" value="Add tip">
 	</form>
+	</table>
 	';
 	
 }
