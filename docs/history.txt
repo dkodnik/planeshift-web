@@ -2,3 +2,8 @@
 - Set svn:eol-style native on all PHP files.
 - Applied Erioleys patch to list_tips.php
 
+*** 2008-01-29 by Darcsabre
+- WC - Initial code cleanup + initial work on book editing for settings.
+
+*** 2008-01-30 by Darcsabre
+- WC - fix last update + add missing file.
