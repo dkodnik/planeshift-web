@@ -1,7 +1,7 @@
 <?php
  
 function listitems() {
-    echo 'test<br />';
+
     echo '<TABLE BORDER="1"><TR><TD VALIGN="top">';
     echo '<TABLE>';
 
