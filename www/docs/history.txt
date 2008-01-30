@@ -1,5 +1,4 @@
 *** 2008-01-27 by Roland Schulz
-
 - Set svn:eol-style native on all PHP files.
-
 - Applied Erioleys patch to list_tips.php
+
