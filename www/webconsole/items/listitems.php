@@ -1,103 +1,55 @@
-<?
-function listitems(){
+<?php
+ 
+function listitems() {
+    echo 'test<br />';
+    echo '<TABLE BORDER="1"><TR><TD VALIGN="top">';
+    echo '<TABLE>';
 
-      ?>
-<SCRIPT language=javascript>
-
-function confirmDelete()
-{
-    return confirm("Are you sure you want to delete this Item?");
-}
-
-</SCRIPT>
-
-<?PHP
-
-    checkAccess('main', '', 'read');
-    
-    echo'<table border="1"><tr><td valign="top">';
-    echo'<table>';
-    $query = "select distinct item_type from item_stats";
+// Display Item Types.
+    $query = "SELECT DISTINCT item_type FROM item_stats";
     $result = mysql_query2($query);
-    while($line = mysql_fetch_array($result))
-    {
-        echo '<tr><td><a href="index.php?page=listitems&item_type=' . $line['item_type'] . '">' . $line['item_type'] . '</a></td></tr>';
-    }
-    echo'</table></td><td valign="top">';
-    if (mysql_num_rows($result) == 0)
-    {
-        echo "<TABLE BORDER='1'><tr><td>Select an item</td></tr></table></td><td valign='top'>";
-    }
-    else
-    {
-        echo'<table>';
-        $query = "select  id ,name from item_stats where item_type ='" . $_GET['item_type'] . "'";
+
+    while ($row = mysql_fetch_array($result)) {
+        echo '<TR><TD><A HREF="index.php?page=listitems&item_type=' . $row['item_type'] . '">' . $row['item_type'] . '</A></TD></TR>';
+        }
+
+    echo '</table></td><td valign="top">';
+
+// Display Items of Type.
+    if (mysql_num_rows($result) == 0) {
+        echo '<TABLE BORDER="1"><TR><TD>Selet an item</TD></TR></TABLE></TD><TD VALIGN="top">';
+        }
+    else {
+        echo '<TABLE>';
+        $query = 'SELECT id, name FROM item_stats WHERE item_type = "' . $_GET['item_type'] . '"';
         $result = mysql_query2($query);
-        while($line = mysql_fetch_array($result))
-        {
-            echo '<tr><td>' . $line['id'] . '</td><td><a href="index.php?page=listitems&item_type=' . $_GET['item_type'] . '&item=' . $line['id'] . '">' . $line['name'] . '</a></td></tr>';
-        }
-        echo'</table></td><td valign="top">';
-    }
-    
-    $query = "SHOW COLUMNS FROM item_stats";
-    $result = mysql_query2($query);
-    $count = 0;
 
-    while ($line = mysql_fetch_array($result, MYSQL_NUM))
-    {
-        $columns[$count++] = $line[0];
-    }
-    
-    /**
-     * // output headers
-     * echo "  <TABLE BORDER=1>";
-     * printf( "<TH> Functions</TH>");
-     * for($i = 0; $i < sizeof($columns); $i++) { 
-     * printf( "<TH> %s</TH>", $columns[$i]); 
-     * }
-     */ 
-     
-    // output item data
-    $query = "select * from item_stats where id ='" . $_GET['item'] . "'";
-    $result = mysql_query2($query);
-
-    if (mysql_num_rows($result) == 0)
-    {
-        echo "<TABLE BORDER=1><tr><td>Select an item</td></tr></TABLE></td></tr></table>";
-    }
-    else
-    {
-        echo '<TABLE BORDER=1>';
-        while ($line = mysql_fetch_array($result, MYSQL_NUM))
-        {
-            for($i = 0; $i < sizeof($line); $i++)
-            {
-                printf("<tr><td>$columns[$i]</td><td> %s</td></tr>", $line[$i]);
+        while($row = mysql_fetch_array($result)) {
+            echo '<TR><TD>' . $row['id'] . '</TD><TD><A HREF="index.php?page=listitems&item_type=' . $_GET['item_type'] . '&item=' . $row['id'] . '">' . $row['name'] . '</A></TD></TR>';
             }
-            printf("<FORM ACTION=processcommand.php METHOD=POST>");
-            printf("<INPUT TYPE=HIDDEN NAME=id VALUE=%d \">", $line[0]);
-            printf("<INPUT TYPE=SUBMIT NAME=submit VALUE=\"EDIT\">");
-            printf("<INPUT TYPE=SUBMIT NAME=%s VALUE=\"DELETE\" onclick=\"return confirmDelete()\">", $line[0]);
-            printf("</FORM>");
-            echo '</TABLE></td></tr></table>';
+
+        echo '</TABLE></TD<TD VALIGN="top">';
         }
-        /**
-         * printf("<TR>");
-         * printf("<TD><FORM ACTION=processcommand.php METHOD=POST>");
-         * printf("<INPUT TYPE=HIDDEN NAME=id VALUE=%d \">", $line[0]);
-         * printf("<INPUT TYPE=SUBMIT NAME=submit VALUE=\"EDIT\">");
-         * printf("<INPUT TYPE=SUBMIT NAME=%s VALUE=\"DELETE\" onclick=\"return confirmDelete()\">", $line[0]);
-         * for($i = 0; $i < sizeof($line); $i++) {
-         * printf( "<TD> %s</TD>", $line[$i]);
-         * }
-         * printf("</FORM></TR>");
-         */
+
+//Display Item Stats for Item
+    $query = "SELECT * FROM item_stats WHERE id ='" . $_GET['item'] . "'";
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) == 0) {
+        echo '<TABLE BORDER="1"><TR><TD>Select an item</TD></TR></TABLE></TD></TR></TABLE>';
+        }
+
+    else {
+        echo '<TABLE BORDER="1">';
+        while ($row = mysql_fetch_assoc($result)) {
+            foreach ($row as $key => $value) {
+                echo '<TR><TD>' . $key . '</TD><TD>' . $value . '</TD></TR>';
+                }
+
+            echo 'Actions for item #' . $row['id'] . ':';
+            echo ' <A HREF="index.php?page=edititem&item=' . $row['id'] . '" TITLE="Edit this item.">EDIT</A>';
+            echo ' <A HREF="index.php?page=deleteitem&item=' . $row['id'] . '" TITLE="Delete this item.">DELETE</A>';
+            echo '</TABLE></TD></TR></TABLE>';
+            }
+        }
     }
-
-    echo '<br><br>';
-}
-
 ?>
-
-                  
