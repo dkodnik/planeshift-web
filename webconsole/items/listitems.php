@@ -28,7 +28,7 @@ function listitems() {
             echo '<TR><TD>' . $row['id'] . '</TD><TD><A HREF="index.php?page=listitems&item_type=' . $_GET['item_type'] . '&item=' . $row['id'] . '">' . $row['name'] . '</A></TD></TR>';
             }
 
-        echo '</TABLE></TD<TD VALIGN="top">';
+        echo '</TABLE></TD><TD VALIGN="top">';
         }
 
 //Display Item Stats for Item
