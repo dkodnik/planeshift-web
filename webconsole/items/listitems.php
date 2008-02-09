@@ -6,11 +6,19 @@ function listitems() {
     echo '<TABLE>';
 
 // Display Item Types.
-    $query = "SELECT DISTINCT item_type FROM item_stats";
+    $query = "SELECT name, category_id FROM item_categories";
     $result = mysql_query2($query);
 
     while ($row = mysql_fetch_array($result)) {
-        echo '<TR><TD><A HREF="index.php?page=listitems&item_type=' . $row['item_type'] . '">' . $row['item_type'] . '</A></TD></TR>';
+        echo '<TR><TD><A HREF="index.php?page=listitems&category_id=' . $row['category_id'] . '">' ;
+	if ($_GET['category_id'] == $row['category_id']){
+		echo '<B>';
+	}
+	echo $row['name'];
+        if ($_GET['category_id'] == $row['category_id']){
+                echo '</B>';
+        }
+	echo '</A></TD></TR>';
         }
 
     echo '</table></td><td valign="top">';
@@ -21,11 +29,11 @@ function listitems() {
         }
     else {
         echo '<TABLE>';
-        $query = 'SELECT id, name FROM item_stats WHERE item_type = "' . $_GET['item_type'] . '"';
+        $query = 'SELECT id, name FROM item_stats WHERE category_id = "' . $_GET['category_id'] . '"';
         $result = mysql_query2($query);
 
         while($row = mysql_fetch_array($result)) {
-            echo '<TR><TD>' . $row['id'] . '</TD><TD><A HREF="index.php?page=listitems&item_type=' . $_GET['item_type'] . '&item=' . $row['id'] . '">' . $row['name'] . '</A></TD></TR>';
+            echo '<TR><TD>' . $row['id'] . '</TD><TD><A HREF="index.php?page=listitems&category_id=' . $_GET['category_id'] . '&item=' . $row['id'] . '">' . $row['name'] . '</A></TD></TR>';
             }
 
         echo '</TABLE></TD><TD VALIGN="top">';
