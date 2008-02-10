@@ -33,7 +33,7 @@ function listnpcquest(){
       $distribution[$line[3]] = $distribution[$line[3]]+1;
     }
     echo "</TD><TD ALIGN=CENTER>";
-    $query4 = "select quests.id,name from quest_scripts, quests where quests.id=quest_scripts.id and script like '%$npcfullname:%Assign Quest%'";
+    $query4 = "select quests.id,name from quest_scripts, quests where quests.id=quest_scripts.id and script REGEXP '".$npcfullname.":.*[Aa]ssign\ [Qq]uest\.'";
     $result4 = mysql_query2($query4);
     while ($line4 = mysql_fetch_array($result4, MYSQL_NUM)){
       echo " <a href=index.php?page=viewquestscript&id=".$line4[0].">".$line4[1]."<br>";
