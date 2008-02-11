@@ -14,7 +14,7 @@ function maincharcreate(){
 	<FORM METHOD=post ACTION="index.php?page=adjustraces" METHOD=POST>   
 	<?PHP
 
-	$query = "select * from race_info where race_id < 12";
+	$query = "select * from race_info where id < 12";
 	$result = mysql_query2($query);
 
 	$switch = false;

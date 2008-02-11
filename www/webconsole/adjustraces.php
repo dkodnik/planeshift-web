@@ -1,7 +1,7 @@
 <?PHP
 function adjustraces()
 {
-	$query = 'SELECT * FROM race_info WHERE race_id < 12';
+	$query = 'SELECT * FROM race_info WHERE id < 12';
 	$result = mysql_query2($query);
 
 	while ($line = mysql_fetch_array($result, MYSQL_BOTH))
