@@ -9,7 +9,6 @@ function questscript_actions(){
 	if ($operation == 'createquest'){
 		$name = $_POST['name'];
 		$description = $_POST['description'];
-		$steps = $_POST['steps'];
 
 		printf("You want to create a new quest named %s<br>", $name); 
 		// is there another way to get a new ID?
@@ -58,71 +57,7 @@ function questscript_actions(){
 
 <?PHP
 
-	} else if ($operation == 'updatekascript') {
-
-		$query = "update quest_scripts set script='{$_POST['script']}' where id='{$_POST['id']}'";
-		$result = mysql_query2($query);
-		?>
-    <SCRIPT language="javascript">
-      document.location = "index.php?page=listkascripts";
-    </script>
-
-<?PHP
-
-	} else if ($operation == 'newka') {
-
-		// check if doesn't exist already
-		$script = $_POST['script'];
-		$cutat = strpos($script, "\n");
-        $script = substr($script,$cutat+1);
-		$cutat = strpos($script, ":");
-		$area = substr($script,0,$cutat);
-		$script = $_POST['script'];
-		
-		if ($area=="") {
-			echo "Your script is not correct, you need to specify an area. AVoid blank lines in the first 2 lines.";
-			return;
-		}
-
-		//$query = "select area from npc_knowledge_areas where area='$area'";
-		//$result = mysql_query2($query);
-		//if (mysql_num_rows($result) > 0) {
-		//	echo "A Knowledge area exists with same name as single triggers.";
-		//	return;
-		//}
-
-		// get a new ID
-		$query_string = "select max(id) from quest_scripts";
-		$result = mysql_query2($query_string);
-		$line = mysql_fetch_array($result, MYSQL_NUM);
-		$newid = $line[0] + 1;
-		echo "new ID: $newid";
-		
-		// insert
-		$query_string = "insert into quest_scripts values($newid, -1, '$script')";
-		$result = mysql_query2($query_string); 
-		?>
-    <SCRIPT language="javascript">
-      document.location = "index.php?page=listkascripts";
-    </script>
-
-<?PHP
-
-
-	} else if ($operation == 'deletekascript') {
-		$id = $_POST['id'];
-		$query_string = "delete from quest_scripts where id=$id";
-		$result = mysql_query2($query_string); 
-
-				?>
-    <SCRIPT language="javascript">
-      document.location = "index.php?page=listkascripts";
-    </script>
-
-<?PHP
-
-	}
-	
+}	
 
 	// manage another operation here
 	echo "Operation $operation not supported.";
