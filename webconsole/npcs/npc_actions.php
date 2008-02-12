@@ -513,7 +513,7 @@ function viewitems()
 
     $base_item_max_id = getBaseItemMax ();
 
-    $query = 'select id, item_type, name, flags from item_stats where id<'.$base_item_max_id.' order by item_type, name';
+    $query = 'select id, item_type, name, flags from item_stats where id<'.$base_item_max_id.' AND category_id!=24  order by item_type, name';
     $result = mysql_query2($query);
 
     echo '<TABLE><TH>Item</TH><TH>Count</TH><TH></TH><TR><TD>';
@@ -521,10 +521,8 @@ function viewitems()
 
     while ($line = mysql_fetch_array($result, MYSQL_NUM))
     {
-        if (!strstr($line[3], "QUESTITEM"))
-        {
-            echo "<OPTION value=$line[0]>$line[1] : $line[2]</OPTION>";
-        }
+    	echo "<OPTION value=$line[0]>$line[1] : $line[2]</OPTION>";
+//Moved the removal of quest items to the SQL, as opposed to filtering in PHP
     }
 
     echo '</SELECT></TD>';
