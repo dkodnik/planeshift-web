@@ -80,10 +80,7 @@ function main_menu(){
 <?PHP }
 	if ($_GET['category'] == 'Quests'){
 		?>	
-		<b>OLD quest system. Triggers/responses used.</b><br>
-	<p><a href="index.php?page=listquests">List/Edit available quests, list all steps if assigned or not</a> (SettingAdmin)</p>
-	<p><a href="index.php?page=createquest&type=old">Create a new trigger quest </a> (SettingMember)</p><br><br>
-		<b>NEW quest system. Text scripts used.</b><br>
+		<b>Quest Management.</b><br>
 	<p><a href="index.php?page=listquestscripts">List/Edit quest scripts</a> (SettingAdmin)</p>
 	<p><a href="index.php?page=createquest&type=new">Create a new quest script </a> (SettingMember)</p>
 	<p><a href="index.php?page=listnpcquest&type=new">List NPCs involved in quest Scripts</a> (SettingMember)</p>
