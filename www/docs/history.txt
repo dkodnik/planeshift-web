@@ -1,3 +1,37 @@
+*** 2008-02-12 Eriroley
+updating history.txt
+
+Copy from svn log because I was a bad doobie and forgot to update history.txt
+Revision 788 - Directory Listing
+Modified Tue Feb 12 03:09:56 2008 UTC (12 hours, 24 minutes ago) by eriroley
+
+Removing old style KA-quests as they are no longer used, and the code wasn't functional 
+anyway
+
+Revision 787 - Directory Listing
+Modified Tue Feb 12 00:13:45 2008 UTC (15 hours, 21 minutes ago) by eriroley
+
+Moved the removal of Quest Items into the SQL query rather than having PHP filter them
+added "AND category_id!=24" to the sql SELECT line for the "items" page
+
+Revision 785 - Directory Listing
+Modified Mon Feb 11 02:35:56 2008 UTC (36 hours, 58 minutes ago) by eriroley
+
+Fixed the SQL query so that the page works (id column in race_info is 'id' not 'race_id')
+
+
+Revision 782 - Directory Listing
+Modified Sun Feb 10 17:17:27 2008 UTC (46 hours, 17 minutes ago) by eriroley
+
+Setting it to show quests started by a specific NPC regardless of caps of "Assign Quest" line - uses rexexp match for "[Aa]ssign\ [Qq]uest"
+
+Revision 780 - Directory Listing
+Modified Sat Feb 9 16:37:21 2008 UTC (2 days, 22 hours ago) by eriroley
+
+Changed listitems to use category_id instead of item_type - also set category to show as bold when selected
+
+
+
 *** 2008-02-01 by Darcsabre
 - WC - Fixed malformed tag causing page display issues.
 
