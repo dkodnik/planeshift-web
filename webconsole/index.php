@@ -277,6 +277,11 @@ if ($_SESSION['loggedin'] == 'yes' && (
                 edititems();
                 break;
 
+            case 'edititemcommit';
+                include('./items/item_edit.php');
+                edititems(1);
+                break;
+
             case 'newbaseitem':
                 include('./items/createnewbase.php');
                 break;
