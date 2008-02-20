@@ -1,3 +1,7 @@
+*** 2008-02-19 by Darcsabre
+WC - Book text editing complete
+WC - Backlink in book text editing
+
 *** 2008-12-19 Eriroley
 Changed it such that when editing quests it always shows the quest prereq (if Any) and when updating the full <pre> syntax takes precidence over
 simple prerequisites.
