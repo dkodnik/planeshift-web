@@ -1,3 +1,6 @@
+*** 2008-02-19 by Darcsabre
+WC - Book text editing complete
+
 *** 2008-02-12 Eriroley
 updating history.txt
 
