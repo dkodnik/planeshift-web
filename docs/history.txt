@@ -1,3 +1,6 @@
+*** 2008-02-20 by Darcsabre
+WC - Icon and mesh selects in editing page, trunk updated to match Darcsabre's modifications to stable
+
 *** 2008-02-19 by Darcsabre
 WC - Book text editing complete
 WC - Backlink in book text editing

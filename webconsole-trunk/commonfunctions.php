@@ -49,10 +49,12 @@ function DrawSelectBox($type, $selectName, $selectedID, $includeNULL = false) {
 // that are used in the query and the <SELECT> block.
 
     $typevals["item"] = array("NULL" => '""', "query" => "SELECT id, name FROM item_stats WHERE id < $base_item_max ORDER BY name");
-    $typevals["skill"] = array("NULL" => "-1", "query" => "SELECT skill_id, name FROM skills ORDER BY name");
-    $typevals["itemcat"] = array("NULL" => "-1", "query" => "SELECT category_id, name FROM item_categories");
+    $typevals["skill"] = array("NULL" => '"-1"', "query" => "SELECT skill_id, name FROM skills ORDER BY name");
+    $typevals["itemcat"] = array("NULL" => '"-1"', "query" => "SELECT category_id, name FROM item_categories");
+    $typevals["icon"] = array("NULL" => '"0"', "query" => "SELECT MIN(id), string FROM common_strings WHERE common_strings.string Like '%_icon.dds' GROUP BY id");
+    $typevals["mesh"] = array("NULL" => '"0"', "query" => "SELECT MIN(id), string FROM common_strings WHERE common_strings.string Like '%#%' GROUP BY id");
 
-// Now the $typevals array contains (two) smaller arrays.  We'll breakout the
+// Now the $typevals array contains (five) smaller arrays.  We'll breakout the
 // values from the $typevals array and use these to determine how the rest
 // of the function plays out.
 
