@@ -7,11 +7,16 @@ function edititems($commit = 0) {
 // pull data from $_POST
         $item_id = $_POST['id'];
         $item_name = $_POST['name'];
+        $item_cstr_id_gfx_icon = $_POST['cstr_id_gfx_icon'];
+        $item_cstr_id_gfx_mesh = $_POST['cstr_id_gfx_mesh'];
         $item_description = $_POST['description'];
         $item_pretags = htmlspecialchars_decode($_POST['pretags']);
         $item_posttags = htmlspecialchars_decode($_POST['posttags']);
         $item_cd = $_POST['creative_definition'];
-        $query = 'UPDATE item_stats SET name = "'. $item_name .'", description = "'. $item_description .'", creative_definition = "'. $item_pretags . $item_cd . $item_posttags .'" WHERE id = '. $item_id;
+//        $query = 'UPDATE item_stats SET name = "' . $item_name . '", cstr_id_gfx_icon = "' . $item_cstr_id_gfx_icon . '", cstr_id_gfx_mesh = "' . $item_cstr_id_gfx_mesh . '", description = "' . $item_description . '", creative_definition = "' . $item_pretags . $item_cd . $item_posttags . '" WHERE id = ' . $item_id;
+        $query = sprintf('UPDATE item_stats SET name = "%s", cstr_id_gfx_icon = "%s", cstr_id_gfx_mesh = "%s", description = "%s", creative_definition = "%s" WHERE id = %s', $item_name, $item_cstr_id_gfx_icon, $item_cstr_id_gfx_mesh, $item_description, $item_pretags . $item_cd . $item_posttags, $item_id);
+//echo $query;
+
         if (strpos($item_cd, '>') || strpos($item_cd, '<')) {
             echo 'Book text contains illegal characters.  Unable to commit changes.';
             }
@@ -39,6 +44,8 @@ function edititems($commit = 0) {
         echo '<TR><TD>id</TD><TD>' . $row['id'];
         echo '<INPUT TYPE="hidden" NAME="id" VALUE="' . $row['id'] . '"></TD></TR>';
         echo '<TR><TD>name</TD><TD><INPUT TYPE="text" NAME="name" VALUE="' . $row['name'] . '"></TD></TR>';
+        echo '<TR><TD>cstr_id_gfx_icon</TD><TD>'; echo 'Due to the effort required, icon and mesh previews will not be available.<br />'; echo DrawSelectBox('icon', 'cstr_id_gfx_icon', $row['cstr_id_gfx_icon']); echo '</TD></TR>';
+        echo '<TR><TD>cstr_id_gfx_mesh</TD><TD>'; echo DrawSelectBox('mesh', 'cstr_id_gfx_mesh', $row['cstr_id_gfx_mesh']); echo '</TD></TR>';
         echo '<TR><TD>description</TD><TD><TEXTAREA NAME="description" ROWS="10" COLS="40">' . $row['description'] . '</TEXTAREA></TD></TR>';
         echo '<TR><TD>creative_definition</TD><TD>';
         $pretags = '';
