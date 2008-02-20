@@ -40,7 +40,7 @@ function questscript_actions(){
 		// update quest
 
 
-         if ($_POST['questprereq']!=-1) {
+         if (($_POST['questprereq']!=-1) && ($_POST['prereq']=="")) {
           $prereq = "<pre><completed quest=\"". $_POST['questprereq'] . "\"/></pre>";
         } else 
           $prereq = $_POST['prereq'];
