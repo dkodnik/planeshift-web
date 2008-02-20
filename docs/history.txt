@@ -26,7 +26,7 @@ Copy from svn log because I was a bad doobie and forgot to update history.txt
 Revision 788 - Directory Listing
 Modified Tue Feb 12 03:09:56 2008 UTC (12 hours, 24 minutes ago) by eriroley
 
-Removing old style KA-quests as they are no longer used, and the code wasn't functional 
+Removing old style KA-quests as they are no longer used, and the code wasn't functional
 anyway
 
 Revision 787 - Directory Listing
