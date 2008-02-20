@@ -22,6 +22,7 @@ function edititems($commit = 0) {
         }
     $query = "SELECT * FROM item_stats WHERE id ='" . $_GET['item'] . "'";
     $result = mysql_query2($query);
+    echo '<A HREF="index.php?page=listitems">Back to item statistics</A>';
     if (mysql_num_rows($result) == 0) {
         echo '<TABLE BORDER="1"><TR><TD>Invalid item.</TD></TR></TABLE>';
         }
