@@ -31,20 +31,11 @@ if ($operation == 'remove'){
 	 */
 }else if ($operation == 'create'){
 	$cat_name = $_POST['cat_id'];
-	$item_stat_id = $_POST['item_stat_id'];
-	$probability = $_POST['probability']; 
-	$min_money = $_POST['min_money']; 
-	$max_money = $_POST['max_money']; 
-	$randomize = $_POST['randomize']; 
 
-    $newlootid = getNextId('loot_rules', 'id');
 	// insert loot_rule
-	$query = "insert into loot_rules values ($newlootid,'$cat_name')";
+	$query = "insert into loot_rules (name) values ('$cat_name') ;";
 	$result = mysql_query2($query); 
 
-	// insert loot_details
-	$query = "insert into loot_rule_details values ('','$newlootid','$item_stat_id','$probability','$min_money','$max_money','$randomize')";
-	$result = mysql_query2($query); 
 	// redirect
 	?><SCRIPT language="javascript">
           document.location = "index.php?page=listlootcategories";

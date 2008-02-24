@@ -1,3 +1,6 @@
+*** 2008-02-24 by Eriroley
+WC - modifications to handeling of loot rules
+
 *** 2008-02-20 by Darcsabre
 
 WC - Icon and mesh selects in editing page, trunk updated to match Darcsabre's modifications to stable
