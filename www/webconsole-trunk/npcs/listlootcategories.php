@@ -86,7 +86,7 @@ function confirmDelete()
           echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=add METHOD=POST>';
           echo "<TD><INPUT TYPE=hidden NAME=cat_id VALUE=\"$category[0]\"></TD>";
           echo '<TD>';
-          SelectBaseItem(-1,item_stat_id);
+          SelectBaseItem(-1,'item_stat_id');
           echo '</TD>';
           echo '<TD><INPUT TYPE=text size=5 name=probability></TD>';
           echo '<TD><INPUT TYPE=text size=5 name=min_money></TD>';
@@ -119,7 +119,7 @@ function confirmDelete()
           echo "<TR><TD>";
           echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=add_npc METHOD=POST>';
           echo "<INPUT TYPE=hidden NAME=cat_id VALUE=\"$category[0]\">";
-          SelectNPCs(-1,npc_id,"vulnerable");
+          SelectNPCs(-1,'npc_id',"vulnerable");
           echo '</TD><TD><INPUT TYPE=SUBMIT NAME=submit VALUE=Add>';
           echo "</FORM>";
           echo "</TD></TR>";
