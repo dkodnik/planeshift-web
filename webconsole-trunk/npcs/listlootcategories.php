@@ -25,7 +25,7 @@ function confirmDelete()
 
     // check if one loot has been selected
     if ($selectedloot) {
-	  $query = "select id, name from loot_rules where id=".$selectedloot." order by id";
+	  $query = "select id, name from loot_rules where id=".$selectedloot ;
 	  $editmode = 1;
 	} else {
 	  $query = "select id, name from loot_rules order by id";
@@ -42,17 +42,17 @@ function confirmDelete()
 
        // prints items table
 	   echo '  <TABLE BORDER=4>';
-       echo '  <TH> Id </TH> ';
-       echo '  <TH> Name </TH> ';
-       echo '  <TH> Probability </TH>';
-       echo '  <TH> Min money </TH>';
-       echo '  <TH> Max money </TH>';
-       echo '  <TH> Randomize </TH>';
+           echo '  <TH> Id </TH> ';
+           echo '  <TH> Name </TH> ';
+           echo '  <TH> Probability </TH>';
+           echo '  <TH> Min money </TH>';
+           echo '  <TH> Max money </TH>';
+           echo '  <TH> Randomize </TH>';
 
 	   while ($line = mysql_fetch_array($result, MYSQL_NUM)){
 
             if ($editmode) {
-        
+			echo '<TH></TH><TH></TH></TR>';        
         		echo '<TR>';
         		echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=update METHOD=POST>';
         		echo "<TD><INPUT TYPE=hidden NAME=cat_id VALUE=\"$category[0]\"><INPUT TYPE=hidden NAME=item_stat_id VALUE=\"$line[0]\">$line[0]</TD>";
@@ -75,7 +75,7 @@ function confirmDelete()
         		echo "<TD>$line[3]</TD>";
         		echo "<TD>$line[4]</TD>";
         		echo "<TD>$line[5]</TD>";
-        		echo '<TD></TD><TD></TD></TR>';
+        		echo '</TR>';
 
         	}
 	   }
@@ -100,20 +100,22 @@ function confirmDelete()
         // npc table
         echo '<TD>';
         
-        if ($editmode) {
-          echo '<TABLE>';
-          $npc_query = "select c.id,c.name,s.name from characters c, sectors s where c.loc_sector_id=s.id and npc_addl_loot_category_id=\"$category[0]\"";
-          $npc_result = mysql_query2($npc_query);
-          while ($npc = mysql_fetch_array($npc_result, MYSQL_NUM)) {
-              echo "<TR><TD>";
+        echo '<TABLE>';
+        $npc_query = "select c.id,c.name,s.name from characters c, sectors s where c.loc_sector_id=s.id and npc_addl_loot_category_id=\"$category[0]\"";
+        $npc_result = mysql_query2($npc_query);
+        while ($npc = mysql_fetch_array($npc_result, MYSQL_NUM)) {
+            echo "<TR><TD>";
+            echo "$npc[1] ($npc[0] - $npc[2])";
+	    if ($editmode){
               echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=remove_npc METHOD=POST>';
               echo "<INPUT TYPE=hidden NAME=cat_id VALUE=\"$category[0]\">";
               echo "<INPUT TYPE=hidden NAME=npc_id VALUE=\"$npc[0]\">";
-              echo "$npc[1] ($npc[0] - $npc[2])";
               echo '</TD><TD><INPUT TYPE=SUBMIT NAME=submit VALUE=Remove>';
               echo "</FORM>";
-              echo "</TD></TR>";
-           }
+	    }
+            echo "</TD></TR>";
+         }
+        if ($editmode) {
           echo "<TR><TD>";
           echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=add_npc METHOD=POST>';
           echo "<INPUT TYPE=hidden NAME=cat_id VALUE=\"$category[0]\">";
@@ -121,8 +123,8 @@ function confirmDelete()
           echo '</TD><TD><INPUT TYPE=SUBMIT NAME=submit VALUE=Add>';
           echo "</FORM>";
           echo "</TD></TR>";
-          echo '</TABLE>';
-        }
+	}
+        echo '</TABLE>';
         echo '</TD>';
         echo '</TR>';
         echo '<TR><TD colspan=3 bgcolor=darkblue></TD><TR>';
@@ -130,29 +132,15 @@ function confirmDelete()
 
     echo '</TABLE>';
 
-    if ($editmode) {
-      // add new full loot rule
-      echo '<BR><H2>Create a new loot rule</H2>';
-      echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=create METHOD=POST>';
-      echo '<TABLE border=1><TR>';
-      echo '<TD>';
-      echo '  <TR><TH> Name </TH><TH> First Item Id </TH> ';
-      echo '  <TH> Probability </TH>';
-      echo '  <TH> Min money </TH>';
-      echo '  <TH> Max money </TH>';
-      echo '  <TH> Randomize </TH></TR>';
-      echo '<TD><INPUT TYPE=text name=cat_id size=15></TD>';
-      echo '<TD>';
-      SelectBaseItem(-1,item_stat_id);
-      echo '</TD>';
-      echo '<TD><INPUT TYPE=text size=5 name=probability ></TD>';
-      echo '<TD><INPUT TYPE=text size=5 name=min_money ></TD>';
-      echo '<TD><INPUT TYPE=text size=5 name=max_money ></TD>';
-      echo '<TD><INPUT TYPE=text size=5 name=randomize></TD>';
-      echo '<TD><INPUT TYPE=SUBMIT NAME=submit VALUE=create>';
-      echo '</FORM>';
-      echo '</TABLE></TD>';
-    }
+    // add new full loot rule
+    echo '<BR><H2>Create a new loot rule</H2>';
+    echo '<FORM ACTION=index.php?page=lootcategories_actions&operation=create METHOD=POST>';
+    echo '<TABLE border=1>';
+    echo '  <TR><TH> Name </TH>';
+    echo '<TD><INPUT TYPE=text name=cat_id size=15></TD>';
+    echo '<TD><INPUT TYPE=SUBMIT NAME=submit VALUE=create></TD></TR>';
+    echo '</FORM>';
+    echo '</TABLE></TD>';
 
 	echo '<TD></TD>';
 
