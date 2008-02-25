@@ -1,4 +1,7 @@
 *** 2008-02-24 by Eriroley
+WC - Modifications to display NPC description on the NPC list pages
+
+*** 2008-02-24 by Eriroley
 WC - modifications to handeling of loot rules
 
 *** 2008-02-20 by Darcsabre
