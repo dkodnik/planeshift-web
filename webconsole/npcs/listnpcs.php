@@ -26,7 +26,7 @@ function confirmDelete()
         echo "<b><A HREF=\"index.php?page=listnpcscombat\">Click here to switch to combat view</A></b>";
     }
 
-    $query = "select c.id, c.name, sec.name, c.loc_x, c.loc_y, c.loc_z, c.npc_spawn_rule, b.npctype,c.npc_addl_loot_category_id, b.region from characters as c LEFT JOIN sc_npc_definitions as b ON b.char_id=c.id, sectors as sec ";
+    $query = "select c.id, c.name, sec.name, c.loc_x, c.loc_y, c.loc_z, c.npc_spawn_rule, b.npctype,c.npc_addl_loot_category_id, b.region, c.description from characters as c LEFT JOIN sc_npc_definitions as b ON b.char_id=c.id, sectors as sec ";
     $query = $query . " where npc_master_id !=0 and character_type=1 and c.loc_sector_id=sec.id";
   
     $sector = $_GET['sector'];
@@ -44,7 +44,7 @@ function confirmDelete()
     $result = mysql_query2($query);
 
     echo "  <TABLE BORDER=1>";
-    echo "  <TH> ID </TH> <TH> NAME</TH><TH> Spawn / Loot</TH><TH> SECTOR</TH> <TH> POSITION</TH><TH>BEHAVIOR</TH><TH>Personal Triggers</TH><TH>Region</TH><TH>NA</TH><TH> FUNCTIONS</TH><TH>CHECK</TH>";
+    echo "  <TH> ID </TH> <TH> NAME</TH><TH> DESCRIPTION</TH><TH> Spawn / Loot</TH><TH> SECTOR</TH> <TH> POSITION</TH><TH>BEHAVIOR</TH><TH>Personal Triggers</TH><TH>Region</TH><TH>NA</TH><TH> FUNCTIONS</TH><TH>CHECK</TH>";
 
     while ($line = mysql_fetch_array($result, MYSQL_NUM))
     {
@@ -61,7 +61,7 @@ function confirmDelete()
         }
 
         echo "<TR><TD>$line[0] </TD><TD><A href='index.php?page=viewnpc&id=".$line[0]."'>".$line[1]."</a></TD>";
-    
+    	echo '<TD>'.$line[10].'</TD>';
         echo "<TD>".$spawn." ".$loot."</TD>";
     
         echo "<TD ALIGN=CENTER>".$line[2]."</TD><TD>".$line[3].",".$line[4].",".$line[5]."</TD>";
