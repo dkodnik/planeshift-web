@@ -1,3 +1,9 @@
+*** 2008-02-25 by Eriroley
+WC - Modifications to the main NPC-edit screen 
+  -Sector, Spawn Rule, Loot Rule are now drop-down Select boxes
+  -Added "Instance" for location
+  -Minor modifications to the layout for location data
+
 *** 2008-02-24 by Eriroley
 WC - Modifications to display NPC description on the NPC list pages
 

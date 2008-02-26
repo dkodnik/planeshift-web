@@ -66,14 +66,17 @@ function viewmain(){
 
     echo '<br><br>';
     // extract position and sector
-    $query = 'select sec.name, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot from characters as c, sectors as sec ';
+    $query = 'select sec.name, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot, c.loc_instance from characters as c, sectors as sec ';
     $query = $query . " where c.id=$id and c.loc_sector_id=sec.id";
     $result = mysql_query2($query);
     $line = mysql_fetch_array($result, MYSQL_NUM);
 
     echo '<TABLE>';
-    echo "<TR><TD>Sector:</TD><TD> <INPUT type=text name=sector value=$line[0]></TD></TR>";
-    echo "<TR><TD>Location x,y,z (rot):</TD><TD> <INPUT size=4 type=text name=locx value=$line[1]>, <INPUT size=4 type=text name=locy value=$line[2]>, <INPUT size=4 type=text name=locz value=$line[3]> (<INPUT type=text size=4 name=locrot value=$line[4]>)</TD></TR>";
+    echo "<TR><TD>Sector:</TD><TD>";
+    DrawSelectBox("sector", "sector", $line[0], FALSE);
+    echo '<TR><TD>Location:</TD><TD><TABLE><TR><TH> x </TH><TH> y </TH><TH> z </TH><TH> rotation </TH><TH> instance </TH></TR>';
+    echo "<TR><TD><input size=4 type=text name=locx value=$line[1]><TD><input size=4 type=text name=locy value=$line[2]></TD><TD><input size=4 type=text name=locz value=$line[3]></TD><TD><input size=4 type=text name=locrot value=$line[4]></TD><TD><input size=4 type=text name=locinst value=$line[5]></TD></TD></TR>";
+    echo '</TABLE></TD></TR>';
     echo '<TR><TD>&nbsp;</TD><TD></TD></TR>'; 
     // get race and gender list
     echo '<TR><TD>Race and gender:</TD><TD><SELECT name=raceid>';
@@ -111,8 +114,12 @@ function viewmain(){
     echo "</SELECT> (When set to Yes, the NPC cannot be attacked by any means)</TD></TR>";
     echo "<TR><TD>Experience:</TD><TD> <INPUT type=text size='6' name=kill_exp value=$kill_exp> (Experience given when killing this NPC)</TD></TR>";
     echo '<TR><TD>&nbsp;</TD><TD></TD></TR>';
-    echo "<TR><TD>Spawn Rule:</TD><TD> <INPUT size='2' type=text name=spawn value=$spawn> (0 doesn't load the npc in game, 1+ <A HREF=index.php?page=listspawnrules target=_blank>use a specific spawn rule</A> )</TD></TR>";
-    echo "<TR><TD>Loot Rule:</TD><TD> <INPUT size='2' type=text name=loot value=$loot> (<A HREF=index.php?page=listlootcategories target=_blank>List available loot rules</A> )</TD></TR>";
+    echo "<TR><TD>Spawn Rule:</TD><TD>";
+    DrawSelectBox("spawn", "spawn", $spawn, TRUE);
+    echo " (NONE prevents NPC from spawning) </TD></TR>";
+    echo "<TR><TD>Loot Rule:</TD><TD> ";
+    DrawSelectBox("loot", "loot", $loot, TRUE);
+    echo "</TD></TR>";
     echo "<TR><TD>Behaviour/region:</TD><TD>";
     if ($behaviour=='New Behavior')
     {
@@ -154,6 +161,7 @@ function editmain(){
     $locy = $_POST['locy'];
     $locz = $_POST['locz'];
     $locrot = $_POST['locrot']; 
+    $locinst = $_POST['locinst'];
     // get sector id or create a new one
     $query = "select id from sectors where name='$sector'";
     $result = mysql_query2($query);
@@ -171,7 +179,7 @@ function editmain(){
     $query = "update characters set description='$description', base_strength=$str, base_agility=$agi, base_endurance=$end, base_intelligence=$int, ";
     $query = $query . "racegender_id=$raceid, ";
     $query = $query . "base_will=$wil, base_charisma=$cha, base_hitpoints_max=$hp, base_mana_max=$mana, npc_spawn_rule=$spawn, npc_addl_loot_category_id=$loot, ";
-    $query = $query . "loc_sector_id=$sectorid, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot,  ";
+    $query = $query . "loc_sector_id=$sectorid, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot, loc_instance=$locinst , ";
     $query = $query . "npc_impervious_ind='$invulnerable', kill_exp=$kill_exp, "; 
     $query = $query . " npc_master_id=$masternpc where id=" . $id;
     //echo "$query";
