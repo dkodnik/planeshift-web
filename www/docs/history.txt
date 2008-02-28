@@ -1,3 +1,11 @@
+*** 2008-02-28 by Darcsabre
+WC - More item editing tricks: weight, cat_id, selling_price
+
+*** 2008-02-27 by Eriroley
+added the field for fixed_spawn_interface
+
+This update does require the -trunk db
+
 *** 2008-02-25 by Eriroley
 WC - Modifications to the main NPC-edit screen 
   -Sector, Spawn Rule, Loot Rule are now drop-down Select boxes
