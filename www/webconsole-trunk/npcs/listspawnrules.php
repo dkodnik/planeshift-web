@@ -47,9 +47,9 @@ function confirmDelete()
 		echo "<tr><th>Fixed Z</th><td><input name=fixed_spawn_z value=\"{$rule[7]}\" size=5></td>\n";
 		echo "<th>Fixed Rot</th><td><input name=fixed_spawn_rot value=\"{$rule[8]}\" size=5></td></tr>\n";
 		echo "<tr><th>Fixed Sector</th><td><input name=fixed_spawn_sector value=\"{$rule[9]}\" size=15></td>\n";
-		echo "<th>Loot Category ID</th><td><input name=loot_category_id value=\"{$rule[10]}\" size=5></td></tr>\n";
-		echo "<tr><th>Dead Time</th><td><input name=dead_remain_time value=\"{$rule[11]}\" size=5></td>\n";
-		echo "<td></td><td></td></tr>\n";
+		echo "<th>Fixed Instance</th><td><input name=fixed_spawn_instance value=\"{$rule[10]}\" size=5></td></tr>";
+		echo "<tr><th>Loot Category ID</th><td><input name=loot_category_id value=\"{$rule[11]}\" size=5></td>\n";
+		echo "<th>Dead Time</th><td><input name=dead_remain_time value=\"{$rule[12]}\" size=5></td></tr>\n";
 		echo "</table>\n";
 		echo '<INPUT TYPE=SUBMIT NAME=submit VALUE=Update>';
 		echo "</form>\n";
