@@ -217,79 +217,83 @@ function getNextId($table, $field) {
  * operation: can be read, create, edit, delete                              *
 ----------------------------------------------------------------------------**/
 
-function checkAccess($objecttype, $arrayattrs, $operation) {
+function checkAccess($objecttype, $arrayattrs, $operation){
+	if($_SESSION['loggedin'] != 'yes'){
+		header("Location: http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/index.php?goto=" . urlencode($_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
+		exit();
+	}
+	// if security level is 0, exit
+	$usersec_level = $_SESSION['sec_level'];
+	$usersec_level_class = substr($usersec_level, 0, 1);
+	$usersec_level_dept = substr($usersec_level, 1, 1);
 
-    if ($_SESSION['loggedin'] != 'yes') {
-        header("Location: http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/index.php?goto=" . urlencode($_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
-        exit;
+	if ($usersec_level == '0'){
+		echo "<HTML>YOU CAN'T ACCESS THIS PAGE!!! You access level is 0</HTML>";
+		exit();
 	}
 
-    $usersec_level = $_SESSION['sec_level'];
-
-// Security 0 can never access.
-
-    if ($usersec_level == '0'){
-        echo "<HTML><BODY><H1>Not Authorized</H1>You are not authorized to view this page.  If you believe you are getting this message in error, contact your server's administrator.</BODY></HTML>";
-        exit;
-	}
-
-// Admin (security 50) can always access.
-
+    // admin (security 50) can always access
     if ($usersec_level==50)
-        return;
+      return;
 
-    $usersec_level_class = substr($usersec_level, 0, 1);
-    $usersec_level_dept = substr($usersec_level, 1, 1);
 
-// Check access based on $function.
+	/**
+	 * * check access based on function *
+	 */
+	$function = "a_" . $operation; 
+	// check if object is known
+	//echo "$objecttype <br>";
+	$query = "select objecttype, fieldname, fieldvalue, $function from accessrules where objecttype='$objecttype' order by $function";
+	$result = mysql_query2($query);
 
-    $function = "a_" . $operation; 
-
-// Check if object type is known.
-
-    $query = "select objecttype, fieldname, fieldvalue, $function from accessrules where objecttype='$objecttype' order by $function";
-
-    $result = mysql_query2($query);
-    $rows = mysql_num_rows($result); 
-
-// Deny access if no rule is present.
-
-    if ($rows == 0 && $usersec_level != 50){
-        echo '<HTML><BODY><H1>Access Rule Not Found</H1>Access rules to this feature ("' . $objecttype . '", Access type ' . $operation . ') could not be located.<br>To access this page you need to have accesslevel 50.</BODY></HTML>';
-        exit;
-        }
+	$rows = mysql_num_rows($result); 
+	// negate access if no rule is present and not admin
+	if ($rows == 0 && $usersec_level != 50){
+		echo "<HTML>Access rules to this page ('$objecttype', Access type $operation) couldn't be located.<br>To access this page you need to have accesslevel 50</HTML>";
+		exit();
+	} 
 	
-// Consider all rules.
-    $canAccess = true;
-    $sec_level = "";
-    while ($row = mysql_fetch_row($result)) {
-        $sec_level_class = substr($row[3], 0, 1);
-        $sec_level_dept = substr($row[3], 1, 1);
-        $canAccess = sec_check_class($usersec_level_class, $sec_level_class);
-        $canAccess = sec_check_dept($usersec_level_dept, $sec_level_dept);
-        }
+	// consider all rules
+	$canAccess = false;
+	$sec_level = "";
+	while ($line = mysql_fetch_array($result, MYSQL_NUM)){
+		$sec_level_class = substr($line[3], 0, 1);
+		$sec_level_dept = substr($line[3], 1, 1); 
+		// if sec lev required is greater than the one of the user
+		if($sec_level_class > $usersec_level_class){ 
+			// store the max sec level required
+			if ($sec_level == '' or $sec_level < $line[3]){
+				$sec_level = $line[3];
+			}
+			$canAccess = false; 
+			// if sec lev required is less than  or equal to the one of the user
+		}else if($sec_level_class <= $usersec_level_class){
+			$canAccess = true;
+		}
 
-    if ($canaccess == false) {
-        echo '<HTML><BODY><H1>Operation Denied</H1>You do not have the requisite access rights to perform this operation.</BODY></HTML>';
-        exit;
-        }
-    }
-
-function sec_check_class($usersec_level_class, $sec_level_class) {
-    $canAccess = true;
-    if ($sec_level_class > $usersec_level_class)
-        $canAccess = false;
-    return $canAccess;
-    }
-
-function sec_check_dept($usersec_level_dept, $sec_level_dept) {
-    $canAccess = true;
-    if ($sec_level_dept != 0 || $sec_level_dept != $usersec_level_dept)
-        $canAccess = false;
-    return $canAccess;
-
-    }
-
+		if (!$canAccess){
+			echo "<HTML>Access to this page is restricted.<br>";
+			echo "Your access level $usersec_level_class is not enough.<br>";
+			echo "You need atleast access level $sec_level_class .</HTML>";
+			exit();
+		} 
+		// now check department
+		$canAccess = false; 
+		// rule for any dep
+		if ($sec_level_dept == 0){
+			$canAccess = true;
+		}else{
+			if ($sec_level_dept == $usersec_level_dept){
+				$canAccess = true;
+			}else{
+				echo "<HTML>Access to this page is restricted.<br>";
+				echo "Your access level $usersec_level_class is ok, but you have to be part of department $sec_level_dept .<br>";
+				echo "</HTML>";
+				exit();
+			}
+		}
+	}
+}
 
 function outputHtmlHeader(){
 	?>
