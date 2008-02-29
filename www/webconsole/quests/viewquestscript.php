@@ -32,10 +32,10 @@ function parsePrereqScript($prereq){
 	  $endname = substr($prereq,$pos+1);
 	  $pos = strpos($endname, "\"");
 	  $endname = substr($endname,0,$pos);
-      $result[1] = $endname;
+      $result[1] = "Completed Quest: ".$endname;
 
 	}else{
-		$result[1] = "!UNKNOWN PREREQUISITE!";
+		$result[1] = htmlspecialchars($prereq);
 	}
   }
   return $result;
@@ -57,28 +57,20 @@ function viewquestscript(){
 		$masterid = $line[0];
 
         echo "<FORM name=editquest action=index.php?page=questscript_actions METHOD=POST onsubmit=\"return checkFields()\" >";
-		echo "<INPUT TYPE=HIDDEN NAME=operation VALUE=updatequestscript>";
-		echo "<INPUT TYPE=HIDDEN NAME=id VALUE=$masterid>";
-		echo "<b>Quest script ID:</b> $masterid<BR>";
-		echo "<b>Category: </b> <INPUT size=30 TYPE=text NAME=category VALUE=\"$line[1]\"><BR>";
-		echo "<b>Name:</b> <INPUT size=50 TYPE=text NAME=name VALUE=\"$line[2]\"> <BR>";
-		echo "<b>Description:</b> <INPUT size=50 TYPE=text NAME=description VALUE=\"$line[7]\"> <BR>";
-		echo "<b>Player lockout:</b> <INPUT size=50 TYPE=text NAME=plock VALUE=\"$line[3]\"> <BR>";
-		echo "<b>Quest lockout:</b> <INPUT size=50 TYPE=text NAME=qlock VALUE=\"$line[4]\"> <BR>";
-		echo "<b>Simple Prerequisite quest:</b> ";
-		$prereqname = parsePrereqScript($line[5]);
-		if (isMultiPrereqScript($line[5])) {
-		  SelectQuestScriptByName("xxx","questprereq");
-		  echo "<br>&nbsp; OR<br>";
-          echo "<br><table border=0><tr><td valign=top><b>Multiple Prerequisite quest (*):</b></td><td><textarea cols=50 NAME=prereq>$line[5]</textarea></td></tr></table>";
-		} else {
-          $found = SelectQuestScriptByName($prereqname[1],"questprereq");
-          if (!$found && $line[5]!="") {
-            echo "<br>&nbsp; <font color=red><b>PROBLEM FOUND, cannot recognize prerequisite: $line[5]</b></font><br>";
-          }
-		  echo "<br>&nbsp; <b>OR</b><br>";
-          echo "<br><table border=0><tr><td valign=top><b>Multiple Prerequisite quest (*):</b></td><td><textarea cols=50 NAME=prereq></textarea></td></tr></table>";
-        }
+	echo "<INPUT TYPE=HIDDEN NAME=operation VALUE=updatequestscript>";
+	echo "<INPUT TYPE=HIDDEN NAME=id VALUE=$masterid>";
+	echo "<b>Quest script ID:</b> $masterid<BR>";
+	echo "<b>Category: </b> <INPUT size=30 TYPE=text NAME=category VALUE=\"$line[1]\"><BR>";
+	echo "<b>Name:</b> <INPUT size=50 TYPE=text NAME=name VALUE=\"$line[2]\"> <BR>";
+	echo "<b>Description:</b> <INPUT size=50 TYPE=text NAME=description VALUE=\"$line[7]\"> <BR>";
+	echo "<b>Player lockout:</b> <INPUT size=50 TYPE=text NAME=plock VALUE=\"$line[3]\"> <BR>";
+	echo "<b>Quest lockout:</b> <INPUT size=50 TYPE=text NAME=qlock VALUE=\"$line[4]\"> <BR>";
+	echo "<b>Simple Prerequisite quest:</b> ";
+	$prereqname = parsePrereqScript($line[5]);
+	SelectQuestScriptByName("xxx","questprereq");
+	echo "<br>OR";
+       	echo "<br><table border=0><tr><td valign=top><b>Multiple Prerequisite quest (*):</b></td><td><textarea cols=50 NAME=prereq>$line[5]</textarea></td></tr></table>";
+	echo "<b>&lt;pre&gt; syntax Prerequisites override Simple prerequisites</b><br><br>";
         echo "<b>Quest script: </b><br><textarea name=script rows=25 cols=80 wrap=virtual>{$line[6]}</textarea><br>";
 
 		echo "<INPUT TYPE=submit NAME=submit VALUE=\"Save\">";

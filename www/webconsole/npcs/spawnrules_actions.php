@@ -83,6 +83,7 @@ if ($operation == 'remove'){
 					fixed_spawn_z='{$_POST['fixed_spawn_z']}', 
 					fixed_spawn_rot='{$_POST['fixed_spawn_rot']}', 
 					fixed_spawn_sector='{$_POST['fixed_spawn_sector']}', 
+					fixed_spawn_instance='{$_POST['fixed_spawn_instance']}',
 					loot_category_id='{$_POST['loot_category_id']}', 
 					dead_remain_time='{$_POST['dead_remain_time']}'
 				where id='{$_POST['rule_id']}'";
