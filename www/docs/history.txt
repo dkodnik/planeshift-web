@@ -1,4 +1,7 @@
 *** 2008-02-29 by Eriroley
+WC - Fixed a glitch with adding items to NPCS
+
+*** 2008-02-29 by Eriroley
 WC - Added the Ability to rename Spawn Rules & fixed a "name Display" issue on listing npc_spawn_rules
 
 *** 2008-02-29 by Eriroley

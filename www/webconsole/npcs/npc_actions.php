@@ -530,7 +530,6 @@ function viewitems()
     while ($line = mysql_fetch_array($result, MYSQL_NUM))
     {
     	echo "<OPTION value=$line[0]>$line[1] : $line[2]</OPTION>";
-//Moved the removal of quest items to the SQL, as opposed to filtering in PHP
     }
 
     echo '</SELECT></TD>';
@@ -578,23 +577,16 @@ function edititems()
     {
         $itemid = $_POST['itemid'];
         $slot = GetNextEmptyBulkLocation($id);
-        $newid = getNextId('item_instances', 'id');
        
-        $query = "INSERT INTO item_instances (id, 
-                                              char_id_owner, 
-                                              location_in_parent,
-                                              stack_count, 
-                                              item_stats_id_standard )   
-                                VALUES ( $newid, $id, $slot, $stack, $itemid )";
+        $query = "INSERT INTO item_instances (char_id_owner, location_in_parent, stack_count, item_stats_id_standard ) VALUES ($id, $slot, $stack, $itemid )";
         $result = mysql_query2($query); 
-        echo $query;
         // redirect
         ?>
         <SCRIPT language="javascript">
             document.location = "index.php?page=npc_actions&operation=viewitems&npcid=<?=$id?>";
          </script>
-      <?PHP
-    }
+     <?PHP
+     }
     else if ($subop == 'del')
     {
         $itemid = $_GET['itemid'];
