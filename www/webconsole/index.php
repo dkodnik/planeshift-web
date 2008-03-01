@@ -343,10 +343,6 @@ if ($_SESSION['loggedin'] == 'yes' && (
 
             case 'listnatural_resources':
                 include('./natural_resources/listnatural_resources.php');
-                break;
-
-            case 'listnatural_resources':
-                include('./natural_resources/listnatural_resources.php');
                 listnatural_resources($_GET['selected']);
                 break;
 
