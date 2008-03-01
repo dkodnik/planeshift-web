@@ -72,8 +72,8 @@ function DrawSelectBox($type, $selectName, $selectedID, $includeNULL = false) {
         echo '<OPTION value=' . $nullval . '>NONE</OPTION>';
     
     while ($row = mysql_fetch_row($result)) {
-        echo '<OPTION value="' . $row[0] . '"';
-        if ($selectedID == $row[0])
+        echo '<OPTION value="' . $row[1] . '"';
+        if ($selectedID == $row[1])
             echo " SELECTED";
         echo '>' . $row[1] . '</OPTION>';
         }
