@@ -118,6 +118,16 @@ if ($operation == 'remove'){
        </script>
     <?PHP
 
+}else if ($operation == 'renamerule'){
+	$rule_id = $_POST['rule_id'];
+	$new_name = $_POST['rule_name'];
+	$query = "UPDATE npc_spawn_rules SET name='$new_name' WHERE id='$rule_id'";
+	$result = mysql_query2($query);
+        // redirect
+        ?><SCRIPT language="javascript">
+          document.location = "index.php?page=listspawnrules";
+       </script>
+     <?PHP
 }else{ 
 	// manage another operation here
 	echo "Operation $operation not supported.";
