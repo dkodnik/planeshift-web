@@ -31,7 +31,7 @@ function confirmDelete()
 
 	$rule_result = mysql_query2($query);
 	while ($rule = mysql_fetch_array($rule_result, MYSQL_NUM)){
-	   echo "<TR><TD>(<A HREF=index.php?page=listspawnrules&selectedrule=$rule[0]>$rule[0]</A>) <br>$rule[12]</TD>";
+	   echo "<TR><TD>(<A HREF=index.php?page=listspawnrules&selectedrule=$rule[0]>$rule[0]</A>) <br><form action=index.php?page=spawnrules_actions&operation=renamerule method=post><input type=hidden name=rule_id value=$rule[0]><textarea name=rule_name>$rule[13]</textarea><input type=submit name=submit value=\"Rename Rule\"></form></TD>";
 	   echo '<TD>';
 
 		// print main spawn fields
