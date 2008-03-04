@@ -1,6 +1,5 @@
 <?PHP
 function mysql_query2($a){
-
 	$result = mysql_query($a) or die(mysql_error());
 	return $result;
 }
@@ -51,8 +50,8 @@ function DrawSelectBox($type, $selectName, $selectedID, $includeNULL = false) {
     $typevals["item"] = array("NULL" => '""', "query" => "SELECT id, name FROM item_stats WHERE id < $base_item_max ORDER BY name");
     $typevals["skill"] = array("NULL" => '"-1"', "query" => "SELECT skill_id, name FROM skills ORDER BY name");
     $typevals["itemcat"] = array("NULL" => '"-1"', "query" => "SELECT category_id, name FROM item_categories");
-    $typevals["icon"] = array("NULL" => '"0"', "query" => "SELECT MIN(id), string FROM common_strings WHERE common_strings.string Like '%_icon.dds' GROUP BY id");
-    $typevals["mesh"] = array("NULL" => '"0"', "query" => "SELECT MIN(id), string FROM common_strings WHERE common_strings.string Like '%#%' GROUP BY id");
+    $typevals["icon"] = array("NULL" => '"0"', "query" => "SELECT MIN(id),CONCAT_WS(' - ',id ,string) FROM common_strings WHERE common_strings.string Like '%_icon.dds' GROUP BY id");
+    $typevals["mesh"] = array("NULL" => '"0"', "query" => "SELECT MIN(id),CONCAT_WS(' - ', id, string) FROM common_strings WHERE common_strings.string Like '%#%' GROUP BY id");
     $typevals["loot"] = array("NULL" => '"0"', "query" => "SELECT id, name FROM loot_rules ORDER by name");
     $typevals["spawn"] = array("NULL" => '"0"', "query" => "SELECT id, name FROM npc_spawn_rules ORDER by name");
     $typevals["sector"] = array("NULL" => '""', "query" => "SELECT name, name FROM sectors ORDER BY name");
