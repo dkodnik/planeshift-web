@@ -1,3 +1,6 @@
+*** 2008-03-03 by Eriroley
+WC - Added item size editing, and cosmetic change to displaying icon and mesh in dropdown box
+
 *** 2008-02-29 by Eriroley
 WC - Fixed a glitch with adding items to NPCS
 
