@@ -1,3 +1,6 @@
+*** 2008-03-08 by Eriroley
+WC - Fixing error in commonfunctions.php in getNextId()
+
 *** 2008-03-03 by Eriroley
 WC - Added item size editing, and cosmetic change to displaying icon and mesh in dropdown box
 
