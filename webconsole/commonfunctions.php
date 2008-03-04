@@ -200,7 +200,7 @@ function ValidSlotCheckArea($name) {
 function getNextId($table, $field) {
 
     $query = "SELECT max($field) FROM $table";
-    $result = mysql_query2($query_string);
+    $result = mysql_query2($query);
     $row = mysql_fetch_array($result, MYSQL_NUM);
     $newid = $row[0] + 1;
     return $newid;
