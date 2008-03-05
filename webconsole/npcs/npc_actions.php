@@ -238,15 +238,9 @@ function viewskills(){
     echo '<b>Add a Skill to this NPC: </b><br><br>';
 
     echo "<FORM action=index.php?page=npc_actions&operation=editskills&npcid=$id&subop=add METHOD=POST>";
-    $query = 'select skill_id,name from skills ';
-    $result = mysql_query2($query);
-
     echo '<table><th>Skill</th><th>Rank</th><th>Knowledge (Y)</th><th>Practice (Z)</th><th></th>';
-    echo '<tr><td><SELECT name=itemid>';
-    while ($line = mysql_fetch_array($result, MYSQL_NUM)){
-        echo "<OPTION value=$line[0]>$line[1]</OPTION>";
-        $found = 1;
-    }
+    echo '<tr><td>';
+    DrawSelectBox('skill', 'itemid', '');
     echo '</SELECT></td>';
     echo '<TD><INPUT type=text name=skillrank size="4" value="0"></td>';
     echo '<TD><INPUT type=text name=skill_y size="4" value="0"></td>';
@@ -1441,15 +1435,9 @@ function viewtrainer(){
     echo '<b>Add/Replace a Training Skill to this NPC: </b><br><br>';
 
     echo "<FORM action=index.php?page=npc_actions&operation=edittrainer&npcid=$id&subop=add METHOD=POST>";
-    $query = 'select skill_id,name from skills ';
-    $result = mysql_query2($query);
-
     echo "<table border='1'><th>Skill</th><th>Min Rank</th><th>Max Rank</th><th>Min Faction</th><th></th>";
-    echo '<tr><td><SELECT name=itemid>';
-    while ($line = mysql_fetch_array($result, MYSQL_NUM)){
-        echo "<OPTION value=$line[0]>$line[1]</OPTION>";
-        $found = 1;
-    }
+    echo '<tr><td>';
+    DrawSelectBox('skill','itemid', '');
     echo '</SELECT></td>';
     echo "<TD><INPUT type=text name=min_rank value='0' size='4'></td>";
     echo "<TD><INPUT type=text name=max_rank  value='0' size='4'></td>";
