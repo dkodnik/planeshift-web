@@ -1,4 +1,7 @@
 *** 2008-03-04 by Eriroley
+WC - Minor change to npc_actions.php to use DrawSelectBox for skills
+
+*** 2008-03-04 by Eriroley
 WC - Minor change in the order of listing KAs Are now ordered alphabetically rather than cronologically
    - also fixed date in previous entry to history.txt
 
