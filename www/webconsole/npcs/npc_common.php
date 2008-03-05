@@ -93,7 +93,7 @@ function printChildTriggers($fatherName, $area, $priorResponse, $trigcount, $att
 
 function getKAs(){ 
   // search all KAs
-  $query = "select distinct(area) from npc_triggers";
+  $query = "select distinct(area) from npc_triggers ORDER BY area";
   $result = mysql_query2($query);
   $i = 0;
   while ($line = mysql_fetch_array($result, MYSQL_NUM)){
