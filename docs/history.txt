@@ -1,3 +1,6 @@
+*** 2008-03-06 by Eriroley
+WC - enabled editing of all books, not just dev-written
+
 *** 2008-03-04 by Eriroley
 WC - Minor change to npc_actions.php to use DrawSelectBox for skills
 
