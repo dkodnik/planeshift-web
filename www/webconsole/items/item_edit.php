@@ -17,10 +17,7 @@ function edititems($commit = 0) {
         $item_pretags = htmlspecialchars_decode($_POST['pretags']);
         $item_posttags = htmlspecialchars_decode($_POST['posttags']);
         $item_cd = $_POST['creative_definition'];
-//        $query = 'UPDATE item_stats SET name = "' . $item_name . '", cstr_id_gfx_icon = "' . $item_cstr_id_gfx_icon . '", cstr_id_gfx_mesh = "' . $item_cstr_id_gfx_mesh . '", description = "' . $item_description . '", creative_definition = "' . $item_pretags . $item_cd . $item_posttags . '" WHERE id = ' . $item_id;
         $query = sprintf('UPDATE item_stats SET name = "%s", weight = "%s", size = "%s", cstr_id_gfx_icon = "%s", cstr_id_gfx_mesh = "%s", category_id = "%s", base_sale_price = "%s", description = "%s", creative_definition = "%s" WHERE id = %s', $item_name, $item_weight, $item_size, $item_cstr_id_gfx_icon, $item_cstr_id_gfx_mesh, $item_category_id, $item_base_sale_price, $item_description, $item_pretags . $item_cd . $item_posttags, $item_id);
-//echo $query;
-
         if (strpos($item_cd, '>') || strpos($item_cd, '<')) {
             echo 'Book text contains illegal characters.  Unable to commit changes.';
             }
@@ -38,8 +35,6 @@ function edititems($commit = 0) {
     else {
         echo '<FORM ACTION="index.php?page=edititemcommit&item=' . $_GET['item'] . '" method="POST"><TABLE BORDER="1"><TR><TD VALIGN="top">';
         $row = mysql_fetch_assoc($result);
-
-// Public books can be edited in-game and we should not be using this to edit any player's books or other creative_definition content in this manner.
 
         $unownedNonPublic = strpos(' ' . $row['creative_definition'], '<creative type="literature">');
 
@@ -65,13 +60,7 @@ function edititems($commit = 0) {
                $posttags = $posttags . $value;
                }
            else {
-               echo '<BR /><TEXTAREA NAME="creative_definition" ROWS="10" COLS="40"';
-               if ($unownedNonPublic) {
-                   echo '>';
-                   }
-               else {
-                   echo 'DISABLED READONLY>';
-                   }
+               echo '<BR /><TEXTAREA NAME="creative_definition" ROWS="10" COLS="40">';
                $cd_text = $value;
                $pretags = $posttags;
                $posttags = '';
