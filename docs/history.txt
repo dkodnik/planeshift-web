@@ -1,3 +1,6 @@
+*** 2008-03-10 by Eriroley
+WC - An update to work with ka-scripts
+
 *** 2008-03-06 by Eriroley
 WC - enabled editing of all books, not just dev-written
 

@@ -56,14 +56,30 @@ function questscript_actions(){
     </script>
 
 <?PHP
+//This doesn't *Really* belong in questscript_actions... and neither does newka, but where it modifies quest_scripts, I can see it
+	}else if ($operation == 'updatekascript'){
+	  $query = "UPDATE quest_scripts SET script='{$_POST['script']}' WHERE id='{$_POST['id']}'";
+	  $result = mysql_query2($query);
 
-}	
+        ?>
+    <SCRIPT language="javascript">
+      document.location = "index.php?category=NPCs&page=listkascripts";
+    </script>
+<?PHP
+
+	}else if ($operation == 'newka'){
+	  $query = "INSERT INTO quest_scripts (quest_id, script) VALUES ('-1', '{$_POST['script']}')";
+	  $result = mysql_query2($query);
+        ?>
+    <SCRIPT language="javascript">
+      document.location = "index.php?category=NPCs&page=listkascripts";
+    </script>
+<?PHP
+
+}
 
 	// manage another operation here
 	echo "Operation $operation not supported.";
 }
 
 ?>
-
-
-
