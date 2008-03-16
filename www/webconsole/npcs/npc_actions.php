@@ -380,7 +380,14 @@ function viewkas(){
     echo '<b>Knowledge Areas present in this NPC: </b><br><br>';
     echo '<TABLE border=1><TH>Knowledge Area - </TH><TH>Priority</TH><TH></TH>';
     while ($line = mysql_fetch_array($result, MYSQL_NUM)){
-        echo "<TR><TD VALIGN=top><b>$line[0]</b></TD><TD>$line[1]</TD><TD><FORM action=index.php?page=npc_actions&operation=editkas&npcid=$id&subop=del METHOD=POST><INPUT type=hidden name=area value=\"$line[0]\"><INPUT type=submit name=submit value=Delete></FORM></TD></TR>";
+        echo "<TR><TD VALIGN=top><b>$line[0]</b></TD><TD><FORM action=index.php?page=npc_actions&operation=editkas&npcid=$id&subop=mod METHOD=POST><select name=priority>";
+        for($i=1;$i<=10;$i++){
+          echo "<option value=$i";
+          if($i == $line[1])
+            echo " selected=selected";
+          echo ">$i</option>";
+        }
+        echo "</select><input type=hidden name=area value=\"$line[0]\"></TD><TD><input type=submit name=mod value=\"Edit Priority\"></FORM><FORM action=index.php?page=npc_actions&operation=editkas&npcid=$id&subop=del METHOD=POST><INPUT type=hidden name=area value=\"$line[0]\"><INPUT type=submit name=submit value=Delete></FORM></TD></TR>";
         $found = 1;
     }
     echo '</TABLE><br><br>';
@@ -437,7 +444,15 @@ function editkas(){
           document.location = "index.php?page=npc_actions&operation=viewkas&npcid=<?=$id?>";
        </script>
     <?PHP
-
+    }else if ($subop == 'mod'){
+      $id = $_GET['npcid'];
+      $priority = $_POST['priority'];
+      $area = $_POST['area'];
+      $query = "UPDATE npc_knowledge_areas SET priority=$priority WHERE player_id='$id' AND area='$area'";
+      $result = mysql_query2($query);
+        ?><SCRIPT language="javascript">
+          document.location = "index.php?page=npc_actions&operation=viewkas&npcid=<?=$id?>";
+       </script>
     }else{
         echo "Operation editkas supported, suboperation $subop not supported.";
     }

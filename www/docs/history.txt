@@ -1,3 +1,6 @@
+*** 2008-03-16 by Eriroley
+WC - An update to allow for simple modifications to the Prioroty of a KA
+
 *** 2008-03-10 by Eriroley
 WC - An update to work with ka-scripts
 
