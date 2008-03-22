@@ -1,3 +1,6 @@
+*** 2008-03-21 by Eriroley
+WC - Minor update to listitems.  all values now get put through htmlspecialchars() so we can see the contents of books/maps
+
 *** 2008-03-16 by Eriroley
 WC - An update to allow for simple modifications to the Prioroty of a KA
 
