@@ -453,7 +453,7 @@ function editkas(){
         ?><SCRIPT language="javascript">
           document.location = "index.php?page=npc_actions&operation=viewkas&npcid=<?=$id?>";
        </script>
-    }else{
+<?    }else{
         echo "Operation editkas supported, suboperation $subop not supported.";
     }
 }
