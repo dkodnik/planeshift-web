@@ -54,7 +54,7 @@ function listquestscripts(){
 	 	 $data =  array($line[0],  $line[1],  $line[2],  $line[3], $line[4]);
           $prereq = parsePrereqScript($line[5]);
           //echo "$line[2] - $prereq[1]<br>";
-          $data2 = array($data, $prereq[1]);
+          $data2 = array($data, $prereq[2]);
           $questarray[$line[2]] = $data2;
 	}
 
