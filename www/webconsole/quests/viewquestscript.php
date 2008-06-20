@@ -33,9 +33,11 @@ function parsePrereqScript($prereq){
 	  $pos = strpos($endname, "\"");
 	  $endname = substr($endname,0,$pos);
       $result[1] = "Completed Quest: ".$endname;
+	  $result[2] = $endname;
 
 	}else{
 		$result[1] = htmlspecialchars($prereq);
+		$result[2] = "";
 	}
   }
   return $result;
