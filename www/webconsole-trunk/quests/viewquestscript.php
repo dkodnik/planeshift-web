@@ -52,7 +52,8 @@ function viewquestscript(){
 		$masterid = $_GET['id'];
 	}
 
-	$query = "select quests.id, category, name, player_lockout_time, quest_lockout_time, prerequisite, script, task from quests, quest_scripts where quests.id=quest_scripts.id and quests.id=" . $masterid;
+	$query = "select quests.id, category, name, player_lockout_time, quest_lockout_time, prerequisite, script, task from quests, quest_scripts where quests.id=quest_scripts.quest_id and quests.id=" . $masterid;
+	//echo "$query";
 	$result = mysql_query2($query);
 
 	while ($line = mysql_fetch_array($result, MYSQL_NUM)){
