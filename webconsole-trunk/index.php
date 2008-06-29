@@ -6,7 +6,7 @@ include ('config.php');
 include ('commonfunctions.php');
 
 
-$link = mysql_connect($db_hostname, $db_username, $db_password);
+$link = mysql_pconnect($db_hostname, $db_username, $db_password);
 mysql_select_db($db_name, $link);
 
 if (isset($_POST['autologin'])) {
@@ -272,6 +272,11 @@ if ($_SESSION['loggedin'] == 'yes' && (
                 listitems();
                 break;
 
+            case 'listitemicons':
+                include('./items/listitemicons.php');
+                listitemicons();
+                break;
+				
             case 'edititem';
                 include('./items/item_edit.php');
                 edititems();
