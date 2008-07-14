@@ -20,6 +20,7 @@
  * Description : This page creates and sends out a verification e-mail.
  */
 ?>
+
 <?PHP
 // send email
 
@@ -56,8 +57,8 @@ else
 	       "\r\n" .
 	       "The PlaneShift Dev Team";
 
-$headers = "From: PlaneShift <noreply@planeshift.it>\r\n" .
-           "Reply-To: PlaneShift <noreply@planeshift.it>\r\n";
+$headers = "From: PlaneShift <noreply@fragnetics.com>\r\n" .
+           "Reply-To: PlaneShift <noreply@fragnetics.com>\r\n";
            
 $subject = "PlaneShift Account Verification";
 mail($email, $subject, $messagebody, $headers, "-fbounce_verify");

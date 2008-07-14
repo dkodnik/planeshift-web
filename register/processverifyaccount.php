@@ -23,7 +23,6 @@
 ?>
 
 <?PHP include "db_setup.php" ?>
-<?PHP include "randString.php" ?>
 
 <?PHP
 if($_POST['verificationid'] == $_POST['password1'])
@@ -54,11 +53,8 @@ $result = ExecQuery($query);
 	 
 if (mysql_num_rows($result) > 0)
 {
- // This line generates a new verificcation ID string
-    $newverify = randString();
- // This sets the password, and commits the above generated new verification string to the DB
     $query = "Update accounts set password = md5('" . $_POST['password1'] . "') " .
-             ",status = 'A', verificationid = '$newverify' " .
+             ",status = 'A' " .
              "where username = '" . addslashes(strtolower($_POST['email'])) . "' " .
 	     "and verificationid = '" . addslashes($_POST['verificationid']) . "' " .
 	     "and status = '$strstatus'";

@@ -21,8 +21,10 @@
  *               an email with a validation link.
  */
 ?>
+
 <?PHP include "db_setup.php" ?>
 <?PHP include "randString.php" ?>
+
 <?PHP
 $db_link = mysql_pconnect($db_hostname,
                           $db_username,
@@ -39,7 +41,11 @@ $result = ExecQuery($query);
 
 if (mysql_num_rows($result) > 0)
 {
-    Header("Location:newaccount.php?error=username");
+    ?>
+         <script language=javascript>
+         document.location='newaccount.php?error=username';
+         </script>
+    <?PHP
     exit();
 }
 					 
@@ -65,6 +71,8 @@ $query = "Insert into accounts (realname, username, verificationid, " .
 		"'" . addslashes($_POST['country']) . 
 		"','" . $_POST['gender'] . "'," . $age. ")";
 
+		echo $query;
+
 ExecQuery($query);
 						    
 
@@ -74,5 +82,10 @@ ExecQuery($query);
 include 'sendverificationemail.php';
 sendVerificationEmail( $_POST['email'], $verificationid);
 
-Header("Location:index.php?action=reg");
 ?>
+
+<HTML>
+<SCRIPT language=javascript>
+document.location="index.php?action=reg";
+</SCRIPT>
+</HTML>
