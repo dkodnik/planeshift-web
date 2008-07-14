@@ -1,6 +1,7 @@
 <?
 /*
- * end.php - Author: Christian Svensson
+ * end.php - Original Author: Christian Svensson
+ *             Redesigned by: John Sennesael
  *
  * Copyright (C) 2004 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -19,36 +20,18 @@
  * Description : This page contains the ending stuff needed for the site
  *                  to look nice
  */
+
+ if (!defined('psregister')) die ('You are not allowed to run this script directly.');
+
 ?>            
-            
-            <p>&nbsp;</p>
-            <!-- #EndEditable --> 
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-            <p align="center"><font size="2" class="testo">Copyright &copy; 2001-2003 
-              PlaneShift Team<br>
-              All material in this site under <a href="../pslicense.html" target="right"><font color="#CC0000">PlaneShift 
-              License</font></a></font> </p>
-          </td>
-          <td width="9">&nbsp;</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr> 
-    <td height="48">&nbsp;</td>
-  </tr>
-  <tr> 
-    <td height="2"></td>
-    <td></td>
-  </tr>
-  <tr> 
-    <td height="2"></td>
-    <td></td>
-    <td width="120"></td>
-    <td></td>
-  </tr>
-</table>
-</BODY>
-<!-- #EndTemplate -->
-</HTML>
+      
+        <div id="footer">
+          <div class="copyright">
+            Copyright &copy; 2001-<? echo date('Y') ?> Atomic Blue Corporation<br />
+            All rights reserved.
+          </div>   
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -20,8 +20,10 @@
  * Description : This page creates random stings of a specified length
  */
 ?>
-
 <?PHP
+
+if (!defined('psregister')) die('You are not allowed to run this script directly');
+
 function randString($length=32)
 {
     $newstring="";

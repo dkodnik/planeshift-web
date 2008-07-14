@@ -1,6 +1,7 @@
-<?PHP
+<?php
 /*
  * processresendemail.php - Author: Greg von Beck
+ *                   Redesigned by: John Sennesael
  *
  * Copyright (C) 2001 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -20,53 +21,75 @@
  * Description : This page verifies e-mail is for a unverified account and
  *               then sends out the verification email.
  */
-?>
 
-<?PHP include "db_setup.php" ?>
+  // allow this script to be directly run by users
+  define ('psregister',1);
+ 
+  // includes
+  include_once("db_setup.php");
+  include_once("usermsg.php");
 
-<?PHP
-// Establish a db connection
-$db_link = mysql_pconnect($db_hostname,
-                          $db_username,
-			  $db_password);
+  // establish a db connection.
+  $db_link = mysql_pconnect($db_hostname,
+                            $db_username,
+	                          $db_password);
 
-mysql_select_db($db_name);
+  // show an error if failed.
+  if (!$db_link)
+  {
+    include_once('start.php');
+    echo "
+    <div id=\"content\">
+      <div class=\"error\">
+        Oops! There was a problem connecting to the database.
+        <p>Hopefully this will be resolved soon<sup>(tm)</sup>.
+      </div>
+    </div>
+    ";
+    include_once('end.php');
+    die('db error');
+  }
 
-// Get the users db entry
-$query = "Select * from accounts where status = 'U' and username = '" . addslashes($_POST['email']) . "'";
+  // select database.
+  mysql_select_db($db_name);
 
-if(isset($_GET['forgot']))
-{
-  $query = "Select * from accounts where status = 'A' and username = '" . addslashes($_POST['email']) . "'";
-}
+  // get user email 
+  $email = mysql_real_escape_string($_POST['email']);
 
-$result = ExecQuery($query);
-
-// Get the verification ID and send a new email
-if(mysql_num_rows($result) > 0)
-{
-    $line = mysql_fetch_array($result, MYSQL_ASSOC);
-
-    include 'sendverificationemail.php';
-
+  // Get the users db entry
+  $query = "Select * from accounts where status = 'U' and username = '" . $email . "'";
   if(isset($_GET['forgot']))
   {
-    sendVerificationEmail($_POST['email'],  $line['verificationid'],"yes");
-  } else {
-    sendVerificationEmail($_POST['email'],  $line['verificationid'],"");
+    $query = "Select * from accounts where status = 'A' and username = '" . $email . "'";
   }
-}
-else
-{
-    ?>
-    <Script>
-    document.location = "resendemail.php?error=email";
-    </script>
-    <?PHP
-}
+  $result = ExecQuery($query);
+
+  // Get the verification ID and send a new email
+  if(mysql_num_rows($result) > 0)
+  {
+    $line = mysql_fetch_array($result, MYSQL_ASSOC);
+    include_once('sendverificationemail.php');
+    if(isset($_GET['forgot']))
+    {
+      sendVerificationEmail($email,  $line['verificationid'],"yes");
+    } else {
+      sendVerificationEmail($email,  $line['verificationid'],"");
+    }
+  }
+  else
+  {
+    header('Location: resendemail.php?error=email');
+    exit();
+  }
+
+  // redirect user
+  UserMsg("
+  <div class=\"yellowtitlebig\">You should receive an email at: {$email} with the account details.</div>
+  <p>
+    - <a href=\"index.php\">Back</a> -
+  </p>
+  ");
 ?>
 
-<Script>
-document.location = "index.php";
 </script>
 

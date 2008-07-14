@@ -1,6 +1,7 @@
-<?PHP
+<?php
 /*
  * processverifyaccount.php - Author: Greg von Beck
+ *                     Redesigned by: John Sennesael
  *
  * Copyright (C) 2001 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -20,74 +21,109 @@
  * Description : This page writes new password into database if username and
  *               validation id are correct
  */
-?>
 
-<?PHP include "db_setup.php" ?>
+  // script can be called directly by user
+  define('psregister',1);
 
-<?PHP
-if($_POST['verificationid'] == $_POST['password1'])
-{
-    exit ("<font color='red'>Do NOT enter the verfication code as the password</font>");
-}
+  // includes
+  include_once("usermsg.php");
+  include_once("db_setup.php");
+  include_once("randString.php");
 
-$db_link = mysql_pconnect($db_hostname,
-                          $db_username,
-			  $db_password);
+  // make sure the password != verification id
+  $verificationid = $_POST['verificationid'];
+  if($verificationid == $_POST['password1'])
+  {
+    UserMsg("
+    <div class=\"error\">Do NOT enter the verification code as the password.</div>
+    <p>
+    - <a href=\"verifyaccount.php?verificationid={$verificationid}\"> Back </a> -
+    "); 
+    exit();
+  }
 
-mysql_select_db($db_name);
+  // connect to database
+  $db_link = mysql_pconnect($db_hostname,
+                            $db_username,
+	                          $db_password);
+  // error handling
+  if (!$db_link)
+  {
+    UserMsg("
+      <div class=\"error\">
+        Oops! There was a problem connecting to the database.
+        <p>Hopefully this will be fixed soon<sup>(tm)</sup>.</p>
+      </div>");
+  }
+  mysql_select_db($db_name);
 
+  // find account in db
+  $query = "Select * from accounts where" .
+           " username='" . mysql_real_escape_string(strtolower($_POST['email'])) . "'" .
+           " and verificationid = '" . mysql_real_escape_string($_POST['verificationid']) . "'";
 
-$query = "Select * from accounts where" .
-         " username='" . addslashes(strtolower($_POST['email'])) . "'" .
-         " and verificationid = '" . addslashes($_POST['verificationid']) . "'";
-
-
-$strstatus = "U";
-if(isset($_GET['forgot'])) {
+  // forgot password?
+  $strstatus = "U";
+  if(isset($_GET['forgot'])) {
     $strstatus = "A";
-}
+  }
+  $query = $query . " and status = '$strstatus'";
+  print $query; 
+  // run db query
+  $result = ExecQuery($query);
 
-$query = $query . " and status = '$strstatus'";
-
-$result = ExecQuery($query);
-	 
-if (mysql_num_rows($result) > 0)
-{
-    $query = "Update accounts set password = md5('" . $_POST['password1'] . "') " .
-             ",status = 'A' " .
-             "where username = '" . addslashes(strtolower($_POST['email'])) . "' " .
-	     "and verificationid = '" . addslashes($_POST['verificationid']) . "' " .
-	     "and status = '$strstatus'";
-
+  // did we find an account?
+  if (mysql_num_rows($result) > 0)
+  {
+    // this line generates a new verificcation ID string
+    $newverify = mysql_real_escape_string(randString());
+    // this sets the password, and commits the above generated new verification string to the DB
+    $query = "Update accounts set password = md5('" . mysql_real_escape_string($_POST['password1']) . "') " .
+             ",status = 'A', verificationid = '$newverify' " .
+             "where username = '" . mysql_real_escape_string(strtolower($_POST['email'])) . "' " .
+      	     "and verificationid = '" . mysql_real_escape_string($_POST['verificationid']) . "' " .
+	           "and status = '$strstatus'";
     ExecQuery($query);
-
-    ?>
-    <Script>
-    document.location = "index.php?action=passchange";
-    </script>
-    <?PHP
-}
-else
-{
+    // Show message to user
+    UserMsg("
+      <div class=\"bigyellowtext\">
+      Thank you. Your account has been updated.
+      </div>
+      <p>
+      - <a href=\"index.php\"> back </a> -
+      </p>
+    ");
+  }
+  else
+  {
+    // was the account already validated maybe?
     $query = "Select * from accounts where" .
-             " username='" . addslashes(strtolower($_POST['email'])) . "'" .
+             " username='" . mysql_real_escape_string(strtolower($_POST['email'])) . "'" .
              " and status = 'A'";
-
     $result = ExecQuery($query);
-
     if(mysql_num_rows($result) > 0)
     {
-        ?>
-	<B>Your Account Has Already Been Validated</B>
-	<?PHP
+      UserMsg("
+        <div class=\"error\">
+          This account validation or password change link was already used!
+        </div>
+        <p>
+        - <a href=\"index.php\"> back </a> -
+        </p>
+      ");
+      exit();
     }
     else
     {
-        ?>
-        <FONT COLOR=red><B>Your Account Has NOT Been Validated!!</B></FONT>
-        <?PHP
+      // The account was not already validated
+      // and we did not find the verification id at all.
+      // Either it was deleted from the database, or some
+      // user has been tampering, or some other mystery has occured.
+      UserMsg("
+        <div class=\"error\">
+          Your account was <strong>NOT</strong> validated!
+        </div>
+      ");
     }
-}
+  }
 ?>
-<BR><BR>
-<a href="index.php">Return to Account Registration</a>
