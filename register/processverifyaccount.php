@@ -68,7 +68,6 @@
     $strstatus = "A";
   }
   $query = $query . " and status = '$strstatus'";
-  print $query; 
   // run db query
   $result = ExecQuery($query);
 

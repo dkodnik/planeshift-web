@@ -44,7 +44,7 @@ if(isset($_GET['forgot']))
     echo "
 
       <div class=\"forgot\">
-        Your password is stored in our DB in an encrypted format, so you will have to generate a new password.<br />
+        Your password is stored in our database in an encrypted format, so you will have to create a new password.<br />
         Use the form below to receive an email which will give you instructions on how to proceed.<br />
       </div>
     
