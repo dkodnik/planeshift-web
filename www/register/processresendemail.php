@@ -78,7 +78,14 @@
   }
   else
   {
-    header('Location: resendemail.php?error=email');
+    if(isset($_GET['forgot']))
+    {
+      header('Location: resendemail.php?error=email&forgot=yes');
+    }
+    else
+    {
+      header('Location: resendemail.php?error=email');
+    }
     exit();
   }
 
