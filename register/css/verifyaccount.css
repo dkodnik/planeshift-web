@@ -1,0 +1,14 @@
+.password
+{
+  width: 300px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2em;
+  margin-top: 2em;
+}
+
+.password TABLE
+{
+  width: 300px;
+}
