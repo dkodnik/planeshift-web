@@ -1,6 +1,7 @@
 <?PHP
 /*
- * index.php - Author: Greg von Beck
+ * index.php - Original Author: Greg von Beck
+ *             Redesigned by: John Sennesael
  *
  * Copyright (C) 2004 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -19,40 +20,53 @@
  * Creation Date : 10/6/03
  * Description : This page is for the creating and activation of player accounts
  */
+ 
+  // global define to check against people trying to call 
+  // scripts directly they shouldn't be calling directly.  
+  define('psregister',1);
+
+  include_once("start.php"); 
+
+  echo "<div id=\"content\">";
+  
+  // Inform the user of stuff
+  if($_GET['action'] == "reg")
+  {
+    echo "An e-mail has been sent to your address with a link for activation<br /><br />";   
+  }
+  else if($_GET['action'] == "active")
+  {
+    echo "Your account is now active<br /><br />";      
+  }
+  else if($_GET['action'] == "passchange")
+  {
+    echo "Your password has been changed.<br /><br />";      
+  }
 ?>
 
-<?include("start.php");?>
-<?
-// Inform the user of stuff
-if($_GET['action'] == "reg")
-{
-    echo "An e-mail has been sent to your address with a link for activation<br><br>";   
-}
-else if($_GET['action'] == "active")
-{
-    echo "Your account is now active<br><br>";      
-}
-else if($_GET['action'] == "passchange")
-{
-    echo "Your password has been changed.<br><br>";      
-}
+      <div class="yellowtitlebig">
+        Create an account!
+      </div>
 
-?>
-            <p class="yellowtitlebig">Create an account!</p>
-            <p class="yellowtitlebig">&nbsp;</p>
+      <div class="registerlinks">
+        <p>
+          In order to create an account use the links below.
+        </p>
+        <ul>
+          <li>
+            <a href="newaccount.php">Create New Account</a>
+          </li>
+          <li>
+            <a href="resendemail.php">Resend Verification E-Mail</a>
+          </li>
+          <li>
+            <a href="resendemail.php?forgot=yes">Forgot my password</a>
+          </li>
+        </ul>
+      </div>
+    
+    </div>
 
-
-            <b><font color=white>Important Notice:</font></b> If you migrated your character from MB release, please do the following: Create an account (using link below) with the same email you used
-            to migrate your MB char. Download the game, and use the created account to log in. Press New Character, enter the first name exactly as it was in MB, enter any last name. If email and
-            first name match the migrated char, you will get the trias and item migrated from MB. <br><br><br>
-
-            <A href="newaccount.php">Create New Account</a><BR>
-            <BR>
-            <A href="resendemail.php">Resend Verification E-Mail</A><BR>
-            <BR>
-            <A href="resendemail.php?forgot=yes">Forgot my password</A>
-
-            <BR><BR>
 <?
 include("end.php");
 ?>

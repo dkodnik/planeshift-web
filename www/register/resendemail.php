@@ -1,6 +1,7 @@
 <?PHP
 /*
- * resendemail.php - Author: Greg von Beck
+ * resendemail.php - Original Author: Greg von Beck
+ *                   Redesigned by: John Sennesael
  *
  * Copyright (C) 2001 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -20,65 +21,108 @@
  * Description : This page accepts a e-mail to resend a account verification
  *               E-Mail to.
  */
+
+  // allow this script to be run directly by the user
+  define('psregister',1);
+
+  // tell start.php which page we are rendering
+  global $page;
+  $page = "resendemail";
+
+  // include first half of webpage
+  include_once("start.php");
+  
 ?>
 
+    <div id="content">
 
-<?include("start.php");
+<?
+
+if(isset($_GET['forgot']))
+  {
+
+    echo "
+
+      <div class=\"forgot\">
+        Your password is stored in our DB in an encrypted format, so you will have to generate a new password.<br />
+        Use the form below to receive an email which will give you instructions on how to proceed.<br />
+      </div>
+    
+    ";
+  }
+  else
+  {
+  
+    echo"
+
+      <div class=\"register\">
+        <p class=\"yellowtitlebig\">
+          Register a new account!
+        </p>
+        <p>
+          Please enter the email address you registered your account <br />
+          with to have your verification email resent.
+        </p>
+      </div>
+    ";
+
+  }
+
+?>
+
+      <script language="javascript" src="validationLibrary.js" type="text/javascript">
+      </script>
+
+      <script language="javascript" type="text/javascript">
+        function validate()
+        {
+          return isEmail(document.resend.email, "E-Mail", true);
+        }
+      </script>
+
+<?
 
 if(isset($_GET['forgot']))
 {
- echo "Since your password is stored in our DB in encrypted format, the only option is to generate a new password.<br>";
- echo "Using the form below you will receive a verification email to reset your password.<br>";
-
+  echo "      <form name=\"resend\" action=\"processresendemail.php?forgot=yes\" method=\"post\" onsubmit=\"return validate()\">";
 } else {
-  ?>
- <p class=yellowtitlebig>Register a new account!</p>
- 
-         <BR>Please Enter the E-Mail you would like to have an<BR>
-        account verification email resent to.<BR>
-<?
-}
+  echo "      <form name=\"resend\" action=\"processresendemail.php\" method=\"post\" onsubmit=\"return validate()\">";
+} 
+
 ?>
-    <p class="yellowtitlebig">&nbsp;</p>
+      <hr class="ruler" />
 
-<script language=javascript src=validationLibrary.js>
-</script>
+<?PHP
 
-<script language=javascript>
-function validate()
+if($_GET['error'] == 'email')
 {
-    return isEmail(document.resend.email, "E-Mail", true);
+  if(isset($_GET['forgot']))
+  {
+    echo "<div class=\"error\">No validated account with that e-mail found. </div>";
+  }
+  else
+  {
+    echo "<div class=\"error\">No account with that e-mail found, or the account has already been validated. </div>";
+  }
 }
-</script>
 
-<?
-if(isset($_GET['forgot']))
-{
 ?>
-<FORM name=resend action="processresendemail.php?forgot=yes" method="post" onsubmit="return validate()">
+      <div class="email">
+        E-Mail
+        <input name="email" />
+      </div>
+        
+      <div class="submit">
+        <input type="submit" value="Submit" />
+      </div>
+    </form>
+    <p>
+    - <a href="index.php">back</a> -
+    </p>
+  </div>
+  
 <?
-} else {
+
+include_once("end.php");
+
 ?>
-<FORM name=resend action="processresendemail.php" method="post" onsubmit="return validate()">
-<? } ?>
-
-<Table>
-    <TR><TD colspan=2>
-
-    </TD></TR>
-    <TR><TD colspan=2><HR></TD></TR>
-    <?PHP
-    if($_GET['error'] == 'email')
-    {
-    	echo "<TR><TD colspan=2><font color=red><B>No account with that e-mail found or account has already been validated. </B></FONT><BR></TD></TR>";
-    }
-    ?>
-    <TR>
-        <TH align=right>E-Mail</TH>
-	<TD><input name="email"></TD>
-    </TR>
-    <TR><TD colspan=2 align=center><BR><input type=submit value="Submit"></TD></TR>
-</TABLE>
-</FORM>
-
-<?include("end.php");?>

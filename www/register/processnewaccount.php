@@ -1,6 +1,7 @@
-<?PHP
+<?php
 /*
  * processnewaccount.php - Author: Greg von Beck
+ *                  Redesigned by: John Sennesael
  *
  * Copyright (C) 2001 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -20,72 +21,66 @@
  * Description : This page enters account info into the database and sends out
  *               an email with a validation link.
  */
-?>
 
-<?PHP include "db_setup.php" ?>
-<?PHP include "randString.php" ?>
+  // This script is to be run directly by the user.
+  define('psregister',1);
 
-<?PHP
-$db_link = mysql_pconnect($db_hostname,
-                          $db_username,
-                          $db_password);
+  // includes
+  include_once("db_setup.php");
+  include_once("randString.php");
 
-mysql_select_db($db_name);
+  // attempt to connect to database
+  $db_link = mysql_pconnect($db_hostname,
+                            $db_username,
+                            $db_password);
 
-//verify username is unique
+  // show error if connection failed
+  if (!$db_link)
+  {
+    include_once('start.php');
+    echo "<div id=\"content\">";
+    echo "<div class=\"error\">";
+    echo "Oops! There was a problem connecting to the database.<p>Hopefully this will be resolved soon<sup>(tm)</sup>.</p>";
+    echo "</div>";
+    echo "</div>";
+    include_once('end.php');
+    die('db error');
+  }
+  mysql_select_db($db_name);
 
-$query = "select username from accounts where username = '" .
-         addslashes(strtolower($_POST['email'])) . "'";
-
-$result = ExecQuery($query);
-
-if (mysql_num_rows($result) > 0)
-{
-    ?>
-         <script language=javascript>
-         document.location='newaccount.php?error=username';
-         </script>
-    <?PHP
+  // verify username is unique.
+  $query = "select username from accounts where username = '" . mysql_real_escape_string(strtolower($_POST['email'])) . "'";
+  $result = ExecQuery($query);
+  if (mysql_num_rows($result) > 0)
+  {
+    Header("Location:newaccount.php?error=username");
     exit();
-}
-					 
+  }
+           
+  // create verification id.
+  $verificationid = randString();
 
-//create verification id
-
-$verificationid = randString();
-
-//save to database
-
-$age = $_POST['age'];
-if ($age=="N")
-{
+  // save to database.
+  $age = mysql_real_escape_string($_POST['age']);
+  if ($age=="N")
+  {
     $age="''";
-}
+  }
+  $query = "Insert into accounts (realname, username, verificationid, " .
+           "created_date, status, country, gender, birth)" .
+           "values('" . mysql_real_escape_string(strtolower($_POST['realname'])) . "', ".
+           "'" . mysql_real_escape_string(strtolower($_POST['email'])) . "', " .
+           "'" . mysql_real_escape_string($verificationid) . "', " .
+           "'" . date('Y/m/d', mktime()) . "', 'U'," .
+           "'" . mysql_real_escape_string($_POST['country']) . 
+           "','" . mysql_real_escape_string($_POST['gender']) . "'," . $age. ")";
+  ExecQuery($query);
+                
+  // send email.
+  include 'sendverificationemail.php';
+  sendVerificationEmail(addslashes($_POST['email']), $verificationid);
 
-$query = "Insert into accounts (realname, username, verificationid, " .
-                               "created_date, status, country, gender, birth)" .
-	 "values('" . addslashes(strtolower($_POST['realname'])) . "', ".
-	        "'" . addslashes(strtolower($_POST['email'])) . "', " .
-		"'" . $verificationid . "', " .
-		"'" . date('Y/m/d', mktime()) . "', 'U'," .
-		"'" . addslashes($_POST['country']) . 
-		"','" . $_POST['gender'] . "'," . $age. ")";
-
-		echo $query;
-
-ExecQuery($query);
-						    
-
-
-// send email
-
-include 'sendverificationemail.php';
-sendVerificationEmail( $_POST['email'], $verificationid);
+  // redirect user.
+  Header("Location:index.php?action=reg");
 
 ?>
-
-<HTML>
-<SCRIPT language=javascript>
-document.location="index.php?action=reg";
-</SCRIPT>
-</HTML>

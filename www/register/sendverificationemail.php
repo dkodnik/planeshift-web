@@ -1,6 +1,6 @@
 <?PHP
 /*
- * sendverificationeamil.php - Author: Greg von Beck
+ * sendverificationemail.php - Author: Greg von Beck
  *
  * Copyright (C) 2001 PlaneShift Team (info@planeshift.it,
  * http://www.planeshift.it)
@@ -36,7 +36,7 @@ if ($forgot=="yes")
     $path = $path . "&forgot=yes";
 }
 
-$messagebody = "Welcome to the PlaneShift Crystal Blue internal testing!\r\n" .
+$messagebody = "Welcome to PlaneShift Steel Blue!\r\n" .
                "\r\n" .
 	       "Your username is : " . $email . "\r\n" .
 	       "Your Verification ID is : " . $verificationid .
@@ -46,11 +46,11 @@ $messagebody = "Welcome to the PlaneShift Crystal Blue internal testing!\r\n" .
 
 if ($forgot=="yes") 
 {
-        $messagebody = $messagebody . "Use the link to reset your password.\r\n";
+  $messagebody = $messagebody . "Click the link and follow the instructions on screen to reset your password.\r\n";
 } 
 else 
 {
-  $messagebody = $messagebody . "Use the link to verify your account so you can begin playing.\r\n";
+  $messagebody = $messagebody . "Click the link to verify your account so you can begin playing.\r\n";
 }
 	       $messagebody = $messagebody . "\r\n" .
 	       $path . "\r\n" .
