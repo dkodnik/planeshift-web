@@ -19,11 +19,8 @@
  * Creation Date : 10/6/03
  * Description : This page creates and sends out a verification e-mail.
  */
-?>
 
-<?PHP
 // send email
-
 function sendVerificationEmail($email, $verificationid,$forgot="no")
 {  
     
