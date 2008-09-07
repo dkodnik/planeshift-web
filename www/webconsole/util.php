@@ -117,7 +117,7 @@ function SelectBaseItem($current_itemID,$select_name)
 function SelectGlyphs($current_glyphID,$select_name)
 {
 	printf("<SELECT name=%s>", $select_name);
-	$query_events = "SELECT id,name FROM item_stats WHERE flags LIKE '%GLYPH%' order by name";
+	$query_events = "SELECT id,name FROM item_stats WHERE flags LIKE 'GLYPH%' order by name";
 	$result = mysql_query2($query_events);
 	while ($list = mysql_fetch_array($result, MYSQL_NUM)){
 		if ($list[0] == $current_glyphID){
