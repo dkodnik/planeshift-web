@@ -26,6 +26,9 @@ function searchnpc(){
   } else if ($name!=null and $name!="") {
     if (strstr($name,"*")) {
       $name = str_replace("*","%",$name);
+      if ($name[0] == "%") {
+	  $name = substr($name, 1);
+      }
       $query = "select id from characters where name like '$name'";
     } else {
       $query = "select id from characters where name='$name'";
