@@ -47,7 +47,7 @@ function view_commands(){
 
 function whereusedglyph() {
 
-	$query_events = "SELECT id,name FROM item_stats WHERE flags LIKE '%GLYPH%' order by name";
+	$query_events = "SELECT id,name FROM item_stats WHERE flags LIKE 'GLYPH%' order by name";
 	$result = mysql_query2($query_events);
 	while ($list = mysql_fetch_array($result, MYSQL_NUM)) {
 
