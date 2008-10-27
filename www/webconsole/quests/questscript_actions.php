@@ -1,4 +1,7 @@
 <?php
+
+define('PSQUEST_DISABLED_QUEST', 0x00000001);
+
 function questscript_actions(){ 
 	// gets operation to perform
 	$operation = $_POST['operation'];
@@ -45,7 +48,9 @@ function questscript_actions(){
         } else 
           $prereq = $_POST['prereq'];
 
-		$query = "update quests set name='{$_POST['name']}', task='{$_POST['description']}', category='{$_POST['category']}', player_lockout_time='{$_POST['plock']}', quest_lockout_time='{$_POST['qlock']}', prerequisite='{$prereq}' where id='{$_POST['id']}'";
+        $flags = $_POST['qdisableflag']? PSQUEST_DISABLED_QUEST : 0;
+        
+		$query = "update quests set name='{$_POST['name']}', task='{$_POST['description']}', category='{$_POST['category']}', player_lockout_time='{$_POST['plock']}', quest_lockout_time='{$_POST['qlock']}', prerequisite='{$prereq}', flags='{$flags}' where id='{$_POST['id']}'";
 		$result = mysql_query2($query);
 
 		$query = "update quest_scripts set script='{$_POST['script']}' where id='{$_POST['id']}'";

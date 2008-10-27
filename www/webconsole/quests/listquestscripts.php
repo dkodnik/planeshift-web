@@ -2,6 +2,8 @@
 
 include('viewquestscript.php');
 
+define('PSQUEST_DISABLED_QUEST', 0x00000001);
+
 function printChildQuests($questname) {
   
 }
@@ -71,15 +73,19 @@ function listquestscripts(){
   } else {
     echo "<A HREF=index.php?page=listquestscripts&mode=hier>Show quest scripts in hierarchical view</A><br><br>";
 
-	$query = "select id, category, name, player_lockout_time, quest_lockout_time, prerequisite from quests order by 2,3";
+	$query = "select id, category, name, player_lockout_time, quest_lockout_time, prerequisite, flags from quests order by 2,3";
 	$result = mysql_query2($query);
-	echo '<table border="1"><tr><td><b>ID:</b></td><td><b>Category:</b></td><td><b>Name: </b></td><td><b>Player Lockout: </b></td><td><b>Quest Lockout: </b></td><td><b>Prerequisite </b></td><td> </td></tr>';
+	echo '<table border="1"><tr><td><b>ID:</b></td><td><b>Category:</b></td><td><b>Name: </b></td><td><b>Player Lockout: </b></td><td><b>Quest Lockout: </b></td><td><b>Prerequisite </b></td><td>Flags</td><td> </td></tr>';
 	while ($line = mysql_fetch_array($result, MYSQL_NUM)){
 		echo "<tr><td> $line[0] </td><td> $line[1] </td><td> $line[2] </td><td> $line[3] </td>";
 		echo "<td> $line[4]</td>";
 
           $prereq = parsePrereqScript($line[5]);
-          echo "<td> $prereq[1]</td>";
+          echo "<td>$prereq[1]</td>";
+          
+          $flaglist = ($line[6] &  PSQUEST_DISABLED_QUEST) ? "DISABLED" : "";
+          echo "<td>$flaglist</td>";
+          
 		echo "<td><FORM ACTION=index.php?page=viewquestscript METHOD=POST>";
 		echo "<INPUT TYPE=HIDDEN NAME=id VALUE=$line[0]>";
 		echo "<INPUT TYPE=SUBMIT NAME=Submit VALUE=Edit>";
