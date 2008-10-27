@@ -2,6 +2,7 @@
 
 include('util.php');
 
+define('PSQUEST_DISABLED_QUEST', 0x00000001);
 
 function isMultiPrereqScript($prereq){
     $pos1 = stristr($prereq, "<and>");
@@ -52,13 +53,16 @@ function viewquestscript(){
 		$masterid = $_GET['id'];
 	}
 
-	$query = "select quests.id, category, name, player_lockout_time, quest_lockout_time, prerequisite, script, task from quests, quest_scripts where quests.id=quest_scripts.id and quests.id=" . $masterid;
+	$query = "select quests.id, category, name, player_lockout_time, quest_lockout_time, prerequisite, script, task, flags from quests, quest_scripts where quests.id=quest_scripts.quest_id and quests.id=" . $masterid;
+	//echo "$query";
 	$result = mysql_query2($query);
 
 	while ($line = mysql_fetch_array($result, MYSQL_NUM)){
 		$masterid = $line[0];
 
-        echo "<FORM name=editquest action=index.php?page=questscript_actions METHOD=POST onsubmit=\"return checkFields()\" >";
+    $questIsDisabled = ($line[8] &  PSQUEST_DISABLED_QUEST) ? "CHECKED=\"yes\"" : "";
+    
+    echo "<FORM name=editquest action=index.php?page=questscript_actions METHOD=POST onsubmit=\"return checkFields()\" >";
 	echo "<INPUT TYPE=HIDDEN NAME=operation VALUE=updatequestscript>";
 	echo "<INPUT TYPE=HIDDEN NAME=id VALUE=$masterid>";
 	echo "<b>Quest script ID:</b> $masterid<BR>";
@@ -67,6 +71,7 @@ function viewquestscript(){
 	echo "<b>Description:</b> <INPUT size=50 TYPE=text NAME=description VALUE=\"$line[7]\"> <BR>";
 	echo "<b>Player lockout:</b> <INPUT size=50 TYPE=text NAME=plock VALUE=\"$line[3]\"> <BR>";
 	echo "<b>Quest lockout:</b> <INPUT size=50 TYPE=text NAME=qlock VALUE=\"$line[4]\"> <BR>";
+    echo "<b>Quest flags:</b> <INPUT TYPE=checkbox NAME=qdisableflag \"$questIsDisabled\"> Disabled <BR>";
 	echo "<b>Simple Prerequisite quest:</b> ";
 	$prereqname = parsePrereqScript($line[5]);
 	SelectQuestScriptByName("xxx","questprereq");
