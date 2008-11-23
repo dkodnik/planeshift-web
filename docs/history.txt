@@ -1,3 +1,6 @@
+*** 2008-10-27 by Stefano Angeleri
+WC - Added support for flags for quests. Right now the only flag is disable.
+
 *** 2008-03-23 by Eriroley
 WC - minor update, added a missing <? back into npc_actions.php
 
