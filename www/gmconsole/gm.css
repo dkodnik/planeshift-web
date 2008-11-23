@@ -1,0 +1,24 @@
+.table {
+    border-color:#937362;
+    border-style:solid;
+    border-width:1px;
+    border-collapse:collapse;
+}
+
+.table th {
+    background-color:#937362;
+    border-color:#937362;
+    border-style:solid;
+    border-width:1px;
+    color:#e1ab65;
+    padding-left:0.5em;
+    padding-right:0.5em;
+}
+
+.table td {
+    border-color:#937362;
+    border-style:solid;
+    border-width:1px;
+    padding-left:0.5em;
+    padding-right:0.5em;
+}
