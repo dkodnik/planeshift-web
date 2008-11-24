@@ -44,8 +44,16 @@ class PSNameChange extends PSBaseClass {
                 $namechange->TimeOfExecution = $row['ex_time'];
                 $namechange->ExecutingGM = $row['name'];
                 $namechange->OldFirstName = $commandParts[1];
-                $namechange->NewFirstName = $commandParts[3];
-                $namechange->NewLastName = $commandParts[4];
+                if($commandParts[2] == 'force' || $commandParts[2] == 'forceall')
+                {
+                    $namechange->NewFirstName = $commandParts[3];
+                    $namechange->NewLastName = $commandParts[4];
+                }
+                else
+                {
+                    $namechange->NewFirstName = $commandParts[2];
+                    $namechange->NewLastName = $commandParts[3];
+                }
                 
                 $namechange->__IsLoaded = true;
                 array_push($namechanges, $namechange);
