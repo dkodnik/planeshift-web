@@ -6,8 +6,8 @@ function checknpctriggers(){
 
   // extract all invulnerable NPC names
   $query = "select c.id, c.name, c.lastname, sec.name, c.loc_x, c.loc_y, c.loc_z, c.npc_spawn_rule from characters as c, sectors as sec ";
-  $query = $query . " where npc_master_id !=0 and c.loc_sector_id=sec.id";
-  $query = $query . " and npc_impervious_ind='Y'";
+  $query = $query . " where c.npc_master_id !=0 and c.loc_sector_id=sec.id";
+  $query = $query . " and c.npc_impervious_ind='Y'";
   $query = $query . " order by sec.name, c.name";
 
   $result = mysql_query2($query);
@@ -21,7 +21,7 @@ function checknpctriggers(){
     $fullname = $line[1] . " " . $line[2];
     $fullname = trim($fullname);
     // search his triggers
-    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger='greetings'";
+    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='greetings'";
     $result2 = mysql_query2($query2);
     $line2 = mysql_fetch_array($result2, MYSQL_NUM);
     $found1 = $line2[0];
@@ -32,12 +32,12 @@ function checknpctriggers(){
       $found1 = $line2[0];
     }
 
-    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger='about you'";
+    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='about you'";
     $result2 = mysql_query2($query2);
     $line2 = mysql_fetch_array($result2, MYSQL_NUM);
     $found2 = $line2[0];
 
-    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger='how you'";
+    $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='how you'";
     $result2 = mysql_query2($query2);
     $line2 = mysql_fetch_array($result2, MYSQL_NUM);
     $found3 = $line2[0];
@@ -51,9 +51,9 @@ function checknpctriggers(){
       if ($found1=="0")
         echo "greetings ";
       if ($found2=="0")
-        echo "about you";
+        echo "about you ";
       if ($found3=="0")
-        echo "how you";
+        echo "how you ";
       echo "</TD><TD>$loaded</TD></TR>";
     }
   }

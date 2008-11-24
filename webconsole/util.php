@@ -187,7 +187,7 @@ function SelectSectors($current_sector,$select_name){
 
 function SelectRace($current_race,$select_name){
 	printf("<SELECT name=%s>", $select_name);
-	$query_events = "select race_id, name, sex from race_info order by name, sex";
+	$query_events = "select id, name, sex from race_info order by name, sex";
 	$result = mysql_query2($query_events);
 	while ($list = mysql_fetch_array($result, MYSQL_NUM)){
 		if ($list[0] == $current_race){
