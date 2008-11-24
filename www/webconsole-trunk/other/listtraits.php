@@ -2,7 +2,7 @@
 
 include('util.php');
 
-function SelectLocation($current_location,$select_name)
+function SelectLocationT($current_location,$select_name)
 {
         printf("<SELECT name=%s>", $select_name);
         $location="EYE_COLOR"; if ($current_location == $location){$selected="selected";}else{$selected="";}
@@ -62,7 +62,7 @@ function show_traits( $race_id )
 {
     checkAccess('main', '', 'read');
    
-    $query = "SELECT  name from  race_info where race_id=$race_id";
+    $query = "SELECT  name from  race_info where id=$race_id";
     $result = mysql_query2($query);
 
     $line = mysql_fetch_array($result, MYSQL_NUM);
@@ -206,7 +206,7 @@ function show_races()
     }
     else
     {
-    $query = "SELECT race_id, name, sex from race_info where race_id < 12";
+    $query = "SELECT id, name, sex from race_info where id < 12";
     $result = mysql_query2($query);
    
     echo "<P>Select the race that you want to change the traits on";
@@ -227,7 +227,7 @@ echo "<TR><TD>" . $line[0] . "</TD><TD><A HREF=index.php?page=list_traits&functi
     echo "<TABLE BORDER=1 CELLPADDING=5 CELLSPACING=0>";
     echo "<TH>ID</TH><TH>Race</TH><TH>Gender</TH>";
     
-    $query = "SELECT race_id, name, sex from race_info where race_id >= 12 and race_id <= 22";
+    $query = "SELECT id, name, sex from race_info where id >= 12 and id <= 22";
     $result = mysql_query2($query);
 
 
@@ -265,7 +265,7 @@ function list_traits(){
 		echo "<TD><INPUT SIZE=5 TYPE=text NAME=next_trait VALUE=\"$line[1]\"></TD>";
 		echo "<TD><TABLE><TR><TD>"; SelectRace($line[2],"race_id"); echo "</TD>";
 		echo "<TD>"; SelectOnlyNPC($line[3],"only_npc"); echo "</TD></TR>";
-		echo "<TR><TD>"; SelectLocation($line[4],"location"); echo "</TD>";
+		echo "<TR><TD>"; SelectLocationT($line[4],"location"); echo "</TD>";
 		echo "<TD><INPUT TYPE=text NAME=name VALUE=\"$line[5]\"></TD></TR></TABLE></TD>";
 		echo "<TD>"; SelectCommonString($line[6],"cstr_id_mesh"); echo "<BR>";
 		echo ""; SelectCommonString($line[7],"cstr_id_material"); echo "<BR>";
@@ -282,7 +282,7 @@ function list_traits(){
 	echo "<TD><INPUT SIZE=5 TYPE=text NAME=next_trait></TD>";
 	echo "<TD><TABLE><TR><TD>"; SelectRace("1","race_id"); echo "</TD>";
 	echo "<TD>"; SelectOnlyNPC("0","only_npc"); echo "</TD></TR>";
-	echo "<TR><TD>"; SelectLocation("EYE_COLOR","location"); echo "</TD>";
+	echo "<TR><TD>"; SelectLocationT("EYE_COLOR","location"); echo "</TD>";
 	echo "<TD><INPUT TYPE=text NAME=name ></TD></TR></TABLE></TD>";
 	echo "<TD>"; SelectCommonString("0","cstr_id_mesh"); echo "<BR>";
 	echo ""; SelectCommonString("0","cstr_id_material"); echo "<BR>";
