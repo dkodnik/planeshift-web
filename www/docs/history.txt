@@ -1,5 +1,5 @@
 *** 2008-11-24 by Stefano Angeleri
-WC - Fixed query in checknpcchar page in order to work with current db
+WC - Fixed query in various pages in order to work with current db
 
 *** 2008-10-27 by Stefano Angeleri
 WC - Added support for flags for quests. Right now the only flag is disable.
