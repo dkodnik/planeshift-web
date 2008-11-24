@@ -7,8 +7,8 @@ function checknpcchar(){
   // extract all invulnerable NPC names
   $query = "select s.name, c.id, c.name, c.lastname, ra.name, ra.sex, description, r.response1";
   $query = $query . " from characters c, sectors s, npc_triggers t, npc_responses r, race_info ra ";
-  $query = $query . " where TRIM(CONCAT(c.name,' ',c.lastname))=t.area and s.id=c.loc_sector_id and t.response_id=r.id and c.racegender_id=ra.race_id ";
-  $query = $query . " and trigger=\"about you\" and character_type=1 and npc_impervious_ind='Y' and npc_spawn_rule!=0 ";
+  $query = $query . " where TRIM(CONCAT(c.name,' ',c.lastname))=t.area and s.id=c.loc_sector_id and t.id=r.id and c.racegender_id=ra.id ";
+  $query = $query . " and t.trigger_text='about you' and c.character_type=1 and c.npc_impervious_ind='Y' and c.npc_spawn_rule!=0 ";
   $query = $query . " order by s.name, c.name;";
 
   $result = mysql_query2($query);
