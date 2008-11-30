@@ -2,17 +2,19 @@ Not much to say for now.
 
 1) You need mysql installed with the PlaneShift database
 
-2) You can use vengeance/keith as use pass, be sure that's defined in accounts table, and that the pass is crypted with md5
+2) edit the configurations in config.php accordly to your mysql configs
 
-3) Be sure to set security level to one account for administration purposes. (accounts.security_level) 
+3) You can use vengeance/keith as use pass, be sure that's defined in accounts table, and that the pass is crypted with md5
 
-4) A directory called "sessions" must exist under the gmconsole main dir.
+4) Be sure to set security level to one account for administration purposes. (accounts.security_level) 
 
-5) If you are on unix be sure to "chmod 775 sessions"
+5) A directory called "sessions" must exist under the gmconsole main dir.
 
-6) make a folder "logs" or symlink it to your psserver logs folder
+6) If you are on unix be sure to "chmod 775 sessions"
 
-7) make an "old" folder in the logs folder
+7) make a folder "logs" or symlink it to your psserver logs folder
+
+8) make an "old" folder in the logs folder
 
 PHP Settings:
 - magic_quotes_gpc On
