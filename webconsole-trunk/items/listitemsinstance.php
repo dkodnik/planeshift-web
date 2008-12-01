@@ -1,4 +1,24 @@
 <?
+
+function SelectSectorsSP($current_sector,$select_name){
+	printf("<SELECT name=%s>", $select_name);
+	$query_events = "select name from sectors";
+	$result = mysql_query2($query_events);
+
+	//add the special entries
+	printf("<OPTION %svalue=\"all\">all</OPTION>", ($current_sector == "all" || $current_sector == "") ? "selected " : "");
+	printf("<OPTION %svalue=\"excludeprivate\">exclude private</OPTION>", ($current_sector == "excludeprivate") ? "selected " : "");
+
+	while ($list = mysql_fetch_array($result, MYSQL_NUM)){
+		if ($list[0] == $current_sector){
+			printf("<OPTION selected value=\"%s\">%s</OPTION>", $list[0], $list[0]);
+		}else{
+			printf("<OPTION value=\"%s\">%s</OPTION>", $list[0], $list[0]);
+		}
+	}
+	printf("</SELECT>");
+}
+
 function listitemsinstance()
 {
 ?>
@@ -14,12 +34,29 @@ function confirmDelete()
 </SCRIPT>
 
 <?PHP
-
     checkAccess('main', '', 'read');
 
-    $query = "select c.id, sec.name, ist.name, c.item_stats_id_standard, c.parent_item_id, c.location_in_parent, c.stack_count, c.creator_mark_id, c.guild_mark_id, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot, c.flags from item_instances as c, sectors as sec, item_stats as ist ";
-    $query = $query . "  where char_id_owner =0 and c.loc_sector_id=sec.id and c.item_stats_id_standard=ist.id ";
+	$sector = $_GET['sector'];
+
+    $query = "SELECT c.id, sec.name, ist.name, c.item_stats_id_standard, c.parent_item_id, c.location_in_parent, c.stack_count, c.creator_mark_id, c.guild_mark_id, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot, c.flags from item_instances as c, sectors as sec, item_stats as ist ";
+	$query = $query . "  WHERE char_id_owner =0  AND c.item_stats_id_standard=ist.id ";
+
+	//check if it's a special case
+	if($sector == "all" || $sector == "") //list all the items on ground
+		$query = $query . "AND c.loc_sector_id=sec.id ";
+	else if($sector == "excludeprivate") //exclude the guild and npc sectors
+		$query = $query . " AND c.loc_sector_id=sec.id AND sec.name != 'guildsimple' AND sec.name != 'guildlaw' AND sec.name != 'NPCroom' ";
+	else //select only a sector provided by the user
+		$query = $query . "AND sec.id=(SELECT id FROM sectors where name='$sector') AND c.loc_sector_id=sec.id ";
+
     $result = mysql_query2($query);
+	
+	echo "  <FORM action=\"index.php?page=listitemsinstance\" METHOD=GET>";
+	echo "  <INPUT TYPE=hidden NAME=page VALUE=\"listitemsinstance\">";
+	echo "  <b>Select one area:</b> <br><br> Area: ";
+	SelectSectorsSP($sector,"sector");
+	echo " <br><br><INPUT type=submit value=view><br><br>";
+	echo "</FORM>";
 
     echo "  <TABLE BORDER=1>";
     echo "  <TH> ID </TH> <TH> SECTOR</TH> <TH> Base_Item_Name (id)</TH> <TH> parent_item_id </TH> <TH> location_in_parent </TH><TH> stack_count</TH> <TH> creator_mark_id</TH> <TH> guild_mark_id</TH> <TH> POSITION</TH> <TH> FLAGS</TH><TH> FUNCTIONS</TH>";
