@@ -1,3 +1,8 @@
+*** 2008-12-01 by Stefano Angeleri
+WC  - Added support to choose a sector in the listitemsinstances page.
+      with two special cases all to show all sectors and exclude private
+	  to exclude guilds sectors and npcroom
+
 *** 2008-11-24 by Stefano Angeleri
 WC  - Fixed query in various pages in order to work with current db
 GMC - Fixed the changename reports for the new command format
