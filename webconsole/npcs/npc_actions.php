@@ -43,11 +43,15 @@ function viewmain(){
     $kill_exp = $line['kill_exp'];
 
     // get behaviour
-    $query = 'select char_id, name,npctype,region from sc_npc_definitions where char_id=' . $id;
+    $query = 'select char_id, name, npctype, region, char_id_owner, move_vel_override, ang_vel_override, disabled from sc_npc_definitions where char_id=' . $id;
     $result2 = mysql_query2($query);
     $line2 = mysql_fetch_array($result2, MYSQL_ASSOC);
     $behaviour = $line2['npctype'];
     $behaviour_region = $line2['region'];
+    $npc_owner = $line2["char_id_owner"];
+    $npcc_move_vel = $line2["move_vel_override"];
+    $npcc_ang_vel = $line2["ang_vel_override"];
+    $npcc_disabled = $line2["disabled"];
 
     echo "<FORM action=index.php?page=npc_actions&npcid=$id&operation=editmain METHOD=POST>";
 
@@ -129,6 +133,20 @@ function viewmain(){
     }
     echo "/";
         SelectRegion($behaviour_region,'behaviour_region');
+    echo "<TR><TD>Owner character:</TD><TD> <INPUT size='9' type=text name=npc_owner value=$npc_owner></TD></TR>";
+    echo "<TR><TD>Move Velocity override:</TD><TD> <INPUT size='9' type=text name=npcc_move_vel value=$npcc_move_vel></TD></TR>";
+    echo "<TR><TD>Angular Velocity override:</TD><TD> <INPUT size='9' type=text name=npcc_ang_vel value=$npcc_ang_vel></TD></TR>";
+    echo "<TR><TD>Disabled:</TD><TD><SELECT name=disabled>";
+
+    if ($npcc_disabled == 'N'){
+            echo "<OPTION value=N SELECTED>No</OPTION>";
+            echo "<OPTION value=Y >Yes</OPTION>";
+    }else{
+            echo "<OPTION value=N>No</OPTION>";
+            echo "<OPTION value=Y SELECTED>Yes</OPTION>";
+    }
+    echo "</SELECT> (When set to Yes, the NPC will be disabled in the npcclient)</TD></TR>";
+
     echo "<INPUT type=hidden name=npcname value=$area></TD></TR>";
     echo '<TR><TD><INPUT type=submit name=save value=save></TD><TD></TD></TR>';
     echo '</TABLE></FORM>';
@@ -163,15 +181,15 @@ function editmain(){
     $locrot = $_POST['locrot']; 
     $locinst = $_POST['locinst'];
     // get sector id or create a new one
-    $query = "select id from sectors where name='$sector'";
+    $query = "select name from sectors where id='$sector'";
     $result = mysql_query2($query);
     $line = mysql_fetch_array($result, MYSQL_NUM);
 
     if ($line != ''){
-        $sectorid = $line[0];
+        $sectorname = $line[0];
     }else{
-        $sectorid = getNextId('sectors', 'id');
-        $query = "insert into sectors values ($sectorid, '$sector',0,0,0,0,0,0,0,0)";
+        $sector = getNextId('sectors', 'id');
+        $query = "insert into sectors values ($sector, '$sectorname',0,0,0,0,0,0,0,0)";
         $result = mysql_query2($query);
     }
 
@@ -179,15 +197,20 @@ function editmain(){
     $query = "update characters set description='$description', base_strength=$str, base_agility=$agi, base_endurance=$end, base_intelligence=$int, ";
     $query = $query . "racegender_id=$raceid, ";
     $query = $query . "base_will=$wil, base_charisma=$cha, base_hitpoints_max=$hp, base_mana_max=$mana, npc_spawn_rule=$spawn, npc_addl_loot_category_id=$loot, ";
-    $query = $query . "loc_sector_id=$sectorid, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot, loc_instance=$locinst , ";
+    $query = $query . "loc_sector_id=$sector, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot, loc_instance=$locinst, ";
     $query = $query . "npc_impervious_ind='$invulnerable', kill_exp=$kill_exp, "; 
     $query = $query . " npc_master_id=$masternpc where id=" . $id;
     //echo "$query";
     $result = mysql_query2($query); 
 
+    $npc_owner = $_POST['npc_owner'];
     $behaviour = $_POST['behaviour'];
-    $region_id = $_POST['behaviour_region'];
+    $behaviour_regionid = $_POST['behaviour_region'];
+    $npcc_move_vel = $_POST["npcc_move_vel"];
+    $npcc_ang_vel = $_POST["npcc_ang_vel"];
+    $npcc_disabled = $_POST["disabled"];
     $name = $_POST['npcname'];
+
 
     //delete previous behaviour
     $query = "delete from sc_npc_definitions where char_id=$id";
@@ -196,9 +219,9 @@ function editmain(){
     
     // create new beahviour
     if ($behaviour!='') {
-          $behaviour_region = GetRegionName($region_id);
-        $query = "insert into sc_npc_definitions(char_id,name,npctype,region,console_debug) values ($id,'$name','$behaviour','$behaviour_region','N')";
-        echo "$query";
+          $behaviour_region = GetRegionName($behaviour_regionid);
+        $query = "insert into sc_npc_definitions(char_id,name,npctype,region,move_vel_override, ang_vel_override, char_id_owner,console_debug, disabled) values ($id,'$name','$behaviour','$behaviour_region',$npcc_move_vel, $npcc_ang_vel, $npc_owner,'N','$npcc_disabled')";
+        //echo "$query";
         $result = mysql_query2($query);
         $line = mysql_fetch_array($result, MYSQL_NUM);
         }
