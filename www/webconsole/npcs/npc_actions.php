@@ -181,15 +181,15 @@ function editmain(){
     $locrot = $_POST['locrot']; 
     $locinst = $_POST['locinst'];
     // get sector id or create a new one
-    $query = "select name from sectors where id='$sector'";
+    $query = "select id from sectors where name='$sector'";
     $result = mysql_query2($query);
     $line = mysql_fetch_array($result, MYSQL_NUM);
 
     if ($line != ''){
-        $sectorname = $line[0];
+        $sectorid = $line[0];
     }else{
-        $sector = getNextId('sectors', 'id');
-        $query = "insert into sectors values ($sector, '$sectorname',0,0,0,0,0,0,0,0)";
+        $sectorid = getNextId('sectors', 'id');
+        $query = "insert into sectors values ($sectorid, '$sector',0,0,0,0,0,0,0,0)";
         $result = mysql_query2($query);
     }
 
@@ -197,7 +197,7 @@ function editmain(){
     $query = "update characters set description='$description', base_strength=$str, base_agility=$agi, base_endurance=$end, base_intelligence=$int, ";
     $query = $query . "racegender_id=$raceid, ";
     $query = $query . "base_will=$wil, base_charisma=$cha, base_hitpoints_max=$hp, base_mana_max=$mana, npc_spawn_rule=$spawn, npc_addl_loot_category_id=$loot, ";
-    $query = $query . "loc_sector_id=$sector, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot, loc_instance=$locinst, ";
+    $query = $query . "loc_sector_id=$sectorid, loc_x=$locx, loc_y=$locy, loc_z=$locz, loc_yrot=$locrot, loc_instance=$locinst, ";
     $query = $query . "npc_impervious_ind='$invulnerable', kill_exp=$kill_exp, "; 
     $query = $query . " npc_master_id=$masternpc where id=" . $id;
     //echo "$query";
@@ -215,7 +215,7 @@ function editmain(){
     //delete previous behaviour
     $query = "delete from sc_npc_definitions where char_id=$id";
     $result = mysql_query2($query);
-    $line = mysql_fetch_array($result, MYSQL_NUM);
+    //$line = mysql_fetch_array($result, MYSQL_NUM);
     
     // create new beahviour
     if ($behaviour!='') {
@@ -223,7 +223,7 @@ function editmain(){
         $query = "insert into sc_npc_definitions(char_id,name,npctype,region,move_vel_override, ang_vel_override, char_id_owner,console_debug, disabled) values ($id,'$name','$behaviour','$behaviour_region',$npcc_move_vel, $npcc_ang_vel, $npc_owner,'N','$npcc_disabled')";
         //echo "$query";
         $result = mysql_query2($query);
-        $line = mysql_fetch_array($result, MYSQL_NUM);
+        //$line = mysql_fetch_array($result, MYSQL_NUM);
         }
 
     // redirect
