@@ -1,3 +1,6 @@
+*** 2008-12-06 by Stefano Angeleri
+WC  - Fixed sql queries in the combat view of vulnerable npcs (listnpccombat)
+	  
 *** 2008-12-04 by Stefano Angeleri
 WC  - Added support for all entries of sc_npc_definitions and
       fixed possible loss of data from it
