@@ -67,7 +67,7 @@ function submit()
     $bad = 0;
 
     // extract weapons
-    $query = "select s.id,s.name from item_instances i,item_stats s where i.item_stats_id_standard=s.id and i.char_id_owner=$line[0] and equipped_slot='righthand'";
+    $query = "select s.id,s.name from item_instances i,item_stats s where i.item_stats_id_standard=s.id and i.char_id_owner=$line[0] and i.location_in_parent=0"; //right hand
     $result2 = mysql_query2($query);
     $line2 = mysql_fetch_array($result2, MYSQL_NUM);
     if (mysql_num_rows($result2)==0)
@@ -77,7 +77,7 @@ function submit()
     echo "</td>";
 
     // extract skills
-    $query = "select s.id,s.name from item_instances i,item_stats s where i.item_stats_id_standard=s.id and i.char_id_owner=$line[0] and equipped_slot='lefthand'";
+    $query = "select s.id,s.name from item_instances i,item_stats s where i.item_stats_id_standard=s.id and i.char_id_owner=$line[0] and i.location_in_parent=1"; //left hand
     $result2 = mysql_query2($query);
     $line2 = mysql_fetch_array($result2, MYSQL_NUM);
     if (mysql_num_rows($result2)==0)
