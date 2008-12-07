@@ -1666,15 +1666,15 @@ function savecombatnpc(){
   }
 
   // update weapons
-    $query = "delete from item_instances where char_id_owner=$id and (equipped_slot='lefthand' or equipped_slot='righthand')";
+    $query = "delete from item_instances where char_id_owner=$id and (location_in_parent=0 or location_in_parent=1)";
   $result = mysql_query2($query);
   if ($righthand!="-1") {
-      $query = "insert into item_instances values ('',$id,0,0,1,0,0,0,0,0,0,0,1,1,$righthand,0,'E','righthand','',0,-1,'')";
+      $query = "insert into item_instances values ('',$id,0,0,0,1,0,0,0,0,0,0,0,0,50,50,-1,$righthand,0,'',0,-1,'','','',0)";
       //echo "$query";
       $result = mysql_query2($query);
   }
   if ($lefthand!="-1") {
-      $query = "insert into item_instances values ('',$id,0,0,1,0,0,0,0,0,0,0,1,1,$lefthand,0,'E','lefthand','',0,-1,'')";
+	  $query = "insert into item_instances values ('',$id,0,0,1,1,0,0,0,0,0,0,0,0,50,50,-1,$lefthand,0,'',0,-1,'','','',0)";
       //echo "$query";
       $result = mysql_query2($query);
   }
