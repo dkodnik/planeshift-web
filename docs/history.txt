@@ -1,3 +1,6 @@
+*** 2009-01-01 by Stefano Angeleri
+WC  - Added world instance for items wrapped in []
+
 *** 2008-12-06 by Stefano Angeleri
 WC  - Fixed sql queries in the combat view of vulnerable npcs (listnpccombat)
 	  

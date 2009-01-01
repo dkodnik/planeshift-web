@@ -38,7 +38,7 @@ function confirmDelete()
 
 	$sector = $_GET['sector'];
 
-    $query = "SELECT c.id, sec.name, ist.name, c.item_stats_id_standard, c.parent_item_id, c.location_in_parent, c.stack_count, c.creator_mark_id, c.guild_mark_id, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot, c.flags from item_instances as c, sectors as sec, item_stats as ist ";
+    $query = "SELECT c.id, sec.name, ist.name, c.item_stats_id_standard, c.parent_item_id, c.location_in_parent, c.stack_count, c.creator_mark_id, c.guild_mark_id, c.loc_x, c.loc_y, c.loc_z, c.loc_yrot, c.flags, c.loc_instance from item_instances as c, sectors as sec, item_stats as ist ";
 	$query = $query . "  WHERE char_id_owner =0  AND c.item_stats_id_standard=ist.id ";
 
 	//check if it's a special case
@@ -63,8 +63,8 @@ function confirmDelete()
 
     while ($line = mysql_fetch_array($result, MYSQL_NUM))
     {
-        printf("<TR><TD>%s</TD><TD>%s</TD><TD>%s (%s)</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s,%s,%s, (%s)</TD><TD>%s</TD>",
-                  $line[0], $line[1], $line[2], $line[3], $line[4], $line[5], $line[6], $line[7], $line[8], $line[9], $line[10], $line[11], $line[12], $line[13]);
+        printf("<TR><TD>%s</TD><TD>%s</TD><TD>%s (%s)</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s</TD><TD>%s,%s,%s, (%s), [%s]</TD><TD>%s</TD>",
+                  $line[0], $line[1], $line[2], $line[3], $line[4], $line[5], $line[6], $line[7], $line[8], $line[9], $line[10], $line[11], $line[12], $line[14], $line[13]);
         printf("<TD><FORM ACTION=processcommand.php METHOD=POST>");
         printf("<INPUT TYPE=HIDDEN NAME=id VALUE=%d \">", $line[0]);
         printf("<INPUT TYPE=SUBMIT NAME=%s VALUE=\"DELETE\" onclick=\"return confirmDelete()\">", $line[0]);
