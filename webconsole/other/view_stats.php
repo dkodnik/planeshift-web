@@ -8,7 +8,7 @@ if ($groupid==1) {
 
 	$statquery = "select count(*) from accounts where created_date>=DATE('param1') and created_date<DATE('param2');";
 
-	$sql = "select * from statistics where groupid = ".$groupid." order by periodname";
+	$sql = "select * from wc_statistics where groupid = ".$groupid." order by periodname";
 	$query = mysql_query2($sql);
 	echo'<table border="1">';
 	$i = 0;
