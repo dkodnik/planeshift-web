@@ -50,7 +50,7 @@ function listitems() {
         echo '<TABLE BORDER="1">';
         while ($row = mysql_fetch_assoc($result)) {
             foreach ($row as $key => $value) {
-                echo '<TR><TD>' . $key . '</TD><TD>' . $value . '</TD></TR>';
+                echo '<TR><TD>' . $key . '</TD><TD>' . htmlspecialchars($value) . '</TD></TR>';
                 }
 
             echo 'Actions for item #' . $row['id'] . ':';
