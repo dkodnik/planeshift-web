@@ -221,37 +221,36 @@ function checkAccess($objecttype, $arrayattrs, $operation){
 		header("Location: http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/index.php?goto=" . urlencode($_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
 		exit();
 	}
-	// if security level is 0, exit
+
 	$usersec_level = $_SESSION['sec_level'];
 	$usersec_level_class = substr($usersec_level, 0, 1);
 	$usersec_level_dept = substr($usersec_level, 1, 1);
 
+    // Security 0 can never access.
 	if ($usersec_level == '0'){
 		echo "<HTML>YOU CAN'T ACCESS THIS PAGE!!! You access level is 0</HTML>";
 		exit();
 	}
 
-    // admin (security 50) can always access
+    // Admin (security 50) can always access.
     if ($usersec_level==50)
-      return;
+        return;
 
 
-	/**
-	 * * check access based on function *
-	 */
-	$function = "a_" . $operation; 
-	// check if object is known
-	//echo "$objecttype <br>";
-	$query = "select objecttype, fieldname, fieldvalue, $function from accessrules where objecttype='$objecttype' order by $function";
-	$result = mysql_query2($query);
+    // Check access based on $function.
+    $function = "a_" . $operation; 
+
+    // Check if object type is known.
+    $query = "select objecttype, fieldname, fieldvalue, $function from accessrules where objecttype='$objecttype' order by $function";
+    $result = mysql_query2($query);
 
 	$rows = mysql_num_rows($result); 
 	// negate access if no rule is present and not admin
 	if ($rows == 0 && $usersec_level != 50){
 		echo "<HTML>Access rules to this page ('$objecttype', Access type $operation) couldn't be located.<br>To access this page you need to have accesslevel 50</HTML>";
 		exit();
-	} 
-	
+	}
+
 	// consider all rules
 	$canAccess = false;
 	$sec_level = "";
