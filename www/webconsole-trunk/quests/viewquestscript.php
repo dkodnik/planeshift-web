@@ -62,7 +62,7 @@ function viewquestscript(){
 
     $questIsDisabled = ($line[8] &  PSQUEST_DISABLED_QUEST) ? "CHECKED=\"yes\"" : "";
     
-    echo "<FORM name=editquest action=index.php?page=questscript_actions METHOD=POST onsubmit=\"return checkFields()\" >";
+        echo "<FORM name=editquest action=index.php?page=questscript_actions METHOD=POST onsubmit=\"return checkFields()\" >";
 	echo "<INPUT TYPE=HIDDEN NAME=operation VALUE=updatequestscript>";
 	echo "<INPUT TYPE=HIDDEN NAME=id VALUE=$masterid>";
 	echo "<b>Quest script ID:</b> $masterid<BR>";

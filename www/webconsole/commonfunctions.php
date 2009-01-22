@@ -54,7 +54,7 @@ function DrawSelectBox($type, $selectName, $selectedID, $includeNULL = false) {
     $typevals["mesh"] = array("NULL" => '"0"', "query" => "SELECT MIN(id),CONCAT_WS(' - ', id, string) FROM common_strings WHERE common_strings.string Like '%#%' GROUP BY id");
     $typevals["loot"] = array("NULL" => '"0"', "query" => "SELECT id, name FROM loot_rules ORDER by name");
     $typevals["spawn"] = array("NULL" => '"0"', "query" => "SELECT id, name FROM npc_spawn_rules ORDER by name");
-    $typevals["sector"] = array("NULL" => '""', "query" => "SELECT name, name FROM sectors ORDER BY name");
+    $typevals["sector"] = array("NULL" => '""', "query" => "SELECT id, name FROM sectors ORDER BY name");
 
 // Now the $typevals array contains (five) smaller arrays.  We'll breakout the
 // values from the $typevals array and use these to determine how the rest
