@@ -36,6 +36,7 @@ function edititems($commit = 0) {
         echo '<FORM ACTION="index.php?page=edititemcommit&item=' . $_GET['item'] . '" method="POST"><TABLE BORDER="1"><TR><TD VALIGN="top">';
         $row = mysql_fetch_assoc($result);
 
+// Public books can be edited in-game and we should not be using this to edit any player's books or other creative_definition content in this manner.
         $unownedNonPublic = strpos(' ' . $row['creative_definition'], '<creative type="literature">');
 
         $creative_definition = strip_tags($row['creative_definition']);
@@ -60,7 +61,13 @@ function edititems($commit = 0) {
                $posttags = $posttags . $value;
                }
            else {
-               echo '<BR /><TEXTAREA NAME="creative_definition" ROWS="10" COLS="40">';
+               echo '<BR /><TEXTAREA NAME="creative_definition" ROWS="10" COLS="40"';
+               if ($unownedNonPublic) {
+                   echo '>';
+                   }
+               else {
+                   echo 'DISABLED READONLY>';
+                   }
                $cd_text = $value;
                $pretags = $posttags;
                $posttags = '';
