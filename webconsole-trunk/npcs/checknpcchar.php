@@ -7,14 +7,16 @@ function checknpcchar(){
   // extract all invulnerable NPC names
   $query = "select s.name, c.id, c.name, c.lastname, ra.name, ra.sex, description, r.response1";
   $query = $query . " from characters c, sectors s, npc_triggers t, npc_responses r, race_info ra ";
-  $query = $query . " where TRIM(CONCAT(c.name,' ',c.lastname))=t.area and s.id=c.loc_sector_id and t.id=r.id and c.racegender_id=ra.id ";
+  $query = $query . " where TRIM(CONCAT(c.name,' ',c.lastname))=t.area and s.id=c.loc_sector_id and t.id=r.trigger_id and c.racegender_id=ra.id ";
   $query = $query . " and t.trigger_text='about you' and c.character_type=1 and c.npc_impervious_ind='Y' and c.npc_spawn_rule!=0 ";
   $query = $query . " order by s.name, c.name;";
 
   $result = mysql_query2($query);
+
   $num = mysql_num_rows($result);
   
-  echo "<BR><b>Please use this page with care, everytime you refresh it, it does a lot of work on the database.</b><br><br>";
+  echo "<BR><b>Please use this page with care, everytime you refresh it, it does a lot of work on the database.</b><br>";
+  echo "<BR><b>Note that the NPCs without the basic triggers will not be displayed here. Use the report \"Check if NPCs have base triggers\" first.</b><BR><br>";
   echo "<b>Found $num NPCs</b><br><br>";
 
   echo "  <TABLE BORDER=1>";
