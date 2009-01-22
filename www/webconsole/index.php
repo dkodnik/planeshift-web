@@ -6,7 +6,7 @@ include ('config.php');
 include ('commonfunctions.php');
 
 
-$link = mysql_connect($db_hostname, $db_username, $db_password);
+$link = mysql_pconnect($db_hostname, $db_username, $db_password);
 mysql_select_db($db_name, $link);
 
 if (isset($_POST['autologin'])) {
@@ -272,6 +272,11 @@ if ($_SESSION['loggedin'] == 'yes' && (
                 listitems();
                 break;
 
+            case 'listitemicons':
+                include('./items/listitemicons.php');
+                listitemicons();
+                break;
+				
             case 'edititem';
                 include('./items/item_edit.php');
                 edititems();
@@ -339,6 +344,10 @@ if ($_SESSION['loggedin'] == 'yes' && (
             case 'faction_actions':
                 include('./factions/faction_actions.php');
                 faction_actions();
+                break;
+
+            case 'listnatural_resources':
+                include('./natural_resources/listnatural_resources.php');
                 break;
 
             case 'listnatural_resources':
