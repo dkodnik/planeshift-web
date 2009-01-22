@@ -66,6 +66,7 @@ function main_menu(){
         <TR><TD><A HREF="index.php?page=newbaseitem">Create a new Base Item </A></TD></TR>
         <TR><TD><a href="index.php?page=listitemsinstance">List items instances</a> on the ground </p></TD></TR>
         <TR><TD><a href="index.php?page=listitemcategories">List/Edit item categories</a></TD></TR>
+		<TR><TD><a href="index.php?page=listitemicons">List icons and meshes</a></TD></TR>
         </TABLE>
         <!--
         <p>List items owned by players (SettingAdmin)</p>
