@@ -26,14 +26,6 @@ function confirmDelete()
 
 <?PHP
 
-    include "config.php";
-
-    $link = mysql_connect($db_hostname,
-                          $db_username,
-                          $db_password);
-
-    mysql_select_db($db_name);
-
     $query = "select category_id, name from item_categories order by name";
     $result = mysql_query2($query);
 

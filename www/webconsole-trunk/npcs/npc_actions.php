@@ -890,7 +890,7 @@ function addtrigger(){
         // search next trigger id
         echo "type: $type<br>";
 
-        $query = "insert into npc_triggers values( '', \"$phrases[$j]\", $prior,  \"$area\")";
+        $query = "insert into npc_triggers (trigger_text,prior_response_required,area) values( \"$phrases[$j]\", $prior,  \"$area\")";
         echo "$query";
         $result = mysql_query2($query);
     } 
@@ -1072,7 +1072,7 @@ function edittrigger(){
     }else if ($subop == 'addphrase'){
         echo "triggerid: $triggerid<br>"; 
 
-        $query2 = "insert into npc_responses values('', '$triggerid', '$phrase','','','','','','','','','','','0')"; 
+        $query2 = "insert into npc_responses (trigger_id, response1) values( '$triggerid', '$phrase')"; 
         // echo "$query2";
         $result2 = mysql_query2($query2);
     }else{
