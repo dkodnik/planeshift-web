@@ -1,3 +1,6 @@
+*** 2009-02-28 by Stefano Angeleri
+WC  - Added a new WC developed by Eriroley
+
 *** 2009-01-01 by Stefano Angeleri
 WC  - Added world instance for items wrapped in []
 
