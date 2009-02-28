@@ -1,5 +1,10 @@
 *** 2009-02-28 by Stefano Angeleri
 WC  - Added a new WC developed by Eriroley
+      This wc is way better as it's more rationally tought, 
+      it's faster (uses less queries), it has some missing features which allows to reduce also
+      bandwidth usage and it's more updated
+      (no broken queries all around). It's even more clean in it's implementation. The controls are also
+      positioned in order to be easier and faster to use.
 
 *** 2009-01-01 by Stefano Angeleri
 WC  - Added world instance for items wrapped in []
