@@ -15,7 +15,7 @@ function view_accounts(){
 	else {
       $sql="select * from accounts ";
       if ($_POST["findaccount"] != "") {
-         $sql .= "WHERE username LIKE '%" . $_POST["findaccount"] . "%' ";
+         $sql .= "WHERE username = '" . $_POST["findaccount"] . "' ";
       }
       else
       {
@@ -74,7 +74,7 @@ function view_accounts(){
       if (!$_POST["findaccount"]) {
          $sql="select count(*) as cnt from accounts";
          if ($_POST["findaccount"] != "") {
-            $sql .= " WHERE username LIKE '%" . $_POST["findaccount"] . "%' ";
+            $sql .= " WHERE username = '" . $_POST["findaccount"] . "' ";
          }
          $query = mysql_query2($sql);
          $temp=mysql_fetch_array($query);

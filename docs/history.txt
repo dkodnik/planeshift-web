@@ -1,3 +1,7 @@
+*** 2009-03-30 by Andrew Dai
+WC - Removed LIKE wildcard matches from the accounts table as this was causing
+     live server delays of at least 15 minutes.
+
 *** 2009-02-28 by Stefano Angeleri
 WC  - Added a new WC developed by Eriroley
       This wc is way better as it's more rationally tought, 
