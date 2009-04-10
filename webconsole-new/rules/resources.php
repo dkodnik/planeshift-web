@@ -1,4 +1,4 @@
-<?
+<?php
 function listresources(){
   if (checkaccess('rules', 'read')){
     if (isset($_POST['commit']) && (checkaccess('rules', 'edit'))){

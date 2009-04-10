@@ -1,4 +1,4 @@
-<?
+<?php
 function rule_scripts(){
   if (checkaccess('rules', 'read')){
     if (isset($_POST['commit'])){

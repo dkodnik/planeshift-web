@@ -1,4 +1,4 @@
-<?
+<?php
   include('./../secure/db_config.php');
   include('./commonfunctions.php');
   SetUpDB("$db_hostname", "$db_username", "$db_password", "$db_name");
@@ -371,11 +371,29 @@
         craftingmain();
         editpattern();
         break;
+      case 'createpattern':
+        include('./crafting/craftingmain.php');
+        include('./crafting/patterns.php');
+        craftingmain();
+        createpattern();
+        break;
       case 'transform':
         include('./crafting/craftingmain.php');
         include('./crafting/transforms.php');
         craftingmain();
         edittransform();
+        break;
+      case 'createtransform':
+        include('./crafting/craftingmain.php');
+        include('./crafting/transforms.php');
+        craftingmain();
+        createtransform();
+        break;
+      case 'deletetransform':
+        include('./crafting/craftingmain.php');
+        include('./crafting/transforms.php');
+        craftingmain();
+        deletetransform();
         break;
       case 'process':
         include('./crafting/craftingmain.php');
@@ -392,31 +410,46 @@
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
     }
-  }else{
+  }
+  else
+  {
     echo '<div class="main">';
     echo "Server Information:<br/>\n";
-    exec("ps -eo user,etime,%mem,comm|grep psserver", $info);
-    if (count($info) == 0){
-      echo '<p class="error">ERROR: psserver does not appear to be running</p>';
-    }else{
-      foreach ($info as $i){
-        echo $i."<br/>\n";
-      }
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        echo "cannot display server status on Windows hosts.";
     }
-    echo "NPC Client Information:<br/>\n";
-    unset($info);
-    exec("ps -eo user,etime,%mem,comm|grep psnpcclient", $info);
-    if (count($info) == 0){
-      echo '<p class="error">ERROR: npcclient does not appear to be running</p>';
-    }else{
-      foreach ($info as $i){
-        echo $i."<br/>\n";
-      }
+    else 
+    {
+        exec("ps -eo user,etime,%mem,comm|grep psserver", $info);
+        if (count($info) == 0)
+        {
+            echo '<p class="error">ERROR: psserver does not appear to be running</p>';
+        }
+        else
+        {
+            foreach ($info as $i)
+            {
+                echo $i."<br/>\n";
+            }
+        }
+        echo "NPC Client Information:<br/>\n";
+        unset($info);
+        exec("ps -eo user,etime,%mem,comm|grep psnpcclient", $info);
+        if (count($info) == 0)
+        {
+            echo '<p class="error">ERROR: npcclient does not appear to be running</p>';
+        }
+        else
+        {
+            foreach ($info as $i){
+                echo $i."<br/>\n";
+            }
+        }
+        echo "Server Load:<br/>\n";
+        echo exec("uptime")."<br/>\n";
+        echo "Mysql Status:<br/>\n";
+        echo exec("mysqladmin status")."<br/>\n";
     }
-    echo "Server Load:<br/>\n";
-    echo exec("uptime")."<br/>\n";
-    echo "Mysql Status:<br/>\n";
-    echo exec("mysqladmin status")."<br/>\n";
   }
   echo "</div><hr/>This is Debugging Information Only: ".($_SESSION['totalq']);
   unset($_SESSION['totalq']);

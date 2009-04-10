@@ -1,4 +1,4 @@
-<?
+<?php
 function deleteitem(){
   if (checkaccess('items', 'delete')){
     if (isset($_GET['commit']) && isset($_POST['passd'])){
@@ -17,13 +17,13 @@ function deleteitem(){
         <SCRIPT language="javascript">
           document.location = "index.php?do=listitems";
         </script>
-<?
+<?php
       }else{
         echo '<p class="error">Password check failed - Did Not Delete item</p>';
         include('./items/listitems.php');
         $_GET['item'] = $id;
         listitems();
-	return;
+        return;
       }
     }else{
       $id = mysql_real_escape_string($_GET['item']);

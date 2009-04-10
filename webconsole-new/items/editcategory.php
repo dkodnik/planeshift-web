@@ -1,4 +1,4 @@
-<?
+<?php
 function editcategory(){
   if (checkaccess('items', 'create')){
     if (isset($_GET['commit'])){
@@ -10,7 +10,7 @@ function editcategory(){
     <SCRIPT language="javascript">
       document.location = "index.php?do=editcategory";
     </script>
-<?
+<?php
     exit;
     }else{
       $query = "SELECT category_id, name FROM item_categories ORDER BY name ASC";

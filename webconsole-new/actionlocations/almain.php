@@ -1,4 +1,4 @@
-<?
+<?php
 function almain(){
   if (checkaccess('als', 'read')){
     echo '<div class="menu_left">';

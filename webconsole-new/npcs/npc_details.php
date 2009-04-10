@@ -1,4 +1,4 @@
-<?
+<?php
 function npc_main(){
   if (checkaccess('npcs', 'edit')){
     if (isset($_GET['npc_id'])){

@@ -1,4 +1,4 @@
-<?
+<?php
 function editprocess(){
   if (checkaccess('crafting', 'read')){
     $id = mysql_real_escape_string($_GET['id']);

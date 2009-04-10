@@ -1,4 +1,4 @@
-<?
+<?php
 function spells(){
   if (checkaccess('rules', 'read')){
     if (checkaccess('rules', 'delete') && isset($_POST['commit']) && isset($_GET['way'])){
@@ -67,7 +67,7 @@ function spell(){
   if (checkaccess('rules', 'read')){
     if (isset($_GET['id'])){
       $id = mysql_real_escape_string($_GET['id']);
-      $query = "SELECT s.name, s.way_id, s.realm, s.caster_effect, s.target_effect, s.spell_description, s.offensive, s.progression_event, s.saved_progression_event, s.saving_throw, s.saving_throw_value, s.max_power, s.npc_spell_power, s.target_type, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
+      $query = "SELECT s.name, s.way_id, s.realm, s.casting_effect, s.spell_description, s.offensive, s.outcome, s.max_power, s.npc_spell_power, s.target_type, s.exclude_target, s.cast_duration, s.range, s.aoe_radius, s.aoe_angle, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
       if (checkaccess('rules', 'edit')){
@@ -75,27 +75,28 @@ function spell(){
           $name = mysql_real_escape_string($_POST['name']);
           $way_id = mysql_real_escape_string($_POST['way_id']);
           $realm = mysql_real_escape_string($_POST['realm']);
-          $caster_effect = mysql_real_escape_string($_POST['caster_effect']);
-          $target_effect = mysql_real_escape_string($_POST['target_effect']);
+          $casting_effect = mysql_real_escape_string($_POST['casting_effect']);
           $spell_description = mysql_real_escape_string($_POST['spell_description']);
           $offensive = mysql_real_escape_string($_POST['offensive']);
-          $progression_event = mysql_real_escape_string($_POST['progression_event']);
-          $saved_progression_event = mysql_real_escape_string($_POST['saved_progression_event']);
-          $saving_throw = mysql_real_escape_string($_POST['saving_throw']);
-          $saving_throw_value = mysql_real_escape_string($_POST['saving_throw_value']);
+          $outcome = mysql_real_escape_string($_POST['outcome']);
           $max_power = mysql_real_escape_string($_POST['max_power']);
           $npc_spell_power = mysql_real_escape_string($_POST['npc_spell_power']);
           $target_type=0;
           foreach ($_POST['tt'] AS $key => $value){
             $target_type += $value;
-          }
+          } 
+          $exclude_target = mysql_real_escape_string($_POST['exclude_target']);
+          $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
+          $range = mysql_real_escape_string($_POST['range']);
+          $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
+          $aoe_angle = mysql_real_escape_string($_POST['aoe_angle']);
           $image_name = mysql_real_escape_string($_POST['image_name']);
           $cstr_npc_spell_category = mysql_real_escape_string($_POST['cstr_npc_spell_category']);
           $pos0 = mysql_real_escape_string($_POST['position-0']);
           $pos1 = mysql_real_escape_string($_POST['position-1']);
           $pos2 = mysql_real_escape_string($_POST['position-2']);
           $pos3 = mysql_real_escape_string($_POST['position-3']);
-          $query = "UPDATE spells SET name='$name', way_id='$way_id', realm='$realm', caster_effect='$caster_effect', target_effect='$target_effect', spell_description='$spell_description', offensive='$offensive', progression_event='$progression_event', saved_progression_event='$saved_progression_event', saving_throw='$saving_throw', saving_throw_value='$saving_throw_value', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category' WHERE id='$id'";
+          $query = "UPDATE spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', exclude_target='$exclude_target', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_range='$aoe_range', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category' WHERE id='$id'";
           $result = mysql_query2($query);
           if ($pos0 == ''){
             $query = "DELETE FROM spell_glyphs WHERE spell_id='$id' AND position='0'";
@@ -141,8 +142,7 @@ function spell(){
             $i++;
           }
           echo '</select></td></tr>';
-          echo '<tr><td>Caster Effect:</td><td><input type="text" name="caster_effect" value="'.$row['caster_effect'].'" size="30"/></td></tr>';
-          echo '<tr><td>Target Effect:</td><td><input type="text" name="target_effect" value="'.$row['target_effect'].'" size="30"/></td></tr>';
+          echo '<tr><td>Casting Effect:</td><td><input type="text" name="casting_effect" value="'.$row['casting_effect'].'" size="30"/></td></tr>';
           echo '<tr><td>Description:</td><td><textarea name="spell_description" rows="4" cols="50">'.$row['spell_description'].'</textarea></td></tr>';
           echo '<tr><td>Offensive:</td><td><select name="offensive">';
           if ($row['offensive'] == '1'){
@@ -152,10 +152,7 @@ function spell(){
           }
           echo '</select></td></tr>';
           $prog_events = PrepSelect('cast_events');
-          echo '<tr><td>Progression Event</td><td>'.DrawSelectBox('cast_events', $prog_events, 'progression_event', $row['progression_event'], true).'</td></tr>';
-          echo '<tr><td>Saved Progression Event</td><td>'.DrawSelectBox('cast_events', $prog_events, 'saved_progression_event', $row['saved_progression_event'], true).'</td></tr>';
-          echo '<tr><td>Saving Throw</td><td><input type="text" name="saving_throw" value="'.$row['saving_throw'].'" size="30" /></td></tr>';
-          echo '<tr><td>Saving Throw Value</td><td><input type="text" name="saving_throw_value" value="'.$row['saving_throw_value'].'" size="30"/></td></tr>';
+          echo '<tr><td>Outcome</td><td>'.DrawSelectBox('cast_events', $prog_events, 'outcome', $row['outcome'], true).'</td></tr>';
           echo '<tr><td>Max Power</td><td><input type="text" name="max_power" value="'.$row['max_power'].'" size="30"/></td></tr>';
           echo '<tr><td>NPC Spell Power</td><td><input type="text" name="npc_spell_power" value="'.$row['npc_spell_power'].'" size="30" /></td></tr>';
           echo '<tr><td>Target Type</td><td>';
@@ -215,6 +212,11 @@ function spell(){
             echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1"/><br/>';
           }
           echo '</td></tr>';
+          echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="'.$row['exclude_target'].'" size="30" /></td></tr>';
+          echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="'.$row['cast_duration'].'" size="30" /></td></tr>';
+          echo '<tr><td>Range</td><td><input type="text" name="range" value="'.$row['range'].'" size="30" /></td></tr>';
+          echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="'.$row['aoe_radius'].'" size="30" /></td></tr>';
+          echo '<tr><td>Aoe Angle</td><td><input type="text" name="aoe_angle" value="'.$row['aoe_angle'].'" size="30" /></td></tr>';
           echo '<tr><td>Image Name</td><td><input type="text" name="image_name" value="'.$row['image_name'].'" size="30" /></td></tr>';
           $cstrings = PrepSelect('cstring');
           echo '<tr><td>NPC Spell Type</td><td>'.DrawSelectBox('cstring', $cstrings, 'cstr_npc_spell_category' ,$row['cstr']).'</td></tr>';
@@ -243,8 +245,7 @@ function spell(){
         echo '<tr><td>Name:</td><td>'.$row['name'].'</td></tr>';
         echo '<tr><td>Way:</td><td>'.$row['way'].'</td></tr>';
         echo '<tr><td>Realm:</td><td>'.$row['realm'].'</td></tr>';
-        echo '<tr><td>Caster Effect:</td><td>'.$row['caster_effect'].'</td></tr>';
-        echo '<tr><td>Target Effect:</td><td>'.$row['target_effect'].'</td></tr>';
+        echo '<tr><td>Casting Effect:</td><td>'.$row['casting_effect'].'</td></tr>';
         echo '<tr><td>Description:</td><td>'.$row['spell_description'].'</td></tr>';
         echo '<tr><td>Offensive:</td><td>';
         if ($row['offensive'] == '1'){
@@ -252,10 +253,7 @@ function spell(){
         }else{
           echo 'False</td></tr>';
         }
-        echo '<tr><td>Progression Event</td><td>'.$row['progression_event'].'</td></tr>';
-        echo '<tr><td>Saved Progression Event</td><td>'.$row['saved_progression_event'].'</td></tr>';
-        echo '<tr><td>Saving Throw</td><td>'.$row['saving_throw'].'</td></tr>';
-        echo '<tr><td>Saving Throw Value</td><td>'.$row['saving_throw_value'].'</td></tr>';
+        echo '<tr><td>Outcome</td><td>'.$row['outcome'].'</td></tr>';
         echo '<tr><td>Max Power</td><td>'.$row['max_power'].'</td></tr>';
         echo '<tr><td>NPC Spell Power</td><td>'.$row['npc_spell_power'].'</td></tr>';
         echo '<tr><td>Target Type</td><td>';
@@ -291,6 +289,11 @@ function spell(){
           }
         }
         echo '</td></tr>';
+        echo '<tr><td>Exclude Target</td><td>'.$row['exclude_target'].'</td></tr>';
+        echo '<tr><td>Cast Duration</td><td>'.$row['cast_duration'].'</td></tr>';
+        echo '<tr><td>Range</td><td>'.$row['range'].'</td></tr>';
+        echo '<tr><td>Aoe Radius</td><td>'.$row['aoe_radius'].'</td></tr>';
+        echo '<tr><td>Aoe Angle</td><td>'.$row['aoe_angle'].'</td></tr>';
         echo '<tr><td>Image Name</td><td>'.$row['image_name'].'</td></tr>';
         echo '<tr><td>NPC Spell Type</td><td>'.$row['cstr'].'</td></tr>';
         $query = "SELECT g.item_id, g.position, i.name FROM spell_glyphs AS g LEFT JOIN item_stats AS i ON i.id=g.item_id WHERE g.spell_id='$id' ORDER BY g.position";
@@ -325,14 +328,10 @@ function createspell(){
       $name = mysql_real_escape_string($_POST['name']);
       $way_id = mysql_real_escape_string($_POST['way_id']);
       $realm = mysql_real_escape_string($_POST['realm']);
-      $caster_effect = mysql_real_escape_string($_POST['caster_effect']);
-      $target_effect = mysql_real_escape_string($_POST['target_effect']);
+      $casting_effect = mysql_real_escape_string($_POST['casting_effect']);
       $spell_description = mysql_real_escape_string($_POST['spell_description']);
       $offensive = mysql_real_escape_string($_POST['offensive']);
-      $progression_event = mysql_real_escape_string($_POST['progression_event']);
-      $saved_progression_event = mysql_real_escape_string($_POST['saved_progression_event']);
-      $saving_throw = mysql_real_escape_string($_POST['saving_throw']);
-      $saving_throw_value = mysql_real_escape_string($_POST['saving_throw_value']);
+      $outcome = mysql_real_escape_string($_POST['outcome']);
       $max_power = mysql_real_escape_string($_POST['max_power']);
       $npc_spell_power = mysql_real_escape_string($_POST['npc_spell_power']);
       $target_type=0;
@@ -341,13 +340,18 @@ function createspell(){
           $target_type += $value;
         }
       }
+      $exclude_target = mysql_real_escape_string($_POST['exclude_target']);
+      $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
+      $range = mysql_real_escape_string($_POST['range']);
+      $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
+      $aoe_angle = mysql_real_escape_string($_POST['aoe_angle']);  
       $image_name = mysql_real_escape_string($_POST['image_name']);
       $cstr_npc_spell_category = mysql_real_escape_string($_POST['cstr_npc_spell_category']);
       $pos0 = mysql_real_escape_string($_POST['position-0']);
       $pos1 = mysql_real_escape_string($_POST['position-1']);
       $pos2 = mysql_real_escape_string($_POST['position-2']);
       $pos3 = mysql_real_escape_string($_POST['position-3']);
-      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', caster_effect='$caster_effect', target_effect='$target_effect', spell_description='$spell_description', offensive='$offensive', progression_event='$progression_event', saved_progression_event='$saved_progression_event', saving_throw='$saving_throw', saving_throw_value='$saving_throw_value', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
+      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', saving_throw='$saving_throw', saving_throw_value='$saving_throw_value', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', exclude_target='$exclude_target', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
       $result = mysql_query2($query);
       $query = "SELECT id FROM spells WHERE name='$name'";
       $result = mysql_query2($query);
@@ -393,17 +397,13 @@ function createspell(){
         $i++;
       }
       echo '</select></td></tr>';
-      echo '<tr><td>Caster Effect:</td><td><input type="text" name="caster_effect" size="30"/></td></tr>';
-      echo '<tr><td>Target Effect:</td><td><input type="text" name="target_effect"  size="30"/></td></tr>';
+      echo '<tr><td>Casting Effect:</td><td><input type="text" name="casting_effect" size="30"/></td></tr>';
       echo '<tr><td>Description:</td><td><textarea name="spell_description" rows="4" cols="50"></textarea></td></tr>';
       echo '<tr><td>Offensive:</td><td><select name="offensive">';
       echo '<option value="1" selected="true">True</option><option value="0">False</option>';
       echo '</select></td></tr>';
-      $prog_events = PrepSelect('cast_events');
-      echo '<tr><td>Progression Event</td><td>'.DrawSelectBox('cast_events', $prog_events, 'progression_event', '', true).'</td></tr>';
-      echo '<tr><td>Saved Progression Event</td><td>'.DrawSelectBox('cast_events', $prog_events, 'saved_progression_event', '', true).'</td></tr>';
-      echo '<tr><td>Saving Throw</td><td><input type="text" name="saving_throw" size="30" /></td></tr>';
-      echo '<tr><td>Saving Throw Value</td><td><input type="text" name="saving_throw_value" size="30"/></td></tr>';
+      $outcome = PrepSelect('cast_events');
+      echo '<tr><td>Outcome</td><td>'.DrawSelectBox('cast_events', $outcome, 'outcome', '', true).'</td></tr>';
       echo '<tr><td>Max Power</td><td><input type="text" name="max_power" size="30"/></td></tr>';
       echo '<tr><td>NPC Spell Power</td><td><input type="text" name="npc_spell_power" size="30" /></td></tr>';
       echo '<tr><td>Target Type</td><td>';
@@ -417,6 +417,12 @@ function createspell(){
       echo 'TARGET_NPC: <input type="checkbox" name="tt[]" value="2"/><br/>';
       echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1"/><br/>';
       echo '</td></tr>';
+      echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="'.$row['exclude_target'].'" size="30" /></td></tr>';
+      echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="'.$row['cast_duration'].'" size="30" /></td></tr>';
+      echo '<tr><td>Range</td><td><input type="text" name="range" value="'.$row['range'].'" size="30" /></td></tr>';
+      echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="'.$row['aoe_radius'].'" size="30" /></td></tr>';
+      echo '<tr><td>Aoe Range</td><td><input type="text" name="aoe_angle" value="'.$row['aoe_angle'].'" size="30" /></td></tr>';
+      
       echo '<tr><td>Image Name</td><td><input type="text" name="image_name" size="30" /></td></tr>';
       $cstrings = PrepSelect('cstring');
       echo '<tr><td>NPC Spell Type</td><td>'.DrawSelectBox('cstring', $cstrings, 'cstr_npc_spell_category' ,'').'</td></tr>';

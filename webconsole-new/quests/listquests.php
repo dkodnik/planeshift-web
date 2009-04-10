@@ -1,4 +1,4 @@
-<?
+<?php
 function listquests(){
   if(checkaccess('quests', 'read')){
     $query = 'SELECT id, name, category, player_lockout_time, quest_lockout_time, prerequisite FROM quests';

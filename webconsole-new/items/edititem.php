@@ -1,4 +1,4 @@
-<?
+<?php
 function edititem(){
   if (checkaccess('items','edit')){
     if (!isset($_GET['commit'])){
@@ -76,9 +76,8 @@ function edititem(){
         echo '<tr><td>spell_feature_timing</td><td><input type="text" name="spell_feature_timing" value="'.$row['spell_feature_timing'].'" /></td></tr>';
         echo '<tr><td>item_anim_id</td><td><input type="text" name="item_anim_id" value="'.$row['item_anim_id'].'"/></td></tr>';
         $script_result = PrepSelect('scripts');
-        echo '<tr><td>prg_evt_equip</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_equip' , $row['prg_evt_equip'], 'true').'</td></tr>';
-        echo '<tr><td>prg_evt_unequip</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_unequip' , $row['prg_evt_unequip'], 'true').'</td></tr>';
-        echo '<tr><td>prg_evt_consume</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_consume' , $row['prg_evt_consume'], 'true').'</td></tr>';
+        echo '<tr><td>equip_script</td><td>'.DrawSelectBox('scripts', $script_result, 'equip_script' , $row['equip_script'], 'true').'</td></tr>';
+        echo '<tr><td>consume_script</td><td>'.DrawSelectBox('scripts', $script_result, 'consume_script' , $row['consume_script'], 'true').'</td></tr>';
         echo '<tr><td>creative_definition</td><td>';
         if (strpos($row['flags'], "CREATIVE") !== FALSE){
         echo '<textarea name="creative_definition" rows="6" cols="50">'.$row['creative_definition'].'</textarea>';
@@ -198,12 +197,10 @@ function edititem(){
       $query = $query . "spell_feature_timing='$spell_feature_timing', ";
       $item_anim_id = mysql_real_escape_string($_POST['item_anim_id']);
       $query = $query . "item_anim_id='$item_anim_id', ";
-      $prg_evt_equip = mysql_real_escape_string($_POST['prg_evt_equip']);
-      $query = $query . "prg_evt_equip='$prg_evt_equip', ";
-      $prg_evt_unequip = mysql_real_escape_string($_POST['prg_evt_unequip']);
-      $query = $query . "prg_evt_unequip='$prg_evt_unequip', ";
-      $prg_evt_consume = mysql_real_escape_string($_POST['prg_evt_consume']);
-      $query = $query . "prg_evt_consume='$prg_evt_consume', ";
+      $equip_script = mysql_real_escape_string($_POST['equip_script']);
+      $query = $query . "equip_script='$equip_script', ";
+      $consume_script = mysql_real_escape_string($_POST['consume_script']);
+      $query = $query . "consume_script='$consume_script', ";
       $creative_definition = mysql_real_escape_string($_POST['creative_definition']);
       $query = $query . "creative_definition='$creative_definition', ";
       $max_charges = mysql_real_escape_string($_POST['max_charges']);
@@ -214,9 +211,9 @@ function edititem(){
       $result = mysql_query2($query);
 ?>
     <SCRIPT language="javascript">
-      document.location = "index.php?do=listitems&item=<?echo $id?>";
+      document.location = "index.php?do=listitems&item=<?php echo $id?>";
     </script>
-<?
+<?php
       exit;
     }
   }else{

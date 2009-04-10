@@ -1,4 +1,4 @@
-<?
+<?php
 function listlootrules(){
   if (checkaccess('npcs', 'read')){
     $query = 'SELECT id, name FROM loot_rules';

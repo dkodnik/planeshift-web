@@ -1,4 +1,4 @@
-<?
+<?php
 function synonyms(){
   if (checkaccess('npcs', 'read')){
     if (isset($_POST['commit'])){

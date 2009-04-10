@@ -1,4 +1,4 @@
-<?
+<?php
 function listmerchant(){
   if (checkaccess('npcs', 'read')){
     $query = 'SELECT category_id, name FROM item_categories';

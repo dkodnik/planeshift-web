@@ -1,4 +1,4 @@
-<?
+<?php
 function ka_trigger(){
   if (checkaccess('npcs', 'read')){
     $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";

@@ -1,4 +1,4 @@
-<?
+<?php
 function ka_scripts(){
   if (checkaccess('npcs', 'read')){
     if (!isset($_GET['sub'])){
