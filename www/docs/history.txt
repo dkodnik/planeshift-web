@@ -1,3 +1,33 @@
+*** 2009-04-10 by Stefano Angeleri
+WC - commonfunctions::mysql_query2 changed timezone to UTC rather that using system 
+     default (which varies between hosts, and generates warnings in PHP
+     change all <? into <?php  (some servers may confuse <? with <?ASP or 
+     just not recognise it at all. Added  a check to see if the host is running windows, 
+     if it is, no server status will be printed. (since ps is not a valid windows command)
+     create item: added checks to see if some of the fields that are of the "real" type 
+     in the database are not filled in. If they are not filled in, we don't want 
+     to sent them to the database either, since the default value of '0.0' works fine, 
+     but sending an empty string returns an error.
+
+     updated all queries (where needed) to work on the HEAD database. (see for more details below)
+
+     NPC: list_spawn_rules       cstr_id_spawn_sector   changed to   sector_id
+     item: locate items  -- put $iid in '' quotes, without this you can get an "unknown column" 
+     error from mysql if the input isn't numeric rather than just returning "0 matches"
+     rules: list spells & glyphs used, SQL: removed saved_progression_event, 
+     saving_throw, saving_throw_value, target_effect. Changed caster_effect 
+     to casting_effect, changed progression_event to outcome.
+
+     spells: added exclude_target, cast_duration, range, aoe_radius, aoe_angle sql fields in all forms
+     edit_item.php, create_item.php  deleted prg_evt_unequip and changed prg_evt_equip
+     to equip_script and prg_evt_consume to consume_script SQL fields in all forms
+     locate_item.php  added fields in the forms for the loc_xrot and loc_zrot sql fields.
+     rules/factions.php, added the "faction_character" field
+
+     Added a "create new transformation" link in "edit pattern" and and 
+     in the main menu. Added the new transformation form.
+     Added a "delete transformation" link in the "edit transformation" menu.
+
 *** 2009-03-30 by Andrew Dai
 WC - Removed LIKE wildcard matches from the accounts table as this was causing
      live server delays of at least 15 minutes.
