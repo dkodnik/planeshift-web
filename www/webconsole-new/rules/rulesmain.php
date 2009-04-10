@@ -1,4 +1,4 @@
-<?
+<?php
 function rulesmain(){
   if (checkaccess('rules', 'read')){
     echo '<div class="menu_left">';

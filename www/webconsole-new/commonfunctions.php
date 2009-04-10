@@ -1,4 +1,4 @@
-<?
+<?php
 /*mysql_query2() calls mysql_query and dies with a failure message if there
 are any mysql errors*/
 function mysql_query2($a, $log=true){
@@ -13,6 +13,7 @@ function mysql_query2($a, $log=true){
     if (strcasecmp($foo[0], 'SELECT') != 0){
       $foo = mysql_real_escape_string($a);
       $user = mysql_real_escape_string($_SESSION['username']);
+      date_default_timezone_set('UTC');
       $date = date("Y-m-d H:i:s");
       $query = "INSERT INTO wc_cmdlog (username, query, date) VALUES ('$user', '$foo', '$date')";
       mysql_query2($query, false);
@@ -182,6 +183,8 @@ function PrepSelect($a){
   $typevals["glyphs"] = "SELECT id, name FROM item_stats WHERE category_id='5' ORDER BY name";
   $typevals["locations"] = "SELECT id, name FROM sc_locations ORDER BY name";
   $typevals["process"] = "SELECT process_id, name FROM trade_processes ORDER BY name";
+  $typevals["patterns"] = "SELECT id, pattern_name FROM trade_patterns ORDER BY pattern_name";
+  $typevals["mind_slot_items"] = "SELECT id, name FROM item_stats WHERE stat_type='B' AND valid_slots LIKE '%MIND%' ORDER BY name";
 
   $query = $typevals[$type];
 
@@ -211,6 +214,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["glyphs"] = '""';
   $typevals["locations"] = '"-1"';
   $typevals["process"] = '""';
+  $typevals["patterns"] = '""';
 
 
   $nullval = $typevals[$type];

@@ -1,4 +1,4 @@
-<?
+<?php
 function alsector(){
   if (checkaccess('als', 'read')){
     $query = "SELECT name FROM sectors ORDER BY name";

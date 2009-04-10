@@ -1,4 +1,4 @@
-<?
+<?php
 function deletequest(){
   if (checkaccess('quests', 'delete')){
     if (!isset($_GET['id'])){

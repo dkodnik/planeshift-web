@@ -1,4 +1,4 @@
-<?
+<?php
 function listitems(){
   if(checkaccess('items', 'read')){
     $query = 'SELECT category_id, name FROM item_categories ORDER BY name';

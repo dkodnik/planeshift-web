@@ -1,4 +1,4 @@
-<?
+<?php
 function npc_search(){
   if (checkaccess('npcs', 'read')){
     if (isset($_POST['commit'])){

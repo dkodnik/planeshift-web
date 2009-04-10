@@ -1,4 +1,4 @@
-<?
+<?php
 function createquest(){
   if(checkaccess('quests','create')){
     if(!isset($_GET['commit'])){
@@ -28,7 +28,7 @@ function createquest(){
     <SCRIPT language="javascript">
       document.location = "index.php?do=editquest&id=<?echo $id?>";
     </script>
-<?
+<?php
     exit;
     }
   }else{

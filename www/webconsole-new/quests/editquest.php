@@ -1,4 +1,4 @@
-<?
+<?php
 function editquest(){
   if(checkaccess('quests', 'read')){
     if(!isset($_GET['id'])){

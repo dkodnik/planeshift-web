@@ -1,4 +1,4 @@
-<?
+<?php
 
 function listpatterns(){
   if (checkaccess('crafting', 'read')){
@@ -98,6 +98,7 @@ function editpattern(){
         echo '</tr>';
       }
       echo '</table>';
+      echo '<a href="./index.php?do=createtransform&amp;id='.$pattern_id.'">Create new transform for this pattern </a><br />';
       echo '<p class="bold">Available Combinations</p>';
       $Alt = FALSE;
       $item = -1;
@@ -135,6 +136,40 @@ function editpattern(){
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
+}
+
+function createpattern() 
+{
+    if (checkaccess('crafting','create') && isset($_POST['commit']) && ($_POST['commit']=='Create Pattern')) // submit pattern
+    {
+        $pattern_name = mysql_real_escape_string($_POST['pattern_name']);
+        $group_id = mysql_real_escape_string($_POST['group_id']);
+        $designitem_id = mysql_real_escape_string($_POST['designitem_id']);
+        $k_factor = mysql_real_escape_string($_POST['k_factor']);
+        $description = mysql_real_escape_string($_POST['description']);
+        $query = "INSERT INTO trade_patterns (pattern_name, group_id, designitem_id, k_factor, description) VALUES ('$pattern_name', '$group_id', '$designitem_id', '$k_factor', '$description')";
+        mysql_query2($query);
+        echo '<p class="error">Pattern added succesfully</a>';
+        unset($_POST);
+        createpattern();
+    }
+    elseif (checkaccess('crafting','create'))
+    {
+        echo '<p class="bold">Create Pattern</p>'."\n"; // new pattern
+        echo '<form action="./index.php?do=createpattern" method="post" /><table>';
+        echo '<tr><td>Pattern Name</td><td><input type="text" name="pattern_name" /> </td></tr>';
+        echo '<tr><td>Group id</td><td><input type="text" name="group_id" /> </td></tr>';
+        $items_results = PrepSelect('mind_slot_items');
+        echo '<tr><td>Design Item </td><td>'.DrawSelectBox('items', $items_results, 'designitem_id', '', false).'</td></tr>';
+        echo '<tr><td>Difficulty Factor</td><td><input type="text" name="k_factor" /> </td></tr>';
+        echo '<tr><td>Description</td><td><textarea name="description" rows="5" cols="40"></textarea> </td></tr>';
+        echo '<tr><td></td><td><input type=submit name="commit" value="Create Pattern"/></td></tr>';
+        echo '</table></form>'."\n";
+    }
+    else
+    {
+        echo '<p class="error">You do not have the required access to create a pattern.</a>';
+    }
 }
 
 ?>

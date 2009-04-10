@@ -1,4 +1,4 @@
-<?
+<?php
 function listwaypoints(){
   if (checkaccess('rules', 'read')){
     if (isset($_POST['commit']) && checkaccess('rules', 'edit')){

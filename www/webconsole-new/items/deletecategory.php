@@ -1,4 +1,4 @@
-<?
+<?php
 function deletecategory(){
   if (checkaccess('items', 'delete')){
     if (isset($_GET['id'])){

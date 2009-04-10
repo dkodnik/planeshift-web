@@ -1,4 +1,4 @@
-<?
+<?php
 //This is the main quest page - gives options for displaying/editing quests
 
 function npcmain(){

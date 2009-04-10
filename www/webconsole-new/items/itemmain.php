@@ -1,4 +1,4 @@
-<?
+<?php
 function itemmain(){
   if (checkaccess('items', 'read')){
     echo '<div class="menu_left">'."\n";

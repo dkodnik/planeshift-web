@@ -1,4 +1,4 @@
-<?
+<?php
 function listnpcs($a, $b = NULL){
   if (checkaccess('npcs', 'read')){
     echo '<table border="1">';

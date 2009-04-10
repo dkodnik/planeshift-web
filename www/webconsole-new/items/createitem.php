@@ -1,4 +1,4 @@
-<?
+<?php
 function createitem(){
   if (checkaccess('items', 'create')){
     if (isset($_GET['commit']) && isset($_POST['name'])){
@@ -54,17 +54,17 @@ function createitem(){
         $cols = $cols . ', decay_rate';
         $values = $values . ", '$decay_rate'";
       }
-      if (isset($_POST['item_skill_id_1'])){
+      if (isset($_POST['item_skill_id_1']) && trim($_POST['item_skill_id_1']) != ""){
         $item_skill_id_1 = mysql_real_escape_string($_POST['item_skill_id_1']);
         $cols = $cols . ', item_skill_id_1';
         $values = $values . ", '$item_skill_id_1'";
       }
-      if (isset($_POST['item_skill_id_2'])){
+      if (isset($_POST['item_skill_id_2']) && trim($_POST['item_skill_id_2']) != ""){
         $item_skill_id_2 = mysql_real_escape_string($_POST['item_skill_id_2']);
         $cols = $cols . ', item_skill_id_2';
         $values = $values . ", '$item_skill_id_2'";
       }
-      if (isset($_POST['item_skill_id_3'])){
+      if (isset($_POST['item_skill_id_3']) && trim($_POST['item_skill_id_3']) != ""){
         $item_skill_id_3 = mysql_real_escape_string($_POST['item_skill_id_3']);
         $cols = $cols . ', item_skill_id_3';
         $values = $values . ", '$item_skill_id_3'";
@@ -84,62 +84,62 @@ function createitem(){
         $cols = $cols . ', item_bonus_3_attr';
         $values = $values . ", '$item_bonus_3_attr'";
       }
-      if (isset($_POST['item_bonus_1_max'])){
+      if (isset($_POST['item_bonus_1_max']) && trim($_POST['item_bonus_1_max']) != ""){
         $item_bonus_1_max = mysql_real_escape_string($_POST['item_bonus_1_max']);
         $cols = $cols . ', item_bonus_1_max';
         $values = $values . ", '$item_bonus_1_max'";
       }
-      if (isset($_POST['item_bonus_2_max'])){
+      if (isset($_POST['item_bonus_2_max']) && trim($_POST['item_bonus_2_max']) != ""){
         $item_bonus_2_max = mysql_real_escape_string($_POST['item_bonus_2_max']);
         $cols = $cols . ', item_bonus_2_max';
         $values = $values . ", '$item_bonus_2_max'";
       }
-      if (isset($_POST['item_bonus_3_max'])){
+      if (isset($_POST['item_bonus_3_max']) && trim($_POST['item_bonus_3_max']) != ""){
         $item_bonus_3_max = mysql_real_escape_string($_POST['item_bonus_3_max']);
         $cols = $cols . ', item_bonus_3_max';
         $values = $values . ", '$item_bonus_3_max'";
       }
-      if (isset($_POST['dmg_slash'])){
+      if (isset($_POST['dmg_slash']) && trim($_POST['dmg_slash']) != ""){
         $dmg_slash = mysql_real_escape_string($_POST['dmg_slash']);
         $cols = $cols . ', dmg_slash';
         $values = $values . ", '$dmg_slash'";
       }
-      if (isset($_POST['dmg_blunt'])){
+      if (isset($_POST['dmg_blunt']) && trim($_POST['dmg_blunt']) != ""){
         $dmg_blunt = mysql_real_escape_string($_POST['dmg_blunt']);
         $cols = $cols . ', dmg_blunt';
-        $values = $values . ", '$smg_blunt'";
+        $values = $values . ", '$dmg_blunt'";
       }
-      if (isset($_POST['dmg_pierce'])){
+      if (isset($_POST['dmg_pierce']) && trim($_POST['dmg_pierce']) != ""){
         $dmg_pierce = mysql_real_escape_string($_POST['dmg_pierce']);
         $cols = $cols . ', dmg_pierce';
         $values = $values . ", '$dmg_pierce'";
       }
-      if (isset($_POST['weapon_speed'])){
+      if (isset($_POST['weapon_speed']) && trim($_POST['weapon_speed']) != ""){
         $weapon_speed = mysql_real_escape_string($_POST['weapon_speed']);
         $cols = $cols . ', weapon_speed';
         $values = $values . ", '$weapon_speed'";
       }
-      if (isset($_POST['weapon_penetration'])){
+      if (isset($_POST['weapon_penetration']) && trim($_POST['weapon_penetration']) != ""){
         $weapon_penetration = mysql_real_escape_string($_POST['weapon_penetration']);
         $cols = $cols . ', weapon_penetration';
         $values = $values . ", '$weapon_penetration'";
       }
-      if (isset($_POST['weapon_block_targeted'])){
+      if (isset($_POST['weapon_block_targeted'])  && trim($_POST['weapon_block_targeted']) != ""){
         $weapon_block_targeted = mysql_real_escape_string($_POST['weapon_block_targeted']);
         $cols = $cols . ', weapon_block_targeted';
         $values = $values . ", '$weapon_block_targeted'";
       }
-      if (isset($_POST['weapon_block_untargeted'])){
+      if (isset($_POST['weapon_block_untargeted']) && trim($_POST['weapon_block_untargeted']) != ""){
         $weapon_block_untargeted = mysql_real_escape_string($_POST['weapon_block_untargeted']);
         $cols = $cols . ', weapon_block_untargeted';
         $values = $values . ", '$weapon_block_untargeted'";
       }
-      if (isset($_POST['weapon_counterblock'])){
+      if (isset($_POST['weapon_counterblock']) && trim($_POST['weapon_counterblock']) != ""){
         $weapon_counterblock = mysql_real_escape_string($_POST['weapon_counterblock']);
         $cols = $cols . ', weapon_counterblock';
         $values = $values . ", '$weapon_counterblock'";
       }
-      if (isset($_POST['armor_hardness'])){
+      if (isset($_POST['armor_hardness']) && trim($_POST['armor_hardness']) != ""){
         $armor_hardness = mysql_real_escape_string($_POST['armor_hardness']);
         $cols = $cols . ', armor_hardness';
         $values = $values . ", '$armor_hardness'";
@@ -189,7 +189,7 @@ function createitem(){
         $cols = $cols . ', requirement_1_name';
         $values = $values . ", '$requirement_1_name'";
       }
-      if (isset($_POST['requirement_1_value'])){
+      if (isset($_POST['requirement_1_value']) && trim($_POST['requirement_1_value']) != ""){
         $requirement_1_value = mysql_real_escape_string($_POST['requirement_1_value']);
         $cols = $cols . ', requirement_1_value';
         $values = $values . ", '$requirement_1_value'";
@@ -199,7 +199,7 @@ function createitem(){
         $cols = $cols . ', requirement_2_name';
         $values = $values . ", '$requirement_2_name'";
       }
-      if (isset($_POST['requirement_2_value'])){
+      if (isset($_POST['requirement_2_value']) && trim($_POST['requirement_2_value']) != ""){
         $requirement_2_value = mysql_real_escape_string($_POST['requirement_2_value']);
         $cols = $cols . ', requirement_2_value';
         $values = $values . ", '$requirement_2_value'";
@@ -209,7 +209,7 @@ function createitem(){
         $cols = $cols . ', requirement_3_name';
         $values = $values . ", '$requirement_3_name'";
       }
-      if (isset($_POST['requirement_3_value'])){
+      if (isset($_POST['requirement_3_value']) && trim($_POST['requirement_3_value']) != ""){
         $requirement_3_value = mysql_real_escape_string($_POST['requirement_3_value']);
         $cols = $cols . ', requirement_3_value';
         $values = $values . ", '$requirement_3_value'";
@@ -224,7 +224,7 @@ function createitem(){
         $cols = $cols . ', spell_id_on_hit';
         $values = $values . ", '$spell_id_on_hit'";
       }
-      if (isset($_POST['spell_on_hit_prob'])){
+      if (isset($_POST['spell_on_hit_prob']) && trim($_POST['spell_on_hit_prob']) != ""){
         $spell_on_hit_prob = mysql_real_escape_string($_POST['spell_on_hit_prob']);
         $cols = $cols . ', spell_on_hit_prob';
         $values = $values . ", '$spell_on_hit_prob'";
@@ -249,20 +249,15 @@ function createitem(){
         $cols = $cols . ', item_anim_id';
         $values = $values . ", '$item_anim_id'";
       }
-      if (isset($_POST['prg_evt_equip'])){
-        $prg_evt_equip = mysql_real_escape_string($_POST['prg_evt_equip']);
-        $cols = $cols . ', prg_evt_equip';
-        $values = $values . ", '$prg_evt_equip'";
+      if (isset($_POST['equip_script'])){
+        $equip_script = mysql_real_escape_string($_POST['equip_script']);
+        $cols = $cols . ', equip_script';
+        $values = $values . ", '$equip_script'";
       }
-      if (isset($_POST['prg_evt_unequip'])){
-        $prg_evt_unequip = mysql_real_escape_string($_POST['prg_evt_unequip']);
-        $cols = $cols . ', prg_evt_unequip';
-        $values = $values . ", '$prg_evt_unequip'";
-      }
-      if (isset($_POST['prg_evt_consume'])){
-        $prg_evt_consume = mysql_real_escape_string($_POST['prg_evt_consume']);
-        $cols = $cols . ', prg_evt_consume';
-        $values = $values . ", '$prg_evt_consume'";
+      if (isset($_POST['consume_script'])){
+        $consume_script = mysql_real_escape_string($_POST['consume_script']);
+        $cols = $cols . ', consume_script';
+        $values = $values . ", '$consume_script'";
       }
       if (isset($_POST['creative_definition'])){
         $creative_definition = mysql_real_escape_string($_POST['creative_definition']);
@@ -274,7 +269,7 @@ function createitem(){
         $cols = $cols . ', max_charges';
         $values = $values . ", '$max_charges'";
       }
-      if (isset($_POST['weapon_range'])){
+      if (isset($_POST['weapon_range']) && trim($_POST['weapon_range']) != ""){
         $weapon_range = mysql_real_escape_string($_POST['weapon_range']);
         $cols = $cols . ', weapon_range';
         $values = $values . ", '$weapon_range'";
@@ -349,9 +344,8 @@ function createitem(){
       echo '<tr><td>spell_feature_timing</td><td><input type="text" name="spell_feature_timing" /></td></tr>';
       echo '<tr><td>item_anim_id</td><td><input type="text" name="item_anim_id" /></td></tr>';
       $script_result = PrepSelect('scripts');
-      echo '<tr><td>prg_evt_equip</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_equip' , '', 'true').'</td></tr>';
-      echo '<tr><td>prg_evt_unequip</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_unequip' , '', 'true').'</td></tr>';
-      echo '<tr><td>prg_evt_consume</td><td>'.DrawSelectBox('scripts', $script_result, 'prg_evt_consume' , '', 'true').'</td></tr>';
+      echo '<tr><td>equip_script</td><td>'.DrawSelectBox('scripts', $script_result, 'equip_script' , '', 'true').'</td></tr>';
+      echo '<tr><td>consume_script</td><td>'.DrawSelectBox('scripts', $script_result, 'consume_script' , '', 'true').'</td></tr>';
       echo '<tr><td>creative_definition</td><td>';
       echo '<textarea name="creative_definition" rows="6" cols="50"></textarea>';
       echo '</td></tr>';

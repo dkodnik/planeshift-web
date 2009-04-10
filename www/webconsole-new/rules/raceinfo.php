@@ -1,4 +1,4 @@
-<?
+<?php
 function raceinfo(){
   if (checkaccess('rules','read')){
     if (checkaccess('rules', 'edit') && isset($_POST['commit'])){

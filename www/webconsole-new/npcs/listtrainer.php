@@ -1,4 +1,4 @@
-<?
+<?php
 function listtrainer(){
   if (checkaccess('npcs', 'read')){
     $query = "SELECT skill_id, name FROM skills";

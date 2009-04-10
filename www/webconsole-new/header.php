@@ -1,4 +1,4 @@
-<?
+<?php
   $time1 = microtime(true);
 ?><!DOCTYPE html
 	PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -9,7 +9,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="./global.css" />
 <title>PlaneShift - Administrator Console
-<?
+<?php
   if (isset($header))
     echo ": $Header";
 ?>
