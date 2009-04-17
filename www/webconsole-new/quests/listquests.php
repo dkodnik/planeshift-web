@@ -33,6 +33,7 @@ function listquests(){
       echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td><td>'.$row['player_lockout_time'];
       echo '</td><td>'.$row['quest_lockout_time'].'</td><td>'.htmlspecialchars($row['prerequisite']).'</td><td>';
       echo '<a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';
+      echo '<br /><a href="./index.php?do=validatequest&amp;id='.$row['id'].'">Validate</a>';
       if (checkaccess('quests', 'edit')){
         echo '<br/><a href="./index.php?do=editquest&amp;id='.$row['id'].'">Edit</a>';
       }
