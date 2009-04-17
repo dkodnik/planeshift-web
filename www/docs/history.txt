@@ -1,3 +1,15 @@
+*** 2009-04-17 by Stefano Angeleri
+WC - minor bugfixes in patterns.php
+     added combinations.php (edit combination allows you to add/remove parts of the combination with edit rights)                           
+     Added create/edit/delete combination.
+     Added Delete pattern.
+     Added List/Create/delete process
+     Fixed Edit process
+     added list process to the menu and added links to add processes in the listing, 
+     and add subprocess links in the "view process" part that already
+     existed when you click on a process name.
+     added the quest validator (linked in "list quests")
+
 *** 2009-04-10 by Stefano Angeleri
 WC - commonfunctions::mysql_query2 changed timezone to UTC rather that using system 
      default (which varies between hosts, and generates warnings in PHP
