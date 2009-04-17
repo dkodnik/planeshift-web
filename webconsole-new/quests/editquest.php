@@ -41,7 +41,7 @@ function editquest(){
     <SCRIPT language="javascript">
       document.location = "index.php?do=listquests";
     </script>
-<?
+<?php
     exit;
     }
   }else{

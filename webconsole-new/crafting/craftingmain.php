@@ -5,6 +5,7 @@ function craftingmain(){
   if (checkaccess('crafting', 'read')){
     echo '<div class="menu_left">';
     echo '<a href="./index.php?do=listpatterns">List Patterns</a> <br/>';
+    echo '<a href="./index.php?do=listprocess">List Process</a> <br/>';
     echo '<a href="./index.php?do=createtransform">Create Transform</a> <br/>';
     echo '<a href="./index.php?do=createpattern">Create Pattern</a> <br/>';
     echo '<hr/><a href="./index.php">Return to main page.</a>';

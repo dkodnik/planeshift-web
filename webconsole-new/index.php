@@ -79,6 +79,12 @@
         questmain();
         readquest();
         break;
+      case 'validatequest':
+        include('./quests/questmain.php');
+        include('./quests/validatequest.php');
+        questmain();
+        validatequest();
+        break;
       case 'editquest':
         include('./quests/questmain.php');
         include('./quests/editquest.php');
@@ -377,6 +383,30 @@
         craftingmain();
         createpattern();
         break;
+      case 'deletepattern':
+        include('./crafting/craftingmain.php');
+        include('./crafting/patterns.php');
+        craftingmain();
+        deletepattern();
+        break;
+      case 'editcombine':
+        include('./crafting/craftingmain.php');
+        include('./crafting/combines.php');
+        craftingmain();
+        editcombine();
+        break;
+      case 'createcombine':
+        include('./crafting/craftingmain.php');
+        include('./crafting/combines.php');
+        craftingmain();
+        createcombine();
+        break;
+      case 'deletecombine':
+        include('./crafting/craftingmain.php');
+        include('./crafting/combines.php');
+        craftingmain();
+        deletecombine();
+        break;
       case 'transform':
         include('./crafting/craftingmain.php');
         include('./crafting/transforms.php');
@@ -395,6 +425,12 @@
         craftingmain();
         deletetransform();
         break;
+      case 'listprocess':
+        include('./crafting/craftingmain.php');
+        include('./crafting/process.php');
+        craftingmain();
+        listprocess();
+        break;
       case 'process':
         include('./crafting/craftingmain.php');
         include('./crafting/process.php');
@@ -406,6 +442,18 @@
         include('./crafting/process.php');
         craftingmain();
         editsubprocess();
+        break;
+      case 'createprocess':
+        include('./crafting/craftingmain.php');
+        include('./crafting/process.php');
+        craftingmain();
+        createprocess();
+        break;
+      case 'deleteprocess':
+        include('./crafting/craftingmain.php');
+        include('./crafting/process.php');
+        craftingmain();
+        deleteprocess();
         break;
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
