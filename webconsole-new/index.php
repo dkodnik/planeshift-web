@@ -305,7 +305,7 @@
         include('./rules/rulesmain.php');
         include('./rules/mscripts.php');
         rulesmain();
-        rule_scripts();
+        rule_mscripts();
         break;
       case 'spells':
         include('./rules/rulesmain.php');
