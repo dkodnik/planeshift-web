@@ -37,10 +37,10 @@ function npc_main(){
         echo '<tr><td>Base Mana (0 for auto-calc)</td><td><input type="text" name="base_mana_max" value="'.$row['base_mana_max'].'" size="7" /></td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         echo '<tr><td>Invulnerable</td><td>';
-        if ($row['npc_impervious_ind'] == 1){
-          echo '<select name="npc_impervious_ind"><option value="0">False</option><option value="1" selected="true">True</option></select>';
+        if ($row['npc_impervious_ind'] == "Y"){
+          echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="true">True</option></select>';
         }else{
-          echo '<select name="npc_impervious_ind"><option value="0" selected="true">False</option><option value="1">True</option></select>';
+          echo '<select name="npc_impervious_ind"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
         }
         echo '</td></tr>';
         echo '<tr><td>Experiance</td><td><input type="text" name="kill_exp" value="'.$row['kill_exp'].'" size="7" /></td></tr>';
@@ -105,7 +105,7 @@ function npc_main(){
         $query2 = "UPDATE sc_npc_definitions SET npctype='$sc_npctype', region='$sc_region' WHERE char_id='$id'";
         $result = mysql_query2($query);
         $result = mysql_query2($query2);
-        echo '<p class="error">Update Successfule</p>';
+        echo '<p class="error">Update Successful</p>';
         unset($_POST);
         npc_main();
       }
