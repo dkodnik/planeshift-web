@@ -113,8 +113,8 @@ function rule_scripts(){
         echo '<p class="error">No Scripts Found</p>';
       }
       if (checkaccess('rules', 'create')){
-        echo '<hr/><p>Create New progression script</p>';
-        echo '<form action="index.php?do=scripts" method="post">Name:<input type="text" name="name" /><br/>';
+        echo '<hr/><p>Create new progression script</p>';
+        echo '<form action="index.php?do=scripts" method="post">Name: <input type="text" name="name" /><br/>';
         echo 'Script: <textarea name="event_script" rows="3" cols="45"></textarea><br/>';
         if (isset($_GET['type'])){
           echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
