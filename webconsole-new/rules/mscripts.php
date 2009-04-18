@@ -56,18 +56,18 @@ function rule_mscripts(){
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
           echo '<tr>';
           if (checkaccess('rules', 'edit')){
-            echo '<td><form action="index.php?do=scripts" method="post">';
+            echo '<td><form action="index.php?do=mscripts" method="post">';
             if (isset($_GET['type'])){
               echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
             }
             echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
-            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+            echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
             if (isset($_GET['type'])){
               echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
             }
             echo '<textarea name="math_script" rows="3" cols="45">'.$row['math_script'].'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
             if (checkaccess('rules', 'delete')){
-            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+            echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
               if (isset($_GET['type'])){
                 echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
               }
@@ -84,8 +84,8 @@ function rule_mscripts(){
         echo '<p class="error">No Scripts Found</p>';
       }
       if (checkaccess('rules', 'create')){
-        echo '<hr/><p>Create New progression script</p>';
-        echo '<form action="index.php?do=scripts" method="post">Name:<input type="text" name="name" /><br/>';
+        echo '<hr/><p>Create new math script</p>';
+        echo '<form action="index.php?do=mscripts" method="post">Name: <input type="text" name="name" /><br/>';
         echo 'Script: <textarea name="math_script" rows="3" cols="45"></textarea><br/>';
         if (isset($_GET['type'])){
           echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
