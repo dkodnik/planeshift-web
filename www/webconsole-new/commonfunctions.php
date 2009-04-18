@@ -55,7 +55,7 @@ function CheckLogin(){
 /*SetUpDB() creates the connections to the DataBase - no return value*/
 function SetUpDB($a, $b, $c, $d){
   $link = mysql_connect("$a", "$b", "$c") or die('mysql_connect failed:' . mysql_error());
-  mysql_select_db("$d", $link) or die('<p class="error">Could no select database:'. mysql_error().'</p>');
+  mysql_select_db("$d", $link) or die('<p class="error">Could not select database: '. mysql_error().'</p>');
 }
 
 /*DoLogin() checks for the existance of a "login" flag to check for login 
