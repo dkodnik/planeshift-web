@@ -1,5 +1,5 @@
 <?php
-function rule_scripts(){
+function rule_mscripts(){
   if (checkaccess('rules', 'read')){
     if (isset($_POST['commit'])){
       if (($_POST['commit']=='Change Name') && (checkaccess('rules', 'edit'))){
