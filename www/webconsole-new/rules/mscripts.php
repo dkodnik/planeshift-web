@@ -1,0 +1,100 @@
+<?php
+function rule_scripts(){
+  if (checkaccess('rules', 'read')){
+    if (isset($_POST['commit'])){
+      if (($_POST['commit']=='Change Name') && (checkaccess('rules', 'edit'))){
+        $name = mysql_real_escape_string($_POST['name']);
+        $orig_name = mysql_real_escape_string($_POST['orig_name']);
+        $query = "UPDATE math_scripts SET name='$name' WHERE name='$orig_name'";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        $_GET['type']=$_POST['type'];
+        unset($_POST);
+        rule_scripts();
+        return;
+      }else if (($_POST['commit']=='Update Script') && (checkaccess('rules', 'edit'))){
+        $name = mysql_real_escape_string($_POST['name']);
+        $math_script = mysql_real_escape_string($_POST['math_script']);
+        $query = "UPDATE math_scripts SET math_script='$math_script' WHERE name='$name'";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        $_GET['type']=$_POST['type'];
+        unset($_POST);
+        rule_scripts();
+        return;
+      }else if (($_POST['commit']=='Delete') && (checkaccess('rules', 'delete'))){
+        $name = mysql_real_escape_string($_POST['name']);
+        $query = "DELETE FROM math_scripts WHERE name='$name'";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        $_GET['type']=$_POST['type'];
+        unset($_POST);
+        rule_scripts();
+        return;
+      }else if (($_POST['commit']=='Create Script') && (checkaccess('rules', 'create'))){
+        $name = mysql_real_escape_string($_POST['name']);
+        $math_script = mysql_real_escape_string($_POST['math_script']);
+        $query = "INSERT INTO math_scripts (name, math_script) VALUES ('$name', '$math_script')";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        $_GET['type']=$_POST['type'];
+        unset($_POST);
+        rule_scripts();
+        return;
+      }
+    }else{
+      $query = "SELECT name, math_script FROM math_scripts ORDER BY name";
+      $result = mysql_query2($query);
+      if (mysql_num_rows($result) > 0){
+        echo '<table border="1">';
+        echo '<tr><th>Name</th><th>Script</th>';
+        if (checkaccess('rules', 'delete')){
+          echo '<th>Actions</th></tr>';
+        }else{
+          echo '</tr>';
+        }
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          echo '<tr>';
+          if (checkaccess('rules', 'edit')){
+            echo '<td><form action="index.php?do=scripts" method="post">';
+            if (isset($_GET['type'])){
+              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+            }
+            echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
+            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+            if (isset($_GET['type'])){
+              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+            }
+            echo '<textarea name="math_script" rows="3" cols="45">'.$row['math_script'].'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
+            if (checkaccess('rules', 'delete')){
+            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+              if (isset($_GET['type'])){
+                echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+              }
+              echo '<input type="submit" name="commit" value="Delete"/>';
+              echo '</form></td>';
+            }
+          }else{
+            echo '<td>'.$row['name'].'</td><td>'.htmlspecialchars($row['math_script']).'</td>';
+          }
+          echo '</tr>';
+        }
+        echo '</table>';
+      }else{
+        echo '<p class="error">No Scripts Found</p>';
+      }
+      if (checkaccess('rules', 'create')){
+        echo '<hr/><p>Create New progression script</p>';
+        echo '<form action="index.php?do=scripts" method="post">Name:<input type="text" name="name" /><br/>';
+        echo 'Script: <textarea name="math_script" rows="3" cols="45"></textarea><br/>';
+        if (isset($_GET['type'])){
+          echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+        }
+        echo '<input type="submit" name="commit" value="Create Script" /></form>';
+      }
+    }
+  }else{
+    echo '<p class="error">You are not authorized to use these functions</p>';
+  }
+}
+?>

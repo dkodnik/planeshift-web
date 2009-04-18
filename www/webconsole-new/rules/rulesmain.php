@@ -6,6 +6,7 @@ function rulesmain(){
     echo '<a href="./index.php?do=scripts&amp;type=SI">List SimpleItem Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=CG">List CharGen Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=S">List Spell Scripts</a> <br/>';
+    echo '<a href="./index.php?do=mscripts">List Math Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=O">List Other Scripts</a> <br/>';
     echo '<hr/>';
     echo '<a href="./index.php?do=spells">List Spells</a><br/>';

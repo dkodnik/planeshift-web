@@ -301,6 +301,12 @@
         rulesmain();
         rule_scripts();
         break;
+      case 'mscripts':
+        include('./rules/rulesmain.php');
+        include('./rules/mscripts.php');
+        rulesmain();
+        rule_scripts();
+        break;
       case 'spells':
         include('./rules/rulesmain.php');
         include('./rules/spells.php');
