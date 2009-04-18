@@ -1,3 +1,6 @@
+*** 2009-04-18 by Mike Gist
+WC - Added math script listing.
+
 *** 2009-04-17 by Stefano Angeleri
 WC - minor bugfixes in patterns.php
      added combinations.php (edit combination allows you to add/remove parts of the combination with edit rights)                           
