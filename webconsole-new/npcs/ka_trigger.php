@@ -43,10 +43,11 @@ function ka_detail(){
           $response4 = mysql_real_escape_string($_POST['response4']);
           $response5 = mysql_real_escape_string($_POST['response5']);
           $script = mysql_real_escape_string($_POST['script']);
+          $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
           if (isset($_POST['c'])){
-            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script'";
+            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite'";
           }else{
-            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script' WHERE trigger_id='$tid'";
+            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite' WHERE trigger_id='$tid'";
           }
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
           $tid_o = mysql_real_escape_string($_POST['trigger_id']);
@@ -98,7 +99,7 @@ function ka_detail(){
         unset($_POST);
         ka_detail();
       }else{
-        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
+        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
         if (isset($_GET['trigger'])){
           $t = mysql_real_escape_string($_GET['trigger']);
           $query = $query . " ORDER BY t.id IN ('$t') DESC";
@@ -152,6 +153,7 @@ function ka_detail(){
                 echo 'Response 5: <textarea name="response5" rows="3" cols="30">'.$row['response5'].'</textarea><br/>';
                 echo '<hr/>';
                 echo 'Script: <textarea name="script">'.$row['script'].'</textarea><br/>';
+                echo 'Prerequisite: <textarea name="prerequisite">'.$row['prerequisite'].'</textarea><br/>';
                 if (isset($_GET['c'])){
                   echo '<input type="hidden" name="c" value="true">';
                 }
@@ -166,6 +168,7 @@ function ka_detail(){
                 echo 'Response 5: '.htmlspecialchars($row['response5']).'<br/>';
                 echo '<hr/>';
                 echo 'Script: '.htmlspecialchars($row['script']).'<br/>';
+                echo 'Prerequisite: '.htmlspecialchars($row['prerequisite']).'<br/>';
               }
             }else{
               if ($row['trigger_id'] == ''){
