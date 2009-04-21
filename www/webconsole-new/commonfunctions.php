@@ -163,7 +163,7 @@ function GetNextID($a){
 /*PrepSelect() Returns the result link appropriate for the table requested*/
 function PrepSelect($a){
   $type = strtolower($a);
-  $typevals["items"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name"; 
+  $typevals["items"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name, i.name"; 
   $typevals["items_resource"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name IN ('Raw Materials') DESC, c.name";
   $typevals["skill"] = "SELECT skill_id, name FROM skills ORDER BY name";
   $typevals["category"] = "SELECT category_id, name FROM item_categories ORDER BY name";

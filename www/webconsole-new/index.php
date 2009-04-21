@@ -225,6 +225,18 @@
         npcmain();
         listlootrules();
         break;
+      case 'editlootruledetail':
+        include('./npcs/npcmain.php');
+        include('./npcs/listlootrules.php');
+        npcmain();
+        editlootruledetail();
+        break;
+      case 'createlootruledetail':
+        include('./npcs/npcmain.php');
+        include('./npcs/listlootrules.php');
+        npcmain();
+        createlootruledetail();
+        break;
       case 'editlootrule':
         include('./npcs/npcmain.php');
         include('./npcs/listlootrules.php');
