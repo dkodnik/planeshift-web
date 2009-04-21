@@ -1,82 +1,111 @@
 <?php
 function listtrainer(){
-  if (checkaccess('npcs', 'read')){
-    $query = "SELECT skill_id, name FROM skills";
-    $result = mysql_query2($query);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-      $S_id = $row['skill_id'];
-      $Skills["$S_id"] = $row['name'];
-    }
-    $query = "SELECT t.skill_id, t.min_rank, t.max_rank, t.player_id, t.min_faction FROM trainer_skills AS t";
-    $result = mysql_query2($query);
-    while (list($skill_id, $min_rank, $max_rank, $player_id, $min_faction) = mysql_fetch_array($result)){
-      $Trainer["$player_id"]["$skill_id"]['min_rank'] = $min_rank;
-      $Trainer["$player_id"]["$skill_id"]['max_rank'] = $max_rank;
-      $Trainer["$player_id"]["$skill_id"]['min_faction'] = $min_faction;
-      $Trainer["$player_id"]["$skill_id"]['skill'] = $skill_id;
-    }
-    $skill_result = PrepSelect('skill');
-    $query = "SELECT DISTINCT t.player_id, CONCAT_WS(' ', c.name, c.lastname) AS name, s.name AS sector FROM trainer_skills AS t LEFT JOIN characters AS c on t.player_id=c.id LEFT JOIN sectors AS s ON c.loc_sector_id=s.id";
-    if (isset($_GET['sort'])){
-      if ($_GET['sort'] == 'name'){
-        $query = $query . ' ORDER BY name, sector';
-      }else if ($_GET['sort'] == 'sector'){
-        $query = $query . ' ORDER BY sector, name';
-      }
-    }else{
-      $query = $query . ' ORDER BY sector, name';
-    }
-    $result = mysql_query2($query);
-    echo '<table border="1"><tr><th><a href="./index.php?do=listtrainer&amp;sort=name">NPC</a></th><th><a href="./index.php?do=listtrainer&amp;sort=sector">Sector</a></th><th>Details</th></tr>';
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-      echo '<tr><td>';
-      $T_id = $row['player_id'];
-      if (checkaccess('npcs', 'edit')){
-        echo '<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$T_id.'">'.$row['name'].'</a></td><td>';
-      }else{
-        echo $row['name'].'</td><td>';
-      }
-      echo $row['sector'].'</td><td>';
-      foreach ($Trainer["$T_id"] AS $t){
-        if (checkaccess('npcs', 'edit')){
-          echo '<form action="./index.php?do=edittrainer" method="post">';
-          echo '<input type="hidden" name="player_id" value="'.$T_id.'" />';
-          echo '<input type="hidden" name="skill_id" value="'.$t['skill'].'" />';
-          echo '<table border="1"><tr><th class="item_wide">Skill</th><th>MinRank</th><th>MaxRank</th><th>Min Faction</th><th>Actions</th></tr>';
-          $skill = $t['skill'];
-          echo '<tr><td>'.htmlspecialchars($Skills["$skill"]).'</td>';
-          echo '<td><input type="text" name="min_rank" value="'.$t['min_rank'].'" size="10"/></td>';
-          echo '<td><input type="text" name="max_rank" value="'.$t['max_rank'].'" size="10"/></td>';
-          echo '<td><input type="text" name="min_faction" value="'.$t['min_faction'].'" size="10"/></td>';
-          echo '<td><input type="submit" name="commit" value="Update" /><br/><input type="submit" name="commit" value="Remove" /></td>';
-          echo '</tr></table>';
-          echo '</form>';
-        }else{
-          echo '<table border="1"><tr><th class="item_wide">Skill</th><th>MinRank</th><th>MaxRank</th><th>Min Faction</th></tr>';
-          $skill = $t['skill'];
-          echo '<tr><td>'.htmlspecialchars($Skills["$skill"]).'</td><td>'.$t['min_rank'].'</td><td>'.$t['max_rank'].'</td><td>'.$t['min_faction'].'</tr>';
-          echo '</table>';
+    if (checkaccess('npcs', 'read')){
+        $query = "SELECT sk.name AS skill_name, t.skill_id, t.min_rank, t.max_rank, t.player_id, t.min_faction, CONCAT_WS(' ', c.name, c.lastname) AS name, s.name AS sector FROM trainer_skills AS t LEFT JOIN characters AS c on t.player_id=c.id LEFT JOIN sectors AS s ON c.loc_sector_id=s.id LEFT JOIN skills AS sk ON sk.skill_id=t.skill_id";
+        if (isset($_GET['sort']))
+        {
+            if ($_GET['sort'] == 'name')
+            {
+                $query .= ' ORDER BY name, sector';
+            }
+            else if ($_GET['sort'] == 'sector')
+            {
+                $query .= ' ORDER BY sector, name';
+            }
         }
-      }
-      if (checkaccess('npcs', 'edit')){
-        echo '<hr/><form action="./index.php?do=edittrainer" method="post">';
-        echo '<input type="hidden" name="player_id" value="'.$T_id.'" />';
-        echo '<table border="1"><tr><th class="item_wide">Skill</th><th>MinRank</th><th>MaxRank</th><th>Min Faction</th></tr>';
-        echo '<tr><td>'.DrawSelectBox('skill', $skill_result, 'skill_id', '').'</td>';
-        echo '<td><input type="text" name="min_rank" size="10"/></td>';
-        echo '<td><input type="text" name="max_rank" size="10"/></td>';
-        echo '<td><input type="text" name="min_faction" size="10"/></td>';
-        echo '</tr>';
-        echo '</table>';
-        echo '<input type="submit" name="commit" value="Add" />';
-        echo '</form>';
-      }
-      echo '</td></tr>';
+        else
+        {
+            $query .= ' ORDER BY sector, name';
+        }
+        $result = mysql_query2($query);
+        $id = "";
+        $skill_result = PrepSelect('skill');
+        $skill_box = DrawSelectBox('skill', $skill_result, 'skill_id', '', false);
+        echo '<table border="1" cellspacing="0"><tr><th><a href="./index.php?do=listtrainer&amp;sort=name">NPC</a></th><th><a href="./index.php?do=listtrainer&amp;sort=sector">Sector</a></th><th>Details</th></tr>';
+        while ($row = mysql_fetch_array($result))
+        {
+            if ($id == "")
+            {
+                echo '<tr><td>';
+                $id = $row['player_id'];
+                if (checkaccess('npcs', 'edit'))
+                {
+                    echo '<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'">'.$row['name'].'</a></td><td>';
+                }
+                else
+                {
+                    echo $row['name'].'</td><td>';
+                }
+                echo $row['sector'].'</td><td>';
+                echo '<table border="1" cellspacing="0"><tr><th class="item_wide">Skill</th><th>MinRank</th><th>MaxRank</th><th>Min Faction</th><th>Actions</th></tr>';
+            }
+            elseif ($id != $row['player_id'])
+            {
+                if (checkaccess('npcs', 'edit'))
+                {
+                    echo '<tr><td colspan="5"></td></tr>';
+                    echo '<form action="./index.php?do=edittrainer" method="post">';
+                    echo '<input type="hidden" name="player_id" value="'.$id.'" />';
+                    echo '<tr><td>'.$skill_box.'</td>';
+                    echo '<td><input type="text" name="min_rank" size="10"/></td>';
+                    echo '<td><input type="text" name="max_rank" size="10"/></td>';
+                    echo '<td><input type="text" name="min_faction" size="10"/></td>';
+                    echo '<td><input type="submit" name="commit" value="Add" /></td>';
+                    echo '</tr>';
+                    echo '</form>';
+                }
+                echo '</table></td></tr><tr><td>';
+                $id = $row['player_id'];
+                if (checkaccess('npcs', 'edit'))
+                {
+                    echo '<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'">'.$row['name'].'</a></td><td>';
+                }
+                else
+                {
+                    echo $row['name'].'</td><td>';
+                }
+                echo $row['sector'].'</td><td>';
+                echo '<table border="1" cellspacing="0"><tr><th class="item_wide">Skill</th><th>MinRank</th><th>MaxRank</th><th>Min Faction</th><th>Actions</th></tr>';
+            }
+            
+            if (checkaccess('npcs', 'edit')){
+                echo '<tr><form action="./index.php?do=edittrainer" method="post">';
+                echo '<input type="hidden" name="player_id" value="'.$id.'" />';
+                echo '<input type="hidden" name="skill_id" value="'.$row['skill_id'].'" />';
+                echo '<td>'.$row['skill_name'].'</td>';
+                echo '<td><input type="text" name="min_rank" value="'.$row['min_rank'].'" size="10"/></td>';
+                echo '<td><input type="text" name="max_rank" value="'.$row['max_rank'].'" size="10"/></td>';
+                echo '<td><input type="text" name="min_faction" value="'.$row['min_faction'].'" size="10"/></td>';
+                echo '<td><input type="submit" name="commit" value="Update" />&nbsp;<input type="submit" name="commit" value="Remove" /></td>';
+                echo '</form>';
+                echo '</tr>';
+            }
+            else
+            {
+                echo '<tr><td>'.$row['skill_name'].'</td><td>'.$row['min_rank'].'</td><td>'.$row['max_rank'].'</td><td>'.$row['min_faction'].'</td><td></td></tr>';
+            }
+        }
+        if (checkaccess('npcs', 'edit'))
+        {
+            echo '<tr><td colspan="5"></td></tr>';
+            echo '<form action="./index.php?do=edittrainer" method="post">';
+            echo '<input type="hidden" name="player_id" value="'.$id.'" />';
+            echo '<tr><td>'.$skill_box.'</td>';
+            echo '<td><input type="text" name="min_rank" size="10"/></td>';
+            echo '<td><input type="text" name="max_rank" size="10"/></td>';
+            echo '<td><input type="text" name="min_faction" size="10"/></td>';
+            echo '<td><input type="submit" name="commit" value="Add" /></td>';
+            echo '</tr>';
+            echo '</form>';
+        }
+        echo '</table>'; 
+        echo '</td></tr>';
+        echo '</table>'; 
     }
-    echo '</table>';
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
+    else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+    }
 }
 
 function edittrainer(){

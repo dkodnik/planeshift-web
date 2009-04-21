@@ -52,6 +52,7 @@ function listitems(){
         if (!isset($_GET['override2'])){
           $query = $query." AND stat_type = 'B'";
         }
+        $query .= ' ORDER BY name';
         $result = mysql_query2($query);
         while ($row = mysql_fetch_array($result)){
           echo '<a href="./index.php?do=listitems&amp;category='.$_GET['category'].'&amp;item='.$row['id'];

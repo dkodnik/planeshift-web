@@ -131,8 +131,10 @@ function editprocess(){
   }
 }
 
-function editsubprocess(){
-  if (checkaccess('crafting','edit')){
+function editsubprocess()
+{
+  if (checkaccess('crafting','edit'))
+  {
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Process"))
     {
         $process_id = mysql_real_escape_string($_GET['id']);
@@ -144,8 +146,10 @@ function editsubprocess(){
         $equipment_id = mysql_real_escape_string($_POST['equipment_id']);
         $equipment_id = ($equipment_id == '' ? 0 : $equipment_id);
         $garbage_id = mysql_real_escape_string($_POST['garbage_id']);
+        $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
         $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
         $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
+        $primary_skill_id = ($primary_skill_id == -1 ? 0 : $primary_skill_id);
         $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
         $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
         $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
@@ -163,7 +167,8 @@ function editsubprocess(){
         unset($_POST);
         editsubprocess();
     }
-    else{
+    else
+    {
       $id = mysql_real_escape_string($_GET['id']);
       $sub = mysql_real_escape_string($_GET['sub']);
       $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&id='.$id.'&sub='.$sub.'">Delete</a>' : '');
@@ -179,12 +184,12 @@ function editsubprocess(){
       echo '<tr><td>Description:</td><td><input type="text" name="description" value="'.$row['description'].'" /></td></tr>';
       echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td></tr>';
       $Items = PrepSelect('items');
-      echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $Items, 'workitem_id', $row['workitem_id'], 'true').'</td></tr>';
-      echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $Items, 'equipment_id', $row['equipment_id'], 'true').'</td></tr>';
-      echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $Items, 'garbage_id', $row['garbage_id']).'</td></tr>';
+      echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $Items, 'workitem_id', $row['workitem_id'], true).'</td></tr>';
+      echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $Items, 'equipment_id', $row['equipment_id'], true).'</td></tr>';
+      echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $Items, 'garbage_id', $row['garbage_id'], true).'</td></tr>';
       echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="'.$row['garbage_qty'].'" /></td></tr>';
       $Skills = PrepSelect('skill');
-      echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'primary_skill_id', $row['primary_skill_id']).'</td></tr>';
+      echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'primary_skill_id', $row['primary_skill_id'], true).'</td></tr>';
       echo '<tr><td>Primary Minimum Skill Level:</td><td><input type="text" name="primary_min_skill" value="'.$row['primary_min_skill'].'"/></td></tr>';
       echo '<tr><td>Primary Maximum Skill Level:</td><td><input type="text" name="primary_max_skill" value="'.$row['primary_max_skill'].'"/></td></tr>';
       echo '<tr><td>Primary Practice Points:</td><td><input type="text" name="primary_practice_points" value="'.$row['primary_practice_points'].'"/></td></tr>';
@@ -197,7 +202,9 @@ function editsubprocess(){
       echo '<tr><td>'.$delete.'</td><td><input type=submit name="commit" value="Update Process"/></td></tr>';
       echo '</table></form>';
     }
-  }else{
+  }
+  else
+  {
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
 }
@@ -214,8 +221,10 @@ function createprocess()
         $equipment_id = ($equipment_id == '' ? 0 : $equipment_id);
         $constraints = mysql_real_escape_string($_POST['constraints']);
         $garbage_id = mysql_real_escape_string($_POST['garbage_id']);
+        $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
         $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
         $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
+        $primary_skill_id = ($primary_skill_id == -1 ? 0 : $primary_skill_id);
         $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
         $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
         $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
@@ -279,10 +288,10 @@ function createprocess()
         echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $items, 'workitem_id', '', true).'</td></tr>';
         echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $items, 'equipment_id', '', true).'</td></tr>';
         echo '<tr><td>Constraints:</td><td><input type="text" name="constraints" /></td></tr>';
-        echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $items, 'garbage_id', '', false).'</td></tr>';
+        echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $items, 'garbage_id', '', true).'</td></tr>';
         echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="0"/></td></tr>';
         $skills = PrepSelect('skill');
-        echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $skills, 'primary_skill_id', '', false).'</td></tr>';
+        echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $skills, 'primary_skill_id', '', true).'</td></tr>';
         echo '<tr><td>Primary Minimum Skill Level:</td><td><input type="text" name="primary_min_skill" value="0"/></td></tr>';
         echo '<tr><td>Primary Maximum Skill Level:</td><td><input type="text" name="primary_max_skill" value="0"/></td></tr>';
         echo '<tr><td>Primary Practice Points:</td><td><input type="text" name="primary_practice_points" value="0"/></td></tr>';
