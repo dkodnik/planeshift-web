@@ -1,4 +1,16 @@
-*** 2009-04-20 bt Stefano Angeleri
+*** 2009-04-22 by Stefano Angeleri
+WC - Changed "list trainer" to only show table headers once. Re-wrote
+     the code while doing so.
+     Changed "list items" and all dropdown menu's with item to be sorted by
+     name as well as by category instead of only category.
+     Changed "list rule" and changed/added edit details, delete details, add
+     details, delete rules, create rules.
+     Changed process.php to accept "None" for garbadge items and primary
+     skill ID and fixed a but in the "editsubprocess where a boolean was
+     writen as 'true' instead of true. (Will evaluate to the same, but isn't
+     right.)
+
+*** 2009-04-20 by Stefano Angeleri
 WC - Added prerequisite editing in KA
 
 *** 2009-04-18 by Mike Gist
