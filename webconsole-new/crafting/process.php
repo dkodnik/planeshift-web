@@ -16,12 +16,17 @@ function listprocess()
             $skills["$i"] = $row['name'];
         }
         $skills[0] = "";
-        $query = "SELECT * FROM trade_processes";
+        /*
+        Notice: skill '0' is sword skill, however, this is the only table that does that, also the database seems to use '0' as 
+        "NONE" as well, so here we have a bug most likely. Currently it does *not* show anything when the ID is '0', so it shows 
+        swords (skill id 0) as no skill too. (although it does have a min/max, so that will in turn cause it to work fine in engine.)
+        */
+        $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $id = $row['process_id'];
         mysql_data_seek($result, 0);
-        echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th>Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+        echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
         if (checkaccess('crafting', 'edit')){
             echo '<th>Actions</th>';
         }
@@ -46,7 +51,7 @@ function listprocess()
             echo '<td>'.$items["$i"].'</td>';
             echo '<td>'.$row['constraints'].'</td>';
             $i = $row['garbage_id'];
-            echo '<td>'.$row['garbage_qty'].' '.$items["$i"].'</td>';
+            echo '<td>'.$row['garbage_qty'].' </td><td> '.$items["$i"].'</td>';
             $i = $row['primary_skill_id'];
             echo '<td>'.$skills["$i"].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
             $i = $row['secondary_skill_id'];
@@ -85,12 +90,12 @@ function editprocess(){
       $Skills["$i"] = $row['name'];
     }
     $Skills[0] = "";
-    $query = "SELECT * FROM trade_processes WHERE process_id = '$id'";
+    $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes AS t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id WHERE process_id = '$id' ORDER BY s.name, t.primary_min_skill, ss.name, secondary_min_skill, t.name";
     $result = mysql_query2($query);
     $row = mysql_fetch_array($result, MYSQL_ASSOC);
     echo '- '.$row['name'].'</p>';
     mysql_data_seek($result, 0);
-    echo '<table><tr><th>Sub-Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th>Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+    echo '<table><tr><th>Sub-Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
     if (checkaccess('crafting', 'edit')){
       echo '<th>Actions</th>';
     }
@@ -111,7 +116,7 @@ function editprocess(){
       echo '<td>'.$Items["$i"].'</td>';
       echo '<td>'.$row['constraints'].'</td>';
       $i = $row['garbage_id'];
-      echo '<td>'.$row['garbage_qty'].' '.$Items["$i"].'</td>';
+      echo '<td>'.$row['garbage_qty'].' </td><td> '.$Items["$i"].'</td>';
       $i = $row['primary_skill_id'];
       echo '<td>'.$Skills["$i"].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
       $i = $row['secondary_skill_id'];

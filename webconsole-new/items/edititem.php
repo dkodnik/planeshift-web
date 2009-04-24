@@ -211,7 +211,7 @@ function edititem(){
       $result = mysql_query2($query);
 ?>
     <SCRIPT language="javascript">
-      document.location = "index.php?do=listitems&item=<?php echo $id?>";
+      document.location = "index.php?do=listitems&category=<?php echo $category_id?>&item=<?php echo $id?>";
     </script>
 <?php
       exit;

@@ -50,11 +50,12 @@ function editpattern(){
       editpattern();
       return;
     }else{
-      $query = "SELECT id, name FROM item_stats";
+      $query = "SELECT id, name FROM item_stats WHERE stat_type='B'";
       $Temp = mysql_query2($query);
       while ($row=mysql_fetch_array($Temp, MYSQL_ASSOC)){
         $iid=$row['id'];
         $Items["$iid"]=$row['name'];
+        $Items[0]="";
       }
       $query = "SELECT pattern_name, description, designitem_id FROM trade_patterns WHERE id='$pattern_id'";
       $result = mysql_query2($query);
@@ -77,9 +78,9 @@ function editpattern(){
         echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
       }
       echo '<p class="bold">Available Transforms</p>';
-      $query = "SELECT t.id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE pattern_id='$pattern_id' GROUP BY id";
+      $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, i.name";
       $result = mysql_query2($query);
-      echo '<table><tr><th>Source Item</th><th>Process</th><th>Result Item</th><th>Time</th><th>Resultant Quality</th><th>Actions</th></tr>';
+      echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
       $Alt = FALSE;
       while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
         $Alt = !$Alt;
@@ -88,11 +89,27 @@ function editpattern(){
         }else{
           echo '<tr class="color_b">';
         }
-        $item_id=$row['item_id'];
-        echo '<td>'.$row['item_qty'].' '.$Items["$item_id"].'</td>';
+        $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+        if (checkaccess('items','edit'))
+        {
+            echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> </td>';
+        }
+        else
+        {
+            echo '<td>'.$row['item_qty'].' </td><td> '.$item_name.' </td>';
+        }
+        echo '<td>'.$row['item_cat'].'</td>';
         echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
-        $result_id=$row['result_id'];
-        echo '<td>'.$row['result_qty'].' '.$Items["$result_id"].'</td>';
+        $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+        if (checkaccess('items','edit'))
+        {
+            echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+        }
+        else
+        {
+            echo '<td>'.$row['result_qty'].' </td><td> '.$result_name.'</td>';
+        }
+        echo '<td>'.$row['result_cat'].'</td>';
         echo '<td>'.$row['trans_points'].'</td>';
         echo '<td>'.$row['penilty_pct'].'</td>';
         echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
@@ -103,10 +120,10 @@ function editpattern(){
       echo '<p class="bold">Available Combinations</p>';
       $Alt = FALSE;
       $item = -1;
-      $query = "SELECT result_id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE pattern_id='$pattern_id' ORDER BY result_id";
+      $query = "SELECT t.result_id, c.name AS result_cat, c.category_id AS result_cat_id, i.name AS result_name, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.min_qty, t.max_qty, t.description FROM trade_combinations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' ORDER BY i.name";
       $result = mysql_query2($query);
       if (mysql_num_rows($result)!= 0){
-        echo '<table><tr><th>Result Item</th><th>Source Items</th><th>Actions</th></tr>';
+        echo '<table><tr><th colspan="2">Result Item</th><th>Category</th><th>Source Items</th><th>Actions</th></tr>';
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
           if ($item != $row['result_id']){
             if ($item != '-1'){
@@ -120,13 +137,36 @@ function editpattern(){
               echo '<tr class="color_b">';
             }
             $result_id = $row['result_id'];
-            echo '<td>'.$row['result_qty'].' '.$Items["$result_id"].'</td>';
-            $item_id = $row['item_id'];
-            echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' '.$Items["$item_id"];
+            $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+            if (checkaccess('items','edit'))
+            {
+                echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+            }
+            else
+            {
+                echo '<td>'.$row['result_qty'].' </td><td> '.$result_name.'</td>';
+            }
+            echo '<td>'.$row['result_cat'].'</td>';
+            $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+            if (checkaccess('items','edit'))
+            {
+                echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+            }
+            else
+            {
+                echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' '.$item_name.' ('.$row['item_cat'].')';
+            }
           }else{
             echo '<br/>';
-            $item_id = $row['item_id'];
-            echo $row['min_qty'].' to '.$row['max_qty'].' '.$Items["$item_id"];
+            $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+            if (checkaccess('items','edit'))
+            {
+                echo $row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+            }
+            else
+            {
+                echo $row['min_qty'].' to '.$row['max_qty'].' '.$item_name.' ('.$row['item_cat'].')';
+            }
           }
         }
         echo '<td><a href="./index.php?do=editcombine&amp;id='.$item.'&amp;pattern_id='.$_GET['id'].'">Edit</a></td></tr></table>';
@@ -224,9 +264,9 @@ function deletepattern()
         echo '</table>';
 
         echo '<p class="bold">Available Transforms</p>';
-        $query = "SELECT t.id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE pattern_id='$pattern_id' GROUP BY id";
+        $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS item_name, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, i.name";
         $result = mysql_query2($query);
-        echo '<table><tr><th>Source Item</th><th>Process</th><th>Result Item</th><th>Time</th><th>Resultant Quality</th></tr>';
+        echo '<table><tr><th colspan="2">Source Item</th><th>Process</th><th colspan="2">Result Item</th><th>Time</th><th>Result Q</th></tr>';
         $alt = FALSE;
         while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
         {
@@ -239,10 +279,10 @@ function deletepattern()
                 echo '<tr class="color_b">';
             }
             $item_id=$row['item_id'];
-            echo '<td>'.$row['item_qty'].' '.$items["$item_id"].'</td>';
+            echo '<td>'.$row['item_qty'].' </td><td> '.$items["$item_id"].'</td>';
             echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
             $result_id=$row['result_id'];
-            echo '<td>'.$row['result_qty'].' '.$items["$result_id"].'</td>';
+            echo '<td>'.$row['result_qty'].' </td><td> '.$items["$result_id"].'</td>';
             echo '<td>'.$row['trans_points'].'</td>';
             echo '<td>'.$row['penilty_pct'].'</td>';
             echo '</tr>';
@@ -255,7 +295,7 @@ function deletepattern()
         $result = mysql_query2($query);
         if (mysql_num_rows($result) != 0)
         {
-            echo '<table><tr><th>Result Item</th><th>Source Items</th></tr>';
+            echo '<table><tr><th colspan="2">Result Item</th><th>Source Items</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
                 if ($item != $row['result_id'])
                 {
@@ -273,7 +313,7 @@ function deletepattern()
                         echo '<tr class="color_b">';
                     }
                     $result_id = $row['result_id'];
-                    echo '<td>'.$row['result_qty'].' '.$items["$result_id"].'</td>';
+                    echo '<td>'.$row['result_qty'].' </td><td> '.$items["$result_id"].'</td>';
                     $item_id = $row['item_id'];
                     echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' '.$items["$item_id"];
                 }

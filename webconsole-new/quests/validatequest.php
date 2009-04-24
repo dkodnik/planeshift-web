@@ -116,7 +116,7 @@ function parseScript($quest_id, $script, $show_lines)
         }
         elseif(strncasecmp($line, "Menu:", 5) === 0) // Menu: trigger
         {
-            if(getTriggerCount($line, "Menu:", $count) === false)
+            if(getTriggerCount($line, "Menu:", $count, 80) === false)
             {
                 append_log("parse error, Menu: with no text on line $line_number");
             }
@@ -268,8 +268,9 @@ function append_log($msg)
 /**
 * get the count for $trigger in $line and put it in $count. If any trigger has no text following it, return false otherwise true.
 */ 
-function getTriggerCount($line, $trigger, &$count)
+function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
 {
+    global $line_number;
     $count = 0;
     $pos = 0;
     while (($pos = stripos($line, $trigger, $pos)) !== false) 
@@ -287,6 +288,10 @@ function getTriggerCount($line, $trigger, &$count)
         else 
         {
             $count++;
+        }
+        if (strlen($temp_line) > $max_chars_per_line)
+        {
+            append_log("Warning, more than $max_chars_per_line char found in trigger on line $line_number");
         }
         check_parenthesis($temp_line); // check for parenthesis and and if they're found, check if they're valid.
         $pos += strlen($trigger); // move the position pointer past our first find so it doesn't get seen again.
@@ -491,7 +496,7 @@ function parse_item($item)
     {
         $item_name = trim($item);
     }
-    $query = sprintf("SELECT id FROM item_stats WHERE name = '%s'", mysql_real_escape_string($item_name));
+    $query = sprintf("SELECT id FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($item_name));
     $result = mysql_query2($query);
     if (mysql_num_rows($result) == 1)
     {
