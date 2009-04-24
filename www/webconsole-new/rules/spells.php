@@ -157,18 +157,6 @@ function spell(){
           echo '<tr><td>NPC Spell Power</td><td><input type="text" name="npc_spell_power" value="'.$row['npc_spell_power'].'" size="30" /></td></tr>';
           echo '<tr><td>Target Type</td><td>';
           $tt = $row['target_type'];
-          if ($tt >= 256){
-            echo 'TARGET_PVP: <input type="checkbox" name="tt[]" value="256" checked="true"/><br/>';
-            $tt -= 256;
-          }else{
-            echo 'TARGET_PVP: <input type="checkbox" name="tt[]" value="256"/><br/>';
-          }
-          if ($tt >=128){
-            echo 'TARGET_GM: <input type="checkbox" name="tt[]" value="128" checked="true"/><br/>';
-            $tt -= 128;
-          }else{
-            echo 'TARGET_GM: <input type="checkbox" name="tt[]" value="128" /><br/>';
-          } 
           if ($tt >=64){
             echo 'TARGET_DEAD: <input type="checkbox" name="tt[]" value="64" checked="true"/><br/>';
             $tt -= 64;
@@ -198,12 +186,6 @@ function spell(){
             $tt -= 4;
           }else{
             echo 'TARGET_ITEM: <input type="checkbox" name="tt[]" value="4"/><br/>';
-          }
-          if ($tt >=2){
-            echo 'TARGET_NPC: <input type="checkbox" name="tt[]" value="2" checked="true"/><br/>';
-            $tt -= 2;
-          }else{
-            echo 'TARGET_NPC: <input type="checkbox" name="tt[]" value="2"/><br/>';
           }
           if ($tt >= 1){
             echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1" checked="true"/><br/>';
@@ -259,13 +241,7 @@ function spell(){
         echo '<tr><td>Target Type</td><td>';
         $tt = $row['target_type'];
         while ($tt > 0){
-          if ($tt >= 256){
-            echo 'TARGET_PVP<br/>';
-            $tt -= 256;
-          }else if ($tt >=128){
-            echo 'TARGET_GM<br/>';
-            $tt -= 128;
-          }else if ($tt >=64){
+          if ($tt >=64){
             echo 'TARGET_DEAD<br/>';
             $tt -= 64;
           }else if ($tt >=32){
@@ -280,9 +256,6 @@ function spell(){
           }else if ($tt >=4){
             echo 'TARGET_ITEM<br/>';
             $tt -= 4;
-          }else if ($tt >=2){
-            echo 'TARGET_NPC<br/>';
-            $tt -= 2;
           }else{
             echo 'TARGET_NONE<br/>';
             $tt -= 1;
@@ -407,21 +380,18 @@ function createspell(){
       echo '<tr><td>Max Power</td><td><input type="text" name="max_power" size="30"/></td></tr>';
       echo '<tr><td>NPC Spell Power</td><td><input type="text" name="npc_spell_power" size="30" /></td></tr>';
       echo '<tr><td>Target Type</td><td>';
-      echo 'TARGET_PVP: <input type="checkbox" name="tt[]" value="256"/><br/>';
-      echo 'TARGET_GM: <input type="checkbox" name="tt[]" value="128" /><br/>';
       echo 'TARGET_DEAD: <input type="checkbox" name="tt[]" value="64"/><br/>';
       echo 'TARGET_FOE: <input type="checkbox" name="tt[]" value="32"/><br/>';
       echo 'TARGET_FRIEND: <input type="checkbox" name="tt[]" value="16"/><br/>';
       echo 'TARGET_SELF: <input type="checkbox" name="tt[]" value="8"/><br/>';
       echo 'TARGET_ITEM: <input type="checkbox" name="tt[]" value="4"/><br/>';
-      echo 'TARGET_NPC: <input type="checkbox" name="tt[]" value="2"/><br/>';
       echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1"/><br/>';
       echo '</td></tr>';
-      echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="'.$row['exclude_target'].'" size="30" /></td></tr>';
-      echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="'.$row['cast_duration'].'" size="30" /></td></tr>';
-      echo '<tr><td>Range</td><td><input type="text" name="range" value="'.$row['range'].'" size="30" /></td></tr>';
-      echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="'.$row['aoe_radius'].'" size="30" /></td></tr>';
-      echo '<tr><td>Aoe Range</td><td><input type="text" name="aoe_angle" value="'.$row['aoe_angle'].'" size="30" /></td></tr>';
+      echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="" size="30" /></td></tr>';
+      echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="" size="30" /></td></tr>';
+      echo '<tr><td>Range</td><td><input type="text" name="range" value="" size="30" /></td></tr>';
+      echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="" size="30" /></td></tr>';
+      echo '<tr><td>Aoe Range</td><td><input type="text" name="aoe_angle" value="" size="30" /></td></tr>';
       
       echo '<tr><td>Image Name</td><td><input type="text" name="image_name" size="30" /></td></tr>';
       $cstrings = PrepSelect('cstring');
