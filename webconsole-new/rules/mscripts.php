@@ -10,7 +10,7 @@ function rule_mscripts(){
         echo '<p class="error">Update Successful</p>';
         $_GET['type']=$_POST['type'];
         unset($_POST);
-        rule_scripts();
+        rule_mscripts();
         return;
       }else if (($_POST['commit']=='Update Script') && (checkaccess('rules', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
@@ -20,7 +20,7 @@ function rule_mscripts(){
         echo '<p class="error">Update Successful</p>';
         $_GET['type']=$_POST['type'];
         unset($_POST);
-        rule_scripts();
+        rule_mscripts();
         return;
       }else if (($_POST['commit']=='Delete') && (checkaccess('rules', 'delete'))){
         $name = mysql_real_escape_string($_POST['name']);
@@ -29,7 +29,7 @@ function rule_mscripts(){
         echo '<p class="error">Update Successful</p>';
         $_GET['type']=$_POST['type'];
         unset($_POST);
-        rule_scripts();
+        rule_mscripts();
         return;
       }else if (($_POST['commit']=='Create Script') && (checkaccess('rules', 'create'))){
         $name = mysql_real_escape_string($_POST['name']);
@@ -39,7 +39,7 @@ function rule_mscripts(){
         echo '<p class="error">Update Successful</p>';
         $_GET['type']=$_POST['type'];
         unset($_POST);
-        rule_scripts();
+        rule_mscripts();
         return;
       }
     }else{
