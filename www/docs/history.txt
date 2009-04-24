@@ -1,3 +1,29 @@
+*** 2009-04-24 by Stefano Angeleri
+WC - pattern listing:
+     *changed transform/combine in edit pattern, 
+     *all items now show their category
+     *item ID's that have no corresponding ID in the item_stats table get labled as "BROKEN"
+     *transforms get sorted by process name, result item
+     *combinations get sorted by result item
+     *resultant Quality got renamed to Result Q (only a cosmetic change, the underlying data is the same).
+     *re-wrote the SQL queries with some fancy joins to collect all this data.
+     *added direct links to "edit item" for all items.
+     *items now have a seperate column for their quantity and their name. 
+      (so they can be easily copied to excell/etc)
+
+   - process:
+     *garbage items get seperate column for name and count
+     *processes sorted by: pri skill name, level, sec skill name, level, process_name
+
+   - itemlist/edit: Changed it so after you are done editing, it will show a suppressed 
+                    list again with the right category instead of not showing a category.
+
+   - Spells: removed TARGET_GM, TARGET_NPC and TARGET_PVP. Also fixed a bug where "create spell" 
+             tried to use database results (probably a leftover from a copy/paste action).
+
+   - questparser: added a check for Menu: tags, a warning is added if they are longer than 80 chars. 
+                  Also changed the item checker to only consider items of stat_type 'B' as valid. 
+
 *** 2009-04-22 by Stefano Angeleri
 WC - Changed "list trainer" to only show table headers once. Re-wrote
      the code while doing so.
@@ -9,6 +35,7 @@ WC - Changed "list trainer" to only show table headers once. Re-wrote
      skill ID and fixed a but in the "editsubprocess where a boolean was
      writen as 'true' instead of true. (Will evaluate to the same, but isn't
      right.)
+     patches by ravna
 
 *** 2009-04-20 by Stefano Angeleri
 WC - Added prerequisite editing in KA
@@ -28,6 +55,7 @@ WC - minor bugfixes in patterns.php
      and add subprocess links in the "view process" part that already
      existed when you click on a process name.
      added the quest validator (linked in "list quests")
+     patches by ravna
 
 *** 2009-04-10 by Stefano Angeleri
 WC - commonfunctions::mysql_query2 changed timezone to UTC rather that using system 
@@ -58,6 +86,7 @@ WC - commonfunctions::mysql_query2 changed timezone to UTC rather that using sys
      Added a "create new transformation" link in "edit pattern" and and 
      in the main menu. Added the new transformation form.
      Added a "delete transformation" link in the "edit transformation" menu.
+     patches by ravna
 
 *** 2009-03-30 by Andrew Dai
 WC - Removed LIKE wildcard matches from the accounts table as this was causing
