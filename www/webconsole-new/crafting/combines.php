@@ -4,6 +4,11 @@ function editcombine()
 {
     if (checkaccess('crafting','edit') && isset($_POST['commit']) && $_POST['commit'] == "Edit Combine")
     {
+        if ($_POST['item_id'][0] == '')
+        {
+            echo '<p class="error">A combination must have at least 1 source item, this should be the top item on your list.</p>';
+            return;
+        }
         for ($i = 0; $i < count($_POST['id']); $i++)
         {
             $id = mysql_real_escape_string($_POST['id'][$i]);
@@ -104,6 +109,11 @@ function createcombine()
 {
     if (checkaccess('crafting','create') && isset($_POST['commit']) && $_POST['commit'] == "Create Combine")
     { // The user wants to submit data.
+        if ($_POST['item_id'][0] == '')
+        {
+            echo '<p class="error">A combination must have at least 1 source item, this should be the top item on your list.</p>';
+            return;
+        }
         for ($i = 0; $i < count($_POST['item_id']); $i++)
         {
             $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
