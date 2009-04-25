@@ -8,7 +8,8 @@ function listpatterns(){
     $Alt = FALSE;
     echo '<table><tr><th>ID</th><th>Pattern Name</th><th>Description</th><th>Design Item</th>';
     echo '<th>Actions</th>';
-    echo '</tr>';
+    echo '</tr>'; // next line shows all transforms/combines without pattern. (general knowledge)
+    echo '<tr class="color_b"><td>0</td><td>Patternless </td><td>transforms/combinations </td><td>none</td><td><a href="./index.php?do=editpattern&amp;id=0">Details</a></td></tr>';
     while ($row = mysql_fetch_array($r, MYSQL_ASSOC)){
       $Alt = !$Alt;
       if ($Alt){
@@ -57,25 +58,32 @@ function editpattern(){
         $Items["$iid"]=$row['name'];
         $Items[0]="";
       }
-      $query = "SELECT pattern_name, description, designitem_id FROM trade_patterns WHERE id='$pattern_id'";
-      $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
-      if (checkaccess('crafting', 'edit')){
-        $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletepattern&id='.$pattern_id.'">Delete Pattern</a>' : "");
-        echo '<form action="./index.php?do=editpattern&amp;id='.$pattern_id.'" method="post">';
-        echo '<table><tr><td>Pattern Name:</td><td><input type="text" name="pattern_name" value="'.$row['pattern_name'].'"/></td></tr>';
-        echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.$row['description'].'</textarea></td></tr>';
-        $i = $row['designitem_id'];
-        echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
-        echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>';
-        echo '</table>';
-        echo '</form>';
-      }else{
-        echo '<table>';
-        echo '<tr><td>Pattern Name:</td><td>'.$row['pattern_name'].'</td></tr>';
-        echo '<tr><td>Pattern Description:</td><td>'.$row['description'].'</td></tr>';
-        $i = $row['designitem_id'];
-        echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
+      if ($pattern_id != 0) // show pattern details only if pattern_id is not 0. (patternless/general knowledge combines/transforms.
+      {
+          $query = "SELECT pattern_name, description, designitem_id FROM trade_patterns WHERE id='$pattern_id'";
+          $result = mysql_query2($query);
+          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          if (checkaccess('crafting', 'edit')){
+            $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletepattern&id='.$pattern_id.'">Delete Pattern</a>' : "");
+            echo '<form action="./index.php?do=editpattern&amp;id='.$pattern_id.'" method="post">';
+            echo '<table><tr><td>Pattern Name:</td><td><input type="text" name="pattern_name" value="'.$row['pattern_name'].'"/></td></tr>';
+            echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.$row['description'].'</textarea></td></tr>';
+            $i = $row['designitem_id'];
+            echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
+            echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>';
+            echo '</table>';
+            echo '</form>';
+          }else{
+            echo '<table>';
+            echo '<tr><td>Pattern Name:</td><td>'.$row['pattern_name'].'</td></tr>';
+            echo '<tr><td>Pattern Description:</td><td>'.$row['description'].'</td></tr>';
+            $i = $row['designitem_id'];
+            echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
+          }
+      }
+      else
+      {
+        echo '<p>Please take note that this is not technically a pattern, it is the lack of it. This collection of combines and transforms is considered "general knowledge" and because of that is not associated with any pattern. You are free to add/edit any of these as long as you keep this in mind.</p>';
       }
       echo '<p class="bold">Available Transforms</p>';
       $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, i.name";
