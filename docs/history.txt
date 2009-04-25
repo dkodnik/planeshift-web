@@ -23,6 +23,19 @@ WC - pattern listing:
 
    - questparser: added a check for Menu: tags, a warning is added if they are longer than 80 chars. 
                   Also changed the item checker to only consider items of stat_type 'B' as valid. 
+   -patterns: 
+    Added a link to ID 0 in the pattern listing. 
+    This shows all tranforms/combines with pattern ID 0 (no pattern). 
+    These are the transforms/combines that are considered 
+    "general knowledge" and are not associated with any pattern.
+    
+    -trasformations:
+     You can now chose to leave either result_item or source_item empty, 
+     if both are empty, an error is produced.
+    
+    -combinations:
+     Now checks for at least 1 source item. 
+     (This must be the top most source item in the list.)
    patch by ravna
    
    - fixed a wrong call in mscripts.php
