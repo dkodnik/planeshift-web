@@ -36,6 +36,8 @@ to what line in your browser.<br>
             {
                 parseScripts($id, $show_lines);
             }
+            append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script2</a>');
+            append_log('');
         }
         echo $parse_log;
     }
@@ -580,8 +582,8 @@ function parse_command($command, &$assigned, $quest_id, $step)
                 {
                     append_log("parse error, no faction ($faction) found in database on line $line_number");
                 }
-            }
-            elseif (stripos($given[$i], " exp") !== false)
+            } // takes the last 4 chars from the "give" string to see if it's " exp", so it doesn't match "expert cookbook" or something by accident.
+            elseif (strcasecmp(substr(trim($given[$i]), -4) , " exp") === 0)
             {
                 $words = explode(" ", trim($given[$i]));
                 if (count($words) != 2 || !is_numeric(trim($words[0])))

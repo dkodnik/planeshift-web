@@ -112,12 +112,18 @@
       case 'items':
         include('./items/itemmain.php');
         itemmain();
-        break;
+        break; 
       case 'listitems':
         include('./items/itemmain.php');
         include('./items/listitems.php');
         itemmain();
         listitems();
+        break;
+      case 'showitemusage':
+        include('./items/itemmain.php');
+        include('./items/listitems.php');
+        itemmain();
+        showitemusage();
         break;
       case 'edititem':
         include('./items/itemmain.php');

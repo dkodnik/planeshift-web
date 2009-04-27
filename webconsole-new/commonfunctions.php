@@ -182,7 +182,7 @@ function PrepSelect($a){
   $typevals["cast_events"] = "SELECT name, name FROM progression_events WHERE name LIKE 'cast %'";
   $typevals["glyphs"] = "SELECT id, name FROM item_stats WHERE category_id='5' ORDER BY name";
   $typevals["locations"] = "SELECT id, name FROM sc_locations ORDER BY name";
-  $typevals["process"] = "SELECT process_id, name FROM trade_processes ORDER BY name";
+  $typevals["process"] = "SELECT DISTINCT process_id, CONCAT(process_id, ' - ', name) FROM trade_processes ORDER BY name";
   $typevals["patterns"] = "SELECT id, pattern_name FROM trade_patterns ORDER BY pattern_name";
   $typevals["mind_slot_items"] = "SELECT id, name FROM item_stats WHERE stat_type='B' AND valid_slots LIKE '%MIND%' ORDER BY name";
 
@@ -214,7 +214,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["glyphs"] = '""';
   $typevals["locations"] = '"-1"';
   $typevals["process"] = '""';
-  $typevals["patterns"] = '""';
+  $typevals["patterns"] = '"0"';
 
 
   $nullval = $typevals[$type];

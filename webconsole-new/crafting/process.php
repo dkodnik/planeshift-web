@@ -21,7 +21,7 @@ function listprocess()
         "NONE" as well, so here we have a bug most likely. Currently it does *not* show anything when the ID is '0', so it shows 
         swords (skill id 0) as no skill too. (although it does have a min/max, so that will in turn cause it to work fine in engine.)
         */
-        $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name";
+        $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name, t.process_id, t.subprocess_number";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $id = $row['process_id'];

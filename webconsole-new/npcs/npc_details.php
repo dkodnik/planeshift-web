@@ -12,13 +12,13 @@ function npc_main(){
         if ($row['npc_master_id'] == $id){
           echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
         }else{
-          echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+          echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
         }
-        $Sectors = PrepSelect('sector');
+        $Sectors = PrepSelect('sectorid');
         echo '<tr><td>Location:</td>';
         echo '<td>';
         echo '<table><tr><th>Sector</th><th>X</th><th>Y</th><th>Z</th><th>Rotation</th><th>Instance</th></tr>';
-        echo '<tr><td>'.DrawSelectBox('sector', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td><td><input type="text" name="loc_x" value="'.$row['loc_x'].'" size="5"/></td>';
+        echo '<tr><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td><td><input type="text" name="loc_x" value="'.$row['loc_x'].'" size="5"/></td>';
         echo '<td><input type="text" name="loc_y" value="'.$row['loc_y'].'" size="5"/></td>';
         echo '<td><input type="text" name="loc_z" value="'.$row['loc_z'].'" size="5"/></td>';
         echo '<td><input type="text" name="loc_yrot" value="'.$row['loc_yrot'].'" size="5"/></td>';

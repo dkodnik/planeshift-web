@@ -24,7 +24,7 @@ function editcombine()
             {
                 if ($id != 0)
                 {
-                    $query = "UPDATE trade_combinations SET result_id='$result_id', result_qty='$result_qty', item_id='$item_id', min_qty='$min_qty', max_qty='$max_qty', description='$description' WHERE id='$id'";
+                    $query = "UPDATE trade_combinations SET pattern_id='$pattern_id', result_id='$result_id', result_qty='$result_qty', item_id='$item_id', min_qty='$min_qty', max_qty='$max_qty', description='$description' WHERE id='$id'";
                     mysql_query2($query);
                 }
                 else // someone added this entry.
@@ -57,7 +57,8 @@ function editcombine()
     elseif (checkaccess('crafting','edit') && isset($_GET['id']) && isset($_GET['pattern_id']))
     {
         $id = mysql_real_escape_string($_GET['id']);
-        $query = "SELECT id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE result_id='$id'";
+        $pattern_id = mysql_real_escape_string($_GET['pattern_id']);
+        $query = "SELECT id, pattern_id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE result_id='$id' AND pattern_id='$pattern_id'";
         $result = mysql_query2($query);
         if (mysql_num_rows($result) < 1)
         {
@@ -73,12 +74,14 @@ function editcombine()
                 $result_item = $row[1];
             }
         }
-        $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&pattern_id='.$_GET['pattern_id'].'&result_id='.$id.'">Delete Combination</a>' : "");
+        $patterns = PrepSelect('patterns');
+        $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&pattern_id='.$pattern_id.'&result_id='.$id.'">Delete Combination</a>' : "");
         $row = mysql_fetch_array($result);
         echo '<p class="bold">Edit Combine</p>'."\n"; 
         echo 'If you set any item to "NONE", it will be removed from the combination.';
-        echo '<form action="./index.php?do=editcombine&id='.$_GET['pattern_id'].'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
-        echo '<tr><td>Pattern id</td><td><input type="hidden" name="pattern_id" value="'.$_GET['pattern_id'].'" />'.$_GET['pattern_id'].'</td></tr>';
+        echo '<form action="./index.php?do=editcombine&id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
+        echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
+        echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
         echo '<tr><td>Result Item</td><td><input type="hidden" name="result_id" value="'.$id.'" />'.$result_item.'</td></tr>';
         echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" /></td></tr>';
         do 
