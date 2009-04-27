@@ -1,3 +1,47 @@
+*** 2009-04-27 by Stefano Angeleri
+WC -Combinations:
+    Minor bugfix, sql query now also uses pattern_id in the query.
+    in edit combination, added a dropdown with the pattern_name, 
+    if it's changed, move it to another pattern.
+
+   -pattern:
+    transform list changed sorting to process name, source name, result name
+
+   -npc_details: 
+    fixed an html bug where the npc_master_id input box was 
+    not properly named due to a missing " in the type field before it.
+    Changed the source of the dropdown menu for loc_sector_id 
+    from 1 that has "name, name" to one that has "id, name" so it can 
+    properly update the ID (which is used in the npc details rather than the name.)
+
+   -quest_parser: 
+    fixed a bug where "give 1 Expert hammer" would be 
+    misinterpreted as "give 1 exp" Changed it by checking for " exp" at the end 
+    of the command instead of just " exp" anywhere in the command.
+    added a link to "edit this script" after a script has been validated.
+
+   -item_usage:
+    method in listitem, lists all places where the selected item is used. 
+    This method is also used to block deletion of items that 
+    are still in use. For deletion, any references found in quest scripts do no 
+    block because detection is only 98% accurate, so 
+    there can be a random false positive in certain scripts (when a certain 
+    line contains both the word "give" or "player gives" and the item name).
+
+   -edit transform:
+    added a dropdown with the pattern_name, if it's changed, move it to another pattern.
+
+   -Process:
+    changed sorting to include id and subprocess_number after name.
+
+   -commonfunctions:
+    prepselect('processes') to show only distinct results. (results that have both the same 
+    id and name are subprocesses of each other, and ignored by the "id" anyway.
+    Additionally, it now shows "id" in front of the name in the drop down, 
+    so values with the same name can be distinguished.
+    
+    patch by ravna
+
 *** 2009-04-24 by Stefano Angeleri
 WC - pattern listing:
      *changed transform/combine in edit pattern, 
