@@ -27,14 +27,17 @@ function deleteitem(){
       }
     }else{
       $id = mysql_real_escape_string($_GET['item']);
-      $query = "SELECT COUNT(id) FROM item_instances WHERE item_stats_id_standard=$id";
-      $result = mysql_query2($query);
-      $row = mysql_fetch_row($result);
-      $num = $row[0];
+      include('./items/listitems.php');
+      echo 'Looking up usage for this item.';
+      if (showitemusage()) 
+      {
+        echo '<p class="error"> You cannot delete this item because it is still in use.';
+        return;
+      }
       $query = "SELECT name FROM item_stats WHERE id=$id";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
-      echo '<p>You are about to permanently delete item id '.$id.' and all related instances<br/>Item Name: '.$row['name'].'<br/>Number of Instances: '.$num.'</p>';
+      echo '<p>No usage of this item was found <br /><br />You are about to permanently delete item id '.$id.' Item Name: '.$row['name'].'</p>';
       echo '<form action="./index.php?do=deleteitem&amp;commit&amp;id='.$id.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
     }
   }else{

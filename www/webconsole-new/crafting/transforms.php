@@ -9,6 +9,7 @@ function edittransform(){
     }
     if (isset($_POST['commit']) && $_POST['commit'] == "Update Transform"){
       $id = mysql_real_escape_string($_GET['id']);
+      $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
       $item_qty = mysql_real_escape_string($_POST['item_qty']);
       $item_id = mysql_real_escape_string($_POST['item_id']);
       $item_id = ($item_id == '' ? 0 : $item_id); // change id to 0 if it is not provided by user ('')
@@ -23,7 +24,7 @@ function edittransform(){
         echo '<p class="error">Source and Result item can not both be empty.</p>';
         return;
       }
-      $query = "UPDATE trade_transformations SET item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', trans_points='$trans_points', penilty_pct='$penilty_pct' WHERE id='$id'";
+      $query = "UPDATE trade_transformations SET pattern_id='$pattern_id', item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', trans_points='$trans_points', penilty_pct='$penilty_pct' WHERE id='$id'";
       $result = mysql_query2($query);
       echo '<p class="error">Update Successful</p>';
       unset($_POST);
@@ -33,12 +34,15 @@ function edittransform(){
       $id = mysql_real_escape_string($_GET['id']);
       $items = PrepSelect('items');
       $process = PrepSelect('process');
-      $query = "SELECT process_id, result_id, result_qty, item_id, item_qty, trans_points, penilty_pct, description FROM trade_transformations WHERE id='$id'";
+      $patterns = PrepSelect('patterns');
+      $query = "SELECT pattern_id, process_id, result_id, result_qty, item_id, item_qty, trans_points, penilty_pct, description FROM trade_transformations WHERE id='$id'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
       $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletetransform&amp;id='.$id.'">Delete Transform</a>' : "");
       echo '<p class="header">Transformation Details</p>';
       echo '<form action="./index.php?do=transform&amp;id='.$id.'" method="post"><table>';
+      echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
+      echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
       echo '<tr><td>Source Item</td><td><input type="text" name="item_qty" value="'.$row['item_qty'].'" size="4"/> '.DrawSelectBox('items', $items, 'item_id', $row['item_id'], true).'</td></tr>';
       echo '<tr><td>Process</td><td>'.DrawSelectBox('process', $process, 'process_id', $row['process_id']).'</td></tr>';
       echo '<tr><td>Result Item</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" size="4"/> '.DrawSelectBox('items', $items, 'result_id', $row['result_id'], true).'</td></tr>';
