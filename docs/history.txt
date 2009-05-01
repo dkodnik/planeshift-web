@@ -1,3 +1,22 @@
+*** 2009-05-02 by Stefano Angeleri
+WC -validatequest:
+    added more explicit warnings for missing : after menu or P, (before it said "Unknown command").
+    Also added a check to warn for missing ':' after any trigger that is more than 3 characters 
+    long. (basically "Menu:" and "Full NPC Name:") shortened npc names are too short and can match anything.
+
+    -process:
+     added a list of all tranforms using a process in each "process details" section.
+     Changed "item used" to "Work Item".
+     Items now link to item details.
+
+    -listprocess:
+     Changed "item used" to "Work Item" on process listing in "checkusage".
+
+    -Combines:
+     added a dropdown for "result item" in edit combine.
+
+     patch by ravna
+
 *** 2009-04-27 by Stefano Angeleri
 WC -Combinations:
     Minor bugfix, sql query now also uses pattern_id in the query.
