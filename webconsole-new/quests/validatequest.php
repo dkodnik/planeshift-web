@@ -277,6 +277,14 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
     $pos = 0;
     while (($pos = stripos($line, $trigger, $pos)) !== false) 
     {
+        if (strlen($trigger) > 3) //check if this is not some "S:" type NPC shortname, can't check those.
+        {
+            $trigger_without_colon = substr($trigger, 0, strlen($trigger)-1); // in all other cases, check if the second "menu:" or "name:" has a colon following it.
+            if (stripos($line, $trigger_without_colon, $pos + strlen($trigger)) !== false)
+            {
+                append_log("Warning, no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
+            }
+        }
         $next_pos = stripos($line, $trigger, $pos + strlen($trigger)); //check if there is another one
         if ($next_pos === false)  //if no more triggers are found, this line goes till the end
         {
@@ -711,6 +719,14 @@ function parse_command($command, &$assigned, $quest_id, $step)
     }
     elseif (strncasecmp($command, "Introduce", 9) === 0)
     {
+    }
+    elseif (strncasecmp($command, "Menu", 4) === 0) // This is basically an error catcher, it should be below all other cases.
+    {
+        append_log("parse error, no ':' following 'Menu' at line $line_number");
+    }
+    elseif (strncasecmp($command, "P", 1) === 0) // This is basically an error catcher, it should be below all other cases.
+    {
+        append_log("parse error, no ':' following 'P' at line $line_number");
     }
     else 
     {

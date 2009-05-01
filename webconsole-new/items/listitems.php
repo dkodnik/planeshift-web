@@ -325,7 +325,7 @@ function showitemusage()
         if (checkaccess('crafting', 'read'))
         {
             echo '<p class="bold">Processes using this item:</p>';
-            echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+            echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
             if (checkaccess('crafting', 'edit')){
                 echo '<th>Actions</th>';
             }

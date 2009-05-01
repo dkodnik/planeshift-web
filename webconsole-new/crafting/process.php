@@ -3,30 +3,17 @@ function listprocess()
 {
     if (checkaccess('crafting', 'read'))
     {
-        echo '<p class="header">Process Information</p>';
-        $result = mysql_query2("SELECT id, name FROM item_stats");
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-            $i = $row['id'];
-            $items["$i"] = $row['name'];
-        }
-        $items[0] = "";
-        $result = mysql_query2("SELECT skill_id, name FROM skills");
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-            $i = $row['skill_id'];
-            $skills["$i"] = $row['name'];
-        }
-        $skills[0] = "";
         /*
         Notice: skill '0' is sword skill, however, this is the only table that does that, also the database seems to use '0' as 
         "NONE" as well, so here we have a bug most likely. Currently it does *not* show anything when the ID is '0', so it shows 
         swords (skill id 0) as no skill too. (although it does have a min/max, so that will in turn cause it to work fine in engine.)
         */
-        $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name, t.process_id, t.subprocess_number";
+        $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, i.name AS workitem_name, i.category_id AS work_cat_id, t.equipment_id, ii.name AS equipment_name, ii.category_id AS equipment_cat_id, t.constraints, t.garbage_id, iii.name AS garbage_name, iii.category_id AS garbage_cat_id, t.garbage_qty, t.primary_skill_id, s.name AS primary_skill_name, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, ss.name AS secondary_skill_name, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id LEFT JOIN item_stats AS i ON i.id=t.workitem_id LEFT JOIN item_stats AS ii ON ii.id=t.equipment_id LEFT JOIN item_stats AS iii ON iii.id=t.garbage_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name, t.process_id, t.subprocess_number";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $id = $row['process_id'];
         mysql_data_seek($result, 0);
-        echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+        echo '<table><tr><th>Name</th><th>Sub-<br>Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
         if (checkaccess('crafting', 'edit')){
             echo '<th>Actions</th>';
         }
@@ -45,17 +32,12 @@ function listprocess()
             echo '<td><a href="./index.php?do=process&id='.$row['process_id'].'">'.$row['name'].'</a></td>';
             echo '<td>'.$row['subprocess_number'].'</td>';
             echo '<td>'.$row['animation'].'</td>';
-            $i = $row['workitem_id'];
-            echo '<td>'.$items["$i"].'</td>';
-            $i = $row['equipment_id'];
-            echo '<td>'.$items["$i"].'</td>';
+            echo '<td><a href="./index.php?do=listitems&override1&category='.$row['work_cat_id'].'&item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
+            echo '<td><a href="./index.php?do=listitems&override1&category='.$row['equipment_cat_id'].'&item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
             echo '<td>'.$row['constraints'].'</td>';
-            $i = $row['garbage_id'];
-            echo '<td>'.$row['garbage_qty'].' </td><td> '.$items["$i"].'</td>';
-            $i = $row['primary_skill_id'];
-            echo '<td>'.$skills["$i"].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
-            $i = $row['secondary_skill_id'];
-            echo '<td>'.$skills["$i"].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
+            echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['garbage_cat_id'].'&item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
+            echo '<td>'.$row['primary_skill_name'].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
+            echo '<td>'.$row['secondary_skill_name'].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
             echo '<td>'.$row['description'].'</td>';
             if (checkaccess('crafting','edit'))
             {
@@ -90,12 +72,12 @@ function editprocess(){
       $Skills["$i"] = $row['name'];
     }
     $Skills[0] = "";
-    $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes AS t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id WHERE process_id = '$id' ORDER BY s.name, t.primary_min_skill, ss.name, secondary_min_skill, t.name";
+            $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, i.name AS workitem_name, i.category_id AS work_cat_id, t.equipment_id, ii.name AS equipment_name, ii.category_id AS equipment_cat_id, t.constraints, t.garbage_id, iii.name AS garbage_name, iii.category_id AS garbage_cat_id, t.garbage_qty, t.primary_skill_id, s.name AS primary_skill_name, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, ss.name AS secondary_skill_name, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id LEFT JOIN item_stats AS i ON i.id=t.workitem_id LEFT JOIN item_stats AS ii ON ii.id=t.equipment_id LEFT JOIN item_stats AS iii ON iii.id=t.garbage_id WHERE process_id = '$id' ORDER BY s.name, t.primary_min_skill, ss.name, secondary_min_skill, t.name";
     $result = mysql_query2($query);
     $row = mysql_fetch_array($result, MYSQL_ASSOC);
     echo '- '.$row['name'].'</p>';
     mysql_data_seek($result, 0);
-    echo '<table><tr><th>Sub-Process</th><th>Animation</th><th>Item Used</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+    echo '<table><tr><th>Sub-Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
     if (checkaccess('crafting', 'edit')){
       echo '<th>Actions</th>';
     }
@@ -110,17 +92,12 @@ function editprocess(){
       }
       echo '<td>'.$row['subprocess_number'].'</td>';
       echo '<td>'.$row['animation'].'</td>';
-      $i = $row['workitem_id'];
-      echo '<td>'.$Items["$i"].'</td>';
-      $i = $row['equipment_id'];
-      echo '<td>'.$Items["$i"].'</td>';
+      echo '<td><a href="./index.php?do=listitems&override1&category='.$row['work_cat_id'].'&item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
+      echo '<td><a href="./index.php?do=listitems&override1&category='.$row['equipment_cat_id'].'&item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
       echo '<td>'.$row['constraints'].'</td>';
-      $i = $row['garbage_id'];
-      echo '<td>'.$row['garbage_qty'].' </td><td> '.$Items["$i"].'</td>';
-      $i = $row['primary_skill_id'];
-      echo '<td>'.$Skills["$i"].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
-      $i = $row['secondary_skill_id'];
-      echo '<td>'.$Skills["$i"].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
+      echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['garbage_cat_id'].'&item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
+      echo '<td>'.$row['primary_skill_name'].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
+      echo '<td>'.$row['secondary_skill_name'].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
       echo '<td>'.$row['description'].'</td>';
       if (checkaccess('crafting','edit')){
         echo '<td><a href="./index.php?do=editsubprocess&amp;id='.$id.'&amp;sub='.$row['subprocess_number'].'">Edit</a></td>';
@@ -131,7 +108,60 @@ function editprocess(){
     if (checkaccess('crafting','create')){
         echo '<a href="./index.php?do=createprocess&amp;id='.$id.'">Create new Sub-process</a>';
     }
-  }else{
+    $query = "SELECT t.id, t.process_id, t.pattern_id, pat.pattern_name, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON t.pattern_id=pat.id WHERE t.process_id='$id' ORDER BY pattern_id";
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) > 0)  
+    {
+        echo '<p>Transformations using this process:</p>';
+        echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
+        $alt = false;
+        while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
+            $alt = !$alt;
+            if ($alt)
+            {
+            echo '<tr class="color_a">';
+            }
+            else
+            {
+              echo '<tr class="color_b">';
+            }
+            $pattern_name = ($row['pattern_id'] != 0 ? $row['pattern_name'] : "patternless");
+            echo '<td><a href="./index.php?do=editpattern&id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
+            $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+            if (checkaccess('items','edit'))
+            {
+                echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> </td>';
+            }
+            else
+            {
+                echo '<td>'.$row['item_qty'].' </td><td> '.$item_name.' </td>';
+            }
+            echo '<td>'.$row['item_cat'].'</td>';
+            echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
+            $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+            if (checkaccess('items','edit'))
+            {
+                echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+            }
+            else
+            {
+                echo '<td>'.$row['result_qty'].' </td><td> '.$result_name.'</td>';
+            }
+            echo '<td>'.$row['result_cat'].'</td>';
+            echo '<td>'.$row['trans_points'].'</td>';
+            echo '<td>'.$row['penilty_pct'].'</td>';
+            echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+    }
+    else
+    {
+        echo '<p>No transforms use this process.</p>';
+    }
+  }
+  else
+  {
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
 }
@@ -378,11 +408,12 @@ function deleteprocess()
         while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
             $iid=$row['id'];
             $items["$iid"]=$row['name'];
+            $items[0] = "";
         }
         
         if ($subprocess_number == 0) // this is a main process
         {
-            $query = "SELECT t.id, t.pattern_id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE t.process_id='$process_id' GROUP BY pattern_id";
+            $query = "SELECT t.id, t.pattern_id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_stats AS i ON i.id=t.result_id WHERE t.process_id='$process_id' ORDER BY pat.pattern_name, i.name";
             $result = mysql_query2($query);
             if (mysql_num_rows($result) > 0)  // there still are dependencies, do not offer to delete anything.
             {

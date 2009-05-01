@@ -82,7 +82,7 @@ function editcombine()
         echo '<form action="./index.php?do=editcombine&id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
         echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
         echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
-        echo '<tr><td>Result Item</td><td><input type="hidden" name="result_id" value="'.$id.'" />'.$result_item.'</td></tr>';
+        echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', $id, true).'</td></tr>';
         echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" /></td></tr>';
         do 
         {
