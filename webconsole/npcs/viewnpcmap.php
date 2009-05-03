@@ -4,7 +4,7 @@ function viewnpcmap(){
 
   checkAccess('listnpc', '', 'read');
 
-  $sector = $_POST['sector'];
+  $sector = $_REQUEST['sector'];
 
   if ($sector!=null and $sector!="") {
 
@@ -118,71 +118,105 @@ document.onmousemove=positiontip;
 </script>
 
 <?PHP
-
+if(!isset($_GET['live'])){
 echo "<h1>NPC Map View $sector</h1>";
+}
+else
+{
+echo "<h1>LIVE Map View $sector</h1>";
+}
 
 echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:90px\">";
 echo "<img src=\"index.php?page=viewnpcdraw&sector=".$sector."\" >";
 
-  $data = getDataFromArea($sector);
-  $sectors = $data[0];
-  $query = $query . " select id,name,loc_x,loc_y,loc_z,loc_sector_id, npc_impervious_ind from characters where npc_master_id>0 and " . $sectors . " and npc_spawn_rule>0";
-  $res = mysql_query2($query);
+$data = getDataFromArea($sector);
+$sectors = $data[0];
+$centerx = $data[1];
+$centery = $data[2];
+$scalefactorx = $data[3];
+$scalefactory = $data[4];
 
-  $i=0;
-  while ($line = mysql_fetch_array($res, MYSQL_NUM)){
-    $elem = $line[0] . "|" . $line[1] . "|x|" . $line[2]  . "|" . $line[4]."|".$line[6];
-    $result .= $elem . "\n";
-   }
-// get each line
-$tok = strtok($result, "\n");
-while ($tok) {
-   $peoples[]=$tok;
-   $tok = strtok("\n");
+if(!isset($_GET['live'])){
+	$query = $query . " select id,name,loc_x,loc_y,loc_z,loc_sector_id, npc_impervious_ind from characters where npc_master_id>0 and " . $sectors . " and npc_spawn_rule>0";
+	$res = mysql_query2($query);
+	
+	$i=0;
+	while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+	$elem = $line[0] . "|" . $line[1] . "|x|" . $line[2]  . "|" . $line[4]."|".$line[6];
+	$result .= $elem . "\n";
+	}
+	// get each line
+	$tok = strtok($result, "\n");
+	while ($tok) {
+	   $peoples[]=$tok;
+	   $tok = strtok("\n");
+	}
+
+	
+	// get all info for each line
+	foreach( $peoples as $people ) {
+	
+	   // skips commented lines
+	   $pos = strstr($people, "#");
+	
+	   if ($pos=="0") {
+		 $tok2 = strtok($people, "|");
+		 $infos[] = "";
+		 $count = 1;
+		 while ($tok2) {
+		  $tok2 = str_replace("\n", "", $tok2);
+		  $tok2 = str_replace("\r", "", $tok2);
+		  $infos[$count]=$tok2;
+		  $tok2 = strtok("|");
+		  $count++;
+		 }
+	
+	
+		 $x= $centerx+($infos[4]*$scalefactorx);
+		 $y= $centery-($infos[5]*$scalefactory);
+		 
+		 if ($infos[6]=="Y") {
+		  $ball = "ball01m.gif";
+		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+		 echo "<A HREF=index.php?page=viewnpc&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
+	
+		  } else {
+		  $ball = "ball04m.gif";
+		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+		 echo "<A HREF=index.php?page=viewnpc&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
+		  }
+	
+		}
+	}
+}
+else
+{
+	// Get Live position data
+	$handle = @fopen("../../psserver/planeshift/report.xml","r");
+	if($handle) {
+		while ( !feof($handle) )
+		{
+			$buffer = fgets($handle, 4096);
+			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches) && $matches['sector'] == $sector) {
+				$ball = "ball01m.gif";
+				$x= $centerx+($matches['x']*$scalefactorx);
+				$y= $centery-($matches['z']*$scalefactory);
+				echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+				echo "<img border=0 src=$ball width=8 height=8></div>\n";
+			}
+			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches) && $matches['sector'] == $sector) {
+				$ball = "ball04m.gif";
+				$x= $centerx+($matches['x']*$scalefactorx);
+				$y= $centery-($matches['z']*$scalefactory);
+				echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+				echo "<img border=0 src=$ball width=10 height=10></div>\n";
+			}
+			
+		}
+	}
+	fclose($handle);
 }
 
-// get all info for each line
-foreach( $peoples as $people ) {
-
-   // skips commented lines
-   $pos = strstr($people, "#");
-
-   if ($pos=="0") {
-     $tok2 = strtok($people, "|");
-     $infos[] = "";
-     $count = 1;
-     while ($tok2) {
-      $tok2 = str_replace("\n", "", $tok2);
-      $tok2 = str_replace("\r", "", $tok2);
-      $infos[$count]=$tok2;
-      $tok2 = strtok("|");
-      $count++;
-     }
-
-    $centerx = $data[1];
-    $centery = $data[2];
-    $scalefactorx = $data[3];
-    $scalefactory = $data[4];
-
-     $x= $centerx+($infos[4]*$scalefactorx);
-     $y= $centery-($infos[5]*$scalefactory);
-     
-     if ($infos[6]=="Y") {
-      $ball = "ball01m.gif";
-     echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-     echo "<A HREF=index.php?page=viewnpc&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
-
-      } else {
-      $ball = "ball04m.gif";
-     echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-     echo "<A HREF=index.php?page=viewnpc&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
-      }
-
-  }
-}
-
-
-  }
 
 
   echo "  <FORM action=\"index.php?page=viewnpcmap\" METHOD=POST>";
@@ -193,7 +227,7 @@ foreach( $peoples as $people ) {
   echo "</FORM>";
 
 }
-
+}
 ?>
 
       
