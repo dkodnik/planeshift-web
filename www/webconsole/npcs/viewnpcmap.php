@@ -4,7 +4,7 @@ function viewnpcmap(){
 
   checkAccess('listnpc', '', 'read');
 
-  $sector = $_REQUEST['sector'];
+  $sector = $_GET['sector'];
 
   if ($sector!=null and $sector!="") {
 
@@ -218,15 +218,14 @@ else
 }
 
 
-
-  echo "  <FORM action=\"index.php?page=viewnpcmap\" METHOD=POST>";
+}
+  echo "  <FORM action=\"index.php?page=viewnpcmap\" METHOD=GET><input type=hidden name=\"page\" value=\"viewnpcmap\">";
   echo "  <b>Select one area:</b> <br><br> Area: ";
   SelectAreas("","sector");
-  echo " <br><br><INPUT type=submit value=view><br><br>";
+  echo " <br><input type=\"checkbox\" name=\"live\" value=\"yes\">LIVE view<br><br><INPUT type=submit value=view><br><br>";
   
   echo "</FORM>";
 
-}
 }
 ?>
 
