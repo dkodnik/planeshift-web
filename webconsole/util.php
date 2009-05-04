@@ -377,90 +377,105 @@ function getDataFromArea($area) {
       $data[2] = 180;
       $data[3] = 2.2;
       $data[4] = 2.2;
+      $data[5] = array('hydlaa_plaza', 'tavern_de_kadel');
   } else if ($area=="hydlaa_jayose") {
       $data[0] = "(loc_sector_id=49 or loc_sector_id=40)";
       $data[1] = -250;
       $data[2] = -150;
       $data[3] = 3.2;
       $data[4] = 3.2;
+      $data[5] = array('hydlaa_jayose', 'jayose_inside');
   } else if ($area=="hydlaa_winch") {
       $data[0] = "(loc_sector_id=72)";
       $data[1] = 200;
       $data[2] = -430;
       $data[3] = 2.2;
       $data[4] = 2.2;
+      $data[5] = array('hydlaa_winch');
   } else if ($area=="sewers") {
       $data[0] = "(loc_sector_id>26 and loc_sector_id<38)";
       $data[1] = 645;
       $data[2] = 175;
       $data[3] = 2.5;
       $data[4] = 2.5;
+      $data[5] = array('swr-pink', 'swr-lightgreen', 'swr-yellow', 'swr-purple', 'swr-red', 'swr-blue', 'swr-orange', 'swr-darkgreen01', 'swr-darkgreen02', 'swr-lightblue01', 'swr-lightblue02');
   } else if ($area=="laanxdungeon") {
       $data[0] = "(loc_sector_id>43 and loc_sector_id<49)";
       $data[1] = 1452;
       $data[2] = 815;
       $data[3] = 6.73;
       $data[4] = 6.73;
+      $data[5] = array('laanxdungeon', 'wtowerdung', 'wtower', 'wtowerexit', 'wtowertop');
   } else if ($area=="arena") {
       $data[0] = "(loc_sector_id>3 and loc_sector_id<15)";
       $data[1] = 470;
       $data[2] = 456;
       $data[3] = 4.43;
       $data[4] = 4.43;
+      $data[5] = array('hall', 'trans1', 'dngn', 'cntr', 'trans2', 'merc', 'upper', 'entr', 'outer', 'hycorr1', 'hycorr2');
   } else if ($area=="ojaroad1") {
       $data[0] = "(loc_sector_id=22)";
       $data[1] = 603;
       $data[2] = 600;
       $data[3] = 0.9;
       $data[4] = 0.9;
+      $data[5] = array('ojaroad1');
   } else if ($area=="ojaroad2") {
       $data[0] = "(loc_sector_id=59)";
       $data[1] = 632;
       $data[2] = 625;
       $data[3] = 1;
       $data[4] = 1;
+      $data[5] = array('ojaroad2');
   } else if ($area=="akkaio") {
       $data[0] = "(loc_sector_id>16 and loc_sector_id<20)";
       $data[1] = 445;
       $data[2] = 465;
       $data[3] = 5.3;
       $data[4] = 5.3;
+      $data[5] = array('ojapath', 'Akk-Central', 'Akk-East');
   } else if ($area=="bdroad1") {
       $data[0] = "(loc_sector_id=60)";
       $data[1] = 491;
       $data[2] = 493;
       $data[3] = 0.76;
       $data[4] = 0.76;
+      $data[5] = array('bdroad1');
   } else if ($area=="bdroad2") {
       $data[0] = "(loc_sector_id=61)";
       $data[1] = 669;
       $data[2] = 667;
       $data[3] = 1.07;
       $data[4] = 1.07;
+      $data[5] = array('bdroad2');
   } else if ($area=="bdoorsout") {
       $data[0] = "(loc_sector_id=67)";
       $data[1] = 832;
       $data[2] = -749;
       $data[3] = 0.55;
       $data[4] = 0.55;
+      $data[5] = array('bdoorsout');
   } else if ($area=="bdoorsin") {
       $data[0] = "(loc_sector_id=66)";
       $data[1] = 656;
       $data[2] = -977;
       $data[3] = 2.2;
       $data[4] = 2.2;
+      $data[5] = array('bdoorsin');
   } else if ($area=="npcroom1") {
       $data[0] = "(loc_sector_id=3)";
       $data[1] =  321.94;
       $data[2] = -371.05;
       $data[3] =    3.22;
       $data[4] =    3.26;
+      $data[5] = array('NPCroom');
   } else if ($area=="npcroom2") {
       $data[0] = "(loc_sector_id=6 or loc_sector_id=7)";
       $data[1] = 460;
       $data[2] = 318;
       $data[3] = 4;
       $data[4] = 4;
+      $data[5] = array('dngn', 'cntr');
   }
 
   return $data;

@@ -197,19 +197,37 @@ else
 		while ( !feof($handle) )
 		{
 			$buffer = fgets($handle, 4096);
-			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches) && $matches['sector'] == $sector) {
-				$ball = "ball01m.gif";
-				$x= $centerx+($matches['x']*$scalefactorx);
-				$y= $centery-($matches['z']*$scalefactory);
-				echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-				echo "<img border=0 src=$ball width=8 height=8></div>\n";
+			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+				$found = FALSE;
+				foreach($data[5] as $sectorname)
+				{
+					if($matches['sector'] === $sectorname)
+						$found = TRUE;
+				}
+				if($found)
+				{
+					$ball = "ball01m.gif";
+					$x= $centerx+($matches['x']*$scalefactorx);
+					$y= $centery-($matches['z']*$scalefactory);
+					echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+					echo "<img border=0 src=$ball width=8 height=8></div>\n";
+				}
 			}
-			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches) && $matches['sector'] == $sector) {
-				$ball = "ball04m.gif";
-				$x= $centerx+($matches['x']*$scalefactorx);
-				$y= $centery-($matches['z']*$scalefactory);
-				echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-				echo "<img border=0 src=$ball width=10 height=10></div>\n";
+			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+				$found = FALSE;
+				foreach($data[5] as $sectorname)
+				{
+					if($matches['sector'] === $sectorname)
+						$found = TRUE;
+				}
+				if($found)
+				{
+					$ball = "ball04m.gif";
+					$x= $centerx+($matches['x']*$scalefactorx);
+					$y= $centery-($matches['z']*$scalefactory);
+					echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+					echo "<img border=0 src=$ball width=10 height=10></div>\n";
+				}
 			}
 			
 		}
