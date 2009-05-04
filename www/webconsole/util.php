@@ -274,7 +274,7 @@ function SelectQuestScriptByName($current_name, $select_name){
 
 function SelectAreas($current_sector,$select_name){
 
-    $areas = array("hydlaa_plaza","hydlaa_jayose","hydlaa_winch","sewers","laanxdungeon","arena","ojaroad1","ojaroad2","akkaio","bdroad1","bdroad2","bdoorsout","bdoorsin","npcroom1","npcroom2");
+    $areas = array("arena","akkaio","bdroad1","bdroad2","bdoorsout","bdoorsin","gugrontid","hydlaa_plaza","hydlaa_jayose","hydlaa_winch","laanxdungeon","ojaroad1","ojaroad2","sewers","npcroom1","npcroom2");
 
 	printf("<SELECT name=%s>", $select_name);
 
@@ -462,6 +462,12 @@ function getDataFromArea($area) {
       $data[3] = 2.2;
       $data[4] = 2.2;
       $data[5] = array('bdoorsin');
+  } else if ($area=="gugrontid") {
+      $data[0] = "(loc_sector_id=77)";
+      $data[1] = 240;
+      $data[2] = 673;
+      $data[3] = 1.3;
+      $data[4] = 1.3;
   } else if ($area=="npcroom1") {
       $data[0] = "(loc_sector_id=3)";
       $data[1] =  321.94;
