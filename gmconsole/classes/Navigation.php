@@ -27,6 +27,9 @@ class Navigation {
                 <tr>
                     <td><a href="reportlogs.php">Report logs</a></td>
                 </tr>
+                <tr>
+                    <td><a href="logs.php">Other logs</a></td>
+                </tr>
             </table>
 NAV;
     }
