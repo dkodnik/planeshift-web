@@ -355,17 +355,35 @@
         rulesmain();
         listresources();
         break;
-     case 'waypoint':
+      case 'resourcemap':
+        include('./rules/rulesmain.php');
+        include('./rules/resourcemap.php');
+        rulesmain();
+        natural_resources_map();
+        break;
+      case 'waypoint':
         include('./rules/rulesmain.php');
         include('./rules/waypoints.php');
         rulesmain();
         listwaypoints();
+        break;
+      case 'waypointmap':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointmap.php');
+        rulesmain();
+        waypoint_map();
         break;
       case 'location':
         include('./rules/rulesmain.php');
         include('./rules/locations.php');
         rulesmain();
         listlocations();
+        break;
+      case 'locationmap':
+        include('./rules/rulesmain.php');
+        include('./rules/locationmap.php');
+        rulesmain();
+        location_map();
         break;
       case 'skills':
         include('./rules/rulesmain.php');
