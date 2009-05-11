@@ -15,8 +15,11 @@ function rulesmain(){
       echo '<a href="./index.php?do=createspell">Create Spell</a><br/>';
     }
     echo '<hr/><a href="./index.php?do=resource">List Natural Resources</a><br/>';
+    echo '<a href="./index.php?do=resourcemap">List Resource Map</a><br/>';
     echo '<a href="./index.php?do=waypoint">List Waypoints</a><br/>';
+    echo '<a href="./index.php?do=waypointmap">List Waypoint Map</a><br/>';
     echo '<a href="./index.php?do=location">List Locations</a><br/>';
+    echo '<a href="./index.php?do=locationmap">List Location Map</a><br/>';
     echo '<hr/><a href="./index.php?do=skills">List Skills</a><br/>';
     echo '<a href="./index.php?do=factions">List Factions</a><br/>';
     echo '<a href="./index.php?do=raceinfo">Race Info/Spawn Points</a><br/>';

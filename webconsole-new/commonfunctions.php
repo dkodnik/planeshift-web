@@ -272,4 +272,114 @@ function LocationToString($id)
     return $id;
 }
 
+/*
+    This method contains hardcoded coords and part of SQL statements. They are the sizes of each map, as well as which sectors they 
+    span in the database. This data "should" be put in a database someday(TM), since right now you will need to edit this code
+    every time a map gets added to the world. (This gets used for drawing maps.)
+*/
+function getDataFromArea($area) {
+
+  // sectors
+  $data;
+  if ($area=='hydlaa_plaza') {
+      $data[0] = 'loc_sector_id=15 or loc_sector_id=52';
+      $data[1] = 535;
+      $data[2] = 180;
+      $data[3] = 2.2;
+      $data[4] = 2.2;
+  } else if ($area=='hydlaa_jayose') {
+      $data[0] = 'loc_sector_id=49 or loc_sector_id=40';
+      $data[1] = -250;
+      $data[2] = -150;
+      $data[3] = 3.2;
+      $data[4] = 3.2;
+  } else if ($area=='hydlaa_winch') {
+      $data[0] = 'loc_sector_id=72';
+      $data[1] = 200;
+      $data[2] = -430;
+      $data[3] = 2.2;
+      $data[4] = 2.2;
+  } else if ($area=='sewers') {
+      $data[0] = 'loc_sector_id>26 and loc_sector_id<38';
+      $data[1] = 645;
+      $data[2] = 175;
+      $data[3] = 2.5;
+      $data[4] = 2.5;
+  } else if ($area=='laanxdungeon') {
+      $data[0] = 'loc_sector_id>43 and loc_sector_id<49';
+      $data[1] = 1452;
+      $data[2] = 815;
+      $data[3] = 6.73;
+      $data[4] = 6.73;
+  } else if ($area=='arena') {
+      $data[0] = 'loc_sector_id>3 and loc_sector_id<15';
+      $data[1] = 470;
+      $data[2] = 456;
+      $data[3] = 4.43;
+      $data[4] = 4.43;
+  } else if ($area=='ojaroad1') {
+      $data[0] = 'loc_sector_id=22';
+      $data[1] = 603;
+      $data[2] = 600;
+      $data[3] = 0.9;
+      $data[4] = 0.9;
+  } else if ($area=="ojaroad2") {
+      $data[0] = 'loc_sector_id=59';
+      $data[1] = 632;
+      $data[2] = 625;
+      $data[3] = 1;
+      $data[4] = 1;
+  } else if ($area=='akkaio') {
+      $data[0] = 'loc_sector_id>16 and loc_sector_id<20';
+      $data[1] = 445;
+      $data[2] = 465;
+      $data[3] = 5.3;
+      $data[4] = 5.3;
+  } else if ($area=='bdroad1') {
+      $data[0] = 'loc_sector_id=60';
+      $data[1] = 491;
+      $data[2] = 493;
+      $data[3] = 0.76;
+      $data[4] = 0.76;
+  } else if ($area=='bdroad2') {
+      $data[0] = 'loc_sector_id=61';
+      $data[1] = 669;
+      $data[2] = 667;
+      $data[3] = 1.07;
+      $data[4] = 1.07;
+  } else if ($area=='bdoorsout') {
+      $data[0] = 'loc_sector_id=67';
+      $data[1] = 832;
+      $data[2] = -749;
+      $data[3] = 0.55;
+      $data[4] = 0.55;
+  } else if ($area=='bdoorsin') {
+      $data[0] = 'loc_sector_id=66';
+      $data[1] = 656;
+      $data[2] = -977;
+      $data[3] = 2.2;
+      $data[4] = 2.2;
+  } else if ($area=='gugrontid') {
+      $data[0] = 'loc_sector_id=77';
+      $data[1] = 240;
+      $data[2] = 673;
+      $data[3] = 1.3;
+      $data[4] = 1.3;
+  } else if ($area=='NPCroom') {
+      $data[0] = 'loc_sector_id=3';
+      $data[1] =  321.94;
+      $data[2] = -371.05;
+      $data[3] =    3.22;
+      $data[4] =    3.26;
+  } else if ($area=='npcroom2') {
+      $data[0] = 'loc_sector_id=6 or loc_sector_id=7';
+      $data[1] = 460;
+      $data[2] = 318;
+      $data[3] = 4;
+      $data[4] = 4;
+  }
+
+  return $data;
+}
+
 ?>
