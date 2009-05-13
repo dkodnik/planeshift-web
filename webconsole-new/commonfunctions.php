@@ -248,7 +248,7 @@ function LocationToString($id)
         case 2: return "Both Hands";
         case 3: return "Right Finger";
         case 4: return "Left Finger";
-        case 5: return "Head";
+        case 5: return "Helm";
         case 6: return "Neck";
         case 7: return "Back";
         case 8: return "Arms";
