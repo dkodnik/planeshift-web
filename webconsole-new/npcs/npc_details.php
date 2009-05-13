@@ -436,8 +436,8 @@ function npc_items(){
                 case "LEGS":
                   echo '<option value="11">Legs</option>';
                   break;
-                case "HEAD":
-                  echo '<option value="5">Head</option>';
+                case "HELM":
+                  echo '<option value="5">Helm</option>';
                   break;
                 case "GLOVES":
                   echo '<option value="9">Gloves</option>';
