@@ -1,5 +1,9 @@
+*** 2009-05-13 by Stefano Angeleri
+WC - Fixed slot handling to be updated to current slot name
+
 *** 2009-05-11 by Stefano Angeleri
 WC - Added back resource, waypoint and locations map from the old wc patch by ravna
+
 *** 2009-05-02 by Stefano Angeleri
 WC -validatequest:
     added more explicit warnings for missing : after menu or P, (before it said "Unknown command").
