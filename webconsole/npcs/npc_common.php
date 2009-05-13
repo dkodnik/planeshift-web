@@ -285,7 +285,7 @@ function PrintAvailableSlots($itemid, $name)
     AddSelected($valid_slots, "BOTHANDS", 2, "Both Hands");
     AddSelected($valid_slots, "RIGHTFINGER", 3, "Right Finger");
     AddSelected($valid_slots, "LEFTFINGER", 4, "Left Finger");
-    AddSelected($valid_slots, "HEAD", 5, "Head");
+    AddSelected($valid_slots, "HELM", 5, "Helm");
     AddSelected($valid_slots, "NECK", 6, "Neck");
     AddSelected($valid_slots, "BACK", 7, "Back");
     AddSelected($valid_slots, "ARMS", 8, "Arms");
@@ -321,7 +321,7 @@ function StringToLocation($string)
         case 2: return "Both Hands";
         case 3: return "Right Finger";
         case 4: return "Left Finger";
-        case 5: return "Head";
+        case 5: return "Helm";
         case 6: return "Neck";
         case 7: return "Back";
         case 8: return "Arms";
@@ -358,7 +358,7 @@ function LocationToString($id)
         case 2: return "Both Hands";
         case 3: return "Right Finger";
         case 4: return "Left Finger";
-        case 5: return "Head";
+        case 5: return "Helm";
         case 6: return "Neck";
         case 7: return "Back";
         case 8: return "Arms";
@@ -400,7 +400,7 @@ function getPreferredLocation($itemid)
     else if (strstr($line[0], " Gloves"))
       $location = "equ_gloves";
     else if (strstr($line[0], " Helm"))
-      $location = "equ_head";
+      $location = "equ_helm";
     else if (strstr($line[0], " Pants"))
       $location = "equ_legs";
     else if (strstr($line[0], " Torso Armor"))
