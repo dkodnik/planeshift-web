@@ -112,7 +112,6 @@ tipobj.style.backgroundColor=''
 tipobj.style.width=''
 }
 }
-
 document.onmousemove=positiontip;
 
 </script>
@@ -127,7 +126,10 @@ echo "<h1>LIVE Map View $sector</h1>";
 }
 
 echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:90px\">";
-echo "<img src=\"index.php?page=viewnpcdraw&sector=".$sector."\" >";
+if(!isset($_GET['live']))
+	echo "<img src=\"index.php?page=viewnpcdraw&sector=".$sector."\" >";
+else
+	echo "<img src=\"index.php?page=viewnpcdraw&sector=".$sector."&live=".$_GET['live']."\" >";
 
 $data = getDataFromArea($sector);
 $sectors = $data[0];
@@ -233,9 +235,8 @@ else
 		}
 	}
 	fclose($handle);
+	
 }
-
-
 }
   echo "  <FORM action=\"index.php?page=viewnpcmap\" METHOD=GET><input type=hidden name=\"page\" value=\"viewnpcmap\">";
   echo "  <b>Select one area:</b> <br><br> Area: ";

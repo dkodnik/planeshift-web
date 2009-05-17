@@ -689,9 +689,50 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
     }
 }
 
+function draw_live_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory, $colors){
+	$colorindex = 0;
 
+	$dir = "../../psserver/tracking/";
+	if($files = scandir($dir)) {
+		foreach($files as $file) {
+			if($file == '.' || $file == '..') continue;
+			
+			$handle = @fopen($dir.$file,"r");
+			if($handle) {
+				$prevx = 999.0;
+				$prevy = 999.0;
+				while(!feof($handle))
+				{
+					$buffer = fgets($handle, 4096);
+					$pieces = explode(",", $buffer);
+					$found = FALSE;
+					foreach($sectors as $sectorname)
+					{
+						if(trim($pieces[2]) === $sectorname)
+							$found = TRUE;
+					}
+					if($found)
+					{
+		
+						$x = $centerx+($pieces[0]*$scalefactorx);
+						$y = $centery-($pieces[1]*$scalefactory);
+						if(!($prevx == 999.0 && $prevy == 999.0))
+						{
+							imageline($im,$prevx,$prevy,$x,$y,$colors[$colorindex]);
+						}
+						$prevx = $x;
+						$prevy = $y;
+					}
+				}
+				fclose($handle);
+				// draw each npc as a different colour
+				$colorindex = ($colorindex + 1) % count($colors);
+			}
+		}
+	}
+}
 
-function draw_map($sector){
+function draw_map($sector, $live = FALSE){
 
     $image_name = $sector.".gif";
 
@@ -716,10 +757,17 @@ function draw_map($sector){
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
 
-    draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$red);
-    draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$orange,$blue);
-    draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
-    draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
+	if($live)
+	{	
+    	draw_live_paths($im,$data[5],$centerx,$centery,$scalefactorx,$scalefactory, array($red, $green, $dark_green, $orange, $gray, $blue));
+	}
+	else
+	{
+		draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$red);
+		draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$orange,$blue);
+		draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
+		draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
+    }
 
     imagepng($im);
     imagedestroy($im);
