@@ -459,14 +459,14 @@ function showitemusage()
         echo '<p>No Resources are using this item.</p>';
     }
     
-    // NPC inventory
+    // Item instances
     $query = "SELECT COUNT(id) FROM item_instances WHERE item_stats_id_standard=$id";
     $result = mysql_query2($query);
     $row = mysql_fetch_row($result);
     if (($num = $row[0]) > 0)
     {
         $item_is_used = true;
-        $button = (checkaccess('items', 'read') ? '<br>Please click the button below if you wish to see a full overview of all instances of this item. <form action="./index.php?do=finditem" method="post"><input type="hidden" name="itemid" value="'.$id.'"><input type="submit" name="search" value="Find Items"/></form>' : '');
+        $button = (checkaccess('items', 'read') ? '<br>Please click the button below if you wish to see a full overview of all instances of this item. <form action="./index.php?do=finditem" method="post"><input type="hidden" name="itemid" value="'.$id.'"><input type="submit" name="search" value="Find Items"/> <input type="submit" name="search" value="Find Merchants"/> </form>' : '');
         echo '<p> There are '.$num.' instances of this item in the database. '.$button.'</p>';
     }
     else 
@@ -474,6 +474,30 @@ function showitemusage()
         echo '<p>There are no instances of this item.</p>';
     }
    
+    // Loot tables
+    $query = "SELECT DISTINCT lr.name, lrd.loot_rule_id FROM loot_rule_details AS lrd LEFT JOIN loot_rules AS lr ON lr.id=lrd.loot_rule_id WHERE lrd.item_stat_id=$id";
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) > 0) {
+        $item_is_used = true;
+        if (checkaccess('npcs', 'read')) {
+            echo '<p>The following loot rules use this item: </p>';
+            echo '<table border="1">';
+            while($row = mysql_fetch_array($result))
+            {
+                echo '<tr><td><a href="./index.php?do=listloot&id='.$row['loot_rule_id'].'">'.$row['name'].'</a></tr></td>';
+            }
+            echo '</table>';
+        }
+        else
+        {
+            echo '<p>You do not have permission to view Loot Rules, but they do use this item.</p>';
+        }
+    }
+    else 
+    {
+        echo '<p>This item is not in any loot rule.</p>';
+    }
+    
     // quests
     // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
     // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between [].
