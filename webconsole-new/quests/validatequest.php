@@ -36,7 +36,7 @@ to what line in your browser.<br>
             {
                 parseScripts($id, $show_lines);
             }
-            append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script2</a>');
+            append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script</a>');
             append_log('');
         }
         echo $parse_log;
@@ -277,12 +277,16 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
     $pos = 0;
     while (($pos = stripos($line, $trigger, $pos)) !== false) 
     {
-        if (strlen($trigger) > 3) //check if this is not some "S:" type NPC shortname, can't check those.
+        if (strcasecmp($trigger, "menu:") === 0) //if we check a menu trigger, check next ones for exact grammar.
         {
-            $trigger_without_colon = substr($trigger, 0, strlen($trigger)-1); // in all other cases, check if the second "menu:" or "name:" has a colon following it.
-            if (stripos($line, $trigger_without_colon, $pos + strlen($trigger)) !== false)
+            $trigger_without_colon = substr($trigger, 0, strlen($trigger)-1); //check if the second "menu:" has a colon following it.
+            if (($temp_pos = stripos($line, $trigger_without_colon, $pos + strlen($trigger))) !== false)
             {
-                append_log("Warning, no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
+                $temp_pos2 = stripos($line, $trigger, $pos + strlen($trigger));
+                if ($temp_pos != $temp_pos2) // it's only a mismatch if "trigger" and "trigger_without_colon" are not starting at the same place.
+                {
+                    append_log("Warning, no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
+                }
             }
         }
         $next_pos = stripos($line, $trigger, $pos + strlen($trigger)); //check if there is another one

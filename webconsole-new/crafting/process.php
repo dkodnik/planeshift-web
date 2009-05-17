@@ -4,9 +4,8 @@ function listprocess()
     if (checkaccess('crafting', 'read'))
     {
         /*
-        Notice: skill '0' is sword skill, however, this is the only table that does that, also the database seems to use '0' as 
-        "NONE" as well, so here we have a bug most likely. Currently it does *not* show anything when the ID is '0', so it shows 
-        swords (skill id 0) as no skill too. (although it does have a min/max, so that will in turn cause it to work fine in engine.)
+        Notice: skill '0' is sword skill, however, this is the only table that does that, I don't believe this is "good", but for now
+        there is not too much that can be done about it. -1 is "none".
         */
         $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, i.name AS workitem_name, i.category_id AS work_cat_id, t.equipment_id, ii.name AS equipment_name, ii.category_id AS equipment_cat_id, t.constraints, t.garbage_id, iii.name AS garbage_name, iii.category_id AS garbage_cat_id, t.garbage_qty, t.primary_skill_id, s.name AS primary_skill_name, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, ss.name AS secondary_skill_name, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id LEFT JOIN item_stats AS i ON i.id=t.workitem_id LEFT JOIN item_stats AS ii ON ii.id=t.equipment_id LEFT JOIN item_stats AS iii ON iii.id=t.garbage_id ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name, t.process_id, t.subprocess_number";
         $result = mysql_query2($query);
@@ -184,13 +183,11 @@ function editsubprocess()
         $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
         $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
         $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
-        $primary_skill_id = ($primary_skill_id == -1 ? 0 : $primary_skill_id);
         $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
         $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
         $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
         $primary_quality_factor = mysql_real_escape_string($_POST['primary_quality_factor']);
         $secondary_skill_id = mysql_real_escape_string($_POST['secondary_skill_id']);
-        $secondary_skill_id = ($secondary_skill_id == -1 ? 0 : $secondary_skill_id); // change id to 0 if it is not provided by user (-1)
         $secondary_min_skill = mysql_real_escape_string($_POST['secondary_min_skill']);
         $secondary_max_skill = mysql_real_escape_string($_POST['secondary_max_skill']);
         $secondary_practice_points = mysql_real_escape_string($_POST['secondary_practice_points']);
@@ -259,13 +256,11 @@ function createprocess()
         $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
         $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
         $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
-        $primary_skill_id = ($primary_skill_id == -1 ? 0 : $primary_skill_id);
         $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
         $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
         $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
         $primary_quality_factor = mysql_real_escape_string($_POST['primary_quality_factor']);
         $secondary_skill_id = mysql_real_escape_string($_POST['secondary_skill_id']);
-        $secondary_skill_id = ($secondary_skill_id == -1 ? 0 : $secondary_skill_id); // change id to 0 if it is not provided by user (-1)
         $secondary_min_skill = mysql_real_escape_string($_POST['secondary_min_skill']);
         $secondary_max_skill = mysql_real_escape_string($_POST['secondary_max_skill']);
         $secondary_practice_points = mysql_real_escape_string($_POST['secondary_practice_points']);

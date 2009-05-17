@@ -67,6 +67,22 @@ function locateitem(){
           echo '<td>'.$row['flags'].'</td></tr>'."\n";
         }
        echo '</table>';
+      }else if ($_POST['search'] == "Find Merchants"){
+        $itemid = mysql_real_escape_string($_POST['itemid']); // Don't make "is" "iss" (like it should logically be) since "is" is a reserved keyword in mysql.
+        $query = "SELECT DISTINCT c.id, c.name, c.lastname, iss.name AS item_name FROM merchant_item_categories AS m LEFT JOIN characters AS c ON c.id=m.player_id LEFT JOIN item_instances AS i ON i.char_id_owner=m.player_id LEFT JOIN item_stats AS iss ON iss.id=i.item_stats_id_standard WHERE i.location_in_parent > '15' AND i.item_stats_id_standard='$itemid' AND iss.category_id=m.category_id ORDER BY iss.name";
+        $result = mysql_query2($query);
+        if (mysql_num_rows($result) == 0)
+        {
+            echo '<p class="error">No vendors found for this item.</p>';
+            return;
+        }
+        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        echo '<p class="bold">Displaying vendors for '.$row['item_name'].'  </p>';
+        echo '<table>';
+        do {
+            echo '<tr><td><a href="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'">'.$row['name'].' '.$row['lastname'].'</a></td></tr>';
+        } while ($row = mysql_fetch_array($result, MYSQL_ASSOC));
+        echo '</table>';
       }
     }else{
       echo '<form action="./index.php?do=finditem" method="post">';
@@ -75,7 +91,8 @@ function locateitem(){
       echo DrawSelectBox('items', $itemresult, 'itemid', ''). '<input type="submit" name="search" value="Find Items"/><br/>';
       echo 'Locate Instance ID: <input type="text" name="iid" /><input type="submit" name="search" value="Find Instance" /><br/>';
       $Sectors = PrepSelect('sectorid');
-      echo 'Locate All Items on floor (Limit to Sector: '.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') <input type="submit" name="search" value="Droped Items" />';
+      echo 'Locate All Items on floor (Limit to Sector: '.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') <input type="submit" name="search" value="Droped Items" /><br/>';
+      echo 'Find all vendors of item: '.DrawSelectBox('items', $itemresult, 'itemid', ''). '<input type="submit" name="search" value="Find Merchants"/><br/>';
       echo '</form>';
     }
   }else{
