@@ -36,10 +36,10 @@
     echo '<a href="./index.php?do=npcs">NPCs</a> -- ';
   }
   if (checkaccess('quests', 'read')){
-    echo '<a href="./index.php?do=quests">quests</a> -- ';
+    echo '<a href="./index.php?do=quests">Quests</a> -- ';
   }
   if (checkaccess('items', 'read')){
-    echo '<a href="./index.php?do=items">items</a> -- ';
+    echo '<a href="./index.php?do=items">Items</a> -- ';
   }
   if (checkaccess('als', 'read')){
     echo '<a href="./index.php?do=als">Action Locations</a> -- ';
@@ -48,13 +48,13 @@
     echo '<a href="./index.php?do=rules">Rules</a>  -- ';
   }
   if (checkaccess('crafting', 'read')){
-    echo '<a href="./index.php?do=crafting">crafting</a> -- ';
+    echo '<a href="./index.php?do=crafting">Crafting</a> -- ';
   }
   if (checkaccess('other', 'read')){
     echo 'other -- ';
   }
   if (checkaccess('admin', 'read')){
-    echo 'admin -- ';
+    echo '<a href="./index.php?do=admin">Admin</a> -- ';
   }
   echo '<a href="./index.php?logout">Logout</a>';
   echo '</div><hr/>';
@@ -496,6 +496,34 @@
         include('./crafting/process.php');
         craftingmain();
         deleteprocess();
+        break;
+      case 'admin':
+        include('./admin/adminmain.php');
+        adminmain();
+        break; 
+      case 'listtips':
+        include('./admin/adminmain.php');
+        include('./admin/tips.php');
+        adminmain();
+        listtips();
+        break;
+      case 'edittips':
+        include('./admin/adminmain.php');
+        include('./admin/tips.php');
+        adminmain();
+        edittips();
+        break;
+      case 'viewcommands':
+        include('./admin/adminmain.php');
+        include('./admin/viewcommands.php');
+        adminmain();
+        viewcommands();
+        break;
+      case 'viewserveroptions':
+        include('./admin/adminmain.php');
+        include('./admin/viewserveroptions.php');
+        adminmain();
+        viewserveroptions();
         break;
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
