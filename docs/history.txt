@@ -1,3 +1,10 @@
+*** 2009-05-18 by Stefano Angeleri
+WC - Added admin menu, added /admin folder, linked them.
+     Added list/edit/create/delete Tips.
+     Added viewcommands.
+     Added view/edit server options.
+     patch by ravna
+
 *** 2009-05-17 by Stefano Angeleri
 WC - bugfix in validate_quest while checking multiple "menu" tags.
    - process: 
