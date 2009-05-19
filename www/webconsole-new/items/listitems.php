@@ -121,7 +121,7 @@ function showitemusage()
     $my_item_name = $row['name'];
     $item_is_used = false;
     
-    echo '<p>This is the usage repor for item #'.$id.' named: '.$my_item_name.'</p>';
+    echo '<p>This is the usage report for item #'.$id.' named: '.$my_item_name.'</p>';
     
     // pattern
     $query = "SELECT t.id, t.pattern_name, t.description, i.name FROM trade_patterns AS t LEFT JOIN item_stats AS i ON t.designitem_id=i.id WHERE t.designitem_id='$id'";
