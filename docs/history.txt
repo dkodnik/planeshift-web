@@ -1,3 +1,8 @@
+*** 2009-05-21 by Stefano Angeleri
+WC -  Patch for bug in "find item instances" 
+      (causing them to use the dropdown from the "vendor search".
+      patch by ravna
+
 *** 2009-05-18 by Stefano Angeleri
 WC - Added admin menu, added /admin folder, linked them.
      Added list/edit/create/delete Tips.
