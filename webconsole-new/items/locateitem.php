@@ -68,7 +68,7 @@ function locateitem(){
         }
        echo '</table>';
       }else if ($_POST['search'] == "Find Merchants"){
-        $itemid = mysql_real_escape_string($_POST['itemid']); // Don't make "is" "iss" (like it should logically be) since "is" is a reserved keyword in mysql.
+        $itemid = mysql_real_escape_string($_POST['vendoritemid']); // Don't make "is" "iss" (like it should logically be) since "is" is a reserved keyword in mysql.
         $query = "SELECT DISTINCT c.id, c.name, c.lastname, iss.name AS item_name FROM merchant_item_categories AS m LEFT JOIN characters AS c ON c.id=m.player_id LEFT JOIN item_instances AS i ON i.char_id_owner=m.player_id LEFT JOIN item_stats AS iss ON iss.id=i.item_stats_id_standard WHERE i.location_in_parent > '15' AND i.item_stats_id_standard='$itemid' AND iss.category_id=m.category_id ORDER BY iss.name";
         $result = mysql_query2($query);
         if (mysql_num_rows($result) == 0)
@@ -92,7 +92,7 @@ function locateitem(){
       echo 'Locate Instance ID: <input type="text" name="iid" /><input type="submit" name="search" value="Find Instance" /><br/>';
       $Sectors = PrepSelect('sectorid');
       echo 'Locate All Items on floor (Limit to Sector: '.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') <input type="submit" name="search" value="Droped Items" /><br/>';
-      echo 'Find all vendors of item: '.DrawSelectBox('items', $itemresult, 'itemid', ''). '<input type="submit" name="search" value="Find Merchants"/><br/>';
+      echo 'Find all vendors of item: '.DrawSelectBox('items', $itemresult, 'vendoritemid', ''). '<input type="submit" name="search" value="Find Merchants"/><br/>';
       echo '</form>';
     }
   }else{
