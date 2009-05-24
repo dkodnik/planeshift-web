@@ -1,3 +1,7 @@
+*** 2009-05-24 by Stefano Angeleri
+WC -  Patch for a bug in quest steps checking in the validator
+      patch by ravna
+
 *** 2009-05-21 by Stefano Angeleri
 WC -  Patch for bug in "find item instances" 
       (causing them to use the dropdown from the "vendor search".
