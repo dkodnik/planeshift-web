@@ -758,7 +758,7 @@ function check_completion($quest_id, $step, $quest)
         }
         else if (strncasecmp(trim($quest), "$name step", 5+strlen($name)) === 0)
         {
-            if (substr($quest, 5+strlen($name)) <= $step)
+            if (trim(substr(trim($quest), 5+strlen($name))) <= $step)
             {
                 // valid too
                 return;
