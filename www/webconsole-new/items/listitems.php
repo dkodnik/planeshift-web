@@ -466,7 +466,7 @@ function showitemusage()
     if (($num = $row[0]) > 0)
     {
         $item_is_used = true;
-        $button = (checkaccess('items', 'read') ? '<br>Please click the button below if you wish to see a full overview of all instances of this item. <form action="./index.php?do=finditem" method="post"><input type="hidden" name="itemid" value="'.$id.'"><input type="submit" name="search" value="Find Items"/> <input type="submit" name="search" value="Find Merchants"/> </form>' : '');
+        $button = (checkaccess('items', 'read') ? '<br>Please click the button below if you wish to see a full overview of all instances of this item. <form action="./index.php?do=finditem" method="post"><input type="hidden" name="itemid" value="'.$id.'"><input type="hidden" name="vendoritemid" value="'.$id.'"><input type="submit" name="search" value="Find Items"/> <input type="submit" name="search" value="Find Merchants"/> </form>' : '');
         echo '<p> There are '.$num.' instances of this item in the database. '.$button.'</p>';
     }
     else 
