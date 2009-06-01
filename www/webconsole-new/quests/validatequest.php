@@ -288,13 +288,13 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
                     append_log("Warning, no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
                 }
             }
-        }
+        } 
         $next_pos = stripos($line, $trigger, $pos + strlen($trigger)); //check if there is another one
         if ($next_pos === false)  //if no more triggers are found, this line goes till the end
-        {
+        { 
             $next_pos = strlen($line);
         }
-        $temp_line = substr($line, $pos, $next_pos);
+        $temp_line = substr($line, $pos, $next_pos-$pos); 
         if (trim($temp_line) == "") // if any trigger is found, but nothing but whitespace follows it, return false
         {
             return false;
