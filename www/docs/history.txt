@@ -1,4 +1,7 @@
 *** 2009-06-01 by Stefano Angeleri
+WC -  Fixed a wrong variable assignment in the locations.php forms
+
+*** 2009-06-01 by Stefano Angeleri
 WC -  Fixed a bug in Menu: length check in the quest verification script
       patch by ravna
 
