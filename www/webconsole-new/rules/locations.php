@@ -11,7 +11,7 @@ function listlocations(){
         $z = mysql_real_escape_string($_POST['z']);
         $radius = mysql_real_escape_string($_POST['radius']);
         $angle = mysql_real_escape_string($_POST['angle']);
-        $id_prev_loc_in_region = mysql_real_escape_string($_POST['loc_sector_id']);
+        $id_prev_loc_in_region = mysql_real_escape_string($_POST['id_prev_loc_in_region']);
         $type_id = mysql_real_escape_string($_POST['type']);
         $query = "UPDATE sc_locations SET name='$name', loc_sector_id='$loc_sector_id', x='$x', y='$y', z='$z', radius='$radius', angle='$angle', id_prev_loc_in_region='$id_prev_loc_in_region', type_id='$type_id' WHERE id = '$id'";
         $result = mysql_query2($query);
@@ -35,7 +35,7 @@ function listlocations(){
         $z = mysql_real_escape_string($_POST['z']);
         $radius = mysql_real_escape_string($_POST['radius']);
         $angle = mysql_real_escape_string($_POST['angle']);
-        $id_prev_loc_in_region = mysql_real_escape_string($_POST['loc_sector_id']);
+        $id_prev_loc_in_region = mysql_real_escape_string($_POST['id_prev_loc_in_region']);
         $type_id = mysql_real_escape_string($_POST['type']);
         $query = "INSERT INTO sc_locations SET name='$name', loc_sector_id='$loc_sector_id', x='$x', y='$y', z='$z', radius='$radius', angle='$angle', id_prev_loc_in_region='$id_prev_loc_in_region', type_id='$type_id'";
         $result = mysql_query2($query);
