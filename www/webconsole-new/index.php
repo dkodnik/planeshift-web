@@ -51,7 +51,7 @@
     echo '<a href="./index.php?do=crafting">Crafting</a> -- ';
   }
   if (checkaccess('other', 'read')){
-    echo 'other -- ';
+    echo '<a href="./index.php?do=other">Other</a> -- ';
   }
   if (checkaccess('admin', 'read')){
     echo '<a href="./index.php?do=admin">Admin</a> -- ';
@@ -496,6 +496,16 @@
         include('./crafting/process.php');
         craftingmain();
         deleteprocess();
+        break;
+      case 'other':
+        include('./other/othermain.php');
+        othermain();
+        break;
+      case 'listguilds':
+        include('./other/othermain.php');
+        include('./other/guilds.php');
+        othermain();
+        listguilds();
         break;
       case 'admin':
         include('./admin/adminmain.php');
