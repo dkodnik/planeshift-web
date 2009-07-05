@@ -294,7 +294,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
         { 
             $next_pos = strlen($line);
         }
-        $temp_line = substr($line, $pos, $next_pos-$pos); 
+        $temp_line = substr($line, $pos+strlen($trigger)+1, $next_pos-$pos); 
         if (trim($temp_line) == "") // if any trigger is found, but nothing but whitespace follows it, return false
         {
             return false;
