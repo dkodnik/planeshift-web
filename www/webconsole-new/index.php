@@ -507,6 +507,18 @@
         othermain();
         listguilds();
         break;
+      case 'editguildmember':
+        include('./other/othermain.php');
+        include('./other/guilds.php');
+        othermain();
+        editguildmember();
+        break;
+      case 'deleteguildmember':
+        include('./other/othermain.php');
+        include('./other/guilds.php');
+        othermain();
+        deleteguildmember();
+        break;
       case 'admin':
         include('./admin/adminmain.php');
         adminmain();
