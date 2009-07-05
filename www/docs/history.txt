@@ -1,4 +1,10 @@
 *** 2009-06-01 by Stefano Angeleri
+WC - Readded other/guild functionality from old wc and added an edit/delete
+     functionality patch by nakem
+   - Fixed the check for the lenght of menu entries to not take in account
+     the "Menu:" command patch by ravna
+
+*** 2009-06-01 by Stefano Angeleri
 WC -  Fixed a wrong variable assignment in the locations.php forms
 
 *** 2009-06-01 by Stefano Angeleri
