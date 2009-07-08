@@ -519,6 +519,12 @@
         othermain();
         deleteguildmember();
         break;
+      case 'listpetitions':
+        include('./other/othermain.php');
+        include('./other/listpetitions.php');
+        othermain();
+        listpetitions();
+        break;
       case 'admin':
         include('./admin/adminmain.php');
         adminmain();
