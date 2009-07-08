@@ -1,3 +1,6 @@
+*** 2009-06-08 by Stefano Angeleri
+WC - Readded petition listing functionality from old wc patch by nakem
+
 *** 2009-06-01 by Stefano Angeleri
 WC - Readded other/guild functionality from old wc and added an edit/delete
      functionality patch by nakem
