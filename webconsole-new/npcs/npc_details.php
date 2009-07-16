@@ -43,7 +43,7 @@ function npc_main(){
           echo '<select name="npc_impervious_ind"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
         }
         echo '</td></tr>';
-        echo '<tr><td>Experiance</td><td><input type="text" name="kill_exp" value="'.$row['kill_exp'].'" size="7" /></td></tr>';
+        echo '<tr><td>Experience</td><td><input type="text" name="kill_exp" value="'.$row['kill_exp'].'" size="7" /></td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         $Spawns = PrepSelect('spawn');
         $Loots = PrepSelect('loot');
@@ -279,7 +279,7 @@ function npc_kas(){
           echo '<tr><th>Area</th><th>Priority</th><th>Actions</th></tr>';
           while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             echo '<tr>';
-            echo '<td>'.$row['area'].'</td>';
+            echo '<td><a href="./index.php?do=ka_detail&area='.rawurlencode($row['area']).'">'.$row['area'].'</a></td>';
             echo '<td>'.$row['priority'].'</td>';
             echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
             echo '<input type="hidden" name="area" value="'.$row['area'].'" />';

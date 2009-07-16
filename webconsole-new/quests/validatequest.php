@@ -195,7 +195,7 @@ function parseScript($quest_id, $script, $show_lines)
         }
         else // we found a command
         {
-            $commands = explode(".", $line);
+            $commands = explode(".", $line);  // Notice that this also drops the trailing '.' of every command.
             for($i = 0; $i < count($commands); $i++) 
             {
                 if(trim($commands[$i]) != "") 
@@ -551,7 +551,12 @@ function parse_command($command, &$assigned, $quest_id, $step)
             }
             elseif (strncasecmp($command, "complete $name step", 14+strlen($name)) === 0)
             {
-                if(substr(trim($command), 14+strlen($name)) <= $step) 
+                $split_complete = explode(' ', substr(trim($command), 15+strlen($name)));
+                if (count($split_complete) > 1) 
+                {
+                    append_log("parse error, illegal text following 'complete $name step {$split_complete[0]}' on line $line_number");
+                }
+                elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
                 {
                     // valid, do nothing
                 }
