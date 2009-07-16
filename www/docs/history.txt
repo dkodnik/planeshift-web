@@ -1,3 +1,14 @@
+*** 2009-07-16 by Stefano Angeleri
+WC - Removed listquest.php.orig
+     Fixed list_item, escape the item name in sql queries.
+     NPC -> detailed NPC view -> KA's -- added a direct link 
+                                         to edit/view these KA area's.
+     Quest validator: "Complete something Step 21 Complete something." 
+                       was accepted. Now checks for anything that comes 
+                       after the number (When a step is given) and 
+                       refuses it if found.
+     patches by ravna
+
 *** 2009-06-08 by Stefano Angeleri
 WC - Readded petition listing functionality from old wc patch by nakem
 
