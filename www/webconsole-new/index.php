@@ -119,6 +119,12 @@
         itemmain();
         listitems();
         break;
+      case 'listitemicons':
+        include('./items/itemmain.php');
+        include('./items/listitemicons.php');
+        itemmain();
+        listitemicons();
+        break;
       case 'showitemusage':
         include('./items/itemmain.php');
         include('./items/listitems.php');
@@ -308,6 +314,18 @@
         include('./npcs/ka_scripts.php');
         npcmain();
         ka_scripts();
+        break;
+      case 'checknpctriggers':
+        include('./npcs/npcmain.php');
+        include('./npcs/checknpctriggers.php');
+        npcmain();
+        checknpctriggers();
+        break;
+      case 'checknpcloaded':
+        include('./npcs/npcmain.php');
+        include('./npcs/checknpcloaded.php');
+        npcmain();
+        checknpcloaded();
         break;
       case 'rules':
         include('./rules/rulesmain.php');

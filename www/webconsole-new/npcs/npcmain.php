@@ -14,6 +14,9 @@ function npcmain(){
     echo '<a href="./index.php?do=synonyms">List Synonyms</a> <br/>';
     echo '<a href="./index.php?do=ka_trigg">List Trigger KAs</a> <br/>';
     echo '<a href="./index.php?do=ka_scripts">List KA Scripts</a> <br/>';
+    echo '<hr/>';
+    echo '<a href="./index.php?do=checknpctriggers">Check NPC Triggers</a> <br/>';
+    echo '<a href="./index.php?do=checknpcloaded">Check NPC Loaded</a> <br/>';
     echo '<hr/><a href="./index.php">Return to main page.</a>';
     echo '</div><div class="main">';
   }
