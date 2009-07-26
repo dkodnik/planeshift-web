@@ -1,3 +1,15 @@
+*** 2009-07-27 by Stefano Angeleri
+WC - Added "List Item Icons" (ported from OLD)
+   - Added the option to exclude "private" zones (guild houses/NPCroom) 
+     from item instance searches. Also re-arranged the code to drop 2 redundant parts.
+   - Added gender to the lists of vuln/invuln NPCs
+   - Added "check npc triggers" which lists all NPCs with missing 
+     "greetings" "about you" or "how you" triggers. (ported from old)
+   - Added "check npc loaded" which lists all NPC's that are either not loaded 
+     as well as a list of npcs that are loaded in the NPC room or in a sector ID smaller than 1.
+   - Added .error to the stylesheet (only had p.error). This does the same, but is valid for all elements that chose that class.
+   patches by ravna
+
 *** 2009-07-16 by Stefano Angeleri
 WC - Removed listquest.php.orig
      Fixed list_item, escape the item name in sql queries.
