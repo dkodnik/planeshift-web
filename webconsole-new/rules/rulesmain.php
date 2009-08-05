@@ -17,7 +17,9 @@ function rulesmain(){
     echo '<hr/><a href="./index.php?do=resource">List Natural Resources</a><br/>';
     echo '<a href="./index.php?do=resourcemap">List Resource Map</a><br/>';
     echo '<a href="./index.php?do=waypoint">List Waypoints</a><br/>';
+    echo '<a href="./index.php?do=listwaypointlinks">List Waypoint links</a><br/>';
     echo '<a href="./index.php?do=waypointmap">List Waypoint Map</a><br/>';
+    echo '<a href="./index.php?do=listpathpoints">List Pathpoints</a><br/>';
     echo '<a href="./index.php?do=location">List Locations</a><br/>';
     echo '<a href="./index.php?do=locationmap">List Location Map</a><br/>';
     echo '<hr/><a href="./index.php?do=skills">List Skills</a><br/>';

@@ -113,6 +113,19 @@ function listwaypoints(){
         echo '</form>';
       }else if (($_POST['action'] == 'Delete') && checkaccess('rules', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
+        $query = "SELECT id FROM sc_waypoint_links WHERE wp1='$id' OR wp2='$id'";
+        $result = mysql_query2($query);
+        if (mysql_num_rows($result) > 0)
+        {
+            echo '<p class="error">There are waypoint links still using this waypoint, it may not be deleted.</p>';
+            echo '<p>Below are links to all such waypoints.<br /><br />';
+            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+            {
+                echo '<a href="./index.php?do=editwaypointlink&id='.$row['id'].'">'.$row['id'].'</a><br />';
+            }
+            echo '</p>';
+            return;
+        }
         $query = "SELECT name FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result);
@@ -274,7 +287,7 @@ function listwaypoints(){
       }
     }
   }else{
-    echo '<p class="error">You are not authorized to use these functions</a>';
+    echo '<p class="error">You are not authorized to use these functions</p>';
   }
 }
 ?>

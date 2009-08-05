@@ -315,6 +315,12 @@
         npcmain();
         ka_scripts();
         break;
+      case 'findtrigger':
+        include('./npcs/npcmain.php');
+        include('./npcs/findtrigger.php');
+        npcmain();
+        findtrigger();
+        break;
       case 'checknpctriggers':
         include('./npcs/npcmain.php');
         include('./npcs/checknpctriggers.php');
@@ -385,11 +391,59 @@
         rulesmain();
         listwaypoints();
         break;
+      case 'listwaypointlinks':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointlinks.php');
+        rulesmain();
+        listwaypointlinks();
+        break;
+      case 'editwaypointlink':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointlinks.php');
+        rulesmain();
+        editwaypointlink();
+        break;
+      case 'createwaypointlink':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointlinks.php');
+        rulesmain();
+        createwaypointlink();
+        break;
+      case 'deletewaypointlink':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointlinks.php');
+        rulesmain();
+        deletewaypointlink();
+        break;
       case 'waypointmap':
         include('./rules/rulesmain.php');
         include('./rules/waypointmap.php');
         rulesmain();
         waypoint_map();
+        break;
+      case 'listpathpoints':
+        include('./rules/rulesmain.php');
+        include('./rules/pathpoints.php');
+        rulesmain();
+        listpathpoints();
+        break;
+      case 'editpathpoint':
+        include('./rules/rulesmain.php');
+        include('./rules/pathpoints.php');
+        rulesmain();
+        editpathpoint();
+        break;
+      case 'createpathpoint':
+        include('./rules/rulesmain.php');
+        include('./rules/pathpoints.php');
+        rulesmain();
+        createpathpoint();
+        break;
+      case 'deletepathpoint':
+        include('./rules/rulesmain.php');
+        include('./rules/pathpoints.php');
+        rulesmain();
+        deletepathpoint();
         break;
       case 'location':
         include('./rules/rulesmain.php');
