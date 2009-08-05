@@ -116,23 +116,24 @@ function parseScript($quest_id, $script, $show_lines)
             }
             // store P: for comparing with NPC: triggers
         }
-        elseif(strncasecmp($line, "Menu:", 5) === 0) // Menu: trigger
+        elseif(strncasecmp($line, 'Menu:', 5) === 0) // Menu: trigger
         {
-            if(getTriggerCount($line, "Menu:", $count, 80) === false)
+            if(getTriggerCount($line, 'Menu:', $count, 80) === false)
             {
                 append_log("parse error, Menu: with no text on line $line_number");
             }
+            checkVariables($line, 'menu');
         }
         elseif(strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
             // Every P: and NPC: combo should be unique, we don't check this atm.
             $count = 0;
             $seen_npc_triggers = true;
-            $temp_name = substr($line, 0, strpos($line, ":"));
+            $temp_name = substr($line, 0, strpos($line, ':'));
             if(stripos($npc_name, $temp_name) === false) // new npc name
             {
                 $npc_name = $temp_name;
-                if ($quest_id == -1 && $npc_name == "general")
+                if ($quest_id == -1 && $npc_name == 'general')
                 {
                     // valid situation, general means all npcs, does not exist in database.
                 }
@@ -151,6 +152,7 @@ function parseScript($quest_id, $script, $show_lines)
             {
                 append_log("parse error, there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
             }
+            checkVariables($line, 'npc');
             
         }
         elseif(strncasecmp($line, "Player ", 7) === 0) // player does something
@@ -311,6 +313,32 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
         $pos += strlen($trigger); // move the position pointer past our first find so it doesn't get seen again.
     }
     return true;
+}
+
+function checkVariables($line, $type)
+{
+    global $line_number;
+    $words = preg_split("/[\s,.]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
+    foreach($words as $word)
+    {
+        if (strpos(trim($word), '$') !== false)
+        {
+            if ($type == 'npc') 
+            {
+                if ($word != '$playerrace' && $word != '$sir' && $word != '$playername')
+                {
+                    append_log("parse error, misplaced variable ($word) on line $line_number");
+                }
+            }
+            else if ($type == 'menu')
+            {
+                if ($word != '$name' && $word != '$race' && $word != '$his' && $word != '$sir')
+                {
+                    append_log("parse error, misplaced variable ($word) on line $line_number");
+                }            
+            }
+        }
+    }
 }
 
 function validate_npc($name)

@@ -185,7 +185,8 @@ function PrepSelect($a){
   $typevals["process"] = "SELECT DISTINCT process_id, CONCAT(process_id, ' - ', name) FROM trade_processes ORDER BY name";
   $typevals["patterns"] = "SELECT id, pattern_name FROM trade_patterns ORDER BY pattern_name";
   $typevals["mind_slot_items"] = "SELECT id, name FROM item_stats WHERE stat_type='B' AND valid_slots LIKE '%MIND%' ORDER BY name";
-
+  $typevals["waypoints"] = "SELECT w.id, CONCAT(s.name, ' -- ', w.name, ' -- ', ' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) FROM sc_waypoints AS w LEFT JOIN sectors AS s ON w.loc_sector_id=s.id ORDER BY s.name, w.name";
+  
   $query = $typevals[$type];
 
   $result = mysql_query2($query);
@@ -195,7 +196,7 @@ function PrepSelect($a){
 /*DrawSelectBox() creates and returns the string for the <select> box*/
 function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $type = strtolower($type);
-  $typevals["items"] = '""';
+  $typevals["items"] = '"0"';
   $typevals["skill"] = '"-1"';
   $typevals["category"] = '"-1"';
   $typevals["icon"] = '"0"';
@@ -215,7 +216,8 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["locations"] = '"-1"';
   $typevals["process"] = '""';
   $typevals["patterns"] = '"0"';
-
+  $typevals["mind_slot_items"] = '"0"';
+  $typevals["waypoints"] = '""';
 
   $nullval = $typevals[$type];
 

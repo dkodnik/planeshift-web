@@ -123,7 +123,7 @@ function edittrainer(){
         $query = "UPDATE trainer_skills SET min_rank='$min_rank', max_rank='$max_rank', min_faction='$min_faction' WHERE player_id='$player_id' AND skill_id='$skill_id'";
         $result = mysql_query2($query);
       }else if ($_POST['commit'] == "Remove"){
-        $query = "DELETE FROM trainer_skills WHERE player_id='$player_id' AND skill_id='$skill_id'";
+        $query = "DELETE FROM trainer_skills WHERE player_id='$player_id' AND skill_id='$skill_id' AND min_rank='$min_rank' LIMIT 1";
         $result = mysql_query2($query);
       }
       echo '<p class="error">Update Successful</p>';

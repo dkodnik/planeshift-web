@@ -52,7 +52,7 @@ function listlootrules()
                     echo '<tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>actions</td></tr>';
                 }
             }
-            if ($row['item_name'] == '') // empty item name means there are no details on this rule, so we display it's name, and bail out.
+            if ($row['item_name'] == '' && $row['min_money'] == '' && $row['max_money'] == '') // empty item name means there are no details on this rule, so we display it's name, and bail out.
             {
                 continue;
             }
@@ -136,7 +136,7 @@ function editlootruledetail()
         $row = mysql_fetch_array($result);
         echo '<table><tr><th>'; // We set the ID in the form to the rule ID instead of the detail, so we can redirect back to ListRules.
         echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th><th>Action</th></tr>';
-        echo '<tr><td>'.DrawSelectBox('items', $item_result, 'item_stat_id', $row['item_stat_id'], false).'</td>';
+        echo '<tr><td>'.DrawSelectBox('items', $item_result, 'item_stat_id', $row['item_stat_id'], true).'</td>';
         echo '<td><input type="text" name="probability" value="'.$row['probability'].'" size="8"/></td>';
         echo '<td><input type="text" name="min_money" value="'.$row['min_money'].'" size="11"/></td>';
         echo '<td><input type="text" name="max_money" value="'.$row['max_money'].'" size="11"/></td>';
@@ -206,7 +206,7 @@ function createlootruledetail()
     elseif (checkaccess('npcs', 'create') && isset($_POST['create']))
     {
         $item_result = PrepSelect('items');        
-        $item_box = DrawSelectBox('items', $item_result, 'item_stat_id', '', false);
+        $item_box = DrawSelectBox('items', $item_result, 'item_stat_id', '', true);
         $loot_rule_id = mysql_real_escape_string($_GET['id']);
         echo '<table border="1"><form action="./index.php?do=createlootruledetail" method="post"><input type="hidden" name="loot_rule_id" value="'.$loot_rule_id.'"/>';
         echo '<tr><th>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th></tr>';
