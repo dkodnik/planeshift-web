@@ -1,3 +1,15 @@
+*** 2009-08-05 by Stefano Angeleri
+WC - Added list/edit/create/delete waypoint links.
+   - Loot rules: allow "none" (0) as an item. (for the cases where you only want to let ppl loot money)
+   - Added list/edit/create/delete path points 
+   - When deleting a skill from a trainer, it would delete all skills with that name regardles of rank. (So if you had swords 1~5 and 10~15, and delete one, both would be gone.) This is now fixed.
+   - Added Find KA trigger (ported from OLD + added direct links to the KA's any found results belong to)
+   - Added check on delete waypoint, can't delete if waypoint_links still use it.
+   - Added variable checking to the quest validator, menu: and npc: lines each have their own specific variables, no other variables may exist.
+     NPC speaking lines can use $playerrace, $sir and $playername
+     MENU lines can use $name, $race, $his, and $sir
+     patches by ravna
+
 *** 2009-07-27 by Stefano Angeleri
 WC - Added "List Item Icons" (ported from OLD)
    - Added the option to exclude "private" zones (guild houses/NPCroom) 
