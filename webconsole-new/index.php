@@ -597,6 +597,30 @@
         othermain();
         listpetitions();
         break;
+      case 'listcommonstrings':
+          include('./other/othermain.php');
+          include('./other/commonstrings.php');
+          othermain();
+          listcommonstrings();
+          break;
+      case 'addcommonstrings':
+        include('./other/othermain.php');
+        include('./other/commonstrings.php');
+        othermain();
+        addcommonstrings();
+        break;
+      case 'editcommonstrings':
+        include('./other/othermain.php');
+        include('./other/commonstrings.php');
+        othermain();
+        editcommonstrings();
+        break;
+      case 'deletecommonstrings':
+        include('./other/othermain.php');
+        include('./other/commonstrings.php');
+        othermain();
+        deletecommonstrings();
+        break;
       case 'admin':
         include('./admin/adminmain.php');
         adminmain();

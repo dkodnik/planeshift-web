@@ -1,5 +1,6 @@
 <?php
-function othermain(){
+function othermain()
+{
     if (checkaccess('other', 'read'))
     {
         echo '<div class="menu_left">';
@@ -13,8 +14,10 @@ function othermain(){
         
         echo '<a href="./index.php?do=viewcharacters">View characters</a <br/>';
         echo '<a href="./index.php?do=listtraits">List/Edit traits</a> <br/>'; // SysAdmin
-        echo '<a href="./index.php?do=listcommonstrings">List/Edit Common Strings</a> <br/>';*/
+        */
+        echo '<a href="./index.php?do=listcommonstrings">List Common Strings</a> <br/>';
         
+        echo '<hr />';
         echo '<a href="./index.php">Return to main page</a>';
         echo '</div><div class="main">'."\n";
     }
