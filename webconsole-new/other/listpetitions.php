@@ -46,7 +46,7 @@ function listpetitions() {
         
         if($page > $page_count)
         {
-            $page = $page_count;
+            $page = ($page_count -1);
         }
         if($page < 0)
         {
@@ -59,6 +59,7 @@ function listpetitions() {
         
         echo '<p class="header">List Petitions</p>';
         
+        echo 'Page: ';
         for($i = 0; $i< $page_count; $i++)
         {
             if($i == $page)
