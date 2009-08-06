@@ -1,4 +1,7 @@
 *** 2009-08-05 by Stefano Angeleri
+WC - Added commonstrings editing patch by nakem
+
+*** 2009-08-05 by Stefano Angeleri
 WC - Added list/edit/create/delete waypoint links.
    - Loot rules: allow "none" (0) as an item. (for the cases where you only want to let ppl loot money)
    - Added list/edit/create/delete path points 
