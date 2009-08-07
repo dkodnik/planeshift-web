@@ -5,7 +5,7 @@ function listpathpoints()
     {
         $query = "SELECT DISTINCT p.path_id, s.name AS sector, wl.wp1, wl.wp2, CONCAT(' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) AS wp1_coords, CONCAT(' X: ', ww.x, ' Y: ', ww.y, ' Z: ', ww.z) AS wp2_coords, w.name AS wp1_name, ww.name AS wp2_name FROM sc_path_points AS p LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id LEFT JOIN sc_waypoints AS ww ON wl.wp2=ww.id LEFT JOIN sectors AS s ON w.loc_sector_id=s.id";
 
-        if (isset($_GET['sector']) && $_GET['sector'] != '')
+        if (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != '0')
         {
             $sec = mysql_real_escape_string($_GET['sector']);
             $query = $query . " WHERE w.loc_sector_id='$sec'";

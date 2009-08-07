@@ -87,6 +87,16 @@ function listlocations(){
       }
     }else{
       $query = "SELECT l.id, l.type_id, l.id_prev_loc_in_region, l.name, l.x, l.y, l.z, l.radius, l.angle, l.flags, l.loc_sector_id, s.name AS sector FROM sc_locations AS l LEFT JOIN sectors AS s ON l.loc_sector_id = s.id";
+      if (isset($_GET['id']))
+      {
+        $id = mysql_real_escape_string($_GET['id']);
+        $query .= " WHERE l.id='$id'";
+      }
+      elseif (isset($_GET['type']))
+      {
+        $type = mysql_real_escape_string($_GET['type']);
+        $query .= " WHERE l.type_id='$type'";
+      }
       if (isset($_GET['sort'])){
         switch ($_GET['sort']){
           case 'name':

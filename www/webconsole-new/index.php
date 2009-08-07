@@ -457,6 +457,12 @@
         rulesmain();
         location_map();
         break;
+      case 'viewnpcmap':
+        include('./rules/rulesmain.php');
+        include('./rules/viewnpcmap.php');
+        rulesmain();
+        viewnpcmap();
+        break;
       case 'skills':
         include('./rules/rulesmain.php');
         include('./rules/skills.php');

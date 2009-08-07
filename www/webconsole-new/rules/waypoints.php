@@ -140,26 +140,30 @@ function listwaypoints(){
       }
     }else{
       $query = "SELECT w.id, w.name, w.wp_group, w.x, w.y, w.z, w.radius, w.flags, w.loc_sector_id, s.name AS sector FROM sc_waypoints AS w LEFT JOIN sectors AS s on s.id=w.loc_sector_id";
-      if (isset($_GET['sector']) && $_GET['sector']!=""){
+      if (isset($_GET['id']) && $_GET['id']!=''){
+        $id = mysql_real_escape_string($_GET['id']);
+        $query .= " WHERE w.id='$id'";
+      }
+      elseif (isset($_GET['sector']) && $_GET['sector']!=''){
         $sec = mysql_real_escape_string($_GET['sector']);
-        $query = $query . " WHERE loc_sector_id='$sec'";
+        $query .= " WHERE w.loc_sector_id='$sec'";
       }
       if (isset($_GET['sort'])){
         switch($_GET['sort']){
           case 'name':
-            $query = $query . " ORDER BY w.name";
+            $query .= ' ORDER BY w.name';
             break;
           case 'group':
-            $query = $query . " ORDER BY w.wp_group";
+            $query .= ' ORDER BY w.wp_group';
             break;
           case 'sector':
-            $query = $query . " ORDER BY sector, name";
+            $query .= ' ORDER BY sector, name';
             break;
           default:
-            $query = $query . " ORDER BY sector, name";
+            $query .= ' ORDER BY sector, name';
         }
       }else{
-        $query = $query . " ORDER BY sector, name";
+        $query .= ' ORDER BY sector, name';
       }
       if (isset($_GET['limit']) && is_numeric($_GET['limit'])){
         $lim = $_GET['limit'] - 30;
