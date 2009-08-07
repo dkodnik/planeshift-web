@@ -123,6 +123,11 @@ function listresources(){
       }
     }else{
       $query = "SELECT r.id, r.loc_sector_id, s.name AS sector, r.loc_x, r.loc_y, r.loc_z, r.radius, r.visible_radius, r.probability, r.skill, sk.name AS skill_name, r.skill_level, r.item_cat_id, c.name AS category, r.item_quality, r.animation, r.anim_duration_seconds, r.item_id_reward, i.name AS item, r.reward_nickname, r.action FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id LEFT JOIN item_stats AS i on i.id=r.item_id_reward LEFT JOIN item_categories AS c ON r.item_cat_id=c.category_id LEFT JOIN skills AS sk on sk.skill_id=r.skill";
+      if (isset($_GET['id']))
+      {
+        $id = mysql_real_escape_string($_GET['id']);
+        $query .= " WHERE r.id='$id'";
+      }
       if (isset($_GET['sort'])){
         if ($_GET['sort'] == 'loc'){
           $query = $query . ' ORDER BY sector, loc_x, loc_y, loc_z, item';

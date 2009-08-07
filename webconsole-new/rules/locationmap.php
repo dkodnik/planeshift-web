@@ -4,13 +4,13 @@
 function location_map(){
   if (!checkAccess('rules', 'read'))
   {
-    echo "You do not have permission to use this page.";
+    echo 'You do not have permission to use this page.';
     return;
   }
 
-  $sector = (isset($_POST['sector']) ? $_POST['sector'] : "");
+  $sector = (isset($_POST['sector']) ? $_POST['sector'] : '');
 
-  if ($sector!=null && $sector!="") {
+  if ($sector != null && $sector != '') {
 
 
 ?>
@@ -136,9 +136,9 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=location\" >";
   //echo "query is $query";
   $res = mysql_query2($query);
 
-  $result="";
+  $result = '';
   while ($line = mysql_fetch_array($res, MYSQL_NUM)){
-    $elem = $line[0] . "|I: ".$line[0]." N:" . $line[6] . " R:".$line[4]." F:".$line[5]."|x|" . $line[1]  . "|" . $line[2]."|".$line[3]."|".$line[7]."|".$line[8];
+    $elem = $line[0] . '|I: '.$line[0].' N:' . $line[6] . ' R:'.$line[4].' F:'.$line[5].'|x|' . $line[1]  . '|' . $line[2].'|'.$line[3].'|'.$line[7].'|'.$line[8];
     $result .= ($elem . "\n");
    }
 // get each line
@@ -153,17 +153,17 @@ while ($tok !== false) {
 foreach($peoples as $people) {
 
    // skips commented lines
-   $pos = strstr($people, "#");
+   $pos = strstr($people, '#');
 
-   if ($pos=="0") {
-     $tok2 = strtok($people, "|");
+   if ($pos == '0') {
+     $tok2 = strtok($people, '|');
      $infos[] = "";
      $count = 1;
      while ($tok2) {
-      $tok2 = str_replace("\n", "", $tok2);
-      $tok2 = str_replace("\r", "", $tok2);
+      $tok2 = str_replace("\n", '', $tok2);
+      $tok2 = str_replace("\r", '', $tok2);
       $infos[$count]=$tok2;
-      $tok2 = strtok("|");
+      $tok2 = strtok('|');
       $count++;
      }
 
@@ -175,15 +175,15 @@ foreach($peoples as $people) {
         $x= $centerx+($infos[4]*$scalefactorx)-4;
         $y= $centery-($infos[6]*$scalefactory)-4;
      
-        if ($infos[7]=="-1" || $infos[7]=="0") {
-          $ball = "rules/ball01m.gif";
+        if ($infos[7] == '-1' || $infos[7] == '0') {
+          $ball = 'img/ball01m.gif';
           echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?page=listlocations&category=Rules_Functions&selected=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
+          echo "<A HREF=index.php?do=location&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
 
         } else {
-          $ball = "rules/ball04m.gif";
+          $ball = 'img/ball04m.gif';
           echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?page=listlocations&category=Rules_Functions&selectedtype=$infos[8]><img border=0 src=$ball width=10 height=10></a></div>\n";
+          echo "<A HREF=index.php?do=location&type=$infos[8]><img border=0 src=$ball width=10 height=10></a></div>\n";
         }
 
   }
@@ -193,13 +193,13 @@ foreach($peoples as $people) {
 }
 
  $sectors_list = PrepSelect('sector');
-  echo "  <FORM action=\"index.php?do=locationmap\" METHOD=POST>";
-  echo "  <b>Select one area:</b> <br><br> Area: ";
+  echo '  <FORM action="index.php?do=locationmap" METHOD=POST>';
+  echo '  <b>Select one area:</b> <br><br> Area: ';
   echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
   //SelectAreas('','sector');
-  echo " <br><br><INPUT type=submit value=view><br><br>";
-  echo "</FORM>";
-  echo "</div>";
+  echo ' <br><br><INPUT type=submit value=view><br><br>';
+  echo '</FORM>';
+  echo '</div>';
 
 }
 

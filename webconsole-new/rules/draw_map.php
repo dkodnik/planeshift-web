@@ -27,14 +27,14 @@
 function natural_resources_draw()
 {
 
-    $sector = isset($_GET['sector']) ? $_GET['sector'] : "";
-    $type = isset($_GET['type']) ? $_GET['type'] : "";
+    $sector = isset($_GET['sector']) ? $_GET['sector'] : '';
+    $type = isset($_GET['type']) ? $_GET['type'] : '';
     if (!checkAccess('rules', 'read'))  // you can't actually see these echo's if you don't type this file directly in your browser.
     {
         echo 'You do not have access to view this image!';
         return;
     }
-    if ($sector == "" || $type == "")
+    if ($sector == '' || $type == '')
     {
         echo 'You must supply a sector name and type.';
         return;
@@ -48,7 +48,7 @@ function natural_resources_draw()
 
 function draw_map($sector, $type)
 {
-    $image_name = $sector.".gif";
+    $image_name = '../img/'.$sector.'.gif';
 
     $data = getDataFromArea($sector);
     $sectors = $data[0];
@@ -71,21 +71,25 @@ function draw_map($sector, $type)
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
 
-    if ($type == "location")
+    if ($type == 'location')
     {
         draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$red);
     }
-    elseif ($type == "waypoint")
+    elseif ($type == 'waypoint')
     {
         draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$orange,$blue);
     }
-    elseif ($type == "path")
+    elseif ($type == 'path')
     {
         draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
     }
-    elseif ($type == "resource")
+    elseif ($type == 'resource')
     {
         draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
+    }
+    elseif ($type == 'live')
+    {
+        draw_live_paths($im,$data[5],$centerx,$centery,$scalefactorx,$scalefactory, array($red, $green, $dark_green, $orange, $gray, $blue));
     }
     else // do nothing if we don't know the command.
     {
@@ -286,6 +290,49 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         }
 
     }
+}
+
+function draw_live_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory, $colors){
+	$colorindex = 0;
+
+	$dir = "../../psserver/tracking/";
+	if($files = @scandir($dir)) {
+		foreach($files as $file) {
+			if($file == '.' || $file == '..') continue;
+			
+			$handle = @fopen($dir.$file,"r");
+			if($handle) {
+				$prevx = 999.0;
+				$prevy = 999.0;
+				while(!feof($handle))
+				{
+					$buffer = fgets($handle, 4096);
+					$pieces = explode(",", $buffer);
+					$found = FALSE;
+					foreach($sectors as $sectorname)
+					{
+						if(trim($pieces[2]) === $sectorname)
+							$found = TRUE;
+					}
+					if($found)
+					{
+		
+						$x = $centerx+($pieces[0]*$scalefactorx);
+						$y = $centery-($pieces[1]*$scalefactory);
+						if(!($prevx == 999.0 && $prevy == 999.0))
+						{
+							imageline($im,$prevx,$prevy,$x,$y,$colors[$colorindex]);
+						}
+						$prevx = $x;
+						$prevy = $y;
+					}
+				}
+				fclose($handle);
+				// draw each npc as a different colour
+				$colorindex = ($colorindex + 1) % count($colors);
+			}
+		}
+	}
 }
 
 ?>
