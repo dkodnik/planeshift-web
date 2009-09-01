@@ -144,7 +144,7 @@ function editguildmember()
         return;
     }
     
-    if(isset($_POST['guild_public_notes']) && isset($_POST['guild_private_notes']))
+    if($edit && isset($_POST['guild_public_notes']) && isset($_POST['guild_private_notes']))
     {
         $public_notes = mysql_real_escape_string(str_replace("\r", '', $_POST['guild_public_notes']));
         $private_notes = mysql_real_escape_string(str_replace("\r", '', $_POST['guild_private_notes']));

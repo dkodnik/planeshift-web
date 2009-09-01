@@ -7,6 +7,7 @@ function adminmain()
         echo '<a href="./index.php?do=listtips">List Tips</a><br/>';
         echo '<a href="./index.php?do=viewcommands">View Commands</a><br/>'; 
         echo '<a href="./index.php?do=viewserveroptions">View Server Options</a><br/>'; 
+        echo '<a href="./index.php?do=listgms">List GMs</a><br/>';
         echo '<hr/><a href="./index.php">Return to main page.</a>';
         echo '</div><div class="main">';
   }
