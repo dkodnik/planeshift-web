@@ -627,6 +627,30 @@
         othermain();
         deletecommonstrings();
         break;
+      case 'listaccounts':
+        include('./other/othermain.php');
+        include('./other/accounts.php');
+        othermain();
+        listaccounts();
+        break;
+      case 'viewaccount':
+        include('./other/othermain.php');
+        include('./other/accounts.php');
+        othermain();
+        viewaccount();
+        break;
+      case 'listcharacters':
+        include('./other/othermain.php');
+        include('./other/characters.php');
+        othermain();
+        listcharacters();
+        break;
+      case 'viewcharacter':
+        include('./other/othermain.php');
+        include('./other/characters.php');
+        othermain();
+        viewcharacter();
+        break;
       case 'admin':
         include('./admin/adminmain.php');
         adminmain();
@@ -654,6 +678,30 @@
         include('./admin/viewserveroptions.php');
         adminmain();
         viewserveroptions();
+        break;
+      case 'listgms':
+        include('./admin/adminmain.php');
+        include('./admin/gms.php');
+        adminmain();
+        listgms();
+        break;
+      case 'viewgmlog':
+        include('./admin/adminmain.php');
+        include('./admin/gms.php');
+        adminmain();
+        viewgmlog();
+        break;
+      case 'addgm':
+        include('./admin/adminmain.php');
+        include('./admin/gms.php');
+        adminmain();
+        addgm();
+        break;
+      case 'editgm':
+        include('./admin/adminmain.php');
+        include('./admin/gms.php');
+        adminmain();
+        editgm();
         break;
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';

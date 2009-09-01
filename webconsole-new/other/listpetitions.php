@@ -14,7 +14,7 @@ function sort_link($column, $label, $sort_col, $sort_dir)
     $html .= '">'.$label;
     if($sort_col == $column)
     {
-        $html .= '<img src="s_'.strtolower($sort_dir).'.png" border="0" />';
+        $html .= '<img src="img/s_'.strtolower($sort_dir).'.png" border="0" />';
     }
     $html .= '</a>';
     return $html;
