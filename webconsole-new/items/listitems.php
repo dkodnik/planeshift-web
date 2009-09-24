@@ -166,7 +166,7 @@ function showitemusage()
     }
     
     // transforms
-    $query = "SELECT pat.pattern_name, t.pattern_id, t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON pat.id=t.pattern_id WHERE t.result_id='$id' OR t.item_id='$id' GROUP BY id ORDER BY p.name, i.name";
+    $query = "SELECT pat.pattern_name, t.pattern_id, t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON pat.id=t.pattern_id WHERE t.result_id='$id' OR t.item_id='$id' GROUP BY id ORDER BY p.name, i.name";
     $result = mysql_query2($query);
     if (mysql_num_rows($result) > 0)
     {
@@ -211,7 +211,7 @@ function showitemusage()
                 }
                 echo '<td>'.$row['result_cat'].'</td>';
                 echo '<td>'.$row['trans_points'].'</td>';
-                echo '<td>'.$row['penilty_pct'].'</td>';
+                echo '<td>'.$row['penalty_pct'].'</td>';
                 echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
                 echo '</tr>';
             }
