@@ -86,7 +86,7 @@ function editpattern(){
         echo '<p>Please take note that this is not technically a pattern, it is the lack of it. This collection of combines and transforms is considered "general knowledge" and because of that is not associated with any pattern. You are free to add/edit any of these as long as you keep this in mind.</p>';
       }
       echo '<p class="bold">Available Transforms</p>';
-      $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, ii.name, i.name";
+      $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, ii.name, i.name";
       $result = mysql_query2($query);
       echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
       $Alt = FALSE;
@@ -119,7 +119,7 @@ function editpattern(){
         }
         echo '<td>'.$row['result_cat'].'</td>';
         echo '<td>'.$row['trans_points'].'</td>';
-        echo '<td>'.$row['penilty_pct'].'</td>';
+        echo '<td>'.$row['penalty_pct'].'</td>';
         echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
         echo '</tr>';
       }
@@ -272,7 +272,7 @@ function deletepattern()
         echo '</table>';
 
         echo '<p class="bold">Available Transforms</p>';
-        $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS item_name, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, i.name";
+        $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS item_name, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, i.name";
         $result = mysql_query2($query);
         echo '<table><tr><th colspan="2">Source Item</th><th>Process</th><th colspan="2">Result Item</th><th>Time</th><th>Result Q</th></tr>';
         $alt = FALSE;
@@ -292,7 +292,7 @@ function deletepattern()
             $result_id=$row['result_id'];
             echo '<td>'.$row['result_qty'].' </td><td> '.$items["$result_id"].'</td>';
             echo '<td>'.$row['trans_points'].'</td>';
-            echo '<td>'.$row['penilty_pct'].'</td>';
+            echo '<td>'.$row['penalty_pct'].'</td>';
             echo '</tr>';
         }
         echo '</table>';
