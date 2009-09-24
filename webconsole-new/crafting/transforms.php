@@ -18,13 +18,13 @@ function edittransform(){
       $result_id = mysql_real_escape_string($_POST['result_id']);
       $result_id = ($result_id == '' ? 0 : $result_id);
       $trans_points = mysql_real_escape_string($_POST['trans_points']);
-      $penilty_pct = mysql_real_escape_string($_POST['penilty_pct']);
+      $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
       if ($item_id =='0' && $result_id=='0')
       {
         echo '<p class="error">Source and Result item can not both be empty.</p>';
         return;
       }
-      $query = "UPDATE trade_transformations SET pattern_id='$pattern_id', item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', trans_points='$trans_points', penilty_pct='$penilty_pct' WHERE id='$id'";
+      $query = "UPDATE trade_transformations SET pattern_id='$pattern_id', item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', trans_points='$trans_points', penalty_pct='$penalty_pct' WHERE id='$id'";
       $result = mysql_query2($query);
       echo '<p class="error">Update Successful</p>';
       unset($_POST);
@@ -35,7 +35,7 @@ function edittransform(){
       $items = PrepSelect('items');
       $process = PrepSelect('process');
       $patterns = PrepSelect('patterns');
-      $query = "SELECT pattern_id, process_id, result_id, result_qty, item_id, item_qty, trans_points, penilty_pct, description FROM trade_transformations WHERE id='$id'";
+      $query = "SELECT pattern_id, process_id, result_id, result_qty, item_id, item_qty, trans_points, penalty_pct, description FROM trade_transformations WHERE id='$id'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
       $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletetransform&amp;id='.$id.'">Delete Transform</a>' : "");
@@ -48,7 +48,7 @@ function edittransform(){
       echo '<tr><td>Result Item</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" size="4"/> '.DrawSelectBox('items', $items, 'result_id', $row['result_id'], true).'</td></tr>';
       echo '<tr><td>Description</td><td><textarea name="description" rows="4" cols="40">'.$row['description'].'</textarea></td></tr>';
       echo '<tr><td>Time Taken</td><td><input type="text" name="trans_points" value="'.$row['trans_points'].'"/></td></tr>';
-      echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penilty_pct" value="'.$row['penilty_pct'].'"/></td></tr>';
+      echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penalty_pct" value="'.$row['penalty_pct'].'"/></td></tr>';
       echo '<tr><td><input type="submit" name="commit" value="Update Transform"/> </td><td>'.$delete_text.'</td></tr>';
       echo '</table></form>';
     }
@@ -70,13 +70,13 @@ function createtransform()
         $result_id = mysql_real_escape_string($_POST['result_id']);
         $result_id = ($result_id == '' ? 0 : $result_id);
         $result_qty = mysql_real_escape_string($_POST['result_qty']);
-        $penilty_pct = mysql_real_escape_string($_POST['penilty_pct']);
+        $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
         if ($item_id =='0' && $result_id=='0')
         {
             echo '<p class="error">Source and Result item can not both be empty.</p>';
             return;
         }
-        $query = "INSERT INTO trade_transformations ( pattern_id, item_id, item_qty, process_id, trans_points, result_id, result_qty, penilty_pct ) VALUES ('$pattern_id', '$item_id', '$item_qty', '$process_id', '$trans_points', '$result_id', '$result_qty', '$penilty_pct')";
+        $query = "INSERT INTO trade_transformations ( pattern_id, item_id, item_qty, process_id, trans_points, result_id, result_qty, penalty_pct ) VALUES ('$pattern_id', '$item_id', '$item_qty', '$process_id', '$trans_points', '$result_id', '$result_qty', '$penalty_pct')";
         mysql_query2($query);
         if(isset($_GET['id'])) // "redirect the user back to where they came from (if they came from somewhere).
         {
@@ -116,7 +116,7 @@ function createtransform()
         echo '<tr><td>Time Taken</td><td><input type="text" name="trans_points" /></td></tr>';
         echo '<tr><td>(amount) Result Item</td><td><input type="text" name="result_qty" size="4"/> ';
         echo DrawSelectBox('items', $items_results, 'result_id', '', true).'</td></tr>';
-        echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penilty_pct" /></td></tr>';
+        echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penalty_pct" /></td></tr>';
         echo '<tr><td></td><td><input type=submit name="commit" value="Create Transformation"/></td></tr>';
         echo '</table></form>'."\n";
     }

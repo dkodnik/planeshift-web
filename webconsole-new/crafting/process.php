@@ -107,7 +107,7 @@ function editprocess(){
     if (checkaccess('crafting','create')){
         echo '<a href="./index.php?do=createprocess&amp;id='.$id.'">Create new Sub-process</a>';
     }
-    $query = "SELECT t.id, t.process_id, t.pattern_id, pat.pattern_name, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON t.pattern_id=pat.id WHERE t.process_id='$id' ORDER BY pattern_id";
+    $query = "SELECT t.id, t.process_id, t.pattern_id, pat.pattern_name, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON t.pattern_id=pat.id WHERE t.process_id='$id' ORDER BY pattern_id";
     $result = mysql_query2($query);
     if (mysql_num_rows($result) > 0)  
     {
@@ -148,7 +148,7 @@ function editprocess(){
             }
             echo '<td>'.$row['result_cat'].'</td>';
             echo '<td>'.$row['trans_points'].'</td>';
-            echo '<td>'.$row['penilty_pct'].'</td>';
+            echo '<td>'.$row['penalty_pct'].'</td>';
             echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
             echo '</tr>';
         }
@@ -408,7 +408,7 @@ function deleteprocess()
         
         if ($subprocess_number == 0) // this is a main process
         {
-            $query = "SELECT t.id, t.pattern_id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penilty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_stats AS i ON i.id=t.result_id WHERE t.process_id='$process_id' ORDER BY pat.pattern_name, i.name";
+            $query = "SELECT t.id, t.pattern_id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_stats AS i ON i.id=t.result_id WHERE t.process_id='$process_id' ORDER BY pat.pattern_name, i.name";
             $result = mysql_query2($query);
             if (mysql_num_rows($result) > 0)  // there still are dependencies, do not offer to delete anything.
             {
@@ -432,7 +432,7 @@ function deleteprocess()
                     $result_id=$row['result_id'];
                     echo '<td>'.$row['result_qty'].' '.$items["$result_id"].'</td>';
                     echo '<td>'.$row['trans_points'].'</td>';
-                    echo '<td>'.$row['penilty_pct'].'</td>';
+                    echo '<td>'.$row['penalty_pct'].'</td>';
                     echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
                     echo '</tr>';
                 }
