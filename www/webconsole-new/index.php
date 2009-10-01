@@ -203,6 +203,12 @@
         almain();
         deleteal();
         break;
+      case 'checkbooks':
+        include('./actionlocations/almain.php');
+        include('./actionlocations/checkbooks.php');
+        almain();
+        checkbooks();
+        break;
       case 'npcs':
         include('./npcs/npcmain.php');
         npcmain();
