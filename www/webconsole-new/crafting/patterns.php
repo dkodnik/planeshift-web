@@ -3,7 +3,7 @@
 function listpatterns(){
   if (checkaccess('crafting', 'read')){
     echo '<p class="header">Available Crafting Patterns</p>';
-    $query = "SELECT t.id, t.pattern_name, t.description, i.name FROM trade_patterns AS t LEFT JOIN item_stats AS i ON t.designitem_id=i.id";
+    $query = "SELECT t.id, t.pattern_name, t.description, i.name FROM trade_patterns AS t LEFT JOIN item_stats AS i ON t.designitem_id=i.id ORDER BY t.id";
     $r = mysql_query2($query);
     $Alt = FALSE;
     echo '<table><tr><th>ID</th><th>Pattern Name</th><th>Description</th><th>Design Item</th>';
