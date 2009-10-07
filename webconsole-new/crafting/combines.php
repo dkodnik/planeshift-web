@@ -20,7 +20,7 @@ function editcombine()
             $max_qty = mysql_real_escape_string($_POST['max_qty'][$i]);
             $description = mysql_real_escape_string($_POST['description'][$i]);
             
-            if ($item_id != "")
+            if ($item_id != '0')
             {
                 if ($id != 0)
                 {
@@ -127,7 +127,7 @@ function createcombine()
             $max_qty = mysql_real_escape_string($_POST['max_qty'][$i]);
             $description = mysql_real_escape_string($_POST['description'][$i]);
             
-            if ($item_id != "") // if this is "", the user has left this line empty because they didn't need it.
+            if ($item_id != '0') // if this is '0', the user has left this line empty because they didn't need it.
             {
                 $query = "INSERT INTO trade_combinations (pattern_id, result_id, result_qty, item_id, min_qty, max_qty, description) VALUES ('$pattern_id', '$result_id', '$result_qty', '$item_id', '$min_qty', '$max_qty', '$description')";
                 mysql_query2($query);
