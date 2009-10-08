@@ -657,6 +657,12 @@
         othermain();
         viewcharacter();
         break;
+      case 'liststats':
+        include('./other/othermain.php');
+        include('./other/liststats.php');
+        othermain();
+        liststats();
+        break;
       case 'admin':
         include('./admin/adminmain.php');
         adminmain();
