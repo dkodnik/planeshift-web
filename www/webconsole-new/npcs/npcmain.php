@@ -18,6 +18,7 @@ function npcmain(){
     echo '<hr/>';
     echo '<a href="./index.php?do=checknpctriggers">Check NPC Triggers</a> <br/>';
     echo '<a href="./index.php?do=checknpcloaded">Check NPC Loaded</a> <br/>';
+    echo '<a href="./index.php?do=checktrainers">Check NPC Trainers</a> <br/>';
     echo '<hr/><a href="./index.php">Return to main page.</a>';
     echo '</div><div class="main">';
   }
