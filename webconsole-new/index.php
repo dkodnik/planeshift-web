@@ -339,6 +339,12 @@
         npcmain();
         checknpcloaded();
         break;
+      case 'checktrainers':
+        include('./npcs/npcmain.php');
+        include('./npcs/checktrainers.php');
+        npcmain();
+        checktrainers();
+        break;
       case 'rules':
         include('./rules/rulesmain.php');
         rulesmain();
