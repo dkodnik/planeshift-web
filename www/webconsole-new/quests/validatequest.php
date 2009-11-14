@@ -16,13 +16,14 @@ function validatequest()
         echo "
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser.<br>
-<form name=\"singlescript\" method=\"post\" action=\"./index.php?do=validatequest&id=$id\">
-<table>
-<tr><td>Quest ID:</td><td><input type=\"text\" name=\"id\" value=\"$id\"></td></tr>
-<tr><td><input type=\"checkbox\" name=\"show_lines\">Show script lines?</td><td></td></tr>
-</table>
-<input type=\"submit\" name=\"submit\" value=\"submit\">
-</form>
+    <form name=\"singlescript\" method=\"post\" action=\"./index.php?do=validatequest&id=$id\">
+        <table>
+            <tr><td>Quest ID:</td><td><input type=\"text\" name=\"id\" value=\"$id\"></td></tr>
+            <tr><td><input type=\"checkbox\" name=\"show_lines\">Show script lines?</td><td></td></tr>
+        </table>
+        <input type=\"submit\" name=\"submit\" value=\"submit\">
+    </form>
+</p>
 ";
 
         if(isset($_POST['submit']))
@@ -73,12 +74,14 @@ function parseScript($quest_id, $script, $show_lines)
 {
     $line = "";
     $p_count = 0;
+    $m_count = 0;
     $npc_name = "";
     $step = 1;
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
+    $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
     
     if($show_lines)
     {
@@ -104,7 +107,13 @@ function parseScript($quest_id, $script, $show_lines)
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
                 $p_count = 0;
             }
+            if ($seen_menu_triggers && $m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
+            {
+                append_log("parse error, there have been more Menu: than npc:/P: tags before $line_number");
+            }
             $seen_npc_triggers = false;
+            $m_count = 0;
+            $seen_menu_triggers = false;
             $count = 0;
             if(getTriggerCount($line, "P:", $count) === false) //get the amount of P: tags
             {
@@ -118,10 +127,13 @@ function parseScript($quest_id, $script, $show_lines)
         }
         elseif(strncasecmp($line, 'Menu:', 5) === 0) // Menu: trigger
         {
+            $count = 0;
             if(getTriggerCount($line, 'Menu:', $count, 80) === false)
             {
                 append_log("parse error, Menu: with no text on line $line_number");
             }
+            $m_count+=$count;
+            $seen_menu_triggers = true;
             checkVariables($line, 'menu');
         }
         elseif(strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
@@ -148,9 +160,14 @@ function parseScript($quest_id, $script, $show_lines)
                 append_log("parse error, $temp_name:  with no text on line $line_number");
             }
             $p_count -= $count; // substract the amount of npc: tags from the P: count, they should match 1 on 1 .
+            $m_count -= $count; // substract the amount of npc: tags from the P: count, they should match 1 on 1 .
             if ($p_count < 0) 
             {
                 append_log("parse error, there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
+            }
+            if ($seen_menu_triggers && $m_count < 0) 
+            {
+                append_log("parse error, there are more $npc_name:/P: triggers than there are Menu: triggers before line $line_number");
             }
             checkVariables($line, 'npc');
             
@@ -174,6 +191,11 @@ function parseScript($quest_id, $script, $show_lines)
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
                 $p_count = 0;
             }
+            if ($seen_menu_triggers && $m_count > 0) 
+            {
+                append_log("parse error, there have been more Menu: than npc:/P: tags before $line_number");
+                $m_count = 0;
+            }
             if (strlen($line) > 3)
             {
                 if (strpos($line, " ") != 3)
@@ -194,6 +216,8 @@ function parseScript($quest_id, $script, $show_lines)
                 }
             }
             $step++;
+            $seen_npc_triggers = false;
+            $seen_menu_triggers = false;
         }
         else // we found a command
         {

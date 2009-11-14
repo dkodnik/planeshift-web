@@ -663,6 +663,30 @@
         othermain();
         viewcharacter();
         break;
+      case 'listtraits':
+        include('./other/othermain.php');
+        include('./other/traits.php');
+        othermain();
+        list_traits();
+        break;
+      case 'showraces':
+        include('./other/othermain.php');
+        include('./other/traits.php');
+        othermain();
+        show_races();
+        break;
+      case 'trait_actions':
+        include('./other/othermain.php');
+        include('./other/traits.php');
+        othermain();
+        trait_actions();
+        break;
+      case 'handletrait':
+        include('./other/othermain.php');
+        include('./other/traits.php');
+        othermain();
+        handle_trait();
+        break;
       case 'liststats':
         include('./other/othermain.php');
         include('./other/liststats.php');
