@@ -9,11 +9,8 @@ function othermain()
         echo '<a href="./index.php?do=listaccounts">List accounts</a> <br/>';
         echo '<a href="./index.php?do=listcharacters">List characters</a> <br/>';
         echo '<a href="./index.php?do=liststats&groupid=1">List Stats</a> <br/>';
-        /*
-         * These pages still need to be done!
-         *
-        echo '<a href="./index.php?do=listtraits">List/Edit traits</a> <br/>'; // SysAdmin
-        */
+        echo '<a href="./index.php?do=listtraits">List traits</a> <br/>'; 
+        echo '<a href="./index.php?do=showraces">Traits per race</a> <br/>'; 
         echo '<a href="./index.php?do=listcommonstrings">List Common Strings</a> <br/>';
         
         echo '<hr />';

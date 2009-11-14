@@ -501,10 +501,11 @@ function showitemusage()
     // quests
     // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
     // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between [].
-    // so we get 'text[^\n]* item' In this case our character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
-    // In other words, we are looking for a character sequence that contains "Player Gives" and "item_name" with any amount of characters between them that are not newlines. This effectively means they have to be on the same line.
+    // so we get '[\n]text[^\n]* item' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
+    // In other words, we are looking for a character sequence that contains a newline, followed by "Player Gives" (so it must be at the start of the line) and "item_name" with any amount of characters between them 
+    // that are not newlines. This effectively means they have to be on the same line, in the form of "give **** <item> ****" where *** can be anything or nothing at all.
     $escaped_item_name = mysql_real_escape_string($my_item_name);
-    $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '(Player Gives|Give)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
+    $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
     $result = mysql_query2($query);
     if (mysql_num_rows($result) > 0)
     {
