@@ -9,6 +9,11 @@ function createitem(){
       $values = 'VALUES (';
       $cols = $cols.'name';
       $values = $values . "'$name'";
+      if (isset($_POST['id']) && $_POST['id'] != '' && is_numeric($_POST['id'])) { // only set the ID if it is set and has a valid value.){
+        $id = mysql_real_escape_string($_POST['id']);
+        $cols = $cols . ', id';
+        $values = $values . ", '$id'";
+      }
       if (isset($_POST['stat_type'])){
         $stat_type = mysql_real_escape_string($_POST['stat_type']);
         $cols = $cols . ', stat_type';
@@ -38,6 +43,11 @@ function createitem(){
         $container_max_size = mysql_real_escape_string($_POST['container_max_size']);
         $cols = $cols . ', container_max_size';
         $values = $values . ", '$container_max_size'";
+      }
+      if (isset($_POST['container_max_slot'])){
+        $container_max_slot = mysql_real_escape_string($_POST['container_max_slot']);
+        $cols = $cols . ', container_max_slot';
+        $values = $values . ", '$container_max_slot'";
       }
       if (isset($_POST['valid_slots'])){
         $valid_slots = mysql_real_escape_string($_POST['valid_slots']);
@@ -144,25 +154,30 @@ function createitem(){
         $cols = $cols . ', armor_hardness';
         $values = $values . ", '$armor_hardness'";
       }
-      if (isset($_POST['cstr_id_gfx_mesh'])){
-        $cstr_id_gfx_mesh = mysql_real_escape_string($_POST['cstr_id_gfx_mesh']);
-        $cols = $cols . ', cstr_id_gfx_mesh';
-        $values = $values . ", '$cstr_id_gfx_mesh'";
+      if (isset($_POST['cstr_gfx_mesh'])){
+        $cstr_gfx_mesh = mysql_real_escape_string($_POST['cstr_gfx_mesh']);
+        $cols = $cols . ', cstr_gfx_mesh';
+        $values = $values . ", '$cstr_gfx_mesh'";
       }
-      if (isset($_POST['cstr_id_gfx_icon'])){
-        $cstr_id_gfx_icon = mysql_real_escape_string($_POST['cstr_id_gfx_icon']);
-        $cols = $cols . ', cstr_id_gfx_icon';
-        $values = $values . ", '$cstr_id_gfx_icon'";
+      if (isset($_POST['cstr_gfx_icon'])){
+        $cstr_gfx_icon = mysql_real_escape_string($_POST['cstr_gfx_icon']);
+        $cols = $cols . ', cstr_gfx_icon';
+        $values = $values . ", '$cstr_gfx_icon'";
       }
-      if (isset($_POST['cstr_id_gfx_texture'])){
-        $cstr_id_gfx_texture = mysql_real_escape_string($_POST['cstr_id_gfx_texture']);
-        $cols = $cols . ', cstr_id_gfx_texture';
-        $values = $values . ", '$cstr_id_gfx_texture'";
+      if (isset($_POST['cstr_gfx_texture'])){
+        $cstr_gfx_texture = mysql_real_escape_string($_POST['cstr_gfx_texture']);
+        $cols = $cols . ', cstr_gfx_texture';
+        $values = $values . ", '$cstr_gfx_texture'";
       }
-      if (isset($_POST['cstr_id_part_mesh'])){
-        $cstr_id_part_mesh = mysql_real_escape_string($_POST['cstr_id_part_mesh']);
-        $cols = $cols . ', cstr_id_part_mesh';
-        $values = $values . ", '$cstr_id_part_mesh'";
+      if (isset($_POST['cstr_part'])){
+        $cstr_part = mysql_real_escape_string($_POST['cstr_part']);
+        $cols = $cols . ', cstr_part';
+        $values = $values . ", '$cstr_part'";
+      }
+      if (isset($_POST['cstr_part_mesh'])){
+        $cstr_part_mesh = mysql_real_escape_string($_POST['cstr_part_mesh']);
+        $cols = $cols . ', cstr_part_mesh';
+        $values = $values . ", '$cstr_part_mesh'";
       }
       if (isset($_POST['armorvsweapon_type'])){
         $armorvsweapon_type = mysql_real_escape_string($_POST['armorvsweapon_type']);
@@ -290,12 +305,14 @@ function createitem(){
         echo '>'.$j.'</option>'."\n";
       }
       echo '</select></td></tr>';
+      echo '<tr><td>ID</td><td><input type="text" size="4" name="id"/> <span class="error">Only do this if you really know what you are doing.</span></td></tr>';
       echo '<tr><td>Name</td><td><input type="text" size="50" name="name" /></td></tr>';
       echo '<tr><td>Description</td><td><input type="text" size="50" name="description" /></td></tr>';
       echo '<tr><td>Weight</td><td><input type="text" name="weight" /></td></tr>';
       echo '<tr><td>Visible Distance</td><td><input type="text" name="visible_distance" /></td></tr>';
       echo '<tr><td>Size</td><td><input type="text" name="size" /></td></tr>';
       echo '<tr><td>container_max_size</td><td><input type="text" name="container_max_size" /></td></tr>';
+      echo '<tr><td>container_max_slots</td><td><input type="text" name="container_max_slots" /></td></tr>';
       echo '<tr><td>valid slots</td><td><input type="text" size="50" name="valid_slots" /></td></tr>';
       echo '<tr><td>flags</td><td><input type="text" size="50" name="flags" /></td></tr>';
       echo '<tr><td>decay rate</td><td><input type="text" name="decay_rate" /></td></tr>';
@@ -318,13 +335,11 @@ function createitem(){
       echo '<tr><td>weapon_block_untargeted</td><td><input type="text" name="weapon_block_untargeted" /></td></tr>';
       echo '<tr><td>weapon_counterblock</td><td><input type="text" name="weapon_counterblock" /></td></tr>';
       echo '<tr><td>armor_hardness</td><td><input type="text" name="armor_hardness" /></td></tr>';
-      $mesh_result = PrepSelect('mesh');
-      echo '<tr><td>cstr_id_gfx_mesh</td><td>'.DrawSelectBox('mesh', $mesh_result, 'cstr_id_gfx_mesh', '').'</td></tr>';
-      $icon_result = PrepSelect('icon');
-      echo '<tr><td>cstr_id_gfx_icon</td><td>'.DrawSelectBox('icon', $icon_result, 'cstr_id_gfx_icon', '').'</td></tr>';
-      $cstring_result = PrepSelect('cstring');
-      echo '<tr><td>cstr_id_gfx_texture</td><td>'.DrawSelectBox('cstring', $cstring_result, 'cstr_id_gfx_texture', '', 'true').'</td></tr>';
-      echo '<tr><td>cstr_id_part_mesh</td><td>'.DrawSelectBox('cstring', $cstring_result, 'cstr_id_part_mesh', '', 'true').'</td></tr>';
+      echo '<tr><td>cstr_gfx_mesh</td><td><input type="text" name="cstr_gfx_mesh"/></td></tr>';
+      echo '<tr><td>cstr_gfx_icon</td><td><input type="text" name="cstr_gfx_icon"/></td></tr>';
+      echo '<tr><td>cstr_gfx_texture</td><td><input type="text" name="cstr_gfx_texture"/></td></tr>';
+      echo '<tr><td>cstr_part</td><td><input type="text" name="cstr_part"/></td></tr>';
+      echo '<tr><td>cstr_part_mesh</td><td><input type="text" name="cstr_part_mesh"/></td></tr>';
       echo '<tr><td>armorvsweapon_type</td><td><input type="text" name="armorvsweapon_type" /></td></tr>';
       $category_result = PrepSelect('category');
       echo '<tr><td>category_id</td><td>'.DrawSelectBox('category', $category_result, 'category_id', '').'</td></tr>';

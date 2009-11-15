@@ -23,11 +23,16 @@ function edititem(){
         }
         echo '</select></td></tr>';
         echo '<tr><td>Name</td><td><input type="text" size="50" name="name" value="'.$row['name'].'" /></td></tr>';
+        if (checkaccess('items','delete'))  // This does not actually delete anything, but 'delete' is the highest level, so this effectively says that only someone who may do *everything* with items can set this.
+        {
+            echo '<tr><td>New ID</td><td><input type="text" size="4" name="new_id"/> <span class="error">Only do this if you really know what you are doing.</span></td></tr>';
+        }
         echo '<tr><td>Description</td><td><input type="text" size="50" name="description" value="'.$row['description'].'"></td></tr>';
         echo '<tr><td>Weight</td><td><input type="text" name="weight" value="'.$row['weight'].'" /></td></tr>';
         echo '<tr><td>Visible Distance</td><td><input type="text" name="visible_distance" value="'.$row['visible_distance'].'" /></td></tr>';
         echo '<tr><td>Size</td><td><input type="text" name="size" value="'.$row['size'].'" /></td></tr>';
         echo '<tr><td>container_max_size</td><td><input type="text" name="container_max_size" value="'.$row['container_max_size'].'" /></td></tr>';
+        echo '<tr><td>container_max_slots</td><td><input type="text" name="container_max_slots" value="'.$row['container_max_slots'].'" /></td></tr>';
         echo '<tr><td>valid slots</td><td><input type="text" size="50" name="valid_slots" value="'.$row['valid_slots'].'"/></td></tr>';
         echo '<tr><td>flags</td><td><input type="text" size="50" name="flags" value="'.$row['flags'].'" /></td></tr>';
         echo '<tr><td>decay rate</td><td><input type="text" name="decay_rate" value="'.$row['decay_rate'].'" /></td></tr>';
@@ -50,13 +55,11 @@ function edititem(){
         echo '<tr><td>weapon_block_untargeted</td><td><input type="text" name="weapon_block_untargeted" value="'.$row['weapon_block_untargeted'].'"/></td></tr>';
         echo '<tr><td>weapon_counterblock</td><td><input type="text" name="weapon_counterblock" value="'.$row['weapon_counterblock'].'"/></td></tr>';
         echo '<tr><td>armor_hardness</td><td><input type="text" name="armor_hardness" value="'.$row['armor_hardness'].'"/></td></tr>';
-        $mesh_result = PrepSelect('mesh');
-        echo '<tr><td>cstr_id_gfx_mesh</td><td>'.DrawSelectBox('mesh', $mesh_result, 'cstr_id_gfx_mesh', $row['cstr_id_gfx_mesh']).'</td></tr>';
-        $icon_result = PrepSelect('icon');
-        echo '<tr><td>cstr_id_gfx_icon</td><td>'.DrawSelectBox('icon', $icon_result, 'cstr_id_gfx_icon', $row['cstr_id_gfx_icon']).'</td></tr>';
-        $cstring_result = PrepSelect('cstring');
-        echo '<tr><td>cstr_id_gfx_texture</td><td>'.DrawSelectBox('cstring', $cstring_result, 'cstr_id_gfx_texture', $row['cstr_id_gfx_texture'], 'true').'</td></tr>';
-        echo '<tr><td>cstr_id_part_mesh</td><td>'.DrawSelectBox('cstring', $cstring_result, 'cstr_id_part_mesh', $row['cstr_id_part_mesh'], 'true').'</td></tr>';
+        echo '<tr><td>cstr_gfx_mesh</td><td><input type="text" name="cstr_gfx_mesh" value="'.$row['cstr_gfx_mesh'].'"/></td></tr>';
+        echo '<tr><td>cstr_gfx_icon</td><td><input type="text" name="cstr_gfx_icon" value="'.$row['cstr_gfx_icon'].'"/></td></tr>';
+        echo '<tr><td>cstr_gfx_texture</td><td><input type="text" name="cstr_gfx_texture" value="'.$row['cstr_gfx_texture'].'"/></td></tr>';
+        echo '<tr><td>cstr_part</td><td><input type="text" name="cstr_part" value="'.$row['cstr_part'].'"/></td></tr>';
+        echo '<tr><td>cstr_part_mesh</td><td><input type="text" name="cstr_part_mesh" value="'.$row['cstr_part_mesh'].'"/></td></tr>';
         echo '<tr><td>armorvsweapon_type</td><td><input type="text" name="armorvsweapon_type" value="'.$row['armorvsweapon_type'].'" /></td></tr>';
         $category_result = PrepSelect('category');
         echo '<tr><td>category_id</td><td>'.DrawSelectBox('category', $category_result, 'category_id', $row['category_id']).'</td></tr>';
@@ -99,6 +102,11 @@ function edititem(){
  //here we do the "magic"
       $id = mysql_real_escape_string($_GET['item']);
       $query = 'UPDATE item_stats SET ';
+      if (isset($_POST['new_id']) && $_POST['new_id'] != '' && is_numeric($_POST['new_id']))  // only change the ID if new ID is set and has a valid value.
+      {
+        $new_id = mysql_real_escape_string($_POST['new_id']);
+        $query = $query . "id='$new_id', ";
+      }
       $stat_type = mysql_real_escape_string($_POST['stat_type']);
       $query = $query . "stat_type='$stat_type', ";
       $name = mysql_real_escape_string($_POST['name']);
@@ -111,8 +119,10 @@ function edititem(){
       $query = $query . "visible_distance='$visible_distance', ";
       $size = mysql_real_escape_string($_POST['size']);
       $query = $query . "size='$size', ";
-      $container_max_size = mysql_real_escape_string($_POST['container_max_size']);
+      $container_max_size = mysql_real_escape_string($_POST['container_max_size']); 
       $query = $query . "container_max_size='$container_max_size', ";
+      $container_max_slots = mysql_real_escape_string($_POST['container_max_slots']);
+      $query = $query . "container_max_slots='$container_max_slots', ";
       $valid_slots = mysql_real_escape_string($_POST['valid_slots']);
       $query = $query . "valid_slots='$valid_slots', ";
       $flags = mysql_real_escape_string($_POST['flags']);
@@ -155,14 +165,16 @@ function edititem(){
       $query = $query . "weapon_counterblock='$weapon_counterblock', ";
       $armor_hardness = mysql_real_escape_string($_POST['armor_hardness']);
       $query = $query . "armor_hardness='$armor_hardness', ";
-      $cstr_id_gfx_mesh = mysql_real_escape_string($_POST['cstr_id_gfx_mesh']);
-      $query = $query . "cstr_id_gfx_mesh='$cstr_id_gfx_mesh', ";
-      $cstr_id_gfx_icon = mysql_real_escape_string($_POST['cstr_id_gfx_icon']);
-      $query = $query . "cstr_id_gfx_icon='$cstr_id_gfx_icon', ";
-      $cstr_id_gfx_texture = mysql_real_escape_string($_POST['cstr_id_gfx_texture']);
-      $query = $query . "cstr_id_gfx_texture='$cstr_id_gfx_texture', ";
-      $cstr_id_part_mesh = mysql_real_escape_string($_POST['cstr_id_part_mesh']);
-      $query = $query . "cstr_id_part_mesh='$cstr_id_part_mesh', ";
+      $cstr_gfx_mesh = mysql_real_escape_string($_POST['cstr_gfx_mesh']);
+      $query = $query . "cstr_gfx_mesh='$cstr_gfx_mesh', ";
+      $cstr_gfx_icon = mysql_real_escape_string($_POST['cstr_gfx_icon']);
+      $query = $query . "cstr_gfx_icon='$cstr_gfx_icon', ";
+      $cstr_gfx_texture = mysql_real_escape_string($_POST['cstr_gfx_texture']);
+      $query = $query . "cstr_gfx_texture='$cstr_gfx_texture', ";
+      $cstr_part = mysql_real_escape_string($_POST['cstr_part']);
+      $query = $query . "cstr_part='$cstr_part', ";
+      $cstr_part_mesh = mysql_real_escape_string($_POST['cstr_part_mesh']);
+      $query = $query . "cstr_part_mesh='$cstr_part_mesh', ";
       $armorvsweapon_type = mysql_real_escape_string($_POST['armorvsweapon_type']);
       $query = $query . "armorvsweapon_type='$armorvsweapon_type', ";
       $category_id = mysql_real_escape_string($_POST['category_id']);
@@ -209,6 +221,10 @@ function edititem(){
       $query = $query . "weapon_range='$weapon_range' ";
       $query = $query . "WHERE id=$id";
       $result = mysql_query2($query);
+      if (isset($new_id))
+      {
+        $id = $new_id; // change id to new_id if it was set, so redirect works properly.
+      }
 ?>
     <SCRIPT language="javascript">
       document.location = "index.php?do=listitems&category=<?php echo $category_id?>&item=<?php echo $id?>";

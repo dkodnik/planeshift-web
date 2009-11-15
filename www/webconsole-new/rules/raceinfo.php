@@ -31,7 +31,13 @@ function raceinfo(){
         $base_physical_regen_walk = mysql_real_escape_string($_POST['base_physical_regen_walk']);
         $base_mental_regen_still = mysql_real_escape_string($_POST['base_mental_regen_still']);
         $base_mental_regen_walk = mysql_real_escape_string($_POST['base_mental_regen_walk']);
-        $query = "UPDATE race_info SET name='$name', sex='$sex', size_x='$size_x', size_y='$size_y', size_z='$size_z', initial_cp='$initial_cp', start_str='$start_str', start_end='$start_end', start_agi='$start_agi', start_int='$start_int', start_will='$start_will', start_cha='$start_cha', base_physical_regen_still='$base_physical_regen_still', base_physical_regen_walk='$base_physical_regen_walk', base_mental_regen_still='$base_mental_regen_still', base_mental_regen_walk='$base_mental_regen_walk' WHERE id='$id'";
+        $armor_id = mysql_real_escape_string($_POST['armor_id']);
+        $helm = mysql_real_escape_string($_POST['helm']);
+        $bracer = mysql_real_escape_string($_POST['bracer']);
+        $belt = mysql_real_escape_string($_POST['belt']);
+        $cloak = mysql_real_escape_string($_POST['cloak']);
+        $speed_modifier = mysql_real_escape_string($_POST['speed_modifier']);
+        $query = "UPDATE race_info SET name='$name', sex='$sex', size_x='$size_x', size_y='$size_y', size_z='$size_z', initial_cp='$initial_cp', start_str='$start_str', start_end='$start_end', start_agi='$start_agi', start_int='$start_int', start_will='$start_will', start_cha='$start_cha', base_physical_regen_still='$base_physical_regen_still', base_physical_regen_walk='$base_physical_regen_walk', base_mental_regen_still='$base_mental_regen_still', base_mental_regen_walk='$base_mental_regen_walk', armor_id='$armor_id', helm='$helm', bracer='$bracer', belt='$belt', cloak='$cloak', speed_modifier='$speed_modifier' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -98,6 +104,12 @@ function raceinfo(){
         echo '<tr><td>Base Charisma:</td><td><input type="text" name="start_cha" value="'.$row['start_cha'].'"/></td></tr>';
         echo '<tr><td>Physical Rengeneration (Standing/Walking):</td><td><input type="text" name="base_physical_regen_still" value="'.$row['base_physical_regen_still'].'"/> / <input type="text" name="base_physical_regen_walk" value="'.$row['base_physical_regen_walk'].'" /></td></tr>';
         echo '<tr><td>Mental Regeneration (Standing/Walking):</td><td><input type="text" name="base_mental_regen_still" value="'.$row['base_mental_regen_still'].'"/> / <input type="text" name="base_mental_regen_walk" value="'.$row['base_mental_regen_walk'].'" /></td></tr>';
+        echo '<tr><td>Armor ID:</td><td><input type="text" name="armor_id" value="'.$row['armor_id'].'"/></td></tr>';
+        echo '<tr><td>Helm:</td><td><input type="text" name="helm" value="'.$row['helm'].'"/></td></tr>';
+        echo '<tr><td>Bracer:</td><td><input type="text" name="bracer" value="'.$row['bracer'].'"/></td></tr>';
+        echo '<tr><td>Belt:</td><td><input type="text" name="belt" value="'.$row['belt'].'"/></td></tr>';  
+        echo '<tr><td>Cloak:</td><td><input type="text" name="cloak" value="'.$row['cloak'].'"/></td></tr>';
+        echo '<tr><td>Speed modifier:</td><td><input type="text" name="speed_modifier" value="'.$row['speed_modifier'].'"/></td></tr>';
         echo '</table><input type="submit" name="commit" value="Confirm Update" />';
         echo '</form>';
       }else if ($_POST['action'] == "Add Spawn Point"){
@@ -134,7 +146,7 @@ function raceinfo(){
       $query = "SELECT * FROM race_info ORDER BY name, sex";
       $result = mysql_query2($query);
       echo '<table>';
-      echo '<tr><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>Spawn Points</th>';
+      echo '<tr><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Spawn Points</th>';
       if (checkaccess('rules', 'edit')){
         echo '<th>Actions</th>';
       }
@@ -160,6 +172,12 @@ function raceinfo(){
         echo '<td>'.$row['start_cha'].'</td>';
         echo '<td>'.$row['base_physical_regen_still'].' / '.$row['base_physical_regen_walk'].'</td>';
         echo '<td>'.$row['base_mental_regen_still'].' / '.$row['base_mental_regen_walk'].'</td>';
+        echo '<td>'.$row['armor_id'].'</td>';
+        echo '<td>'.$row['helm'].'</td>';
+        echo '<td>'.$row['bracer'].'</td>';
+        echo '<td>'.$row['belt'].'</td>'; 
+        echo '<td>'.$row['cloak'].'</td>';
+        echo '<td>'.$row['speed_modifier'].'</td>';
         echo '<td>';
         if (isset($Spawns[$raceid])){
           echo '<table border="1"><tr><th>X</th><th>Y</th><th>Z</th><th>Angle</th><th>Sector</th>';

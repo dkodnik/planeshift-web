@@ -615,6 +615,7 @@
         othermain();
         listpetitions();
         break;
+        /*  commented pending a decision on what to do with this since there is no more such table, but the information is still out there.
       case 'listcommonstrings':
           include('./other/othermain.php');
           include('./other/commonstrings.php');
@@ -639,6 +640,7 @@
         othermain();
         deletecommonstrings();
         break;
+        */
       case 'listaccounts':
         include('./other/othermain.php');
         include('./other/accounts.php');
