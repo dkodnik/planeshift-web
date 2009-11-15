@@ -200,8 +200,7 @@ function spell(){
           echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="'.$row['aoe_radius'].'" size="30" /></td></tr>';
           echo '<tr><td>Aoe Angle</td><td><input type="text" name="aoe_angle" value="'.$row['aoe_angle'].'" size="30" /></td></tr>';
           echo '<tr><td>Image Name</td><td><input type="text" name="image_name" value="'.$row['image_name'].'" size="30" /></td></tr>';
-          $cstrings = PrepSelect('cstring');
-          echo '<tr><td>NPC Spell Type</td><td>'.DrawSelectBox('cstring', $cstrings, 'cstr_npc_spell_category' ,$row['cstr']).'</td></tr>';
+          echo '<tr><td>NPC Spell Type</td><td><input type="text" name="cstr_npc_spell_category" value="'.$row['cstr'].'"/></td></tr>';
           $query = "SELECT g.item_id, g.position FROM spell_glyphs AS g WHERE g.spell_id='$id' ORDER BY g.position";
           $result2 = mysql_query2($query);
           $i = 0;
@@ -394,8 +393,7 @@ function createspell(){
       echo '<tr><td>Aoe Range</td><td><input type="text" name="aoe_angle" value="" size="30" /></td></tr>';
       
       echo '<tr><td>Image Name</td><td><input type="text" name="image_name" size="30" /></td></tr>';
-      $cstrings = PrepSelect('cstring');
-      echo '<tr><td>NPC Spell Type</td><td>'.DrawSelectBox('cstring', $cstrings, 'cstr_npc_spell_category' ,'').'</td></tr>';
+      echo '<tr><td>NPC Spell Type</td><td><input type="text" name="cstr_npc_spell_category" /></td></tr>';
       $i = 0;
       $glyphs = PrepSelect('Glyphs');
       while ($i < 4){

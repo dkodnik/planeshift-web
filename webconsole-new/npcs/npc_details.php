@@ -4,7 +4,7 @@ function npc_main(){
     if (isset($_GET['npc_id'])){
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT description, npc_master_id, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id FROM characters WHERE id='.$id;
+        $query = 'SELECT description, npc_master_id, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
@@ -44,6 +44,23 @@ function npc_main(){
         }
         echo '</td></tr>';
         echo '<tr><td>Experience</td><td><input type="text" name="kill_exp" value="'.$row['kill_exp'].'" size="7" /></td></tr>';
+        echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
+        if ($row['banker'] == "1")
+        {
+            echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" checked="checked" /> </td></tr>';
+        }
+        else
+        {
+          echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" /> </td></tr>';
+        }
+        if ($row['statue'] == "1")
+        {
+            echo '<tr><td>Statue</td><td><input type="checkbox" name="statue" checked="checked" /> </td></tr>';
+        }
+        else
+        {
+          echo '<tr><td>Statue</td><td><input type="checkbox" name="statue" /> </td></tr>';
+        }
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         $Spawns = PrepSelect('spawn');
         $Loots = PrepSelect('loot');
@@ -98,7 +115,23 @@ function npc_main(){
         $npc_spawn_rule = mysql_real_escape_string($_POST['npc_spawn_rule']);
         $query = $query . "npc_spawn_rule = '$npc_spawn_rule', ";
         $npc_addl_loot_category_id = mysql_real_escape_string($_POST['npc_addl_loot_category_id']);
-        $query = $query . "npc_addl_loot_category_id = '$npc_addl_loot_category_id' ";
+        $query = $query . "npc_addl_loot_category_id = '$npc_addl_loot_category_id', ";
+        if (isset($_POST['banker'])) 
+        {
+            $query .= "banker = '1', ";
+        }
+        else
+        {
+            $query .= "banker = '0', ";
+        }
+        if (isset($_POST['statue'])) 
+        {
+            $query .= "statue = '1' ";
+        }
+        else
+        {
+            $query .= "statue = '0' ";
+        }
         $query = $query . "WHERE id='$id'";
         $sc_npctype = mysql_real_escape_string($_POST['sc_npctype']);
         $sc_region = mysql_real_escape_string($_POST['sc_region']);

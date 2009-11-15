@@ -44,10 +44,15 @@ function ka_detail(){
           $response5 = mysql_real_escape_string($_POST['response5']);
           $script = mysql_real_escape_string($_POST['script']);
           $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
+          $audio_path1 = mysql_real_escape_string($_POST['audio_path1']);
+          $audio_path2 = mysql_real_escape_string($_POST['audio_path2']);
+          $audio_path3 = mysql_real_escape_string($_POST['audio_path3']);
+          $audio_path4 = mysql_real_escape_string($_POST['audio_path4']);
+          $audio_path5 = mysql_real_escape_string($_POST['audio_path5']);
           if (isset($_POST['c'])){
-            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite'";
+            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5'";
           }else{
-            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite' WHERE trigger_id='$tid'";
+            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5' WHERE trigger_id='$tid'";
           }
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
           $tid_o = mysql_real_escape_string($_POST['trigger_id']);
@@ -99,7 +104,7 @@ function ka_detail(){
         unset($_POST);
         ka_detail();
       }else{
-        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
+        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, r.audio_path1, r.audio_path2, r.audio_path3, r.audio_path4, r.audio_path5, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
         if (isset($_GET['trigger'])){
           $t = mysql_real_escape_string($_GET['trigger']);
           $query = $query . " ORDER BY t.id IN ('$t') DESC";
@@ -147,10 +152,15 @@ function ka_detail(){
                 echo '<form action="./index.php?do=ka_detail&amp;area='.rawurlencode($area).'" method="post">';
                 echo '<input type="hidden" name="trigger_id" value="'.$row['id'].'" />';
                 echo 'Response 1: <textarea name="response1" rows="3" cols="30">'.$row['response1'].'</textarea><br/>';
+                echo 'Audio Path 1: <input type="text" name="audio_path1" value="'.$row['audio_path1'].'"><br/>';
                 echo 'Response 2: <textarea name="response2" rows="3" cols="30">'.$row['response2'].'</textarea><br/>';
+                echo 'Audio Path 2: <input type="text" name="audio_path2" value="'.$row['audio_path2'].'"><br/>';
                 echo 'Response 3: <textarea name="response3" rows="3" cols="30">'.$row['response3'].'</textarea><br/>';
+                echo 'Audio Path 3: <input type="text" name="audio_path3" value="'.$row['audio_path3'].'"><br/>';
                 echo 'Response 4: <textarea name="response4" rows="3" cols="30">'.$row['response4'].'</textarea><br/>';
+                echo 'Audio Path 4: <input type="text" name="audio_path4" value="'.$row['audio_path4'].'"><br/>';
                 echo 'Response 5: <textarea name="response5" rows="3" cols="30">'.$row['response5'].'</textarea><br/>';
+                echo 'Audio Path 5: <input type="text" name="audio_path5" value="'.$row['audio_path5'].'"><br/>';
                 echo '<hr/>';
                 echo 'Script: <textarea name="script">'.$row['script'].'</textarea><br/>';
                 echo 'Prerequisite: <textarea name="prerequisite">'.$row['prerequisite'].'</textarea><br/>';
@@ -162,10 +172,15 @@ function ka_detail(){
                 echo '</form>';
               }else{
                 echo 'Response 1: '.htmlspecialchars($row['response1']).'<br/>';
+                echo 'Audio Path 1: '.$row['audio_path1'].'<br/>';
                 echo 'Response 2: '.htmlspecialchars($row['response2']).'<br/>';
+                echo 'Audio Path 2: '.$row['audio_path2'].'<br/>';
                 echo 'Response 3: '.htmlspecialchars($row['response3']).'<br/>';
+                echo 'Audio Path 3: '.$row['audio_path3'].'<br/>';
                 echo 'Response 4: '.htmlspecialchars($row['response4']).'<br/>';
+                echo 'Audio Path 4: '.$row['audio_path4'].'<br/>';
                 echo 'Response 5: '.htmlspecialchars($row['response5']).'<br/>';
+                echo 'Audio Path 5: '.$row['audio_path5'].'<br/>';
                 echo '<hr/>';
                 echo 'Script: '.htmlspecialchars($row['script']).'<br/>';
                 echo 'Prerequisite: '.htmlspecialchars($row['prerequisite']).'<br/>';

@@ -2,52 +2,32 @@
 
 function SelectLocationT($current_location,$select_name)
 {
-        printf("<SELECT name=%s>", $select_name);
-        $location="EYE_COLOR"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
-        $location="HAIR_COLOR"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
-        $location="HAIR_STYLE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
-        $location="BEARD_STYLE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
-        $location="SKIN_TONE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
-        printf("</SELECT>");
+    $slocation = '';
+    $slocation .= sprintf('<SELECT name="%s">', $select_name);
+    $location="EYE_COLOR"; if ($current_location == $location){$selected="selected";}else{$selected="";}
+    $slocation .= sprintf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
+    $location="HAIR_COLOR"; if ($current_location == $location){$selected="selected";}else{$selected="";}
+    $slocation .= sprintf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
+    $location="HAIR_STYLE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
+    $slocation .= sprintf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
+    $location="BEARD_STYLE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
+    $slocation .= sprintf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
+    $location="SKIN_TONE"; if ($current_location == $location){$selected="selected";}else{$selected="";}
+    $slocation .= sprintf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,$location);
+    $slocation .= sprintf("</SELECT>");
+    return $slocation;
 }
 
 function SelectOnlyNPC($current_location,$select_name)
 {
-        printf("<SELECT name=%s>", $select_name);
-        $location="0"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,"NO");
-        $location="1"; if ($current_location == $location){$selected="selected";}else{$selected="";}
-        printf("<OPTION %s value=\"%s\">%s</OPTION>",$selected,$location,"YES");
-        printf("</SELECT>");
-}
-
-
-/******************************************************************************
-Used to create a drop down list from common string using a like search 
-******************************************************************************/
-function SelectCommonStringLike( $current_string, $like, $select_name )
-{
-    
-    printf("<SELECT name=%s>", $select_name);
-    $query_strings = "select id, string from common_strings where string like '$like%'";
-    $result = mysql_query2($query_strings);
-    while ($list = mysql_fetch_array($result, MYSQL_NUM))
-    {
-        if ($list[0] == $current_string)
-        {
-            printf("<OPTION selected value=\"%s\">%s - %s</OPTION>",$list[0], $list[0], $list[1]);
-        }
-        else
-        {
-            printf("<OPTION value=\"%s\">%s - %s</OPTION>", $list[0], $list[0], $list[1]);
-        }
-    }
-    printf("</SELECT>");
+    $only = '';
+    $only .= sprintf('<SELECT name="%s">', $select_name);
+    $location='0'; if ($current_location == $location){$selected='selected="selected"';}else{$selected='';}
+    $only .= sprintf('<OPTION %s value="%s">NO</OPTION>',$selected,$location);
+    $location='1'; if ($current_location == $location){$selected='selected="selected"';}else{$selected='';}
+    $only .= sprintf('<OPTION %s value="%s">YES</OPTION>',$selected,$location);
+    $only .= sprintf('</SELECT>');
+    return $only;
 }
 
 
@@ -102,7 +82,7 @@ function ShowHairColours($race_id)
 
         echo "<TR>";
         echo "<TD><INPUT TYPE=TEXT NAME=trait_name VALUE='" . $line["name"] . "'></TD>";
-        echo "<TD>"; SelectOnlyNPC($line[3],"only_npc"); echo "</TD>";
+        echo "<TD>".SelectOnlyNPC($line[3],"only_npc")."</TD>";
         echo "<TD><INPUT TYPE=TEXT VALUE='" . $line["shader"]. "' NAME=shader></TD>";
         echo "<TD><INPUT TYPE=CHECKBOX NAME=delete_box></TD>";
         echo "<TD><INPUT TYPE=SUBMIT VALUE=Update></TD>";
@@ -117,7 +97,7 @@ function ShowHairColours($race_id)
 
     echo "<TR>";
     echo "<TD><INPUT TYPE=TEXT NAME=trait_name></TD>";
-    echo "<TD>"; SelectOnlyNPC("0","only_npc"); echo "</TD>";
+    echo "<TD>".SelectOnlyNPC("0","only_npc")."</TD>";
     echo "<TD><INPUT TYPE=TEXT VALUE='" . $line["shader"]. "' NAME=shader></TD>";
     echo "<TD>-</TD>";
     echo "<TD><INPUT TYPE=SUBMIT VALUE=Add></TD>";
@@ -157,15 +137,15 @@ function ShowFaces($race_id)
         echo "<INPUT TYPE=HIDDEN NAME=action VALUE=update>";
         echo "<INPUT TYPE=HIDDEN NAME=area VALUE=FACE>";
 
-        echo "<TR>";
-        echo "<TD><INPUT TYPE=TEXT NAME=trait_name VALUE='" . $line["name"] . "'></TD>";
-        echo "<TD>"; SelectOnlyNPC($line[3],"only_npc"); echo "</TD>";
-        echo "<TD>"; SelectCommonStringLike($line[7], "$"."F_head","cstr_id_material");
-        echo "<TD>"; SelectCommonStringLike($line[8], "/planeshift/models/".  "$". "F/". "$" . "F_head","cstr_id_texture");
-        echo "<TD><INPUT TYPE=CHECKBOX NAME=delete_box></TD>";
-        echo "<TD><INPUT TYPE=SUBMIT VALUE=Update></TD>";
-        echo "</TR>";
-        echo "</FORM>";
+        echo '<TR>';
+        echo '<TD><INPUT TYPE="TEXT" NAME="trait_name" VALUE="'.$line['name'].'" /></TD>';
+        echo '<TD>'.SelectOnlyNPC($line[3],'only_npc').'</TD>';
+        echo '<TD> <input type="text" name="cstr_material" value="'.$line[7].'"/>';
+        echo '<TD> <input type="text" name="cstr_texture" value="'.$line[8].'"/>';
+        echo '<TD><INPUT TYPE="CHECKBOX" NAME="delete_box"></TD>';
+        echo '<TD><INPUT TYPE="SUBMIT" VALUE="Update"></TD>';
+        echo '</TR>';
+        echo '</FORM>';
     }
 
     echo "<FORM ACTION='index.php?do=handletrait' METHOD='post'>";
@@ -175,18 +155,18 @@ function ShowFaces($race_id)
     echo "<INPUT TYPE=HIDDEN NAME=area VALUE=FACE>";
 
 
-    echo "<TR>";
-    echo "<TD><INPUT TYPE=TEXT NAME=trait_name></TD>";
-    echo "<TD>"; SelectOnlyNPC("0","only_npc"); echo "</TD>";
-    echo "<TD>"; SelectCommonStringLike("", "$"."F_head","cstr_id_material");
-    echo "<TD>"; SelectCommonStringLike("", "/planeshift/models/".  "$". "F/". "$" . "F_head","cstr_id_texture");
-    echo "<TD>-</TD>";
-    echo "<TD><INPUT TYPE=SUBMIT VALUE=Add></TD>";
-    echo "</TR>";
-    echo "</FORM>";
+    echo '<TR>';
+    echo '<TD><INPUT TYPE="TEXT" NAME="trait_name"></TD>';
+    echo '<TD>'.SelectOnlyNPC('0','only_npc').'</TD>';
+    echo '<TD><input type="text" name="cstr_material" />';
+    echo '<TD><input type="text" name="cstr_texture" />';
+    echo '<TD>-</TD>';
+    echo '<TD><INPUT TYPE="SUBMIT" VALUE="Add"></TD>';
+    echo '</TR>';
+    echo '</FORM>';
  
     
-    echo "</TABLE>";
+    echo '</TABLE>';
 }
 
 
@@ -250,7 +230,7 @@ function list_traits()
         return;
     }
 
-	$query = "select id, next_trait, race_id, only_npc, location, name, cstr_id_mesh, cstr_id_material, cstr_id_texture from traits";
+	$query = "select id, next_trait, race_id, only_npc, location, name, cstr_mesh, cstr_material, cstr_texture from traits";
 	$result = mysql_query2($query);
 
 	echo '  <TABLE BORDER=1>';
@@ -260,38 +240,37 @@ function list_traits()
 	echo '  <TH> Mesh/Material/Texture </TH> ';
 	echo '  <TH> Functions </TH> ';
     $races = PrepSelect('races');
-    $cstrings = PrepSelect('cstring');
     
 	while ($line = mysql_fetch_array($result, MYSQL_NUM)){
 		echo '<TR>';
 		echo '<FORM ACTION=index.php?do=trait_actions&operation=update METHOD=POST>';
-		echo "<TD><INPUT TYPE=hidden NAME=id VALUE=\"$line[0]\">$line[0]</TD>";
-		echo "<TD><INPUT SIZE=5 TYPE=text NAME=next_trait VALUE=\"$line[1]\"></TD>";
+		echo '<TD><INPUT TYPE="hidden" NAME="id" VALUE="'.$line[0].'" />'.$line[0].'</TD>';
+		echo '<TD><INPUT SIZE="5" TYPE="text" NAME="next_trait" VALUE="'.$line[1].'"></TD>';
 		echo '<TD><TABLE><TR><TD>'.DrawSelectBox('races', $races, 'race_id', $line[2], false).'</TD>';
-		echo '<TD>'; SelectOnlyNPC($line[3], 'only_npc'); echo'</TD></TR>';
-		echo "<TR><TD>"; SelectLocationT($line[4],"location"); echo "</TD>";
-		echo "<TD><INPUT TYPE=text NAME=name VALUE=\"$line[5]\"></TD></TR></TABLE></TD>";
-		echo '<TD>'.DrawSelectBox('cstring', $cstrings, 'cstr_id_mesh', $line[6], false).'<BR>';
-		echo DrawSelectBox('cstring', $cstrings, 'cstr_id_material', $line[7], false).'<BR>';
-		echo DrawSelectBox('cstring', $cstrings, 'cstr_id_texture', $line[8], false).'</TD>';
-		echo '<TD><TABLE><TR><TD><INPUT TYPE=SUBMIT NAME=submit VALUE=Update></FORM></TD>';
-		echo '<TD><FORM ACTION=index.php?do=trait_actions&operation=delete METHOD=POST>';
-		echo "<INPUT TYPE=hidden NAME=id VALUE=\"$line[0]\">";
-		echo '<INPUT TYPE=SUBMIT NAME=submit VALUE=Delete></FORM></TD></TR></TABLE>';
+		echo '<TD>'.SelectOnlyNPC($line[3], 'only_npc').'</TD></TR>';
+		echo '<TR><TD>'.SelectLocationT($line[4],'location').'</TD>';
+		echo '<TD><INPUT TYPE="text" NAME="name" VALUE="'.$line[5].'" /></TD></TR></TABLE></TD>';
+		echo '<TD><input type="text" name="cstr_mesh" value="'.$line[6].'" /><BR />';
+		echo '<input type="text" name="cstr_material" value="'.$line[7].'" /><BR />';
+		echo '<input type="text" name="cstr_texture" value="'.$line[8].'" /></TD>';
+		echo '<TD><TABLE><TR><TD><INPUT TYPE="SUBMIT" NAME="submit" VALUE="Update" /></FORM></TD>';
+		echo '<TD><FORM ACTION="index.php?do=trait_actions&operation=delete" METHOD="POST">';
+		echo '<INPUT TYPE="hidden" NAME="id" VALUE="'.$line[0].'" />';
+		echo '<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete" /></FORM></TD></TR></TABLE>';
 		echo '</TD></TR>';
 	}
 	echo '<TR>';
-	echo '<FORM ACTION=index.php?do=trait_actions&operation=add METHOD=POST>';
-	echo "<TD></TD>";
-	echo "<TD><INPUT SIZE=5 TYPE=text NAME=next_trait></TD>";
+	echo '<FORM ACTION="index.php?do=trait_actions&operation=add" METHOD="POST">';
+	echo '<TD></TD>';
+	echo '<TD><INPUT SIZE="5" TYPE="text" NAME="next_trait" /></TD>';
 	echo '<TD><TABLE><TR><TD>'.DrawSelectBox('races', $races, 'race_id', '', false).'</TD>';
-	echo "<TD>"; SelectOnlyNPC("0","only_npc"); echo "</TD></TR>";
-	echo "<TR><TD>"; SelectLocationT("EYE_COLOR","location"); echo "</TD>";
-	echo "<TD><INPUT TYPE=text NAME=name ></TD></TR></TABLE></TD>";
-	echo '<TD>'.DrawSelectBox('cstring', $cstrings, 'cstr_id_mesh', '', false).'<BR>';
-	echo DrawSelectBox('cstring', $cstrings, 'cstr_id_material', '', false).'<BR>';
-	echo DrawSelectBox('cstring', $cstrings, 'cstr_id_texture', '', false).'</TD>';
-	echo '<TD><INPUT TYPE=SUBMIT NAME=submit VALUE=Add></FORM>';
+	echo '<TD>'.SelectOnlyNPC('0','only_npc').'</TD></TR>';
+	echo '<TR><TD>'.SelectLocationT('EYE_COLOR','location').'</TD>';
+	echo '<TD><INPUT TYPE="text" NAME="name" /></TD></TR></TABLE></TD>';
+	echo '<TD><input type="text" name="cstr_mesh" /><BR />';
+	echo '<input type="text" name="cstr_material" /><BR />';
+	echo '<input type="text" name="cstr_texture" /></TD>';
+	echo '<TD><INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add"></FORM>';
 
 	echo '</FORM></TD></TR>';
 	echo '</TABLE><br><br>';
@@ -309,10 +288,10 @@ function handle_trait() {
     $trait_id = (isset($_POST['trait_id']) ? $_POST['trait_id'] : '-1');
     $name     = $_POST['trait_name'];
     $only_npc = $_POST['only_npc'];
-    $mat      = (isset($_POST['cstr_id_material']) ? $_POST['cstr_id_material'] : '');
-    $delete   = (isset($_POST['delete_box']) ? $_POST['delete_box'] : '');
+    $mat      = (isset($_POST['cstr_material']) ? $_POST['cstr_material'] : '');
+    $delete   = (isset($_POST['delete_box']) ? 'on' : '');
     $action   = $_POST['action'];
-    $cstr_id_texture = (isset($_POST['cstr_id_texture']) ? $_POST['cstr_id_texture'] : '');
+    $cstr_texture = (isset($_POST['cstr_texture']) ? $_POST['cstr_texture'] : '');
     $area     = $_POST['area'];
     $shader   = (isset($_POST['shader']) ? $_POST['shader'] : '');
 
@@ -325,24 +304,24 @@ function handle_trait() {
             echo '<p class="error">You are not authorised to use these functions.</p>';
             return;
         }
-        $query = "DELETE FROM traits WHERE id=$trait_id";
+        $query = "DELETE FROM traits WHERE id='$trait_id'";
         mysql_query2($query);    
     }
 
-    if ( $action == "update" )
+    else if ( $action == "update" )
     {
        
         switch ( $area )
         {
             case "FACE":
             {
-                $query = "UPDATE traits SET only_npc=$only_npc, name='$name', cstr_id_material=$mat, cstr_id_texture=$cstr_id_texture WHERE id=$trait_id";
+                $query = "UPDATE traits SET only_npc='$only_npc', name='$name', cstr_material='$mat', cstr_texture='$cstr_texture' WHERE id='$trait_id'";
                 break;
             }
 
             case "HAIR_COLOR":
             {
-                $query = "UPDATE traits SET only_npc=$only_npc, name='$name', shader='$shader' WHERE id=$trait_id";
+                $query = "UPDATE traits SET only_npc='$only_npc', name='$name', shader='$shader' WHERE id='$trait_id'";
                 break; 
             }
         }
@@ -357,12 +336,9 @@ function handle_trait() {
             echo '<p class="error">You are not authorised to use these functions.</p>';
             return;
         }
-        $cstr_id_texture;
+
         
-        $query = "SELECT id FROM common_strings where string='Head'";
-        $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_NUM);
-        $cstr_id_mesh = $row[0];
+        $cstr_mesh = 'Head';
 
 
 
@@ -375,17 +351,17 @@ function handle_trait() {
                                       only_npc,
                                       location, 
                                       name, 
-                                      cstr_id_mesh, 
-                                      cstr_id_material, 
-                                      cstr_id_texture) 
+                                      cstr_mesh, 
+                                      cstr_material, 
+                                      cstr_texture) 
                                     VALUES(  '-1', 
-                                             $race_id, 
-                                             $only_npc, 
+                                             '$race_id', 
+                                             '$only_npc', 
                                              'FACE',
                                               '$name',
-                                              $cstr_id_mesh, 
-                                              $mat, 
-                                              $cstr_id_texture)";
+                                              '$cstr_mesh', 
+                                              '$mat', 
+                                              '$cstr_texture')";
                 break;
             }
 
@@ -398,8 +374,8 @@ function handle_trait() {
                                       name, 
                                       shader ) 
                                     VALUES(  '-1', 
-                                             $race_id, 
-                                             $only_npc, 
+                                             '$race_id', 
+                                             '$only_npc', 
                                              'HAIR_COLOR',
                                               '$name',
                                               '$shader')";
@@ -430,12 +406,12 @@ function trait_actions()
         $location = $_POST['location'];
         $name = $_POST['name'];
         $only_npc = $_POST['only_npc'];
-        $cstr_id_mesh = $_POST['cstr_id_mesh'];
-        $cstr_id_material = $_POST['cstr_id_material'];
-        $cstr_id_texture = $_POST['cstr_id_texture'];
+        $cstr_mesh = $_POST['cstr_mesh'];
+        $cstr_material = $_POST['cstr_material'];
+        $cstr_texture = $_POST['cstr_texture'];
 
         // insert script
-        $query = "update traits set next_trait='$next_trait', race_id='$race_id',only_npc='$only_npc',location='$location',name='$name' ,cstr_id_mesh='$cstr_id_mesh' ,cstr_id_material='$cstr_id_material' ,cstr_id_texture='$cstr_id_texture' where id='$id'";
+        $query = "update traits set next_trait='$next_trait', race_id='$race_id',only_npc='$only_npc',location='$location',name='$name' ,cstr_mesh='$cstr_mesh' ,cstr_material='$cstr_material' ,cstr_texture='$cstr_texture' where id='$id'";
         $result = mysql_query2($query); 
         // redirect
 
@@ -447,12 +423,12 @@ function trait_actions()
         $only_npc = $_POST['only_npc'];
         $location = $_POST['location'];
         $name = $_POST['name'];
-        $cstr_id_mesh = $_POST['cstr_id_mesh'];
-        $cstr_id_material = $_POST['cstr_id_material'];
-        $cstr_id_texture = $_POST['cstr_id_texture'];
+        $cstr_mesh = $_POST['cstr_mesh'];
+        $cstr_material = $_POST['cstr_material'];
+        $cstr_texture = $_POST['cstr_texture'];
 
         // insert script
-        $query = "insert into traits (next_trait,race_id,only_npc,location,name,cstr_id_mesh,cstr_id_material,cstr_id_texture) values ('$next_trait','$race_id','$only_npc','$location','$name','$cstr_id_mesh','$cstr_id_material','$cstr_id_texture')";
+        $query = "insert into traits (next_trait,race_id,only_npc,location,name,cstr_mesh,cstr_material,cstr_texture) values ('$next_trait','$race_id','$only_npc','$location','$name','$cstr_mesh','$cstr_material','$cstr_texture')";
         $result = mysql_query2($query); 
         // redirect
 

@@ -1,4 +1,6 @@
 <?php
+
+//pending a decision on what to do with this, this code is unused since there is no more common_strings table, but the information is still out there.
 function listcommonstrings()
 {
     if (checkaccess('other', 'read'))
