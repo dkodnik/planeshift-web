@@ -35,33 +35,114 @@ function ka_detail(){
           $tid = mysql_real_escape_string($_POST['trigger_id']);
           $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
           $query = "UPDATE npc_triggers SET trigger_text='$trigger_text' WHERE id='$tid'";
+        }else if ($_POST['commit'] == 'add action to script')
+        {
+            $responseid = $_GET['responseid'];
+            $area = $_GET['area'];
+            $scriptelem = $_POST['scriptelem'];
+            $skillname = $_POST['skillname'];
+            $questname = $_POST['questname'];
+            $offeritem = $_POST['offeritem'];
+            $giveexp = $_POST['giveexp'];
+            $givemoney = $_POST['givemoney'];
+
+            // get current script
+            $query = "select script from npc_responses where id=$responseid";
+            $result = mysql_query2($query);
+            $line = mysql_fetch_array($result, MYSQL_NUM);
+            $script = $line[0];
+
+            // remove last part
+            if ($script=='') 
+            {
+                $script = '<response>';
+            } 
+            else 
+            {
+                $pos = strpos($script, '</response>');
+                $script = substr($script,0,$pos);
+            }
+
+            if ($scriptelem=='respond') 
+            {
+                $script = $script . '<respond/>';
+            } 
+            else if ($scriptelem=='animgreet') 
+            {
+                $script = $script . '<action anim='.greet.'/>';
+            } 
+            else if ($scriptelem=='train') 
+            {
+                $script = $script . '<train skill='.$skillname.'/>';
+            } 
+            else if ($scriptelem=='assignquest') 
+            {
+                $script = $script . '<assign q1='.$questname.'/>';
+            } 
+            else if ($scriptelem=='completequest') 
+            {
+                $script = $script . '<complete quest_id="'.$questname.'/>';
+            } 
+            else if ($scriptelem=='offeritem') 
+            {
+                $script = $script . '<offer>';
+                if (strpos($offeritem, ',')) 
+                {
+                    $tok = strtok($offeritem, ',');
+                    $script = $script . '<item id='.$tok.'/>';  
+                    while ($tok = strtok(','))
+                    {
+                        $script = $script . "<item id=".$tok."/>";
+                    }
+                } 
+                else 
+                {
+                    $script = $script . '<item id='.$offeritem.'/>';
+                }
+                $script = $script . '</offer>';
+
+            } else if ($scriptelem=='giveexp') {
+                $script = $script . "<run scr=\"give_exp\" param0=\"$giveexp\" />";
+            } else if ($scriptelem=='givemoney') {
+                $script = $script . "<money value=\"$givemoney\" />";
+            }
+
+            $script = $script . "</response>";
+            $query = "update npc_responses set script='".$script."' where id=$responseid";
+            //echo "$query"; 
+            $result = mysql_query2($query);
+
+            // redirect on same page
+            echo "<SCRIPT language=\"javascript\">";
+            echo '  this.location = "index.php?do=ka_detail&area='.$area.'&trigger='.$responseid.'";';
+            echo "  </script>";        
         }else if ($_POST['commit'] == "Update Responses"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
-          $response1 = mysql_real_escape_string($_POST['response1']);
-          $response2 = mysql_real_escape_string($_POST['response2']);
-          $response3 = mysql_real_escape_string($_POST['response3']);
-          $response4 = mysql_real_escape_string($_POST['response4']);
-          $response5 = mysql_real_escape_string($_POST['response5']);
-          $script = mysql_real_escape_string($_POST['script']);
-          $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
-          $audio_path1 = mysql_real_escape_string($_POST['audio_path1']);
-          $audio_path2 = mysql_real_escape_string($_POST['audio_path2']);
-          $audio_path3 = mysql_real_escape_string($_POST['audio_path3']);
-          $audio_path4 = mysql_real_escape_string($_POST['audio_path4']);
-          $audio_path5 = mysql_real_escape_string($_POST['audio_path5']);
-          if (isset($_POST['c'])){
-            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5'";
-          }else{
-            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5' WHERE trigger_id='$tid'";
-          }
+            $tid = mysql_real_escape_string($_POST['trigger_id']);
+            $response1 = mysql_real_escape_string($_POST['response1']);
+            $response2 = mysql_real_escape_string($_POST['response2']);
+            $response3 = mysql_real_escape_string($_POST['response3']);
+            $response4 = mysql_real_escape_string($_POST['response4']);
+            $response5 = mysql_real_escape_string($_POST['response5']);
+            $script = mysql_real_escape_string($_POST['script']);
+            $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
+            $audio_path1 = mysql_real_escape_string($_POST['audio_path1']);
+            $audio_path2 = mysql_real_escape_string($_POST['audio_path2']);
+            $audio_path3 = mysql_real_escape_string($_POST['audio_path3']);
+            $audio_path4 = mysql_real_escape_string($_POST['audio_path4']);
+            $audio_path5 = mysql_real_escape_string($_POST['audio_path5']);
+            if (isset($_POST['c'])){
+                $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5'";
+            }else{
+                $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5' WHERE trigger_id='$tid'";
+            }
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
-          $tid_o = mysql_real_escape_string($_POST['trigger_id']);
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
-          $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-          $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
-          $npcname = $row['name'];
-          if ($row['lastname'] != ''){
+            $tid_o = mysql_real_escape_string($_POST['trigger_id']);
+            $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+            $query = "SELECT name, lastname FROM characters WHERE id='$id'";
+            $result = mysql_query2($query);
+            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $npcname = $row['name'];
+            if ($row['lastname'] != ''){
             $npcname = $npcname . ' ' .$row['lastname'];
           }
           $tid = GetNextId('npc_triggers');
@@ -104,7 +185,7 @@ function ka_detail(){
         unset($_POST);
         ka_detail();
       }else{
-        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, r.audio_path1, r.audio_path2, r.audio_path3, r.audio_path4, r.audio_path5, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
+        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.id AS r_id, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, r.audio_path1, r.audio_path2, r.audio_path3, r.audio_path4, r.audio_path5, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
         if (isset($_GET['trigger'])){
           $t = mysql_real_escape_string($_GET['trigger']);
           $query = $query . " ORDER BY t.id IN ('$t') DESC";
@@ -162,6 +243,8 @@ function ka_detail(){
                 echo 'Response 5: <textarea name="response5" rows="3" cols="30">'.$row['response5'].'</textarea><br/>';
                 echo 'Audio Path 5: <input type="text" name="audio_path5" value="'.$row['audio_path5'].'"><br/>';
                 echo '<hr/>';
+                
+
                 echo 'Script: <textarea name="script">'.$row['script'].'</textarea><br/>';
                 echo 'Prerequisite: <textarea name="prerequisite">'.$row['prerequisite'].'</textarea><br/>';
                 if (isset($_GET['c'])){
@@ -170,6 +253,36 @@ function ka_detail(){
                 echo '<input type="submit" name="commit" value="Update Responses" /><hr/>';
                 echo 'New Trigger:<input type="text" name="trigger_text" size="25" /><input type="submit" name="commit" value="Create Sub-Trigger" />';
                 echo '</form>';
+                echo '<table><tr><form action="index.php?do=ka_detail&area='.rawurlencode($area).'&responseid='.$row['r_id'].'" method="POST">';
+                echo '<td>action</td><td>use only for train</td><td>quest name</td></tr>';
+                echo '<tr><td>';
+
+                echo '<select name="scriptelem">';
+                echo '<option value="respond">Say one response</option>';
+                echo '<option value="animgreet">Play greet animation</option>';
+                echo '<option value="train">Train player</option>';
+                echo '<option value="assignquest">Assign quest</option>';
+                echo '<option value="completequest">Complete quest</option>';
+                echo '<option value="offeritem">Give Item</option>';
+                echo '<option value="giveexp">Give Exp</option>';
+                echo '<option value="givemoney">Give Money</option>';
+                echo '</select></td>';
+
+                // skill field
+                $query2 = 'select skill_id,name from skills ';
+                $result2 = mysql_query2($query2);
+                echo '<td><select name="skillname">';
+                echo '<option value="empty"></option>';
+                while ($line2 = mysql_fetch_array($result2, MYSQL_NUM))
+                {
+                    echo '<option value="'.$line2[1].'">'.$line2[1].'</option>';
+                }
+                echo '</select></td>';
+
+                // quest, items, exp fields
+                echo '<td><input type="text" name="questname"></td></tr><tr><td>items id given</td><td>exp given</td><td>money (C,O,H,T)</td></tr>';
+                echo '<tr><td><input type="text" name="offeritem"></td><td><input type="text" name="giveexp" size="6"></td><td><input type="text" name="givemoney" size="8"></td></TR>';
+                echo '<tr><td><input type="submit" name="commit" value="add action to script"></td><td></td></tr></form></table>';
               }else{
                 echo 'Response 1: '.htmlspecialchars($row['response1']).'<br/>';
                 echo 'Audio Path 1: '.$row['audio_path1'].'<br/>';
