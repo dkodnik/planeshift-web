@@ -106,8 +106,8 @@ function listresources(){
         echo '<tr><td>Animation:</td><td><input type="text" name="animation"  /></td>';
         echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" size="5"/></td></tr>';
         echo '<tr><td>Action:</td><td><input type="text" name="action" /></td>';
-        echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" /></td></tr>';
-        echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit New" />';
+        echo '<td>Reward Nickname:<br/>(Name used after action)</td><td><input type="text" name="reward_nickname" /></td></tr>';
+        echo '</table><input type="submit" name="commit" value="Commit New" />';
         echo '</form>';
       }else if ($_POST['action'] == 'Delete' && checkaccess('rules', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
