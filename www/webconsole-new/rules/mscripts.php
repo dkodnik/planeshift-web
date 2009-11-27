@@ -8,7 +8,6 @@ function rule_mscripts(){
         $query = "UPDATE math_scripts SET name='$name' WHERE name='$orig_name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-        $_GET['type']=$_POST['type'];
         unset($_POST);
         rule_mscripts();
         return;
@@ -18,7 +17,6 @@ function rule_mscripts(){
         $query = "UPDATE math_scripts SET math_script='$math_script' WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-        $_GET['type']=$_POST['type'];
         unset($_POST);
         rule_mscripts();
         return;
@@ -27,7 +25,6 @@ function rule_mscripts(){
         $query = "DELETE FROM math_scripts WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-        $_GET['type']=$_POST['type'];
         unset($_POST);
         rule_mscripts();
         return;
@@ -37,7 +34,6 @@ function rule_mscripts(){
         $query = "INSERT INTO math_scripts (name, math_script) VALUES ('$name', '$math_script')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-        $_GET['type']=$_POST['type'];
         unset($_POST);
         rule_mscripts();
         return;
@@ -57,20 +53,11 @@ function rule_mscripts(){
           echo '<tr>';
           if (checkaccess('rules', 'edit')){
             echo '<td><form action="index.php?do=mscripts" method="post">';
-            if (isset($_GET['type'])){
-              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
-            }
             echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
             echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-            if (isset($_GET['type'])){
-              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
-            }
             echo '<textarea name="math_script" rows="3" cols="45">'.$row['math_script'].'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
             if (checkaccess('rules', 'delete')){
-            echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-              if (isset($_GET['type'])){
-                echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
-              }
+              echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
               echo '<input type="submit" name="commit" value="Delete"/>';
               echo '</form></td>';
             }
@@ -87,9 +74,6 @@ function rule_mscripts(){
         echo '<hr/><p>Create new math script</p>';
         echo '<form action="index.php?do=mscripts" method="post">Name: <input type="text" name="name" /><br/>';
         echo 'Script: <textarea name="math_script" rows="3" cols="45"></textarea><br/>';
-        if (isset($_GET['type'])){
-          echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
-        }
         echo '<input type="submit" name="commit" value="Create Script" /></form>';
       }
     }
