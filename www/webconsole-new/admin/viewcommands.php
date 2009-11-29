@@ -28,19 +28,67 @@ function viewcommands()
         echo'</td><td valign="top"><table border="1">';
 
         $found = false;
-        echo"<TR><TH ><b>Group: $groupname</b></TH></TR>";
-        while ($row = mysql_fetch_array($result, MYSQL_NUM)){
+        echo"<TR><TH ><b>Group: $groupname</b></TH><TH>Action</TH></TR>";
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             $found = true;
-            echo '<TR><TD>'.$row[0].'</TD></TR>';
-            // There is nothing to edit with, so drop the link for now.
-            //echo '<TR><TD><a href="index.php?do=cmd_actions&group='.$row[1].'&cmd='.$row[0].'">'.$row[0].'</a></TD></TR>'; 
-            //echo"<TD ><P>$row[1] </P></TD></TR>"; 
+            $actions = (checkaccess('admin', 'edit') ? '<a href="./index.php?do=deletecommand&group='.$group.'&command='.$row['command_name'].'">Delete</a>' : '');
+            echo '<TR><TD>'.$row['command_name'].'</TD><TD>'.$actions.'</TD></TR>';
         }
-        
         if(!$found && isset($_GET['group']))
         echo "<TR><TD><P>No commands found in this group</P></TD></TR>";
 
-        echo '</TABLE></td></tr></table>';
+        echo '</TABLE>';
+        echo '<form action="./index.php?do=createcommand&group='.$group.'" method="post">';
+        echo '<input type="text" name="command"><input type="submit" name="create" value="Add new Command"></form>';
+        echo '</td></tr></table>';
+    }
+}
+
+function deletecommand() 
+{
+    if (checkaccess('admin', 'edit')) 
+    {
+        if (isset($_GET['group']) && isset($_GET['command']))
+        {
+            $group = mysql_real_escape_string($_GET['group']);
+            $command = mysql_real_escape_string($_GET['command']);
+            $query = "DELETE FROM command_group_assignment WHERE command_name='$command' AND group_member='$group' LIMIT 1";
+            mysql_query2($query);
+            echo '<p class="error">update succesful</p>';
+            viewcommands();
+        }
+        else
+        {
+            echo '<p class="error">Missing parameters in delete operation! No action was taken!</p>';
+        }
+    }
+    else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+    }
+}
+
+function createcommand()
+{
+    if (checkaccess('admin', 'edit')) 
+    {
+        if (isset($_GET['group']) && isset($_POST['command']))
+        {
+            $group = mysql_real_escape_string($_GET['group']);
+            $command = mysql_real_escape_string($_POST['command']);
+            $query = "INSERT INTO command_group_assignment (command_name, group_member) VALUES ('$command', '$group')";
+            mysql_query2($query);
+            echo '<p class="error">update succesful</p>';
+            viewcommands();
+        }
+        else
+        {
+            echo '<p class="error">Missing parameters in create operation! No action was taken!</p>';
+        }
+    }
+    else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
     }
 }
 

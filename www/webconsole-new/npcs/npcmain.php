@@ -4,7 +4,10 @@
 function npcmain(){
   if (checkaccess('npcs', 'read')){
     echo '<div class="menu_left">';
-    echo '<a href="./index.php?do=searchnpc">Search for NPCs</a> <br/>';
+    echo '<a href="./index.php?do=searchnpc&char_type=1">Search for NPCs</a> <br/>';
+    echo '<a href="./index.php?do=searchnpc&char_type=0">Search for Players</a> <br/>';
+    echo '<a href="./index.php?do=searchnpc&char_type=2">Search for Pets</a> <br/>';
+    echo '<a href="./index.php?do=searchnpc&char_type=3">Search for Mounts</a> <br/>';
     echo '<a href="./index.php?do=listnpcs">List NPCs (invuln)</a> <br/>';
     echo '<a href="./index.php?do=listvuln">List NPCs (vuln)</a> <br/>';
     echo '<a href="./index.php?do=listtrainer">List Trainers</a> <br/>';

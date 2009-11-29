@@ -4,15 +4,21 @@ function npc_main(){
     if (isset($_GET['npc_id'])){
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT description, npc_master_id, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, banker, statue FROM characters WHERE id='.$id;
+        $query = 'SELECT description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
         echo '<tr><td>Description:</td><td><textarea name="description" rows="4" cols="50">'.$row['description'].'</textarea></td></tr>';
-        if ($row['npc_master_id'] == $id){
-          echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
-        }else{
-          echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+        echo '<tr><td>OOC Description:</td><td><textarea name="description_ooc" rows="4" cols="50">'.$row['description_ooc'].'</textarea></td></tr>';
+        echo '<tr><td>Creation Info:</td><td><textarea name="creation_info" rows="4" cols="50">'.$row['creation_info'].'</textarea></td></tr>';
+        echo '<tr><td>Life Description:</td><td><textarea name="description_life" rows="4" cols="50">'.$row['description_life'].'</textarea></td></tr>';
+        if ($row['character_type'] > 0) // don't show for players
+        {
+            if ($row['npc_master_id'] == $id){
+              echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+            }else{
+              echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+            }
         }
         $Sectors = PrepSelect('sectorid');
         echo '<tr><td>Location:</td>';
@@ -36,22 +42,28 @@ function npc_main(){
         echo '<tr><td>Base HP (0 for auto-calc)</td><td><input type="text" name="base_hitpoints_max" value="'.$row['base_hitpoints_max'].'" size="7" /></td></tr>';
         echo '<tr><td>Base Mana (0 for auto-calc)</td><td><input type="text" name="base_mana_max" value="'.$row['base_mana_max'].'" size="7" /></td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-        echo '<tr><td>Invulnerable</td><td>';
-        if ($row['npc_impervious_ind'] == "Y"){
-          echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="true">True</option></select>';
-        }else{
-          echo '<select name="npc_impervious_ind"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
+        if ($row['character_type'] > 0) // don't show for players
+        {
+            echo '<tr><td>Invulnerable</td><td>';
+            if ($row['npc_impervious_ind'] == "Y"){
+              echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="true">True</option></select>';
+            }else{
+              echo '<select name="npc_impervious_ind"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
+            }
+            echo '</td></tr>';
         }
-        echo '</td></tr>';
         echo '<tr><td>Experience</td><td><input type="text" name="kill_exp" value="'.$row['kill_exp'].'" size="7" /></td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-        if ($row['banker'] == "1")
+        if ($row['character_type'] == 1) // Only show for real NPCs
         {
-            echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" checked="checked" /> </td></tr>';
-        }
-        else
-        {
-          echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" /> </td></tr>';
+            if ($row['banker'] == "1")
+            {
+                echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" checked="checked" /> </td></tr>';
+            }
+            else
+            {
+              echo '<tr><td>Banker</td><td><input type="checkbox" name="banker" /> </td></tr>';
+            }
         }
         if ($row['statue'] == "1")
         {
@@ -62,67 +74,86 @@ function npc_main(){
           echo '<tr><td>Statue</td><td><input type="checkbox" name="statue" /> </td></tr>';
         }
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-        $Spawns = PrepSelect('spawn');
-        $Loots = PrepSelect('loot');
-        echo '<tr><td>Spawn Rule</td><td>'.DrawSelectBox('spawn', $Spawns, 'npc_spawn_rule', $row['npc_spawn_rule'], TRUE).'</td></tr>';
-        echo '<tr><td>Loot Rule</td><td>'.DrawSelectBox('loot', $Loots, 'npc_addl_loot_category_id', $row['npc_addl_loot_category_id'], TRUE).'</td></tr>';
-        $Behaviours = PrepSelect('behaviour');
-        $B_Regions = PrepSelect('b_region');
-        $query = "SELECT npctype, region FROM sc_npc_definitions WHERE char_id='$id'";
-        $r2 = mysql_query2($query);
-        $row2 = mysql_fetch_array($r2, MYSQL_ASSOC);
-        echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region']).'</td></tr>';
+        if ($row['character_type'] > 0) // Don't show for players
+        {
+            $Spawns = PrepSelect('spawn');
+            $Loots = PrepSelect('loot');
+            echo '<tr><td>Spawn Rule</td><td>'.DrawSelectBox('spawn', $Spawns, 'npc_spawn_rule', $row['npc_spawn_rule'], TRUE).'</td></tr>';
+            echo '<tr><td>Loot Rule</td><td>'.DrawSelectBox('loot', $Loots, 'npc_addl_loot_category_id', $row['npc_addl_loot_category_id'], TRUE).'</td></tr>';
+            $Behaviours = PrepSelect('behaviour');
+            $B_Regions = PrepSelect('b_region');
+            $query = "SELECT npctype, region FROM sc_npc_definitions WHERE char_id='$id'";
+            $r2 = mysql_query2($query);
+            $row2 = mysql_fetch_array($r2, MYSQL_ASSOC);
+            echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region']).'</td></tr>';
+        }
+        echo '<input type="hidden" name="char_type" value="'.$row['character_type'].'">';
         echo '</table><input type="submit" name="commit" value="update" /></form>';
       }else{
         $id = mysql_real_escape_string($_GET['npc_id']);
         $query = "UPDATE characters SET ";
         $description = mysql_real_escape_string($_POST['description']);
-        $query = $query . "description = '$description', ";
-        $npc_master_id = mysql_real_escape_string($_POST['npc_master_id']);
-        $query = $query . "npc_master_id = '$npc_master_id', ";
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
-        $query = $query . "loc_sector_id = '$loc_sector_id', ";
-        $loc_x = mysql_real_escape_string($_POST['loc_x']);
-        $query = $query . "loc_x = '$loc_x', ";
-        $loc_y = mysql_real_escape_string($_POST['loc_y']);
-        $query = $query . "loc_y = '$loc_y', ";
-        $loc_z = mysql_real_escape_string($_POST['loc_z']);
-        $query = $query . "loc_z = '$loc_z', ";
-        $loc_yrot = mysql_real_escape_string($_POST['loc_yrot']);
-        $query = $query . "loc_yrot = '$loc_yrot', ";
-        $loc_instance = mysql_real_escape_string($_POST['loc_instance']);
-        $query = $query . "loc_instance = '$loc_instance', ";
-        $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
-        $query = $query . "racegender_id = '$racegender_id', ";
-        $base_agility= mysql_real_escape_string($_POST['base_agility']);
-        $query = $query . "base_agility = '$base_agility', ";
-        $base_strength = mysql_real_escape_string($_POST['base_strength']);
-        $query = $query . "base_strength = '$base_strength', ";
-        $base_endurance = mysql_real_escape_string($_POST['base_endurance']);
-        $query = $query . "base_endurance = '$base_endurance', ";
-        $base_will = mysql_real_escape_string($_POST['base_will']);
-        $query = $query . "base_will = '$base_will', ";
-        $base_charisma = mysql_real_escape_string($_POST['base_charisma']);
-        $query = $query . "base_charisma = '$base_charisma', ";
-        $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
-        $query = $query . "base_hitpoints_max = '$base_hitpoints_max', ";
-        $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
-        $query = $query . "base_mana_max = '$base_mana_max', ";
-        $npc_impervious_ind = mysql_real_escape_string($_POST['npc_impervious_ind']);
-        $query = $query . "npc_impervious_ind = '$npc_impervious_ind', ";
-        $kill_exp = mysql_real_escape_string($_POST['kill_exp']);
-        $query = $query . "kill_exp = '$kill_exp', ";
-        $npc_spawn_rule = mysql_real_escape_string($_POST['npc_spawn_rule']);
-        $query = $query . "npc_spawn_rule = '$npc_spawn_rule', ";
-        $npc_addl_loot_category_id = mysql_real_escape_string($_POST['npc_addl_loot_category_id']);
-        $query = $query . "npc_addl_loot_category_id = '$npc_addl_loot_category_id', ";
-        if (isset($_POST['banker'])) 
+        $query .= "description = '$description', ";
+        $description_ooc = mysql_real_escape_string($_POST['description_ooc']);
+        $query .= "description_ooc = '$description_ooc', ";
+        $creation_info = mysql_real_escape_string($_POST['creation_info']);
+        $query .= "creation_info = '$creation_info', ";
+        $description_life = mysql_real_escape_string($_POST['description_life']);
+        $query .= "description_life = '$description_life', ";
+        if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $query .= "banker = '1', ";
+            $npc_master_id = mysql_real_escape_string($_POST['npc_master_id']);
+            $query .= "npc_master_id = '$npc_master_id', ";
         }
-        else
+        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
+        $query .= "loc_sector_id = '$loc_sector_id', ";
+        $loc_x = mysql_real_escape_string($_POST['loc_x']);
+        $query .= "loc_x = '$loc_x', ";
+        $loc_y = mysql_real_escape_string($_POST['loc_y']);
+        $query .= "loc_y = '$loc_y', ";
+        $loc_z = mysql_real_escape_string($_POST['loc_z']);
+        $query .= "loc_z = '$loc_z', ";
+        $loc_yrot = mysql_real_escape_string($_POST['loc_yrot']);
+        $query .= "loc_yrot = '$loc_yrot', ";
+        $loc_instance = mysql_real_escape_string($_POST['loc_instance']);
+        $query .= "loc_instance = '$loc_instance', ";
+        $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
+        $query .= "racegender_id = '$racegender_id', ";
+        $base_agility= mysql_real_escape_string($_POST['base_agility']);
+        $query .= "base_agility = '$base_agility', ";
+        $base_strength = mysql_real_escape_string($_POST['base_strength']);
+        $query .= "base_strength = '$base_strength', ";
+        $base_endurance = mysql_real_escape_string($_POST['base_endurance']);
+        $query .= "base_endurance = '$base_endurance', ";
+        $base_will = mysql_real_escape_string($_POST['base_will']);
+        $query .= "base_will = '$base_will', ";
+        $base_charisma = mysql_real_escape_string($_POST['base_charisma']);
+        $query .= "base_charisma = '$base_charisma', ";
+        $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
+        $query .= "base_hitpoints_max = '$base_hitpoints_max', ";
+        $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
+        $query .= "base_mana_max = '$base_mana_max', ";
+        if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $query .= "banker = '0', ";
+            $npc_impervious_ind = mysql_real_escape_string($_POST['npc_impervious_ind']);
+            $query .= "npc_impervious_ind = '$npc_impervious_ind', ";
+        }
+        $kill_exp = mysql_real_escape_string($_POST['kill_exp']);
+        $query .= "kill_exp = '$kill_exp', ";
+        if ($_POST['char_type'] > 0) // Don't update for players
+        {
+            $npc_spawn_rule = mysql_real_escape_string($_POST['npc_spawn_rule']);
+            $query .= "npc_spawn_rule = '$npc_spawn_rule', ";
+            $npc_addl_loot_category_id = mysql_real_escape_string($_POST['npc_addl_loot_category_id']);
+            $query .= "npc_addl_loot_category_id = '$npc_addl_loot_category_id', ";
+            if (isset($_POST['banker'])) 
+            {
+                $query .= "banker = '1', ";
+            }
+            else
+            {
+                $query .= "banker = '0', ";
+            }
         }
         if (isset($_POST['statue'])) 
         {
@@ -132,12 +163,19 @@ function npc_main(){
         {
             $query .= "statue = '0' ";
         }
-        $query = $query . "WHERE id='$id'";
-        $sc_npctype = mysql_real_escape_string($_POST['sc_npctype']);
-        $sc_region = mysql_real_escape_string($_POST['sc_region']);
-        $query2 = "UPDATE sc_npc_definitions SET npctype='$sc_npctype', region='$sc_region' WHERE char_id='$id'";
+        $query .= "WHERE id='$id'";
+        if ($_POST['char_type'] > 0) // Don't update for players
+        {
+            $sc_npctype = mysql_real_escape_string($_POST['sc_npctype']);
+            $sc_region = mysql_real_escape_string($_POST['sc_region']);
+            $query2 = "UPDATE sc_npc_definitions SET npctype='$sc_npctype', region='$sc_region' WHERE char_id='$id'";
+            
+        }
         $result = mysql_query2($query);
-        $result = mysql_query2($query2);
+        if ($_POST['char_type'] > 0) // Don't update for players
+        {
+            $result = mysql_query2($query2);
+        }
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         npc_main();
@@ -223,16 +261,16 @@ function npc_traits(){
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $race = $row['racegender_id'];
-        $query = "SELECT id, location, name, cstr_id_mesh, cstr_id_material, cstr_id_texture, shader FROM traits WHERE race_id='$race'";
+        $query = "SELECT id, location, name, cstr_mesh, cstr_material, cstr_texture, shader FROM traits WHERE race_id='$race'";
         $Traits_Result = mysql_query2($query);
         while ($row = mysql_fetch_array($Traits_Result)){
           $t_id = $row['id'];
           $Traits["$t_id"]['id']=$t_id;
           $Traits["$t_id"]['location'] = $row['location'];
           $Traits["$t_id"]['name'] = $row['name'];
-          $Traits["$t_id"]['cstr_id_mesh'] = $row['cstr_id_mesh'];
-          $Traits["$t_id"]['cstr_id_material'] = $row['cstr_id_material'];
-          $Traits["$t_id"]['cstr_id_texture'] = $row['cstr_id_texture'];
+          $Traits["$t_id"]['cstr_mesh'] = $row['cstr_mesh'];
+          $Traits["$t_id"]['cstr_material'] = $row['cstr_material'];
+          $Traits["$t_id"]['cstr_texture'] = $row['cstr_texture'];
           $Traits["$t_id"]['shader'] = $row['shader'];
         }
         $query = "SELECT trait_id FROM character_traits WHERE character_id='$id'";
@@ -243,9 +281,9 @@ function npc_traits(){
             $t_id = $row['trait_id'];
             echo '<tr><td>'.$Traits["$t_id"]['location'].'</td>';
             echo '<td>'.$Traits["$t_id"]['name'].'</td>';
-            echo '<td>'.$Traits["$t_id"]['cstr_id_texture'].'</td>';
-            echo '<td>'.$Traits["$t_id"]['cstr_id_mesh'].'</td>';
-            echo '<td>'.$Traits["$t_id"]['cstr_id_material'].'</td>';
+            echo '<td>'.$Traits["$t_id"]['cstr_texture'].'</td>';
+            echo '<td>'.$Traits["$t_id"]['cstr_mesh'].'</td>';
+            echo '<td>'.$Traits["$t_id"]['cstr_material'].'</td>';
             echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=traits" method="post"><input type="hidden" name="trait_id" value="'.$t_id.'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
           }
           echo '</table>';
@@ -767,7 +805,7 @@ function npcdetails(){
     if (isset($_GET['npc_id'])){
       if (is_numeric($_GET['npc_id'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = "SELECT name, lastname FROM characters WHERE id='$id'";
+        $query = "SELECT name, lastname, character_type FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
@@ -778,11 +816,17 @@ function npcdetails(){
     echo '<a href="'.$uri_string.'&amp;sub=main">Main</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=skills">skills</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=traits">traits</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
+    if ($row['character_type'] > 0)   // don't display for players
+    {
+        echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
+    }
     echo '<a href="'.$uri_string.'&amp;sub=items">items</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=training">training</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=merchant">merchant</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=specific">Specific KA\'s</a><br/>';
+    if ($row['character_type'] > 0)   // don't display for players
+    {
+        echo '<a href="'.$uri_string.'&amp;sub=training">training</a><br/>';
+        echo '<a href="'.$uri_string.'&amp;sub=merchant">merchant</a><br/>';
+        echo '<a href="'.$uri_string.'&amp;sub=specific">Specific KA\'s</a><br/>';
+    }
     echo '</div><div class="main_npc">';
     if (isset($_GET['sub'])){
       switch ($_GET['sub']){

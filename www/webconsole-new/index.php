@@ -717,6 +717,18 @@
         adminmain();
         viewcommands();
         break;
+      case 'deletecommand':
+        include('./admin/adminmain.php');
+        include('./admin/viewcommands.php');
+        adminmain();
+        deletecommand();
+        break;
+       case 'createcommand':
+        include('./admin/adminmain.php');
+        include('./admin/viewcommands.php');
+        adminmain();
+        createcommand();
+        break;
       case 'viewserveroptions':
         include('./admin/adminmain.php');
         include('./admin/viewserveroptions.php');

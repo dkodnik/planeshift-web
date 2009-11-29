@@ -239,7 +239,14 @@ function npcquests()
                 $AllScripts["$id"] = $scripts['script'];
             }
 
-            echo '<tr><td>'.$fullname.' - ';
+            if (checkaccess('npc', 'edit')) 
+            {
+                echo '<tr><td><a href="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'">'.$fullname.'</a> - ';
+            }
+            else 
+            {
+                echo '<tr><td>'.$fullname.' - ';
+            }
             echo '</td><td>'.$row['sector'].'</td><td>';
             if(isset($AllQuests["$fullname"]))
             {
