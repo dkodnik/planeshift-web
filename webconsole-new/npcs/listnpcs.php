@@ -3,10 +3,11 @@ function listnpcs($a, $b = NULL){
   if (checkaccess('npcs', 'read')){
     echo '<table border="1">';
     echo '<tr><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=id">ID</a></th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=name">Name</a></th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=race">Race</a></th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=sex">Gender</a></th><th>Description</th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=spawn">Spawn</a>/<a href="./index.php?do='.$_GET['do'].'&amp;sort=loot">Loot</a></th><th>Position</th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=sector">Sector</a></th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=behavior">Behavior</a></th><th>Region</th></tr>';
-    $query = 'SELECT c.id, c.name, c.lastname, c.description, c.npc_spawn_rule, c.npc_addl_loot_category_id, s.name AS sector, c.loc_x, c.loc_y, c.loc_z, c.loc_instance, b.npctype AS behavior, b.region, r.name AS race, r.sex FROM characters as c LEFT JOIN sectors AS s ON c.loc_sector_id=s.id LEFT JOIN sc_npc_definitions AS b ON c.id=b.char_id LEFT JOIN race_info AS r ON c.racegender_id=r.id WHERE c.character_type=1';
+    $query = 'SELECT c.id, c.name, c.lastname, c.description, c.npc_spawn_rule, c.npc_addl_loot_category_id, s.name AS sector, c.loc_x, c.loc_y, c.loc_z, c.loc_instance, b.npctype AS behavior, b.region, r.name AS race, r.sex FROM characters as c LEFT JOIN sectors AS s ON c.loc_sector_id=s.id LEFT JOIN sc_npc_definitions AS b ON c.id=b.char_id LEFT JOIN race_info AS r ON c.racegender_id=r.id ';
     if ($b != NULL){
-      $query = $query . $b;
+      $query .= $b;
     }else{
+    $query .= 'WHERE (c.character_type=1 OR c.character_type=3)';
       if ($a == 'true'){
         $query = $query . ' AND c.npc_impervious_ind=\'Y\'';
       }else{
