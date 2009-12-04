@@ -48,13 +48,14 @@ function listcharacters()
         echo '<input type="hidden" name="do" value="listcharacters" />';
         echo '<input type="hidden" name="page" value="'.$page.'" />';
         echo 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" /><br/>';
-        echo 'List all characters of this account: <select name="account_id" onChange="this.form.submit();">';
+        // commented this dropdown for now, 500k + records make it a bit hard to use/load. :)
+        /*echo 'List all characters of this account: <select name="account_id" onChange="this.form.submit();">'; 
         echo '<option value=""'.($account_id == 'nan' ? ' selected="selected"' : '').'>All</option>';
         while($row = mysql_fetch_array($query2, MYSQL_ASSOC))
         {
             echo '<option value="'.$row['id'].'"'.($row['id'] == $account_id ? ' selected="selected"' : '').'>'.htmlentities($row['username']).'</option>';
         }
-        echo '</select>';
+        echo '</select>';*/
         
         echo '</form><br/>';
         

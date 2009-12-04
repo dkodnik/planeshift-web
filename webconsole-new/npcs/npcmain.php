@@ -10,6 +10,7 @@ function npcmain(){
     echo '<a href="./index.php?do=searchnpc&char_type=3">Search for Mounts</a> <br/>';
     echo '<a href="./index.php?do=listnpcs">List NPCs (invuln)</a> <br/>';
     echo '<a href="./index.php?do=listvuln">List NPCs (vuln)</a> <br/>';
+    echo '<a href="./index.php?do=listnpcscombat">List NPCs (combat view)</a> <br/>';
     echo '<a href="./index.php?do=listtrainer">List Trainers</a> <br/>';
     echo '<a href="./index.php?do=listmerchant">List Merchants</a> <br/>';
     echo '<a href="./index.php?do=listspawn">List Spawn Rules</a> <br/>';
