@@ -357,6 +357,12 @@
         npcmain();
         checknpcchar();
         break;
+      case 'viewnpcmap':
+        include('./npcs/npcmain.php');
+        include('./npcs/viewnpcmap.php');
+        npcmain();
+        viewnpcmap();
+        break;
       case 'rules':
         include('./rules/rulesmain.php');
         rulesmain();
@@ -480,12 +486,6 @@
         include('./rules/locationmap.php');
         rulesmain();
         location_map();
-        break;
-      case 'viewnpcmap':
-        include('./rules/rulesmain.php');
-        include('./rules/viewnpcmap.php');
-        rulesmain();
-        viewnpcmap();
         break;
       case 'skills':
         include('./rules/rulesmain.php');

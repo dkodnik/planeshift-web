@@ -22,7 +22,6 @@ function rulesmain(){
     echo '<a href="./index.php?do=listpathpoints">List Pathpoints</a><br/>';
     echo '<a href="./index.php?do=location">List Locations</a><br/>';
     echo '<a href="./index.php?do=locationmap">List Location Map</a><br/>';
-    echo '<a href="./index.php?do=viewnpcmap">View NPC Map</a><br/>';
     echo '<hr/><a href="./index.php?do=skills">List Skills</a><br/>';
     echo '<a href="./index.php?do=factions">List Factions</a><br/>';
     echo '<a href="./index.php?do=raceinfo">Race Info/Spawn Points</a><br/>';
