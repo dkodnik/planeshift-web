@@ -55,7 +55,7 @@ function rule_mscripts(){
             echo '<td><form action="index.php?do=mscripts" method="post">';
             echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
             echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-            echo '<textarea name="math_script" rows="3" cols="45">'.htmlspecialchars($row['math_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
+            echo '<textarea name="math_script" rows="6" cols="55">'.htmlspecialchars($row['math_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
             if (checkaccess('rules', 'delete')){
               echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
               echo '<input type="submit" name="commit" value="Delete"/>';
@@ -73,7 +73,7 @@ function rule_mscripts(){
       if (checkaccess('rules', 'create')){
         echo '<hr/><p>Create new math script</p>';
         echo '<form action="index.php?do=mscripts" method="post">Name: <input type="text" name="name" /><br/>';
-        echo 'Script: <textarea name="math_script" rows="3" cols="45"></textarea><br/>';
+        echo 'Script: <textarea name="math_script" rows="6" cols="55"></textarea><br/>';
         echo '<input type="submit" name="commit" value="Create Script" /></form>';
       }
     }
