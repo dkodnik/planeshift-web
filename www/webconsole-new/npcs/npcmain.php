@@ -24,6 +24,7 @@ function npcmain(){
     echo '<a href="./index.php?do=checknpcchar">List NPCs and Base Dialog</a> <br/>';
     echo '<a href="./index.php?do=checknpcloaded">Check NPC Loaded</a> <br/>';
     echo '<a href="./index.php?do=checktrainers">Check NPC Trainers</a> <br/>';
+    echo '<a href="./index.php?do=viewnpcmap">View NPC Map</a><br/>';
     echo '<hr/><a href="./index.php">Return to main page.</a>';
     echo '</div><div class="main">';
   }

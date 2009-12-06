@@ -200,6 +200,15 @@ function ka_detail(){
           if (checkaccess('npcs', 'edit')){
             echo '<th>Action</th>';
           }
+          echo '<td rowspan="'.(mysql_num_rows($result)+2).'">The following NPC use this KA:<br />';
+          $query2 = "SELECT c.id, c.name FROM npc_knowledge_areas AS nka LEFT JOIN characters AS c ON c.id=nka.player_id WHERE area='$area'";
+          $result2 = mysql_query2($query2);
+          while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) 
+          {
+            echo '<a href="./index.php?do=npc_details&sub=kas&npc_id='.$row2['id'].'">'.$row2['name'].'</a><br />';
+          }
+          // npc list
+          echo '</td>';
           echo '</tr>';
           while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             $t_id = $row['id'];
