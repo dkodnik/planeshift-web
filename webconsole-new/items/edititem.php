@@ -78,8 +78,8 @@ function edititem(){
         echo '<tr><td>spell_feature_charges</td><td><input type="text" name="spell_feature_charges" value="'.$row['spell_feature_charges'].'"/></td></tr>';
         echo '<tr><td>spell_feature_timing</td><td><input type="text" name="spell_feature_timing" value="'.$row['spell_feature_timing'].'" /></td></tr>';
         echo '<tr><td>item_anim_id</td><td><input type="text" name="item_anim_id" value="'.$row['item_anim_id'].'"/></td></tr>';
-        echo '<tr><td>equip_script</td><td><textarea name="equip_script">'.htmlspecialchars($row['equip_script']).'</textarea></td></tr>';
-        echo '<tr><td>consume_script</td><td><textarea name="consume_script">'.htmlspecialchars($row['consume_script']).'</textarea></td></tr>';
+        echo '<tr><td>equip_script</td><td><textarea name="equip_script" rows="6" cols="55">'.htmlspecialchars($row['equip_script']).'</textarea></td></tr>';
+        echo '<tr><td>consume_script</td><td><textarea name="consume_script" rows="6" cols="55">'.htmlspecialchars($row['consume_script']).'</textarea></td></tr>';
         echo '<tr><td>creative_definition</td><td>';
         if (strpos($row['flags'], "CREATIVE") !== FALSE){
         echo '<textarea name="creative_definition" rows="6" cols="50">'.$row['creative_definition'].'</textarea>';

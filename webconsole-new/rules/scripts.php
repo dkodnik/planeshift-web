@@ -102,7 +102,7 @@ function rule_scripts(){
                 {
                     echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                 }
-                echo '<textarea name="event_script" rows="3" cols="45">'.htmlspecialchars($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
+                echo '<textarea name="event_script" rows="6" cols="55">'.htmlspecialchars($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
                 if (checkaccess('rules', 'delete'))
                 {
                     echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
@@ -153,7 +153,7 @@ function rule_scripts(){
             }
         }
         echo '<form action="index.php?do=scripts" method="post">Name: <input type="text" name="name" />  '.$prefix.' <br/>';
-        echo 'Script: <textarea name="event_script" rows="3" cols="45"></textarea><br/>';
+        echo 'Script: <textarea name="event_script" rows="6" cols="55"></textarea><br/>';
         if (isset($_GET['type']))
         {
             echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
