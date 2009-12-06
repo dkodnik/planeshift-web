@@ -74,50 +74,89 @@ function rule_scripts(){
       }
       $query = $query. " ORDER BY name";
       $result = mysql_query2($query);
-      if (mysql_num_rows($result) > 0){
+      if (mysql_num_rows($result) > 0)
+      {
         echo '<table border="1">';
         echo '<tr><th>Name</th><th>Script</th>';
-        if (checkaccess('rules', 'delete')){
-          echo '<th>Actions</th></tr>';
-        }else{
-          echo '</tr>';
+        if (checkaccess('rules', 'delete'))
+        {
+            echo '<th>Actions</th></tr>';
         }
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-          echo '<tr>';
-          if (checkaccess('rules', 'edit')){
-            echo '<td><form action="index.php?do=scripts" method="post">';
-            if (isset($_GET['type'])){
-              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+        else
+        {
+            echo '</tr>';
+        }
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        {
+            echo '<tr>';
+            if (checkaccess('rules', 'edit'))
+            {
+                echo '<td><form action="index.php?do=scripts" method="post">';
+                if (isset($_GET['type']))
+                {
+                    echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+                }
+                echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
+                echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+                if (isset($_GET['type']))
+                {
+                    echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+                }
+                echo '<textarea name="event_script" rows="3" cols="45">'.htmlspecialchars($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
+                if (checkaccess('rules', 'delete'))
+                {
+                    echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+                    if (isset($_GET['type']))
+                    {
+                        echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+                    }
+                echo '<input type="submit" name="commit" value="Delete"/>';
+                echo '</form></td>';
+                }
             }
-            echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
-            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-            if (isset($_GET['type'])){
-              echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+            else
+            {
+                echo '<td>'.$row['name'].'</td><td>'.htmlspecialchars($row['event_script']).'</td>';
             }
-            echo '<textarea name="event_script" rows="3" cols="45">'.$row['event_script'].'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
-            if (checkaccess('rules', 'delete')){
-            echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-              if (isset($_GET['type'])){
-                echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
-              }
-              echo '<input type="submit" name="commit" value="Delete"/>';
-              echo '</form></td>';
-            }
-          }else{
-            echo '<td>'.$row['name'].'</td><td>'.htmlspecialchars($row['event_script']).'</td>';
-          }
-          echo '</tr>';
+            echo '</tr>';
         }
         echo '</table>';
-      }else{
+      }
+      else
+      {
         echo '<p class="error">No Scripts Found</p>';
       }
-      if (checkaccess('rules', 'create')){
+      if (checkaccess('rules', 'create'))
+      {
         echo '<hr/><p>Create new progression script</p>';
-        echo '<form action="index.php?do=scripts" method="post">Name: <input type="text" name="name" /><br/>';
+        $prefix='Script names of this type should start with: ';
+        if (isset($_GET['type']))
+        {
+            echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+            switch ($_GET['type'])
+            {
+                case 'RL':
+                    $prefix .= '"randomitem"';
+                    break;
+                case 'SI':
+                    $prefix .= '"simpleitem"';
+                    break;
+                case 'CG':
+                    $prefix .= '"charcreate" or "PATH"';
+                    break;
+                case 'S':
+                    $prefix .= '"cast" or "apply"';
+                    break;
+                case 'O':
+                    $prefix = '';
+                    break;
+            }
+        }
+        echo '<form action="index.php?do=scripts" method="post">Name: <input type="text" name="name" />  '.$prefix.' <br/>';
         echo 'Script: <textarea name="event_script" rows="3" cols="45"></textarea><br/>';
-        if (isset($_GET['type'])){
-          echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
+        if (isset($_GET['type']))
+        {
+            echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
         }
         echo '<input type="submit" name="commit" value="Create Script" /></form>';
       }
