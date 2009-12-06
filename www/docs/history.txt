@@ -4,6 +4,10 @@ WC - Added display hint to the "name" field in add scripts.
    - removed common_strings from the menu. (already commented everywhere else pending a final descision on their status.) And uncommented list Traits (mistakenly commented before).
    - changed menu name for "find ka" into "find word in ka"
    - Added a list of all NPCs and their about you triggers (with links to the KA's they use).
+   - You can now directly edit the equip and consume scripts in edit items.
+   - moved NPC map from /rules to /npcs
+   - All KA scripts now show a list of NPC's using the said script. 
+   - Made bigger input fields for scripts and mscripts.
 
 *** 2009-08-05 by Stefano Angeleri
 WC - Added commonstrings editing patch by nakem
