@@ -78,9 +78,8 @@ function edititem(){
         echo '<tr><td>spell_feature_charges</td><td><input type="text" name="spell_feature_charges" value="'.$row['spell_feature_charges'].'"/></td></tr>';
         echo '<tr><td>spell_feature_timing</td><td><input type="text" name="spell_feature_timing" value="'.$row['spell_feature_timing'].'" /></td></tr>';
         echo '<tr><td>item_anim_id</td><td><input type="text" name="item_anim_id" value="'.$row['item_anim_id'].'"/></td></tr>';
-        $script_result = PrepSelect('scripts');
-        echo '<tr><td>equip_script</td><td>'.DrawSelectBox('scripts', $script_result, 'equip_script' , $row['equip_script'], 'true').'</td></tr>';
-        echo '<tr><td>consume_script</td><td>'.DrawSelectBox('scripts', $script_result, 'consume_script' , $row['consume_script'], 'true').'</td></tr>';
+        echo '<tr><td>equip_script</td><td><textarea name="equip_script">'.htmlspecialchars($row['equip_script']).'</textarea></td></tr>';
+        echo '<tr><td>consume_script</td><td><textarea name="consume_script">'.htmlspecialchars($row['consume_script']).'</textarea></td></tr>';
         echo '<tr><td>creative_definition</td><td>';
         if (strpos($row['flags'], "CREATIVE") !== FALSE){
         echo '<textarea name="creative_definition" rows="6" cols="50">'.$row['creative_definition'].'</textarea>';
