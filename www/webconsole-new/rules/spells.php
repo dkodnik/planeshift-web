@@ -67,7 +67,7 @@ function spell(){
   if (checkaccess('rules', 'read')){
     if (isset($_GET['id'])){
       $id = mysql_real_escape_string($_GET['id']);
-      $query = "SELECT s.name, s.way_id, s.realm, s.casting_effect, s.spell_description, s.offensive, s.outcome, s.max_power, s.npc_spell_power, s.target_type, s.exclude_target, s.cast_duration, s.range, s.aoe_radius, s.aoe_angle, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
+      $query = "SELECT s.name, s.way_id, s.realm, s.casting_effect, s.spell_description, s.offensive, s.outcome, s.max_power, s.npc_spell_power, s.target_type, s.cast_duration, s.range, s.aoe_radius, s.aoe_angle, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
       if (checkaccess('rules', 'edit')){
@@ -85,7 +85,6 @@ function spell(){
           foreach ($_POST['tt'] AS $key => $value){
             $target_type += $value;
           } 
-          $exclude_target = mysql_real_escape_string($_POST['exclude_target']);
           $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
           $range = mysql_real_escape_string($_POST['range']);
           $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
@@ -96,7 +95,7 @@ function spell(){
           $pos1 = mysql_real_escape_string($_POST['position-1']);
           $pos2 = mysql_real_escape_string($_POST['position-2']);
           $pos3 = mysql_real_escape_string($_POST['position-3']);
-          $query = "UPDATE spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', exclude_target='$exclude_target', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category' WHERE id='$id'";
+          $query = "UPDATE spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category' WHERE id='$id'";
           $result = mysql_query2($query);
           if ($pos0 == ''){
             $query = "DELETE FROM spell_glyphs WHERE spell_id='$id' AND position='0'";
@@ -194,7 +193,6 @@ function spell(){
             echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1"/><br/>';
           }
           echo '</td></tr>';
-          echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="'.$row['exclude_target'].'" size="30" /></td></tr>';
           echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="'.$row['cast_duration'].'" size="30" /></td></tr>';
           echo '<tr><td>Range</td><td><input type="text" name="range" value="'.$row['range'].'" size="30" /></td></tr>';
           echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="'.$row['aoe_radius'].'" size="30" /></td></tr>';
@@ -261,7 +259,6 @@ function spell(){
           }
         }
         echo '</td></tr>';
-        echo '<tr><td>Exclude Target</td><td>'.$row['exclude_target'].'</td></tr>';
         echo '<tr><td>Cast Duration</td><td>'.$row['cast_duration'].'</td></tr>';
         echo '<tr><td>Range</td><td>'.$row['range'].'</td></tr>';
         echo '<tr><td>Aoe Radius</td><td>'.$row['aoe_radius'].'</td></tr>';
@@ -312,7 +309,6 @@ function createspell(){
           $target_type += $value;
         }
       }
-      $exclude_target = mysql_real_escape_string($_POST['exclude_target']);
       $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
       $range = mysql_real_escape_string($_POST['range']);
       $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
@@ -323,7 +319,7 @@ function createspell(){
       $pos1 = mysql_real_escape_string($_POST['position-1']);
       $pos2 = mysql_real_escape_string($_POST['position-2']);
       $pos3 = mysql_real_escape_string($_POST['position-3']);
-      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', saving_throw='$saving_throw', saving_throw_value='$saving_throw_value', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', exclude_target='$exclude_target', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
+      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
       $result = mysql_query2($query);
       $query = "SELECT id FROM spells WHERE name='$name'";
       $result = mysql_query2($query);
@@ -386,7 +382,6 @@ function createspell(){
       echo 'TARGET_ITEM: <input type="checkbox" name="tt[]" value="4"/><br/>';
       echo 'TARGET_NONE: <input type="checkbox" name="tt[]" value="1"/><br/>';
       echo '</td></tr>';
-      echo '<tr><td>Exclude Target</td><td><input type="text" name="exclude_target" value="" size="30" /></td></tr>';
       echo '<tr><td>Cast Duration</td><td><input type="text" name="cast_duration" value="" size="30" /></td></tr>';
       echo '<tr><td>Range</td><td><input type="text" name="range" value="" size="30" /></td></tr>';
       echo '<tr><td>Aoe Radius</td><td><input type="text" name="aoe_radius" value="" size="30" /></td></tr>';
