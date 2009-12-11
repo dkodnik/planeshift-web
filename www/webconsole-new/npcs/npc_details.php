@@ -188,57 +188,91 @@ function npc_main(){
   }
 }
 
-function npc_skills(){
-  if (checkaccess('npcs', 'edit')){
-    if (isset($_GET['npc_id'])){
-      if (isset($_POST['commit'])){
-        $id = mysql_real_escape_string($_GET['npc_id']);
-        $skill_id = mysql_real_escape_string($_POST['skill_id']);
-        if ($_POST['commit'] == "Remove"){
-          $query = "DELETE FROM character_skills WHERE character_id='$id' AND skill_id='$skill_id'";
-        }else if($_POST['commit'] == "Add Skill"){
-          $skill_rank = mysql_real_escape_string($_POST['skill_rank']);
-          $query = "INSERT INTO character_skills (character_id, skill_id, skill_rank) VALUES ('$id', '$skill_id', '$skill_rank') ON DUPLICATE KEY UPDATE skill_rank='$skill_rank'";
+function npc_skills()
+{
+    if (checkaccess('npcs', 'edit'))
+    {
+        if (isset($_GET['npc_id']))
+        {
+            if (isset($_POST['commit']))
+            {
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $skill_id = mysql_real_escape_string($_POST['skill_id']);
+                $query = '';
+                if ($_POST['commit'] == 'Remove')
+                {
+                    $query = "DELETE FROM character_skills WHERE character_id='$id' AND skill_id='$skill_id'";
+                }
+                else if($_POST['commit'] == 'Add Skill')
+                {
+                    $skill_rank = mysql_real_escape_string($_POST['skill_rank']);
+                    $query = "INSERT INTO character_skills (character_id, skill_id, skill_rank) VALUES ('$id', '$skill_id', '$skill_rank') ON DUPLICATE KEY UPDATE skill_rank='$skill_rank'";
+                }
+                else if($_POST['commit'] == 'Edit')
+                {
+                    $skill_rank = mysql_real_escape_string($_POST['skill_rank']);
+                    $skill_Z = mysql_real_escape_string($_POST['skill_Z']);
+                    $skill_Y = mysql_real_escape_string($_POST['skill_Y']);
+                    $query = "UPDATE character_skills SET skill_rank='$skill_rank', skill_Z='$skill_Z', skill_Y='$skill_Y' WHERE character_id='$id' AND skill_id='$skill_id'";
+                }
+                else
+                {
+                    echo '<p class="error">Invalid commit!</p>';
+                    return;
+                }
+                $result = mysql_query2($query);
+                unset($_POST);
+                echo '<p class="error">Update Successful</p>';
+                npc_skills();
+            }
+            else
+            {
+                $Skill_result = PrepSelect('skill');
+                while ($row = mysql_fetch_array($Skill_result, MYSQL_ASSOC))
+                {
+                    $s_id = $row['skill_id'];
+                    $Skills[$s_id] = $row['name'];
+                }
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $query = 'SELECT skill_id, skill_Z, skill_Y, skill_rank FROM character_skills WHERE character_id='.$id.' ORDER BY skill_id';
+                $result = mysql_query2($query);
+                echo '<table border="1"><tr><th>Skill</th><th>Rank</th><th>Skill Z</th><th>Skill Y</th><th>Actions</th></tr>';
+                if (mysql_num_rows($result) > 0)
+                {
+                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    {
+                        $s_id = $row['skill_id'];
+                        echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
+                        echo '<input type="hidden" name="skill_id" value="'.$s_id.'" />'.$Skills[$s_id].'</td>';
+                        echo '<td><input type="text" size="9" name="skill_rank" value="'.$row['skill_rank'].'" /></td>';
+                        echo '<td><input type="text" size="9" name="skill_Z" value="'.$row['skill_Z'].'" /></td>';
+                        echo '<td><input type="text" size="9" name="skill_Y" value="'.$row['skill_Y'].'" /></td>';
+                        echo '<td><input type="submit" name="commit" value="Edit" /></form>';
+                        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
+                        echo '<input type="hidden" name="skill_id" value="'.$s_id.'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
+                    }
+                    echo '</table>';
+                }
+                else
+                {
+                    echo '</table>';
+                    echo '<p class="error">NPC has no skills</p>';
+                }
+                echo '<p>Add a Skill to this NPC</p>';
+                echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
+                echo '<table border="1"><tr><th>Skill</th><th>Rank</th><th>Actions</th></tr>';
+                echo '<tr><td>'.DrawSelectBox('skill', $Skill_result, 'skill_id', '').'</td><td><input type="text" name="skill_rank" size="7" /></td><td>';
+                echo '<input type="submit" name="commit" value="Add Skill" /></td></tr></table></form>';
+            }
         }
-        $result = mysql_query2($query);
-        unset($_POST);
-        echo '<p class="error">Update Successful</p>';
-        npc_skills();
-      }else{
-        $Skill_result = PrepSelect('skill');
-        while ($row = mysql_fetch_array($Skill_result, MYSQL_ASSOC)){
-          $s_id = $row['skill_id'];
-          $Skills["$s_id"] = $row['name'];
+        else
+        {
+            echo '<p class="error">Error: No NPC Selected</p>';
         }
-        $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT skill_id, skill_rank FROM character_skills WHERE character_id='.$id.' ORDER BY skill_id';
-        $result = mysql_query2($query);
-        echo '<table border="1"><tr><th>Skill</th><th>Rank</th><th>Actions</th></tr>';
-        if (mysql_num_rows($result) > 0){
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-            $s_id = $row['skill_id'];
-            echo '<tr><td>'.$Skills["$s_id"].'</td><td>'.$row['skill_rank'].'</td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
-            echo '<input type="hidden" name="skill_id" value="'.$s_id.'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
-          }
-          echo '</table>';
-        }else{
-          echo '</table>';
-          echo '<p class="error">NPC has no skills</p>';
-        }
-        echo '<p>Add a Skill to this NPC</p>';
-        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
-        echo '<table border="1"><tr><th>Skill</th><th>Rank</th><th>Actions</th></tr>';
-        echo '<tr><td>'.DrawSelectBox('skill', $Skill_result, 'skill_id', '').'</td><td><input type="text" name="skill_rank" size="7" /></td><td>';
-        echo '<input type="submit" name="commit" value="Add Skill" /></td></tr></table></form>';
-        
-      }
-    }else{
-      echo '<p class="error">Error: No NPC Selected</p>';
+    }else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
     }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
 }
 
 function npc_traits(){
