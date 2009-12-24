@@ -342,7 +342,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
 function checkVariables($line, $type)
 {
     global $line_number;
-    $words = preg_split("/[\s,.?]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
+    $words = preg_split("/[\s,.?!]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
     foreach($words as $word)
     {
         if (strpos(trim($word), '$') !== false)  // A $variable was found in this word
