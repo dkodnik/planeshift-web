@@ -13,18 +13,18 @@ function validatequest()
     {
         global $parse_log;
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
-        echo "
+        echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser.<br>
-    <form name=\"singlescript\" method=\"post\" action=\"./index.php?do=validatequest&id=$id\">
+    <form name="singlescript" method="post" action="./index.php?do=validatequest&id='.$id.'">
         <table>
-            <tr><td>Quest ID:</td><td><input type=\"text\" name=\"id\" value=\"$id\"></td></tr>
-            <tr><td><input type=\"checkbox\" name=\"show_lines\">Show script lines?</td><td></td></tr>
+            <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'"></td></tr>
+            <tr><td><input type="checkbox" name="show_lines">Show script lines?</td><td></td></tr>
         </table>
-        <input type=\"submit\" name=\"submit\" value=\"submit\">
+        <input type="submit" name="submit" value="submit">
     </form>
 </p>
-";
+';
 
         if(isset($_POST['submit']))
         {
@@ -138,7 +138,7 @@ function parseScript($quest_id, $script, $show_lines)
         }
         elseif(strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
-            // Every P: and NPC: combo should be unique, we don't check this atm.
+            // Every P: and NPC: combo should be unique, we don't check this atm. (This means a trigger may not already exist, requires parsing of all scripts.)
             $count = 0;
             $seen_npc_triggers = true;
             $temp_name = substr($line, 0, strpos($line, ':'));
@@ -342,24 +342,21 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
 function checkVariables($line, $type)
 {
     global $line_number;
-    $words = preg_split("/[\s,.]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
+    $words = preg_split("/[\s,.?]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
     foreach($words as $word)
     {
-        if (strpos(trim($word), '$') !== false)
+        if (strpos(trim($word), '$') !== false)  // A $variable was found in this word
         {
-            if ($type == 'npc') 
+            if ($type == 'npc' || $type == 'menu')  // currently there are no other types, there could be in the future though, so this can be easily extended.
             {
-                if ($word != '$playerrace' && $word != '$sir' && $word != '$playername')
+                if ($word != '$playerrace' && $word != '$sir' && $word != '$playername' && $word != '$his' && $word != '$time' && $word != '$npc')
                 {
                     append_log("parse error, misplaced variable ($word) on line $line_number");
                 }
             }
-            else if ($type == 'menu')
+            else 
             {
-                if ($word != '$name' && $word != '$race' && $word != '$his' && $word != '$sir')
-                {
-                    append_log("parse error, misplaced variable ($word) on line $line_number");
-                }            
+                append_log("parse error, misplaced variable ($word) on line $line_number. Was not expecting any variable in this line.");
             }
         }
     }
