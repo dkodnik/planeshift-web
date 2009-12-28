@@ -144,14 +144,14 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=waypoint\" >";
    }
 // get each line
 $tok = strtok($result, "\n");
-$peoples;
+$peoples = null;
 while ($tok !== false) {
    $peoples[]=$tok;
    $tok = strtok("\n");
 }
 
 // get all info for each line
-foreach($peoples as $people) {
+foreach((array) $peoples as $people) {
 
    // skips commented lines
    $pos = strstr($people, '#');

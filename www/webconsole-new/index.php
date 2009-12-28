@@ -4,6 +4,7 @@
   SetUpDB("$db_hostname", "$db_username", "$db_password", "$db_name");
   session_save_path('sessions');
   session_start();
+  date_default_timezone_set('UTC');
   if (!isset($_SESSION['totalq'])){
     $_SESSION['totalq'] = "SQL Queries Performed:";
   }

@@ -157,7 +157,7 @@ if(!isset($_GET['live'])){
 	}
 	// get each line
 	$tok = strtok($result, "\n");
-    $peoples;
+    $peoples = null;
 	while ($tok) {
 	   $peoples[]=$tok;
 	   $tok = strtok("\n");
@@ -165,7 +165,7 @@ if(!isset($_GET['live'])){
 
 	
 	// get all info for each line
-	foreach( $peoples as $people ) {
+	foreach((array) $peoples as $people ) {
 	
 	   // skips commented lines
 	   $pos = strstr($people, '#');
