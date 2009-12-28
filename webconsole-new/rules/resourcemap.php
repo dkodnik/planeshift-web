@@ -142,7 +142,7 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
    }
 // get each line
 $tok = strtok($result, "\n");
-$peoples;
+$peoples = null;
 while ($tok !== false) {
    $peoples[]=$tok;
    $tok = strtok("\n");
@@ -174,7 +174,7 @@ foreach((array) $peoples as $people) {
      $x = $centerx+($infos[4]*$scalefactorx);
      $y = $centery-($infos[5]*$scalefactory);
      
-     if ($infos[6] == 'Y') {
+     if ((isset($infos[6])? $infos[6] : '') == 'Y') {
       $ball = 'img/ball01m.gif';
      echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
      echo "<A HREF=index.php?do=resource&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
