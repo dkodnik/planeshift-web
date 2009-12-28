@@ -149,7 +149,7 @@ while ($tok !== false) {
 }
 
 // get all info for each line
-foreach($peoples as $people) {
+foreach((array) $peoples as $people) {
 
    // skips commented lines
    $pos = strstr($people, '#');
