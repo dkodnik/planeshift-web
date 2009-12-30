@@ -29,11 +29,32 @@
   include_once("db_setup.php");
   include_once("randString.php");
 
+  require_once('recaptchalib.php');
+  
+  
   // attempt to connect to database
   $db_link = mysql_pconnect($db_hostname,
                             $db_username,
                             $db_password);
 
+  // show error if captcha failed
+  $resp = recaptcha_check_answer ($privatekey,
+								$_SERVER["REMOTE_ADDR"],
+								$_POST["recaptcha_challenge_field"],
+								$_POST["recaptcha_response_field"]);
+
+  if (!$resp->is_valid) {
+    include_once('start.php');
+    echo "<div id=\"content\">";
+    echo "<div class=\"error\">";
+    echo "The human verification check didn't pass, the two words entered are wrong. Please <a href=javascript:history.back()>re-try</a>.</p>";
+    echo "</div>";
+    echo "</div>";
+    include_once('end.php');
+	exit;
+	// $error = $resp->error;
+  }
+  
   // show error if connection failed
   if (!$db_link)
   {

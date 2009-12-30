@@ -32,6 +32,8 @@
  include_once("start.php");
  include_once("db_setup.php");
 
+ require_once('recaptchalib.php');
+
 ?>
 
 <script language="javascript" src="validationLibrary.js" type="text/javascript"></script>
@@ -179,6 +181,15 @@
 	  Once you do this you will be able to set your password<br />
 	  and access the PlaneShift server.<br />
   </p>
+
+    <p>
+	  To avoid bots and spammers, we ask you to type the two words in the picture in the box below.<br />
+	  If you cannot read the words clearly, then press the button with two cycling arrows below and you will get two new words. <br>
+  </p>
+  
+  <?php
+  echo recaptcha_get_html($publickey, $error);
+  ?>
 
   <p>
     <input type="submit" value="Create Account" />
