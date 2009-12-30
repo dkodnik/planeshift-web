@@ -31,12 +31,22 @@
 
   // include first half of webpage
   include_once("start.php");
-  
+
+  require_once('recaptchalib.php');  
+
 ?>
 
     <div id="content">
 
+
 <?
+
+if(isset($_GET['forgot']))
+{
+  echo "      <form name=\"resend\" action=\"processresendemail.php?forgot=yes\" method=\"post\" onsubmit=\"return validate()\">";
+} else {
+  echo "      <form name=\"resend\" action=\"processresendemail.php\" method=\"post\" onsubmit=\"return validate()\">";
+} 
 
 if(isset($_GET['forgot']))
   {
@@ -44,28 +54,39 @@ if(isset($_GET['forgot']))
     echo "
 
       <div class=\"forgot\">
-        Your password is stored in our database in an encrypted format, so you will have to create a new password.<br />
+        Your password is stored in our database in an encrypted format and we cannot retrieve it. So you will have to create a new password.<br />
         Use the form below to receive an email which will give you instructions on how to proceed.<br />
-      </div>
-    
+      <p>
+	  To avoid bots and spammers, we ask you to type the two words in the picture in the box below.<br />
+	  <br> 
+	  If you cannot read the words clearly, then press the button with two cycling arrows below and you will get two new words. <br> <hr class=ruler /> <center>
     ";
+
+	 echo recaptcha_get_html($publickey, $error);
+	 echo "</center></p></div>";
   }
   else
   {
   
-    echo"
+    echo "
 
       <div class=\"register\">
         <p class=\"yellowtitlebig\">
-          Register a new account!
+          Resend verification email!
         </p>
         <p>
           Please enter the email address you registered your account <br />
           with to have your verification email resent.
         </p>
-      </div>
+
+      <p>
+	  To avoid bots and spammers, we ask you to type the two words in the picture in the box below.<br />
+	  <br> 
+	  If you cannot read the words clearly, then press the button with two cycling arrows below and you will get two new words. <br> <hr class=ruler /> <center>
     ";
 
+	 echo recaptcha_get_html($publickey, $error);
+	 echo "</center></p></div>";
   }
 
 ?>
@@ -80,17 +101,8 @@ if(isset($_GET['forgot']))
         }
       </script>
 
-<?
 
-if(isset($_GET['forgot']))
-{
-  echo "      <form name=\"resend\" action=\"processresendemail.php?forgot=yes\" method=\"post\" onsubmit=\"return validate()\">";
-} else {
-  echo "      <form name=\"resend\" action=\"processresendemail.php\" method=\"post\" onsubmit=\"return validate()\">";
-} 
-
-?>
-      <hr class="ruler" />
+      
 
 <?PHP
 
@@ -107,6 +119,7 @@ if($_GET['error'] == 'email')
 }
 
 ?>
+<br>
       <div class="email">
         E-Mail
         <input name="email" />
