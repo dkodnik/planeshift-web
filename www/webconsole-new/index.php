@@ -54,6 +54,9 @@
   if (checkaccess('other', 'read')){
     echo '<a href="./index.php?do=other">Other</a> -- ';
   }
+  if (checkaccess('statistics', 'read')){
+    echo '<a href="./index.php?do=statistics">Statistics</a> -- ';
+  }
   if (checkaccess('admin', 'read')){
     echo '<a href="./index.php?do=admin">Admin</a> -- ';
   }
@@ -604,6 +607,22 @@
         include('./other/othermain.php');
         othermain();
         break;
+      case 'statistics':
+        include('./statistics/statsmain.php');
+        statsmain();
+        break;
+      case 'statshardware':
+        include('./statistics/statsmain.php');
+        include('./statistics/statshardware.php');
+        statsmain();
+        statshardware();
+        break;
+      case 'liststats':
+        include('./statistics/statsmain.php');
+        include('./other/liststats.php');
+        statsmain();
+        liststats();
+        break;
       case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
@@ -701,12 +720,6 @@
         include('./other/traits.php');
         othermain();
         handle_trait();
-        break;
-      case 'liststats':
-        include('./other/othermain.php');
-        include('./other/liststats.php');
-        othermain();
-        liststats();
         break;
       case 'admin':
         include('./admin/adminmain.php');
