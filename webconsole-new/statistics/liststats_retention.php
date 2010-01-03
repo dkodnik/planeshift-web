@@ -9,7 +9,7 @@ function liststats_retention()
     }
 
 	echo '<p class="header">Player Retention</p>';
-	echo 'Overall time in seconds logged in by characters';
+	echo 'Overall time in seconds logged in by characters created in the given quarter.';
 
 	$groupid = (isset($_GET['groupid']) && is_numeric($_GET['groupid']) ? $_GET['groupid'] : 'nan');
 	$op = (isset($_GET['op']) && ($_GET['op'] == 'add' || $_GET['op'] == 'calc')  ? $_GET['op'] : 'list');
@@ -53,36 +53,36 @@ function liststats_retention()
 					$query = mysql_query2($sql);
 					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 1800)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 7200)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result3.", 7200)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 36000)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result4.", 36000)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 115200)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result5.", 115200)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 230400)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result6.", 230400)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 460800)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result7.", 460800)";
 					$query = mysql_query2($sql);
-					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result2.", 921600)";
+					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result8.", 921600)";
 					$query = mysql_query2($sql);
 
 				} else {
 
 					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=180";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=1800";
+					$sql = "UPDATE wc_statistics SET result = '".$result2."' WHERE groupid = '$groupid' and periodname = '$period' and param1=1800";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=7200";
+					$sql = "UPDATE wc_statistics SET result = '".$result3."' WHERE groupid = '$groupid' and periodname = '$period' and param1=7200";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=36000";
+					$sql = "UPDATE wc_statistics SET result = '".$result4."' WHERE groupid = '$groupid' and periodname = '$period' and param1=36000";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=115200";
+					$sql = "UPDATE wc_statistics SET result = '".$result5."' WHERE groupid = '$groupid' and periodname = '$period' and param1=115200";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=230400";
+					$sql = "UPDATE wc_statistics SET result = '".$result6."' WHERE groupid = '$groupid' and periodname = '$period' and param1=230400";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=460800";
+					$sql = "UPDATE wc_statistics SET result = '".$result7."' WHERE groupid = '$groupid' and periodname = '$period' and param1=460800";
 					mysql_query2($sql);
-					$sql = "UPDATE wc_statistics SET result = '".$result."' WHERE groupid = '$groupid' and periodname = '$period' and param1=921600";
+					$sql = "UPDATE wc_statistics SET result = '".$result8."' WHERE groupid = '$groupid' and periodname = '$period' and param1=921600";
 					mysql_query2($sql);
 				}
 			}
@@ -113,7 +113,7 @@ function liststats_retention()
 
 		$line1 .= '<td>'.getLabelFromTime($result['param1']).'</td>';
 		$line2 .= '<td valign=bottom>';
-		$line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result['result'] / 1).'" />';
+		$line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result['result'] / 10).'" />';
 		$line2 .= '</td>';
 		$line3 .= '<td>'.(is_numeric($result['result']) ? $result['result'] : '').'</td>';
 			
@@ -153,8 +153,8 @@ function runBaseQuery($groupid, $period, $time) {
 	
 	$sql = "select count(*) as result from characters where last_login is not null and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."')";
 
-	$sql .= " and time_connected_sec<".$time;
-	echo $sql;
+	$sql .= " and time_connected_sec>".$time;
+	//echo $sql;
 	$query = mysql_query2($sql);
 	$result = mysql_fetch_array($query, MYSQL_ASSOC);
 	$counted_items = $result['result'];
@@ -208,9 +208,9 @@ function getDatesFromPeriod($period) {
 
 function getLabelFromTime($time) {
 	if ($time<3600)
-		return "<".($time/60)." minutes";
+		return ">".($time/60)." minutes";
 	else
-		return "<".($time/3600)." hours";
+		return ">".($time/3600)." hours";
 }
 
 ?>
