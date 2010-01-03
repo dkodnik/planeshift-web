@@ -619,9 +619,21 @@
         break;
       case 'liststats':
         include('./statistics/statsmain.php');
-        include('./other/liststats.php');
+        include('./statistics/liststats.php');
         statsmain();
         liststats();
+        break;
+      case 'liststats_retention':
+        include('./statistics/statsmain.php');
+        include('./statistics/liststats_retention.php');
+        statsmain();
+        liststats_retention();
+        break;
+      case 'liststats_charstats':
+        include('./statistics/statsmain.php');
+        include('./statistics/liststats_charstats.php');
+        statsmain();
+        liststats_charstats();
         break;
       case 'listguilds':
         include('./other/othermain.php');

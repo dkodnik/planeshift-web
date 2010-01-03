@@ -11,7 +11,7 @@ function statshardware()
         <?php
 		echo '<p class="header">Operating Systems</p>';
 
-		$filter = 0;
+		$filter = 10;
 		if ( isset($_POST['filter']) ) {
 			$filter = $_POST['filter'];
 		}
