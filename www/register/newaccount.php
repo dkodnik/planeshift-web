@@ -176,10 +176,10 @@
   </table>
 
   <p>
-	  When you click "Create Account" an e-mail will be<br />
-	  sent to your address with a link to verify your account.<br />
-	  Once you do this you will be able to set your password<br />
-	  and access the PlaneShift server.<br />
+	  When you click "Create Account" <font color=red>an e-mail will be sent to your address with a link to verify your account</font>.<br>
+	  <br>
+	  <u>Without a valid email you will not be able to play.</u><br>
+	  <br>Once you do this you will be able to set your password and access the PlaneShift server.<br />
   </p>
 
     <p>
