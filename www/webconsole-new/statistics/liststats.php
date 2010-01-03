@@ -70,8 +70,8 @@ function liststats()
 	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
 	{
 		echo '<th>'.htmlentities($result['periodname']).'</th>';
-		$line2 .= '<td>';
-		$line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result['result'] / 1).'" />';
+		$line2 .= '<td valign=bottom>';
+		$line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result['result'] / 10).'" />';
 		$line2 .= '</td>';
 		$line3 .= '<td>'.(is_numeric($result['result']) ? $result['result'] : '').'</td>';
 	}
