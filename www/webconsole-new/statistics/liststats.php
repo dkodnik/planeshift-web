@@ -110,9 +110,9 @@ function getBaseQuery($groupid, $period) {
 	$dates = getDatesFromPeriod($period);
 
 	if ($groupid==1)
-		return "select count(*) as result from accounts where created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
+		return "select count(*) as result from accounts where security_level=0 and created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
 	else if ($groupid==2)
-		return "select count(*) as result from accounts where last_login is not null and created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
+		return "select count(*) as result from accounts where security_level=0 and last_login is not null and created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
 
 }
 

@@ -151,7 +151,7 @@ function runBaseQuery($groupid, $period, $time) {
 
 	$dates = getDatesFromPeriod($period);
 	
-	$sql = "select count(*) as result from characters where last_login is not null and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."')";
+	$sql = "select count(*) as result from characters c, accounts a where c.account_id=a.id and character_type=0 and security_level=0 and last_login is not null and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."')";
 
 	$sql .= " and time_connected_sec>".$time;
 	//echo $sql;
