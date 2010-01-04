@@ -7,8 +7,6 @@ function liststats()
         echo '<p class="error">You are not authorized to use these functions</p>';
 		return;
     }
-
-	echo '<p class="header">Statistics</p>';
 	
 	$groupid = (isset($_GET['groupid']) && is_numeric($_GET['groupid']) ? $_GET['groupid'] : 'nan');
 	$op = (isset($_GET['op']) && ($_GET['op'] == 'add' || $_GET['op'] == 'calc')  ? $_GET['op'] : 'list');
@@ -21,6 +19,12 @@ function liststats()
 		echo '<p class="error">You have to specify a valid Group ID!</p>';
 		return;
 	}
+
+	if ($groupid==1)
+		echo '<p class="header">New Accounts</p>(including also the ones without a login in game)<br><br>';
+	else if ($groupid==2)
+		echo '<p class="header">New Accounts</p>(including only the ones with a valid login in game)<br><br>';
+
 
 	if($op == 'calc')
 	{

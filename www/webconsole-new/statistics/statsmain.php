@@ -14,7 +14,14 @@ function statsmain()
 		echo '<a href="./index.php?do=liststats_charstats&groupid=7">Char Stats: Intelligence</a> <br/>';
 		echo '<a href="./index.php?do=liststats_charstats&groupid=8">Char Stats: Will</a> <br/>';
 		echo '<a href="./index.php?do=liststats_charstats&groupid=9">Char Stats: Charisma</a> <br/>';
-        
+		echo '<a href="./index.php?do=liststats_charstats&groupid=10">Skill: Sword</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=11">Skill: Light Armor</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=12">Skill: Medium Armor</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=13">Skill: Heavy Armor</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=14">Skill: Crystal Way</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=15">Skill: Melee</a> <br/>';
+		echo '<a href="./index.php?do=liststats_charstats&groupid=16">Char Money</a> <br/>';
+
         echo '<hr />';
         echo '<a href="./index.php">Return to main page</a>';
         echo '</div><div class="main">'."\n";
