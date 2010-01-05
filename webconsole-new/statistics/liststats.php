@@ -24,6 +24,10 @@ function liststats()
 		echo '<p class="header">New Accounts</p>(including also the ones without a login in game)<br><br>';
 	else if ($groupid==2)
 		echo '<p class="header">New Accounts</p>(including only the ones with a valid login in game)<br><br>';
+	else if ($groupid==17)
+		echo '<p class="header">New Characters</p>(including the ones with no connections)<br><br>';
+	else if ($groupid==18)
+		echo '<p class="header">New Accounts</p>(including only the ones with connection time>0)<br><br>';
 
 
 	if($op == 'calc')
@@ -38,11 +42,11 @@ function liststats()
 			{
 				// run the query to get the result
 				$sql = getBaseQuery($groupid,$period);
-				echo $sql;
+				//echo $sql;
 				$query = mysql_query2($sql);
 				$result = mysql_fetch_array($query, MYSQL_ASSOC);
 				$counted_items = $result['result'];
-				echo "$counted_items";
+				//echo "$counted_items";
 
 				// check if period already exists, if not add it
 				$sql = "SELECT * FROM wc_statistics where groupid=".$groupid." and periodname='".$period."'";
@@ -87,82 +91,21 @@ function liststats()
 
 }
 
-function getNextQuarterPeriod($groupid) {
-    $sql = "SELECT MAX(periodname) AS max FROM wc_statistics WHERE groupid = '$groupid' ORDER BY periodname";
-
-    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
-    $max = $result['max'];
-    
-    $year = substr($max, 0, 4);
-    $quarter = substr($max, 5, 6);
-    
-    if($quarter == 'Q4')
-    {
-      $year = $year+1;
-      $quarter = 'Q1';
-    }
-    else
-    {
-      $quarter = 'Q'. (substr($quarter, 1, 2) + 1);
-    }
-
-    return $year.' '.$quarter;
-}
 
 function getBaseQuery($groupid, $period) {
 
 	$dates = getDatesFromPeriod($period);
+	$to_exclude = getAccountsToExclude();
 
 	if ($groupid==1)
 		return "select count(*) as result from accounts where security_level=0 and created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
 	else if ($groupid==2)
 		return "select count(*) as result from accounts where security_level=0 and last_login is not null and created_date>=DATE('".$dates[1]."') and created_date<DATE('".$dates[2]."')";
-
+	else if ($groupid==17)
+		return "select count(*) as result from characters where creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."') and account_id not in ".$to_exclude;
+	else if ($groupid==18)
+		return "select count(*) as result from characters where time_connected_sec>0 and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."') and account_id not in ".$to_exclude;
 }
 
-function validatePeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-	
-	if ($year=='' || $quarter=='')
-		return 0;
-	
-	if ($quarter!="Q1" && $quarter!="Q2" && $quarter!="Q3" && $quarter!="Q4")
-		return 0;
-	
-	return 1;
-}
-
-function getDatesFromPeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-    
-    if($quarter == 'Q1')
-    {
-      $start = $year."-01-01";
-      $end = $year."-03-31";
-    }
-    else if($quarter == 'Q2')
-    {
-      $start = $year."-04-01";
-      $end = $year."-06-30";
-    }
-    else if($quarter == 'Q3')
-    {
-      $start = $year."-07-01";
-      $end = $year."-09-30";
-    }
-    else if($quarter == 'Q4')
-    {
-      $start = $year."-10-01";
-      $end = $year."-12-31";
-    }
-
-	$dates[1] = $start;
-	$dates[2] = $end;
-    return $dates;
-}
 
 ?>

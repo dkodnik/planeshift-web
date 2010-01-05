@@ -35,14 +35,15 @@ function liststats_retention()
 			{
 				// run the queries to get the results
 				// time: 180 (3 minutes), 1800 (30 minutes), 7200 (2 hours), 36000 (10 hours), 115200 (32 hours), 230400 (64 hours), 460800 (128 hours), 921600 (256 hours)
-				$result = runBaseQuery($groupid,$period,180);
-				$result2 = runBaseQuery($groupid,$period,1800);
-				$result3 = runBaseQuery($groupid,$period,7200);
-				$result4 = runBaseQuery($groupid,$period,36000);
-				$result5 = runBaseQuery($groupid,$period,115200);
-				$result6 = runBaseQuery($groupid,$period,230400);
-				$result7 = runBaseQuery($groupid,$period,460800);
-				$result8 = runBaseQuery($groupid,$period,921600);
+				$to_exclude = getAccountsToExclude();
+				$result = runBaseQuery($groupid,$period,180,$to_exclude);
+				$result2 = runBaseQuery($groupid,$period,1800,$to_exclude);
+				$result3 = runBaseQuery($groupid,$period,7200,$to_exclude);
+				$result4 = runBaseQuery($groupid,$period,36000,$to_exclude);
+				$result5 = runBaseQuery($groupid,$period,115200,$to_exclude);
+				$result6 = runBaseQuery($groupid,$period,230400,$to_exclude);
+				$result7 = runBaseQuery($groupid,$period,460800,$to_exclude);
+				$result8 = runBaseQuery($groupid,$period,921600,$to_exclude);
 
 				// check if period already exists, if not add it
 				$sql = "SELECT * FROM wc_statistics where groupid=".$groupid." and periodname='".$period."'";
@@ -125,33 +126,12 @@ function liststats_retention()
 
 }
 
-function getNextQuarterPeriod($groupid) {
-    $sql = "SELECT MAX(periodname) AS max FROM wc_statistics WHERE groupid = '$groupid' ORDER BY periodname";
 
-    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
-    $max = $result['max'];
-    
-    $year = substr($max, 0, 4);
-    $quarter = substr($max, 5, 6);
-    
-    if($quarter == 'Q4')
-    {
-      $year = $year+1;
-      $quarter = 'Q1';
-    }
-    else
-    {
-      $quarter = 'Q'. (substr($quarter, 1, 2) + 1);
-    }
-
-    return $year.' '.$quarter;
-}
-
-function runBaseQuery($groupid, $period, $time) {
+function runBaseQuery($groupid, $period, $time, $to_exclude) {
 
 	$dates = getDatesFromPeriod($period);
 	
-	$sql = "select count(*) as result from characters c, accounts a where c.account_id=a.id and character_type=0 and security_level=0 and last_login is not null and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."')";
+	$sql = "select count(*) as result from characters c where character_type=0 and last_login is not null and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."') and account_id not in ".$to_exclude;
 
 	$sql .= " and time_connected_sec>".$time;
 	//echo $sql;
@@ -159,51 +139,6 @@ function runBaseQuery($groupid, $period, $time) {
 	$result = mysql_fetch_array($query, MYSQL_ASSOC);
 	$counted_items = $result['result'];
 	return $counted_items;
-}
-
-function validatePeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-	
-	if ($year=='' || $quarter=='')
-		return 0;
-	
-	if ($quarter!="Q1" && $quarter!="Q2" && $quarter!="Q3" && $quarter!="Q4")
-		return 0;
-	
-	return 1;
-}
-
-function getDatesFromPeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-    
-    if($quarter == 'Q1')
-    {
-      $start = $year."-01-01";
-      $end = $year."-03-31";
-    }
-    else if($quarter == 'Q2')
-    {
-      $start = $year."-04-01";
-      $end = $year."-06-30";
-    }
-    else if($quarter == 'Q3')
-    {
-      $start = $year."-07-01";
-      $end = $year."-09-30";
-    }
-    else if($quarter == 'Q4')
-    {
-      $start = $year."-10-01";
-      $end = $year."-12-31";
-    }
-
-	$dates[1] = $start;
-	$dates[2] = $end;
-    return $dates;
 }
 
 function getLabelFromTime($time) {
