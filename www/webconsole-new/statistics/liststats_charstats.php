@@ -39,13 +39,14 @@ function liststats_charstats()
 			{
 				// run the queries to get the results
 				// time: 3600 (1 hour), 36000 (10 hours), 72000 (20 hours), 180000 (50 hours), 360000 (100 hours), 720000 (200 hours), 1080000 (300 hours)
-				$result = runBaseQuery($groupid,$period,3600);
-				$result2 = runBaseQuery($groupid,$period,36000);
-				$result3 = runBaseQuery($groupid,$period,72000);
-				$result4 = runBaseQuery($groupid,$period,180000);
-				$result5 = runBaseQuery($groupid,$period,360000);
-				$result6 = runBaseQuery($groupid,$period,720000);
-				$result7 = runBaseQuery($groupid,$period,1080000);
+				$to_exclude = getAccountsToExclude();
+				$result = runBaseQuery($groupid,$period,3600,$to_exclude);
+				$result2 = runBaseQuery($groupid,$period,36000,$to_exclude);
+				$result3 = runBaseQuery($groupid,$period,72000,$to_exclude);
+				$result4 = runBaseQuery($groupid,$period,180000,$to_exclude);
+				$result5 = runBaseQuery($groupid,$period,360000,$to_exclude);
+				$result6 = runBaseQuery($groupid,$period,720000,$to_exclude);
+				$result7 = runBaseQuery($groupid,$period,1080000,$to_exclude);
 
 				// check if period already exists, if not add it
 				$sql = "SELECT * FROM wc_statistics where groupid=".$groupid." and periodname='".$period."'";
@@ -129,29 +130,7 @@ function liststats_charstats()
 
 }
 
-function getNextQuarterPeriod($groupid) {
-    $sql = "SELECT MAX(periodname) AS max FROM wc_statistics WHERE groupid = '$groupid' ORDER BY periodname";
-
-    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
-    $max = $result['max'];
-    
-    $year = substr($max, 0, 4);
-    $quarter = substr($max, 5, 6);
-    
-    if($quarter == 'Q4')
-    {
-      $year = $year+1;
-      $quarter = 'Q1';
-    }
-    else
-    {
-      $quarter = 'Q'. (substr($quarter, 1, 2) + 1);
-    }
-
-    return $year.' '.$quarter;
-}
-
-function runBaseQuery($groupid, $period, $time) {
+function runBaseQuery($groupid, $period, $time, $to_exclude) {
 
 	$dates = getDatesFromPeriod($period);
 	$startime = $time - $time * 0.1;
@@ -159,13 +138,13 @@ function runBaseQuery($groupid, $period, $time) {
 
 	// run query for money
 	if ($groupid==16) {
-		$sql = "select avg( money_trias+money_hexas*10+money_octas*50+money_circles*250+bank_money_trias+bank_money_hexas*10+bank_money_octas*50+bank_money_circles*250) as result from characters c, accounts a where c.account_id=a.id and character_type=0 and security_level=0";
+		$sql = "select avg( money_trias+money_hexas*10+money_octas*50+money_circles*250+bank_money_trias+bank_money_hexas*10+bank_money_octas*50+bank_money_circles*250) as result from characters c where character_type=0";
 		$sql .= " and time_connected_sec>".$startime." and time_connected_sec<".$endtime;
 
 	// run query for stats/skills
 	} else {
 		$statid = getStatIDFromGroup($groupid);
-		$sql = "select avg(skill_rank) as result from character_skills s, characters c, accounts a where c.account_id=a.id and character_type=0 and security_level=0 ";
+		$sql = "select avg(skill_rank) as result from character_skills s, characters c where character_type=0 ";
 		$sql .= " and skill_id=".$statid." and c.id=s.character_id and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."')";
 
 		$sql .= " and time_connected_sec>".$startime." and time_connected_sec<".$endtime;
@@ -173,7 +152,8 @@ function runBaseQuery($groupid, $period, $time) {
 		// remove 0 ranks from the average
 		$sql .= " and skill_rank!=0";
 	}
-	
+
+	$sql .= " and account_id not in ".$to_exclude;
 	//echo $sql;
 	$query = mysql_query2($sql);
 	$result = mysql_fetch_array($query, MYSQL_ASSOC);
@@ -181,50 +161,6 @@ function runBaseQuery($groupid, $period, $time) {
 	return ($counted_items=='')?0:$counted_items;
 }
 
-function validatePeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-	
-	if ($year=='' || $quarter=='')
-		return 0;
-	
-	if ($quarter!="Q1" && $quarter!="Q2" && $quarter!="Q3" && $quarter!="Q4")
-		return 0;
-	
-	return 1;
-}
-
-function getDatesFromPeriod($period) {
-    
-    $year = substr($period, 0, 4);
-    $quarter = substr($period, 5, 6);
-    
-    if($quarter == 'Q1')
-    {
-      $start = $year."-01-01";
-      $end = $year."-03-31";
-    }
-    else if($quarter == 'Q2')
-    {
-      $start = $year."-04-01";
-      $end = $year."-06-30";
-    }
-    else if($quarter == 'Q3')
-    {
-      $start = $year."-07-01";
-      $end = $year."-09-30";
-    }
-    else if($quarter == 'Q4')
-    {
-      $start = $year."-10-01";
-      $end = $year."-12-31";
-    }
-
-	$dates[1] = $start;
-	$dates[2] = $end;
-    return $dates;
-}
 
 function getLabelFromTime($time) {
 	
