@@ -57,6 +57,9 @@
   if (checkaccess('statistics', 'read')){
     echo '<a href="./index.php?do=statistics">Statistics</a> -- ';
   }
+  if (checkaccess('assets', 'read')){
+    echo '<a href="./index.php?do=assets">Assets</a> -- ';
+  }
   if (checkaccess('admin', 'read')){
     echo '<a href="./index.php?do=admin">Admin</a> -- ';
   }
@@ -635,7 +638,17 @@
         statsmain();
         liststats_charstats();
         break;
-      case 'listguilds':
+      case 'assets':
+        include('./assets/assetsmain.php');
+        assetsmain();
+        break;
+	case 'assetsnpc':
+        include('./assets/assetsmain.php');
+        include('./assets/assetsnpc.php');
+        assetsmain();
+        assetsnpc();
+        break;
+	case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
         othermain();
