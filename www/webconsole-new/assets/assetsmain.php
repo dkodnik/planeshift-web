@@ -5,6 +5,7 @@ function assetsmain()
     {
         echo '<div class="menu_left">';
         echo '<a href="./index.php?do=assetsnpc">NPCs</a> <br/>';
+        echo '<a href="./index.php?do=assetsitem">Items</a> <br/>';
 
         echo '<hr />';
         echo '<a href="./index.php">Return to main page</a>';

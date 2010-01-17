@@ -476,4 +476,9 @@ function getDatesFromPeriod($period) {
     return $dates;
 }
 
+function getAssetsDir() {
+
+	return "D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art";
+}
+
 ?>

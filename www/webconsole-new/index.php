@@ -648,6 +648,12 @@
         assetsmain();
         assetsnpc();
         break;
+	case 'assetsitem':
+        include('./assets/assetsmain.php');
+        include('./assets/assetsitem.php');
+        assetsmain();
+        assetsitem();
+        break;
 	case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
