@@ -77,12 +77,12 @@ function assetsitem()
 	$second= array_values(array_diff($db_meshfacts, $int)); //B' = B - C
 
 	echo "<br><h2>Elements present in the file definitions but not in the db:</h2>";
-	for ($i = 0; $i <= count($first); $i++) {
+	for ($i = 0; $i < count($first); $i++) {
 		echo "$first[$i] <br>";
 	}
 
 	echo "<br><h2>Elements present in the database but not in the files:</h2>";
-	for ($i = 0; $i <= count($second); $i++) {
+	for ($i = 0; $i < count($second); $i++) {
 		echo "$second[$i] <br>";
 	}
 
@@ -110,12 +110,12 @@ function assetsitem()
 	$second= array_values(array_diff($db_icons, $int)); //B' = B - C
 
 	echo "<br><h2>Icons present in the art directory but not in the db:</h2>";
-	for ($i = 0; $i <= count($first); $i++) {
+	for ($i = 0; $i < count($first); $i++) {
 		echo "$first[$i] <br>";
 	}
 
 	echo "<br><h2>Icons present in the database but not in the art directory:</h2>";
-	for ($i = 0; $i <= count($second); $i++) {
+	for ($i = 0; $i < count($second); $i++) {
 		echo "$second[$i] <br>";
 	}
 
