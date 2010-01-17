@@ -56,7 +56,7 @@ function assetsitem()
 			// retrieves all icons
 			if (is_file($fileNameWithPathAndExt) && strstr($fileNameWithPathAndExt,"_icon")) {
 				//echo "ICON: $fileNameWithPathAndExt<br>";
-				$icons[$k] = $fileNameWithPathAndExt;
+				$icons[$k] = $fileNameWithExt;
 				$k++;
 			}
 		}
@@ -95,7 +95,13 @@ function assetsitem()
 	$i=0;
 	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
 	{
-		$db_icons[$i] = $result['cstr_gfx_icon'];
+		// strip path
+		if (strrpos($result['cstr_gfx_icon'],'/')) {
+			$slash_pos = strrchr ($result['cstr_gfx_icon'],'//');
+			$slash_pos = substr ($slash_pos,1);
+		}else
+			$slash_pos = $result['cstr_gfx_icon'];
+		$db_icons[$i] = $slash_pos;
 		$i++;
 	}
 
