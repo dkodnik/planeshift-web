@@ -4,7 +4,8 @@ function assetsmain()
     if (checkaccess('assets', 'read'))
     {
         echo '<div class="menu_left">';
-        echo '<a href="./index.php?do=assetsnpc">NPCs</a> <br/>';
+        echo '<a href="./index.php?do=assetsnpc&op=npc">NPCs Used</a> <br/>';
+		echo '<a href="./index.php?do=assetsnpc&op=trait">NPC Traits Used</a> <br/>';
         echo '<a href="./index.php?do=assetsitem">Items</a> <br/>';
 
         echo '<hr />';
