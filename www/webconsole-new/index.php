@@ -45,6 +45,9 @@
   if (checkaccess('als', 'read')){
     echo '<a href="./index.php?do=als">Action Locations</a> -- ';
   }
+  if (checkaccess('events', 'read')) {
+  	echo '<a href="./index.php?do=events">Events</a> -- ';
+  }
   if (checkaccess('rules','read')){
     echo '<a href="./index.php?do=rules">Rules</a>  -- ';
   }
@@ -816,6 +819,18 @@
         adminmain();
         editgm();
         break;
+      case 'events';
+      	include('./events/eventsmain.php');
+      	include('./events/events.php');
+      	eventsmain();
+      	listevents();
+      	break;
+      case 'viewevent';
+      	include('./events/eventsmain.php');
+      	include('./events/events.php');
+      	eventsmain();
+      	viewevent();
+      	break;
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
     }
