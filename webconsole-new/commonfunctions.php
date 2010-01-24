@@ -235,6 +235,23 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   return $string;
 }
 
+/*SelectAreas() creates and returns the string for the <select> of areas which include multiple sectors*/
+function SelectAreas($current_sector,$select_name){
+
+    $areas = array("arena","akkaio","bdroad1","bdroad2","bdoorsout","bdoorsin","gugrontid","hydlaa_plaza","hydlaa_jayose","hydlaa_winch","laanxdungeon","ojaroad1","ojaroad2","sewers","npcroom1","npcroom2");
+
+	printf("<SELECT name=%s>", $select_name);
+
+	for ($i=0; $i<sizeof($areas);$i++) {
+		if ($areas[$i] == $current_sector){
+			printf("<OPTION selected value=\"%s\">%s</OPTION>", $areas[$i], $areas[$i]);
+		} else {
+			printf("<OPTION value=\"%s\">%s</OPTION>", $areas[$i], $areas[$i]);
+		}
+	}
+	printf("</SELECT>");
+}
+
 function LocationToString($id)
 {
     switch ($id)
