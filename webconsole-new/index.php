@@ -238,6 +238,12 @@
         npcmain();
         listnpcscombat();
         break;
+      case 'listnpcsector':
+        include('./npcs/npcmain.php');
+        include('./npcs/listnpcsector.php');
+        npcmain();
+        listnpcsector();
+        break;
       case 'listspawn':
         include('./npcs/npcmain.php');
         include('./npcs/listspawnrules.php');
