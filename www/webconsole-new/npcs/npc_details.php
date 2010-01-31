@@ -4,7 +4,7 @@ function npc_main(){
     if (isset($_GET['npc_id'])){
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, banker, statue FROM characters WHERE id='.$id;
+        $query = 'SELECT description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
@@ -19,6 +19,10 @@ function npc_main(){
             }else{
               echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
             }
+        }
+        else // show only for players (npcs are 0000-00-00 00:00:00
+        {
+            echo '<tr><td>Creation date/time</td><td>'.$row['creation_time'].'</td></tr>';
         }
         $Sectors = PrepSelect('sectorid');
         echo '<tr><td>Location:</td>';
