@@ -77,7 +77,7 @@ function DoLogin(){
         setcookie('autoname', "$username", time()+60*60*24*30);
         setcookie('autopass', md5($password), time()+60*60*24*30);
       }
-      return 1;
+      header('Location: '.$_POST['redir']);
     }
     echo '<p class="error">Incorrect Username or Password.</p>'."\n";
   }else if (isset($_COOKIE['autologin'])){
@@ -89,7 +89,7 @@ function DoLogin(){
       $_SESSION['username'] = $username;
       $_SESSION['security_level'] = $row['security_level'];
       $_SESSION['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
-      return 1;
+      header('Location: '.$_POST['redir']);
     }
   }
   return 0;
@@ -97,8 +97,9 @@ function DoLogin(){
 
 /*DisplayLogin displays the login dialog box*/
 function DisplayLogin(){
-  echo '<form action="./index.php" method="post">'."\n";
-  echo '<p>Username:<input type="text" name="username" /><br/>'."\n";
+  echo '<form action="'.$_SERVER['REQUEST_URI'].'" method="post">'."\n";
+  echo '<p><input type="hidden" name="redir" value="'.$_SERVER['REQUEST_URI'].'">';
+  echo 'Username:<input type="text" name="username" /><br/>'."\n";
   echo 'Password:<input type="password" name="password" /><br/>'."\n";
   echo 'Remember me<input type="checkbox" name="remember" /><br/>'."\n";
   echo '<input type="submit" name="login" value="Log In" /></p>'."\n";

@@ -19,6 +19,7 @@
     session_unset();
     session_destroy();
     session_start();
+    header('location: index.php');
   }
   if (!CheckLogin() && !DoLogin()){
     include('./header.php');
