@@ -418,12 +418,12 @@ function getDataFromArea($area) {
       $data[4] =    3.26;
       $data[5] = array('NPCroom');
   } else if ($area=='npcroom2') {
-      $data[0] = 'loc_sector_id=6 or loc_sector_id=7';
-      $data[1] = 460;
-      $data[2] = 318;
-      $data[3] = 4;
-      $data[4] = 4;
-      $data[5] = array('npcroom2');
+      $data[0] = 'loc_sector_id=70 or loc_sector_id=71';
+      $data[1] = 700;
+      $data[2] = 293;
+      $data[3] = 3;
+      $data[4] = 3;
+      $data[5] = array('NPCroom3','NPCroomwarp');
   }
 
   return $data;
