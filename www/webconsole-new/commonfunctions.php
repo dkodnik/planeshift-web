@@ -239,7 +239,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
 /*SelectAreas() creates and returns the string for the <select> of areas which include multiple sectors*/
 function SelectAreas($current_sector,$select_name){
 
-    $areas = array("arena","akkaio","bdroad1","bdroad2","bdoorsout","bdoorsin","gugrontid","hydlaa_plaza","hydlaa_jayose","hydlaa_winch","laanxdungeon","ojaroad1","ojaroad2","sewers","npcroom1","npcroom2");
+    $areas = array("arena","akkaio","bdroad1","bdroad2","bdoorsout","bdoorsin","ojaroadcave01","bdroadcave02","caves03","gugrontid","hydlaa_plaza","hydlaa_jayose","hydlaa_winch","laanxdungeon","ojaroad1","ojaroad2","sewers","npcroom1","npcroom2");
 
 	printf("<SELECT name=%s>", $select_name);
 
@@ -392,7 +392,25 @@ function getDataFromArea($area) {
       $data[2] = 673;
       $data[3] = 1.3;
       $data[4] = 1.3;
-  } else if ($area=='NPCroom') {
+  } else if ($area=='ojaroadcave01') {
+      $data[0] = 'loc_sector_id=75';
+      $data[1] = 1006;
+      $data[2] = 751;
+      $data[3] = 2.7;
+      $data[4] = 2.7;
+  } else if ($area=='bdroadcave02') {
+      $data[0] = 'loc_sector_id=76';
+      $data[1] = 1254;
+      $data[2] = 759;
+      $data[3] = 1.3;
+      $data[4] = 1.3;
+  } else if ($area=='caves03') {
+      $data[0] = 'loc_sector_id=16';
+      $data[1] = 2200;
+      $data[2] = 726;
+      $data[3] = 1.3;
+      $data[4] = 1.3;
+  }  else if ($area=='npcroom1') {
       $data[0] = 'loc_sector_id=3';
       $data[1] =  321.94;
       $data[2] = -371.05;
@@ -405,7 +423,7 @@ function getDataFromArea($area) {
       $data[2] = 318;
       $data[3] = 4;
       $data[4] = 4;
-      $data[5] = array('dngn', 'cntr');
+      $data[5] = array('npcroom2');
   }
 
   return $data;
