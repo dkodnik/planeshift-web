@@ -129,6 +129,8 @@ function npc_main(){
         $query .= "base_strength = '$base_strength', ";
         $base_endurance = mysql_real_escape_string($_POST['base_endurance']);
         $query .= "base_endurance = '$base_endurance', ";
+        $base_intelligence = mysql_real_escape_string($_POST['base_intelligence']);
+        $query .= "base_intelligence = '$base_intelligence', ";
         $base_will = mysql_real_escape_string($_POST['base_will']);
         $query .= "base_will = '$base_will', ";
         $base_charisma = mysql_real_escape_string($_POST['base_charisma']);
