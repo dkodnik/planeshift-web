@@ -188,12 +188,12 @@ if(!isset($_GET['live'])){
 		 
 		 if ($infos[6] == 'Y') {
 		  $ball = 'img/ball01m.gif';
-		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
 		 echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
 	
 		  } else {
 		  $ball = 'img/ball04m.gif';
-		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
 		 echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
 		  }
 	
