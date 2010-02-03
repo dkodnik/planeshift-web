@@ -15,7 +15,7 @@ function validatequest()
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
         echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
-to what line in your browser.<br>
+to what line in your browser).<br>
     <form name="singlescript" method="post" action="./index.php?do=validatequest&id='.$id.'">
         <table>
             <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'"></td></tr>
