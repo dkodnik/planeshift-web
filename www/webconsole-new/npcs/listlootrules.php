@@ -208,7 +208,7 @@ function createlootruledetail()
         $item_result = PrepSelect('items');        
         $item_box = DrawSelectBox('items', $item_result, 'item_stat_id', '', true);
         $loot_rule_id = mysql_real_escape_string($_GET['id']);
-        echo '<table border="1"><form action="./index.php?do=createlootruledetail" method="post"><input type="hidden" name="loot_rule_id" value="'.$loot_rule_id.'"/>';
+        echo '<table border="1"><form action="./index.php?do=createlootruledetail&id='.$loot_rule_id.'" method="post"><input type="hidden" name="loot_rule_id" value="'.$loot_rule_id.'"/>';
         echo '<tr><th>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th></tr>';
         echo '<tr><td>'.$item_box.'</td>';
         echo '<td><input type="text" name="probability" value="0" size="8"/></td>';
