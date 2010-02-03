@@ -472,10 +472,10 @@ function validatePeriod($period) {
     $year = substr($period, 0, 4);
     $quarter = substr($period, 5, 6);
 	
-	if ($year=='' || $quarter=='')
+	if (trim($year)=='' || trim($quarter)=='')
 		return 0;
 	
-	if ($quarter!="Q1" && $quarter!="Q2" && $quarter!="Q3" && $quarter!="Q4")
+	if ($quarter!='Q1' && $quarter!='Q2' && $quarter!='Q3' && $quarter!='Q4')
 		return 0;
 	
 	return 1;
@@ -488,23 +488,23 @@ function getDatesFromPeriod($period) {
     
     if($quarter == 'Q1')
     {
-      $start = $year."-01-01";
-      $end = $year."-03-31";
+      $start = $year.'-01-01';
+      $end = $year.'-03-31';
     }
     else if($quarter == 'Q2')
     {
-      $start = $year."-04-01";
-      $end = $year."-06-30";
+      $start = $year.'-04-01';
+      $end = $year.'-06-30';
     }
     else if($quarter == 'Q3')
     {
-      $start = $year."-07-01";
-      $end = $year."-09-30";
+      $start = $year.'-07-01';
+      $end = $year.'-09-30';
     }
     else if($quarter == 'Q4')
     {
-      $start = $year."-10-01";
-      $end = $year."-12-31";
+      $start = $year.'-10-01';
+      $end = $year.'-12-31';
     }
 
 	$dates[1] = $start;
@@ -514,7 +514,7 @@ function getDatesFromPeriod($period) {
 
 function getAssetsDir() {
 
-	return "D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art";
+	return 'D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art';
 }
 
 ?>

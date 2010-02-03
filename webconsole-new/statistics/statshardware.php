@@ -13,7 +13,7 @@ function statshardware()
 
 		$filter = 10;
 		if ( isset($_POST['filter']) ) {
-			$filter = $_POST['filter'];
+			$filter = mysql_real_escape_string($_POST['filter']);
 		}
 
 		$sql = "SELECT operating_system,count(operating_system) as result FROM accounts where operating_system <>'' group by operating_system having result>=".$filter." order by result desc";
