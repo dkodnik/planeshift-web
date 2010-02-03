@@ -10,7 +10,7 @@ function liststats_charstats()
 
 	$groupid = (isset($_GET['groupid']) && is_numeric($_GET['groupid']) ? $_GET['groupid'] : 'nan');
 	$op = (isset($_GET['op']) && ($_GET['op'] == 'add' || $_GET['op'] == 'calc')  ? $_GET['op'] : 'list');
-	$period = (isset($_POST['period']) ? $_POST['period'] : 'nan');
+	$period = (isset($_POST['period']) ? mysql_real_escape_string($_POST['period']) : 'nan');
 	if (validatePeriod($period)==0)
 		$period = 'nan';
 
