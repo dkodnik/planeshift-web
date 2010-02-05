@@ -66,7 +66,7 @@ function listlootrules()
                 echo '<tr><td>'.$row['item_name'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td><td></td></tr>';
             }
         }
-        if (mysql_num_rows($result) > 1) // Check if there were results, if there were, we need to add the last "add details" function.
+        if (mysql_num_rows($result) > 0) // Check if there were results, if there were, we need to add the last "add details" function.
         {
             if (checkaccess('npcs', 'edit'))
             {
