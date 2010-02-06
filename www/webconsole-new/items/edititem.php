@@ -78,6 +78,7 @@ function edititem(){
         echo '<tr><td>spell_feature_charges</td><td><input type="text" name="spell_feature_charges" value="'.$row['spell_feature_charges'].'"/></td></tr>';
         echo '<tr><td>spell_feature_timing</td><td><input type="text" name="spell_feature_timing" value="'.$row['spell_feature_timing'].'" /></td></tr>';
         echo '<tr><td>item_anim_id</td><td><input type="text" name="item_anim_id" value="'.$row['item_anim_id'].'"/></td></tr>';
+        echo '<tr><td>item_max_quality</td><td><input type="text" name="item_max_quality" value="'.$row['item_max_quality'].'"/></td></tr>';
         echo '<tr><td>equip_script</td><td><textarea name="equip_script" rows="6" cols="55">'.htmlspecialchars($row['equip_script']).'</textarea></td></tr>';
         echo '<tr><td>consume_script</td><td><textarea name="consume_script" rows="6" cols="55">'.htmlspecialchars($row['consume_script']).'</textarea></td></tr>';
         echo '<tr><td>creative_definition</td><td>';
@@ -208,6 +209,8 @@ function edititem(){
       $query = $query . "spell_feature_timing='$spell_feature_timing', ";
       $item_anim_id = mysql_real_escape_string($_POST['item_anim_id']);
       $query = $query . "item_anim_id='$item_anim_id', ";
+      $item_max_quality = mysql_real_escape_string($_POST['item_max_quality']);
+      $query = $query . "item_max_quality='$item_max_quality', ";
       $equip_script = mysql_real_escape_string($_POST['equip_script']);
       $query = $query . "equip_script='$equip_script', ";
       $consume_script = mysql_real_escape_string($_POST['consume_script']);
