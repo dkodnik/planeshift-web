@@ -478,7 +478,11 @@ function npc_items(){
               $location = 47;
             }
           }
-          $query = "INSERT INTO item_instances (char_id_owner, location_in_parent, stack_count, item_stats_id_standard) VALUES ('$id', $location, '1', '$item')";
+          $query = "SELECT item_max_quality FROM item_stats WHERE id = '$item'";
+          $result = mysql_query2($query);
+          $row = mysql_fetch_array($result);
+          $quality = $row['item_max_quality'];
+          $query = "INSERT INTO item_instances (char_id_owner, location_in_parent, stack_count, item_stats_id_standard, item_quality, crafted_quality) VALUES ('$id', $location, '1', '$item', '$quality', '$quality')";
         }else if ($_POST['commit'] == 'Update'){
           $stack_count = mysql_real_escape_string($_POST['stack_count']);
           $inst_id = mysql_real_escape_string($_POST['id']);
