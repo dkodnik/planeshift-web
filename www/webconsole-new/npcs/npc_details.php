@@ -464,20 +464,19 @@ function npc_items(){
         }else if ($_POST['commit'] == 'Change Location'){
           $inst_id = mysql_real_escape_string($_POST['id']);
           $slot = mysql_real_escape_string($_POST['slot']);
-          $query = "UPDATE item_instances SET location_in_parent='$slot' WHERE id='$inst_id'";
+          $query = "UPDATE item_instances SET location_in_parent='$slot', WHERE id='$inst_id'";
         }else if ($_POST['commit'] == 'Add'){
           $item = mysql_real_escape_string($_POST['item_id']);
           $query = "SELECT MAX(location_in_parent) AS loc FROM item_instances WHERE char_id_owner='$id' AND location_in_parent>15";
           $result = mysql_query2($query);
-          if (mysql_num_rows($result) == 0){
-            $location=16;
-          }else{
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
-            $location = $row['loc']+1;
-            if ($location > 47){
-              $location = 47;
-            }
+          $location = '';
+          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $location = $row['loc'];
+          $location = ($location == null ? 15 : $location) + 1;
+          if ($location > 47){
+            $location = 47;
           }
+
           $query = "SELECT item_max_quality FROM item_stats WHERE id = '$item'";
           $result = mysql_query2($query);
           $row = mysql_fetch_array($result);
@@ -485,23 +484,24 @@ function npc_items(){
           $query = "INSERT INTO item_instances (char_id_owner, location_in_parent, stack_count, item_stats_id_standard, item_quality, crafted_quality) VALUES ('$id', $location, '1', '$item', '$quality', '$quality')";
         }else if ($_POST['commit'] == 'Update'){
           $stack_count = mysql_real_escape_string($_POST['stack_count']);
+          $item_quality = mysql_real_escape_string($_POST['item_quality']);
           $inst_id = mysql_real_escape_string($_POST['id']);
-          $query = "UPDATE item_instances SET stack_count='$stack_count' WHERE id='$inst_id'";
+          $query = "UPDATE item_instances SET stack_count='$stack_count', item_quality='$item_quality' WHERE id='$inst_id'";
         }
         unset($_POST);
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         npc_items();
       }else{
-        $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
+        $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_quality, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
         $result = mysql_query2($query);
         if (mysql_num_rows($result) > 0){
-          echo '<table border=1><tr><th>Item</th><th>Location</th><th>Count</th><th>Functions</th></tr>';
+          echo '<table border=1><tr><th>Item</th><th>Location</th><th>Count/Quality</th><th>Functions</th></tr>';
           while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             echo '<tr>';
             echo '<td>'.$row['name'].'</td>';
             echo '<td>'.LocationToString($row['location_in_parent']).'</td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><input type="text" name="stack_count" value="'.$row['stack_count'].'" size="3"/><input type="hidden" name="id" value="'.$row['id'].'"/><input type="submit" name="commit" value="Update"/></form></td>';
+            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><input type="text" name="stack_count" value="'.$row['stack_count'].'" size="3"/><input type="text" name="item_quality" value="'.$row['item_quality'].'" size="3"/><input type="hidden" name="id" value="'.$row['id'].'"/><input type="submit" name="commit" value="Update"/></form></td>';
             echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post">';
             echo '<input type="hidden" name="id" value="'.$row['id'].'"/>';
             echo '<input type="submit" name="commit" value="Remove" /><br/>';
@@ -514,57 +514,176 @@ function npc_items(){
                   $i = 1;
                   while ($i <=32){
                     $j = $i+15;
-                    echo '<option value="'.$j.'">Bulk '.$i.'</option>';
+                    if ($row['location_in_parent'] == $j) 
+                    {
+                        echo '<option value="'.$j.'" selected="selected">Bulk '.$i.'</option>';
+                    }
+                    else 
+                    {
+                        echo '<option value="'.$j.'">Bulk '.$i.'</option>';
+                    }
                     $i++;
                   }
                   break;
                 case "LEFTHAND":
-                  echo '<option value="1">Left Hand</option>';
+                  if ($row['location_in_parent'] == 1)
+                  {
+                    echo '<option value="1" selected="selected">Left Hand</option>';
+                  }
+                  else 
+                  {
+                    echo '<option value="1">Left Hand</option>';
+                  }
                   break;
                 case "RIGHTHAND":
-                  echo '<option value="0">Right Hand</option>';
+                  if($row['location_in_parent'] == 0)
+                  {
+                    echo '<option value="0" selected="selected">Right Hand</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="0">Right Hand</option>';
+                  }
                   break;
                 case "BOTHHANDS":
-                  echo '<option value="2">Both Hands</option>';
+                  if($row['location_in_parent'] == 2)
+                  {
+                    echo '<option value="2" selected="selected">Both Hands</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="2">Both Hands</option>';
+                  }
                   break;
                 case "LEFTFINGER":
-                  echo '<option value="4">Left Finger</option>';
+                  if($row['location_in_parent'] == 4)
+                  {
+                    echo '<option value="4" selected="selected">Left Finger</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="4">Left Finger</option>';
+                  }
                   break;
                 case "RIGHTFINGER":
-                  echo '<option value="3">Right Finger</option>';
+                  if($row['location_in_parent'] == 3)
+                  {
+                    echo '<option value="3" selected="selected">Right Finger</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="3">Right Finger</option>';
+                  }
                   break;
                 case "NECK":
-                  echo '<option value="6">Neck</option>';
+                  if($row['location_in_parent'] == 6)
+                  {
+                    echo '<option value="6" selected="selected">Neck</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="6">Neck</option>';
+                  }
                   break;
                 case "BACK":
-                  echo '<option value="7">Back</option>';
+                  if($row['location_in_parent'] == 7)
+                  {
+                    echo '<option value="7" selected="selected">Back</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="7">Back</option>';
+                  }
                   break;
                 case "BELT":
-                  echo '<option value="12">Belt</option>';
+                  if($row['location_in_parent'] == 12)
+                  {
+                    echo '<option value="12" selected="selected">Belt</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="12">Belt</option>';
+                  }
                   break;
                 case "BRACERS":
-                  echo '<option value="13">Bracers</option>';
+                  if($row['location_in_parent'] == 13)
+                  {
+                    echo '<option value="13" select="select">Bracers</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="13">Bracers</option>';
+                  }
                   break;
                 case "TORSO":
-                  echo '<option value="14">Torso</option>';
+                  if($row['location_in_parent'] == 14)
+                  {
+                    echo '<option value="14" selected="selected">Torso</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="14">Torso</option>';
+                  }
                   break;
                 case "LEGS":
-                  echo '<option value="11">Legs</option>';
+                  if($row['location_in_parent'] == 11)
+                  {
+                    echo '<option value="11" selected="selected">Legs</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="11">Legs</option>';
+                  }
                   break;
                 case "HELM":
-                  echo '<option value="5">Helm</option>';
+                  if($row['location_in_parent'] == 5)
+                  {
+                    echo '<option value="5" selected="selected">Helm</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="5">Helm</option>';
+                  }
                   break;
                 case "GLOVES":
-                  echo '<option value="9">Gloves</option>';
+                  if($row['location_in_parent'] == 9)
+                  {
+                    echo '<option value="9" selected="selected">Gloves</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="9">Gloves</option>';
+                  }
                   break;
                 case "BOOTS":
-                  echo '<option value="10">Boots</option>';
+                  if($row['location_in_parent'] == 10)
+                  {
+                    echo '<option value="10" selected="selected">Boots</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="10">Boots</option>';
+                  }
                   break;
                 case "ARMS":
-                  echo '<option value="8">Arms</option>';
+                  if($row['location_in_parent'] == 8)
+                  {
+                    echo '<option value="8" selected="selected">Arms</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="8">Arms</option>';
+                  }
                   break;
                 case "MIND":
-                  echo '<option value="15">Mind</option>';
+                  if($row['location_in_parent'] == 15)
+                  {
+                    echo '<option value="15" selected="selected">Mind</option>';
+                  }
+                  else
+                  {
+                    echo '<option value="15">Mind</option>';
+                  }
                   break;
               }
             }
