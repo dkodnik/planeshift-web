@@ -15,7 +15,7 @@ function listspawnrules(){
       $id = $c_row['id'];
       $chars[$rule][$id] = $c_row['name'];
     }
-    $query = "SELECT r.id, r.npc_spawn_rule_id, r.x1, r.y1, r.z1, r.x2, r.y2, r.z2, r.sector_id, r.range_type_code, s.name FROM npc_spawn_ranges AS r LEFT JOIN sectors AS s ON r.sector_id=s.id";
+    $query = "SELECT r.id, r.npc_spawn_rule_id, r.x1, r.y1, r.z1, r.x2, r.y2, r.z2, r.sector_id, r.range_type_code, r.radius, s.name FROM npc_spawn_ranges AS r LEFT JOIN sectors AS s ON r.sector_id=s.id";
     $r_result = mysql_query2($query);
     while ($r_row = mysql_fetch_array($r_result, MYSQL_ASSOC)){
       $rule = $r_row['npc_spawn_rule_id'];
@@ -30,6 +30,7 @@ function listspawnrules(){
       $Rules[$rule][$id]['sector'] = $r_row['sector_id'];
       $Rules[$rule][$id]['sname'] = $r_row['name'];
       $Rules[$rule][$id]['code'] = $r_row['range_type_code'];
+      $Rules[$rule][$id]['radius'] = $r_row['radius'];
     }
     $Sectors = PrepSelect('sectorid');
     echo '<tr><th>Rule</th><th>Details</th><th>NPCs</th></tr>';
@@ -68,7 +69,7 @@ function listspawnrules(){
       $id = $row['id'];
       if (checkaccess('npcs', 'edit')){
         if (isset($Rules["$id"])){
-          echo '<table border="1"><tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th><th>Actions</th></tr>';
+          echo '<table border="1"><tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th><th>Radius</th><th>Actions</th></tr>';
           foreach ($Rules["$id"] AS $r_id){
             echo '<tr>';
             echo '<td>'.$r_id['x1'].'</td>';
@@ -79,6 +80,7 @@ function listspawnrules(){
             echo '<td>'.$r_id['z2'].'</td>';
             echo '<td>'.$r_id['sname'].'</td>';
             echo '<td>'.$r_id['code'].'</td>';
+            echo '<td>'.$r_id['radius'].'</td>';
             echo '<td><form action="./index.php?do=editspawnrule" method="post"><input type="hidden" name="id" value="'.$id.'" />';
             echo '<input type="hidden" name="range_id" value="'.$r_id['id'].'"/><input type="submit" name="commit" value="Remove Range" />';
             echo '</form></td>';
@@ -86,7 +88,7 @@ function listspawnrules(){
           echo '</table>';
         }
         echo '<form action="./index.php?do=editspawnrule" method="post"><input type="hidden" name="id" value="'.$id.'" /><table border="1">';
-        echo '<tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th></tr>';
+        echo '<tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th><th>Radius</th></tr>';
         echo '<tr>';
         echo '<td><input type="text" name="x1" size="4" /></td>';
         echo '<td><input type="text" name="y1" size="4" /></td>';
@@ -96,10 +98,11 @@ function listspawnrules(){
         echo '<td><input type="text" name="z2" size="4" /></td>';
         echo '<td>'.DrawSelectBox('sectorid', $Sectors, 'sector_id', '').'</td>';
         echo '<td><select name="code"><option value="A">Area</option><option value="L">Line</option></select></td>';
+        echo '<td><input type="text" name="radius" size="4" /></td>';
         echo '</tr>';
         echo '</table><input type="submit" name="commit" value="New Range" /></form>';
       }else{
-        echo '<table border="1"><tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th></tr>';
+        echo '<table border="1"><tr><th>X1</th><th>Y1</th><th>Z1</th><th>X2</th><th>Y2</th><th>Z2</th><th>Sector</th><th>Type</th><th>Radius</th></tr>';
         if (isset($Rules["$id"])){
           foreach ($Rules["$id"] AS $r_id){
             echo '<tr>';
@@ -111,6 +114,7 @@ function listspawnrules(){
             echo '<td>'.$r_id['z2'].'</td>';
             echo '<td>'.$r_id['sname'].'</td>';
             echo '<td>'.$r_id['code'].'</td>';
+            echo '<td>'.$r_id['radius'].'</td>';
           }
         }
         echo '</table>';
@@ -200,7 +204,8 @@ function editspawnrule(){
         $z2 = mysql_real_escape_string($_POST['z2']);
         $sector_id = mysql_real_escape_string($_POST['sector_id']);
         $range_type_code = mysql_real_escape_string($_POST['code']);
-        $query = "INSERT INTO npc_spawn_ranges (npc_spawn_rule_id, x1, y1, z1, x2, y2, z2, sector_id, range_type_code) VALUES ('$id', '$x1', '$y1', '$z1', '$x2', '$y2', '$z2', '$sector_id', '$range_type_code')";
+        $radius = mysql_real_escape_string($_POST['radius']);
+        $query = "INSERT INTO npc_spawn_ranges (npc_spawn_rule_id, x1, y1, z1, x2, y2, z2, sector_id, range_type_code, radius) VALUES ('$id', '$x1', '$y1', '$z1', '$x2', '$y2', '$z2', '$sector_id', '$range_type_code', '$radius')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
