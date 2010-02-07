@@ -486,7 +486,7 @@ function npc_items(){
           $stack_count = mysql_real_escape_string($_POST['stack_count']);
           $item_quality = mysql_real_escape_string($_POST['item_quality']);
           $inst_id = mysql_real_escape_string($_POST['id']);
-          $query = "UPDATE item_instances SET stack_count='$stack_count', item_quality='$item_quality' WHERE id='$inst_id'";
+          $query = "UPDATE item_instances SET stack_count='$stack_count', item_quality='$item_quality', crafted_quality='$item_quality' WHERE id='$inst_id'";
         }
         unset($_POST);
         $result = mysql_query2($query);
