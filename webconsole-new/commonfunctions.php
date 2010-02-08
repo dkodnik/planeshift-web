@@ -89,7 +89,7 @@ function DoLogin(){
       $_SESSION['username'] = $username;
       $_SESSION['security_level'] = $row['security_level'];
       $_SESSION['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
-      header('Location: '.$_POST['redir']);
+      return 1;
     }
   }
   return 0;
