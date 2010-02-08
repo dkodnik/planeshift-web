@@ -165,7 +165,7 @@ function GetNextID($a){
 function PrepSelect($a){
   $type = strtolower($a);
   $typevals["items"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name, i.name"; 
-  $typevals["items_resource"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' AND (c.category_id='12' OR c.category_id='16' OR c.category_id='26' OR c.category_id='27') ORDER BY c.name, i.name";
+  $typevals["items_resource"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' AND (c.category_id='12' OR c.category_id='16' OR c.category_id='26' OR c.category_id='27' OR c.category_id='29') ORDER BY c.name, i.name";
   $typevals["skill"] = "SELECT skill_id, name FROM skills ORDER BY name";
   $typevals["category"] = "SELECT category_id, name FROM item_categories ORDER BY name";
   $typevals["loot"] = "SELECT id, CONCAT_WS(' - ', id, name) FROM loot_rules ORDER by id";
