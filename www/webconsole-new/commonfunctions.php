@@ -516,6 +516,116 @@ function getDatesFromPeriod($period) {
     return $dates;
 }
 
+function RenderNav($page_params, $item_count, $items_per_page = 30)
+{
+    if(is_string($page_params))
+    {
+        parse_str($page_params, $t);
+        $page_params = $t;
+        unset($t);
+    }
+    if(!is_array($page_params))
+    {
+        die('<p class="error">RenderNav(): First parameter has to be an array or a string!</p></body></html>');
+    }
+    
+    $page = (isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0);
+    $items_per_page = (isset($_GET['items_per_page']) && is_numeric($_GET['items_per_page']) ? $_GET['items_per_page'] : $items_per_page);
+    $page_count = ceil($item_count / $items_per_page);
+    
+    if($page >= $page_count)
+    {
+        $page = $page_count - 1;
+    }
+    if($page < 0)
+    {
+        $page = 0;
+    }
+    
+    $sql = ' LIMIT '.($page * $items_per_page).', '.$items_per_page;
+    $html = 'Page: ';
+    
+    $start = $page - 5;
+    $start = ($start < 2 ? 2 : $start);
+    $end = $page + 10 + ($start - $page);
+    $end = ($end > ($page_count - 2) ? ($page_count - 2) : $end);
+    $end = ($end < $start ? $start + 1 : $end);
+    $start2 = (($page_count - 2) < $end ? $end + 1 : ($page_count - 2));
+    
+    if(isset($page_params['page']))
+    {
+        unset($page_params['page']);
+    }
+    $page_params['items_per_page'] = $items_per_page;
+    $query = http_build_query($page_params);
+    
+    for($i = 0; $i< 2; $i++)
+    {
+        if($i >= $page_count)
+        {
+            break;
+        }
+        if($page == $i)
+        {
+            $html .= ($i+1);
+        }
+        else
+        {
+            $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+        }
+        $html .= ($i == 1 || $i == ($page_count - 1) ? '' : ' | ');
+    }
+
+    if($page_count > 2)
+    {
+        $html .= ($start == 2 ? ' | ' : ' ... ');
+
+        for($i = $start; $i< $end; $i++)
+        {
+            if($page == $i)
+            {
+                $html .= ($i+1);
+            }
+            else
+            {
+                $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+            }
+            $html .= ($i == ($end - 1) ? '' : ' | ');
+        }
+
+        if($start2 < $page_count)
+        {
+            $html .= ($end < $start ? '' : ($end == $start2 ? ' | ' : ' ... '));
+
+            for($i = $start2; $i< $page_count; $i++)
+            {
+                if($page == $i)
+                {
+                    $html .= ($i+1);
+                }
+                else
+                {
+                    $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+                }
+                $html .= ($i == ($page_count - 1) ? '' : ' | ');
+            }
+        }
+    }
+
+    $html .= '<br/><form action="./index.php" method="get">';
+    foreach($page_params as $name => $value)
+    {
+        if($name != 'items_per_page')
+        {
+            $html .= '<input type="hidden" name="'.htmlentities($name).'" value="'.htmlentities($value).'" />';
+        }
+    }
+    $html .= '<input type="hidden" name="page" value="'.$page.'" />';
+    $html .= 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" /></form><br/>';
+    
+    return compact('sql', 'html');
+}
+
 function getAssetsDir() {
 
 	return 'D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art';

@@ -17,99 +17,16 @@
 //    return $html.'</select>';
 //}
 
-function RenderNav($page, $items_per_page, $page_count)
-{
-    echo 'Page: ';
-
-    $start = $page - 10;
-    $start = ($start < 2 ? 2 : $start);
-    $end = $page + 10;
-    $end = ($end > ($page_count - 2) ? ($page_count - 2) : $end);
-    $end = ($end < $start ? $start + 1 : $end);
-    $start2 = (($page_count - 2) < $end ? $end + 1 : ($page_count - 2));
-
-    for($i = 0; $i< 2; $i++)
-    {
-        if($i >= $page_count)
-        {
-            break;
-        }
-        if($page == $i)
-        {
-            echo ($i+1);
-        }
-        else
-        {
-            echo '<a href="./index.php?do=listnpcscombat&items_per_page='.$items_per_page.'&page='.$i.'">'.($i+1).'</a>';
-        }
-        echo ($i == 1 || $i == ($page_count - 1) ? '' : ' | ');
-    }
-
-    if($page_count > 2)
-    {
-        echo ($start == 2 ? ' | ' : ' ... ');
-
-        for($i = $start; $i< $end; $i++)
-        {
-            if($page == $i)
-            {
-                echo ($i+1);
-            }
-            else
-            {
-                echo '<a href="./index.php?do=listnpcscombat&items_per_page='.$items_per_page.'&page='.$i.'">'.($i+1).'</a>';
-            }
-            echo ($i == ($end - 1) ? '' : ' | ');
-        }
-
-        if($start2 < $page_count)
-        {
-            echo ($end < $start ? '' : ($end == $start2 ? ' | ' : ' ... '));
-
-            for($i = $start2; $i< $page_count; $i++)
-            {
-                if($page == $i)
-                {
-                    echo ($i+1);
-                }
-                else
-                {
-                    echo '<a href="./index.php?do=listnpcscombat&items_per_page='.$items_per_page.'&page='.$i.'">'.($i+1).'</a>';
-                }
-                echo ($i == ($page_count - 1) ? '' : ' | ');
-            }
-        }
-    }
-
-    echo '<br/><form action="./index.php" method="get">';
-    echo '<input type="hidden" name="do" value="listnpcscombat" />';
-    echo '<input type="hidden" name="page" value="'.$page.'" />';
-    echo 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" /></form><br/>';
-}
-
 function listnpcscombat()
 {
     if (checkaccess('npcs', 'read'))
     {
-        $page = (isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0);
-        $items_per_page = (isset($_GET['items_per_page']) && is_numeric($_GET['items_per_page']) ? $_GET['items_per_page'] : 30);
-
         $sql = 'SELECT c.id, c.name, c.lastname, c.npc_spawn_rule, c.npc_addl_loot_category_id, c.kill_exp, s.name AS sector, c.loc_x, c.loc_y, c.loc_z, c.loc_instance, b.region, i.location_in_parent AS weapon_location, i2.id AS weapon_id, i2.name AS weapon_name, cs.skill_id, sk.name AS skill_name, cs.skill_rank FROM characters as c LEFT JOIN sectors AS s ON c.loc_sector_id=s.id LEFT JOIN sc_npc_definitions AS b ON c.id=b.char_id LEFT JOIN item_instances AS i ON i.char_id_owner=c.id AND (i.location_in_parent = 0 OR i.location_in_parent = 1) LEFT JOIN item_stats AS i2 ON i.item_stats_id_standard = i2.id LEFT JOIN character_skills AS cs ON cs.character_id = c.id LEFT JOIN skills AS sk ON sk.skill_id = cs.skill_id WHERE c.character_type = 1';
         $sql.= ' AND c.npc_impervious_ind=\'N\'';
 
         $sql2 = "SELECT COUNT(*) FROM characters WHERE character_type = 1 AND npc_impervious_ind='N'";
-        $page_count = mysql_fetch_array(mysql_query2($sql2), MYSQL_NUM);
-        $page_count = ceil($page_count[0] / $items_per_page);
-
-        if($page >= $page_count)
-        {
-            $page = $page_count - 1;
-        }
-        if($page < 0)
-        {
-            $page = 0;
-        }
-
+        $item_count = mysql_fetch_array(mysql_query2($sql2), MYSQL_NUM);
+        
         if (isset($_GET['sort']))
         {
             if ($_GET['sort'] == 'id')
@@ -141,9 +58,12 @@ function listnpcscombat()
         {
             $sql = $sql . ' ORDER BY sector, name';
         }
-        $sql .= ' LIMIT '.($page * $items_per_page).', '.$items_per_page;
 
-        RenderNav($page, $items_per_page, $page_count);
+        $nav = RenderNav('do=listnpcscombat', $item_count[0]);
+        $sql .= $nav['sql'];
+        echo $nav['html'];
+        unset($nav);
+        
 
         $query = mysql_query2($sql);
         if (mysql_num_rows($query) == 0)

@@ -4,50 +4,30 @@ function listaccounts()
 {
     if(checkaccess('other', 'read'))
     {
-        $items_per_page = (isset($_GET['items_per_page']) && is_numeric($_GET['items_per_page']) ? $_GET['items_per_page'] : 30);
-        $page = (isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0);
         $id = (isset($_GET['id']) && is_numeric($_GET['id']) ? $_GET['id'] : 'nan');
         
-        if($items_per_page < 1)
-        {
-            $items_per_page = 1;
-        }
-        
-        if($id != 'nan')
+        if($id == 'nan')
         {
             $sql = 'SELECT COUNT(*) FROM accounts';
-            $page_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-            $page_count = ceil($page_count[0] / $items_per_page);
+            $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+            $item_count = $item_count[0];
         }
         else
         {
-            $page_count = 1;
+            $item_count = 1;
         }
         
+        $nav = RenderNav(array('do' => 'listaccounts', 'id' => $id), $item_count);
+        
         $sql = 'SELECT a.id, a.username, a.status, a.verificationid, b.end AS banned_until FROM accounts AS a LEFT JOIN bans AS b ON a.id = b.account';
-        $sql.= ($id != 'nan' ? " WHERE id = '".$id."' LIMIT 1" : ' ORDER BY id LIMIT '.($page * $items_per_page).', '.$items_per_page);
+        $sql.= ($id != 'nan' ? " WHERE id = '".$id."'" : ' ORDER BY id');
+        $sql.= $nav['sql'];
         $query = mysql_query2($sql);
         
         echo '<p class="header">List Accounts</p>';
         
-        echo 'Page: ';
-        for($i = 0; $i< $page_count; $i++)
-        {
-            if($i == $page)
-            {
-                echo ($i+1);
-            }
-            else
-            {
-                echo '<a href="./index.php?do=listaccounts&page='.$i.'&items_per_page='.$items_per_page.'">'.($i+1).'</a>';
-            }
-            echo ($i == ($page_count - 1) ? '' : ' | ');
-        }
-        echo '<br/><form action="./index.php" method="get">';
-        echo '<input type="hidden" name="do" value="listaccounts" />';
-        echo '<input type="hidden" name="page" value="'.$page.'" />';
-        echo 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" />';
-        echo '</form>';
+        echo $nav['html'];
+        unset($nav);
         
         echo '<table>';
         echo '<tr><th>ID</th><th>Accountname</th><th>Account status</th><th>Verify ID</th><th>Actions</th></tr>';
