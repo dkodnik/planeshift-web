@@ -221,6 +221,12 @@
         include('./npcs/npcmain.php');
         npcmain();
         break;
+      case 'createnpc':
+        include('./npcs/npcmain.php');
+        include('./npcs/createnpc.php');
+        npcmain();
+        createnpc();
+        break;
       case 'listnpcs':
         include('./npcs/npcmain.php');
         include('./npcs/listnpcs.php');
