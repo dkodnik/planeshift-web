@@ -5,49 +5,26 @@ function listcharacters()
     if(checkaccess('other', 'read'))
     {
         $account_id = (isset($_GET['account_id']) && is_numeric($_GET['account_id']) ? $_GET['account_id'] : 'nan');
-        $page = (isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0);
-        $items_per_page = (isset($_GET['items_per_page']) && is_numeric($_GET['items_per_page']) ? $_GET['items_per_page'] : 30);
         
         echo '<p class="header">List Characters</p>';
         
         $sql = 'SELECT COUNT(*) FROM characters'.($account_id == 'nan' ? '' : ' WHERE account_id = '.$account_id);
-        $page_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-        $page_count = ceil($page_count[0] / $items_per_page);
+        $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
         
-        if($page >= $page_count)
-        {
-            $page = $page_count - 1;
-        }
-        if($page < 0)
-        {
-            $page = 0;
-        }
+        $nav = RenderNav(array('do' => 'listcharacters', 'account_id' => $account_id), $item_count[0]);
         
         $sql = 'SELECT c.id, c.account_id, c.name, c.lastname, c.guild_member_of, c.time_connected_sec, g.name AS guild_name, a.username AS account_name ';
         $sql.= 'FROM characters AS c LEFT JOIN guilds AS g on g.id = c.guild_member_of LEFT JOIN accounts AS a ON a.id = c.account_id ';
-        $sql.= ($account_id == 'nan' ? '' : 'WHERE c.account_id = \''.$account_id.'\' ').' ORDER BY name LIMIT '.($page * $items_per_page).', '.$items_per_page;
+        $sql.= ($account_id == 'nan' ? '' : 'WHERE c.account_id = \''.$account_id.'\' ').' ORDER BY name';
+        $sql.= $nav['sql'];
         $query = mysql_query2($sql);
         
         $sql = 'SELECT id, username FROM accounts ORDER BY username';
         $query2 = mysql_query2($sql);
         
-        echo 'Page: ';
-        for($i = 0; $i< $page_count; $i++)
-        {
-            if($page == $i)
-            {
-                echo ($i+1);
-            }
-            else
-            {
-                echo '<a href="./index.php?do=listcharacters&account_id='.$account_id.'&items_per_page='.$items_per_page.'&page='.$i.'">'.($i+1).'</a>';
-            }
-            echo ($i == ($page_count - 1) ? '' : ' | ');
-        }
-        echo '<br/><form action="./index.php" method="get">';
-        echo '<input type="hidden" name="do" value="listcharacters" />';
-        echo '<input type="hidden" name="page" value="'.$page.'" />';
-        echo 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" /><br/>';
+        echo $nav['html'];
+        unset($nav);
+        
         // commented this dropdown for now, 500k + records make it a bit hard to use/load. :)
         /*echo 'List all characters of this account: <select name="account_id" onChange="this.form.submit();">'; 
         echo '<option value=""'.($account_id == 'nan' ? ' selected="selected"' : '').'>All</option>';

@@ -35,51 +35,23 @@ function listpetitions() {
     $petition = @$_GET['petition'];
     if(!is_numeric($petition))
     {
-        $page = (is_numeric(@$_GET['page']) ? $_GET['page'] : 0);
-        $items_per_page = (is_numeric(@$_GET['items_per_page']) ? $_GET['items_per_page'] : 30);
         $sort_column = (!empty($_GET['sort_column']) ? $_GET['sort_column'] : 'id');
         $sort_dir = (@$_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC');
         
         $sql = 'SELECT COUNT(*) FROM petitions';
-        $page_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-        $page_count = ceil($page_count[0] / $items_per_page);
+        $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
         
-        if($page > $page_count)
-        {
-            $page = ($page_count -1);
-        }
-        if($page < 0)
-        {
-            $page = 0;
-        }
+        $nav = RenderNav(array('do' => 'listpetitions', 'sort_column' => $sort_column, 'sort_dir' => $sort_dir), $item_count[0]);
         
         $sql = 'SELECT p.*, c.name AS player_name, c2.name AS gm_name FROM petitions as p LEFT JOIN characters AS c ON c.id = p.player LEFT JOIN characters AS c2 ON c2.id = p.assigned_gm';
-        $sql .= ' ORDER BY '.$sort_column.' '.$sort_dir.' LIMIT '.($page*$items_per_page).', '.$items_per_page;
+        $sql.= ' ORDER BY '.$sort_column.' '.$sort_dir;
+        $sql.= $nav['sql'];
         $query = mysql_query2($sql);
         
         echo '<p class="header">List Petitions</p>';
         
-        echo 'Page: ';
-        for($i = 0; $i< $page_count; $i++)
-        {
-            if($i == $page)
-            {
-                echo ($i+1);
-            }
-            else
-            {
-                echo '<a href="./index.php?do=listpetitions&page='.$i.'&items_per_page='.$items_per_page.'&sort_column='.$sort_column.'&sort_dir='.$sort_dir.'">'.($i+1).'</a>';
-            }
-            echo ($i == ($page_count -1) ? '' : ' | ');
-        }
-        
-        echo '  <form action="./index.php" method="get">';
-        echo '<input type="hidden" name="do" value="listpetitions" />';
-        echo '<input type="hidden" name="page" value="'.$page.'" />';
-        echo '<input type="hidden" name="sort_column" value="'.$sort_column.'" />';
-        echo '<input type="hidden" name="sort_dir" value="'.$sort_dir.'" />';
-        echo 'Items per page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="3" />';
-        echo '</form>';
+        echo $nav['html'];
+        unset($nav);
         echo '<br />';
         
         
