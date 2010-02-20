@@ -640,7 +640,23 @@ function getAssetsDir() {
     {
 		return 'Please set a proper dir';
     }
+}
 
+/* CheckPassword() checks the password for the current user
+ * it's mostly used for special actions like deleting NPCs
+ * where you have to confirm it with your password.
+ */
+function CheckPassword($password)
+{
+    if(!CheckLogin())
+    {
+        return;
+    }
+    $username = mysql_real_escape_string($_SESSION['username']);
+    $password = mysql_real_escape_string(md5($password));
+    $sql = "SELECT COUNT(*) FROM accounts WHERE username='$username' AND password='$password' AND security_level > 0";
+    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+    return ($result[0] == 1);
 }
 
 ?>
