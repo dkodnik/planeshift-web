@@ -102,8 +102,8 @@ function createnpc()
         echo '<tr class="color_b"><td>Spawn Rule: </td><td>'.DrawSelectBox('spawn', PrepSelect('spawn'), 'spawn', (isset($_POST['spawn']) ? $_POST['spawn'] : '')).'</td></tr>';
         echo '<tr class="color_a"><td>Weapon: </td><td>'.DrawSelectBox('weapon', PrepSelect('weapon'), 'weapon', (isset($_POST['weapon']) ? $_POST['weapon'] : -1)).'</td></tr>';
         echo '<tr class="color_b"><td>Weapon Skill Rank: </td><td><input type="text" name="skill_value" size="8" value="'.(isset($_POST['skill_value']) ? htmlentities($_POST['skill_value']) : '').'" /></td></tr>';
-        echo '<tr class="color_b"><td>Behavior: </td><td>'.DrawSelectBox('behaviour', PrepSelect('behaviour'), 'behavior', (isset($_POST['behavior']) ? $_POST['behavior'] : '')).'</td></tr>';
-        echo '<tr class="color_a"><td>Region: </td><td>'.DrawSelectBox('b_region', PrepSelect('b_region'), 'region', (isset($_POST['region']) ? $_POST['region'] : '')).'</td></tr>';
+        echo '<tr class="color_a"><td>Behavior: </td><td>'.DrawSelectBox('behaviour', PrepSelect('behaviour'), 'behavior', (isset($_POST['behavior']) ? $_POST['behavior'] : '')).'</td></tr>';
+        echo '<tr class="color_b"><td>Region: </td><td>'.DrawSelectBox('b_region', PrepSelect('b_region'), 'region', (isset($_POST['region']) ? $_POST['region'] : '')).'</td></tr>';
         echo '<tr class="color_a"><td>Exp: </td><td><input type="text" name="exp" size="5" value="'.(isset($_POST['exp']) ? htmlentities($_POST['exp']) : '').'" /></td></tr>';
         echo '</table>';
         echo '<input type="submit" name="submit" value="Create NPC" /><input type="reset" value="Reset" /></form>';

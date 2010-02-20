@@ -971,7 +971,10 @@ function npcdetails(){
         $query = "SELECT name, lastname, character_type FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
-        echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
+        //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
+        echo '<form action="index.php?do=deletenpc&id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
+        echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
+        echo '<input type="submit" value="delete NPC"></form>';
         $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
       }
     }

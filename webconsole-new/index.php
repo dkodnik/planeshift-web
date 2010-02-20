@@ -227,6 +227,12 @@
         npcmain();
         createnpc();
         break;
+      case 'deletenpc':
+        include('./npcs/npcmain.php');
+        include('./npcs/deletenpc.php');
+        npcmain();
+        deletenpc();
+        break;
       case 'listnpcs':
         include('./npcs/npcmain.php');
         include('./npcs/listnpcs.php');
