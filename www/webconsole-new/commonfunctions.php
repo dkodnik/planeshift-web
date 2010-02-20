@@ -628,7 +628,19 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
 
 function getAssetsDir() {
 
-	return 'D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art';
+    if(file_exists("d:\\Luca")) //luca dev server
+    {
+        return 'D:\\Luca\\PS_distro\\distroCB\\repo\\planeshift\\art';
+    }
+    else if(file_exists("/home/planeshift/art_repo/repo")) //laanx server
+    {
+        return '/home/planeshift/art_repo/repo/planeshift/art';
+    }
+    else
+    {
+		return 'Please set a proper dir';
+    }
+
 }
 
 ?>
