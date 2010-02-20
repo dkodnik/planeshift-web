@@ -9,7 +9,6 @@ function assetsitem()
     }
 
 	echo '<p class="header">Meshfacts available used/not used in game </p>';
-	echo '(todo: exclude npcroom)<br><br>';
 
 	$assets_dir=getAssetsDir();
 	echo "Analyzing ".$assets_dir."<br><br>";
@@ -87,7 +86,6 @@ function assetsitem()
 	}
 
 	echo '<p class="header">Icons available used/not used in game </p>';
-	echo '(todo: exclude npcroom)<br><br>';
 
 	$sql = "SELECT cstr_gfx_icon from item_stats";
 	$query = mysql_query2($sql);
