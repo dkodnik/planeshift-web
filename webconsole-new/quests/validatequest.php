@@ -77,6 +77,7 @@ function parseScript($quest_id, $script, $show_lines)
     $m_count = 0;
     $npc_name = "";
     $step = 1;
+    $total_steps = count(explode('...', $script));
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
@@ -226,7 +227,7 @@ function parseScript($quest_id, $script, $show_lines)
             {
                 if(trim($commands[$i]) != "") 
                 {
-                    parse_command(trim($commands[$i]), $assigned, $quest_id, $step);
+                    parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps);  // using totalsteps now, since we can both require and close future steps now.
                 }
             }
         }
@@ -611,7 +612,7 @@ function parse_command($command, &$assigned, $quest_id, $step)
                 }
                 else
                 {
-                    append_log("parse error, completing a step that has not been reached yet on line $line_number");
+                    append_log("parse error, completing a step that is higher than the total number of steps in this quest on line $line_number");
                 }
             }
             else
@@ -663,14 +664,6 @@ function parse_command($command, &$assigned, $quest_id, $step)
             }
         }
     }
-    elseif (strncasecmp($command, "require completion of", 21) === 0)
-    {
-        check_completion($quest_id, $step, substr($command, 21));
-    }
-    elseif (strncasecmp($command, "require no completion of", 24) === 0)
-    {
-        check_completion($quest_id, $step, substr($command, 24));
-    }
     elseif (strncasecmp($command, "norepeat", 8) === 0)
     {
         // valid, nothing to be checked.
@@ -719,61 +712,63 @@ function parse_command($command, &$assigned, $quest_id, $step)
             append_log("parse error, could not find admin command ($cmd) in the database");
         } // else it's found, do nothing.
     }
-    elseif (strncasecmp($command, "Require time of day", 19) === 0)
+    elseif (strncasecmp($command, "require", 7) === 0) 
     {
-        validate_time_of_day(substr($command, 19));
-    }
-    elseif (strncasecmp($command, "Require not time of day", 21) === 0)
-    {
-        validate_time_of_day(substr($command, 21));
-    }
-    elseif (strncasecmp($command, "Require guild", 13) === 0)
-    {
-        // dunno if/how this should be checked.
-    }
-    elseif (strncasecmp($command, "Require not guild", 17) === 0)
-    {
-        // dunno if/how this should be checked.
-    }
-    elseif (strncasecmp($command, "Require active magic", 20) === 0)
-    {
-        validate_magic(substr($command, 20));
-    }
-    elseif (strncasecmp($command, "Require not active magic", 24) === 0)
-    {
-        validate_magic(substr($command, 24));
-    }
-    elseif (strncasecmp($command, "Require known spell", 19) === 0)
-    {
-        validate_magic(substr($command, 19));
-    }
-    elseif (strncasecmp($command, "Require not known spell", 23) === 0)
-    {
-        validate_magic(substr($command, 23));
-    }
-    elseif (strncasecmp($command, "Require race", 12) === 0)
-    {
-        validate_race(substr($command, 12));
-    }
-    elseif (strncasecmp($command, "Require not race", 16) === 0)
-    {
-        validate_race(substr($command, 16));
-    }
-    elseif (strncasecmp($command, "Require gender", 14) === 0)
-    {
-        validate_gender(substr($command, 14));
-    }
-    elseif (strncasecmp($command, "Require not gender", 18) === 0)
-    {
-        validate_gender(substr($command, 18));
-    }
-    elseif (strncasecmp($command, "Require married", 15) === 0)
-    {
-        // valid, nothing to check
-    }
-    elseif (strncasecmp($command, "Require not married", 19) === 0)
-    {
-        // valid, nothing to check
+        // Found a "require command"
+        $requirements = substr($command, 8); // remove the require part and it's trailing space.
+        $requirements = explode(' | ', $requirements); // split on all cases of the OR operator.
+   
+        foreach($requirements AS $requirement) 
+        {
+            $require = $requirement; // we use this one for the error message later if need be.
+            // Determine if the next word is "no" or "not" and remove that too. (It's not relevant for the parser to know which is the case, as in 
+            // both cases it is whatever that follows that needs to be valid.)
+            if (strncasecmp($require, "not", 3) === 0) // notice the order of not and no (otherwise no will match the first 2 letters of not).
+            {
+                $require = substr($require, 4);
+            }
+            elseif (strncasecmp($require, "no ", 2) === 0)
+            {
+                $require = substr($require, 3);
+            }
+            // Now find out which command was used.
+            if (strncasecmp($require, "completion of", 13) === 0) 
+            {
+                check_completion($quest_id, $step, substr($require, 13));
+            }
+            elseif (strncasecmp($require, "time of day", 11) === 0)
+            {
+                validate_time_of_day(substr($require, 11));
+            }
+            elseif (strncasecmp($require, "guild", 5) === 0)
+            {
+                // dunno if/how this should be checked.
+            }
+            elseif (strncasecmp($require, "active magic", 12) === 0)
+            {
+                validate_magic(substr($require, 12));
+            }
+            elseif (strncasecmp($require, "known spell", 11) === 0)
+            {
+                validate_magic(substr($require, 11));
+            }
+            elseif (strncasecmp($require, "race", 4) === 0)
+            {
+                validate_race(substr($require, 4));
+            }
+            elseif (strncasecmp($require, "gender", 6) === 0)
+            {
+                validate_gender(substr($require, 6));
+            }
+            elseif (strncasecmp($require, "married", 7) === 0)
+            {
+                // valid, nothing to check
+            }
+            else 
+            {
+                append_log("parse error, unknown requirement (require $requirement) at line $line_number");
+            }
+        }
     }
     elseif (strncasecmp($command, "Introduce", 9) === 0)
     {
@@ -819,7 +814,7 @@ function check_completion($quest_id, $step, $quest)
             }
             else
             {
-                append_log("parse error, you can't refer to quest steps that are not yet declared at line $line_number");
+                append_log("parse error, you can't refer to quest steps that exceed the total number of steps at line $line_number");
                 return;
             }
         }
@@ -845,6 +840,7 @@ function check_completion($quest_id, $step, $quest)
     $result = mysql_query2($query); 
     if (mysql_num_rows($result) > 0)  // found a quest with that name
     {
+        append_log("Warning, references to another quest are not recommended, only use if you really must: line $line_number");
         $row = mysql_fetch_row($result);
         $id = $row[0];
         if($complete_step == "")
