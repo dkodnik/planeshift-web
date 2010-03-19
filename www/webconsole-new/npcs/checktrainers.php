@@ -55,7 +55,7 @@ function checktrainers()
     {
         echo '<p class="header">Check Trainers</p>';
         
-        $sql = 'SELECT id, name FROM characters';
+        $sql = 'SELECT id, name FROM characters WHERE character_type=1';
         $query = mysql_query2($sql);
         $names = array();
         while($row = mysql_fetch_array($query, MYSQL_ASSOC))
