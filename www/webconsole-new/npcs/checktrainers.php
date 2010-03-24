@@ -51,7 +51,7 @@ function sum_ranges($current, $new, $npc, $names) {
 
 function checktrainers()
 {
-    if(checkaccess('npc', 'read'))
+    if(checkaccess('npcs', 'read'))
     {
         echo '<p class="header">Check Trainers</p>';
         
