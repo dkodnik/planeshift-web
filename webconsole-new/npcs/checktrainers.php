@@ -1,6 +1,6 @@
 <?php
 
-function sum_ranges($current, $new, $npc, $names) {
+function sum_ranges($current, $new, $npc, $names, $sectors) {
     $finished = false;
     foreach($current as $i => $range)
     {
@@ -10,7 +10,7 @@ function sum_ranges($current, $new, $npc, $names) {
         }
         if($range['max'] >= $new['max'] && $range['min'] <= $new['min'])
         {// Included in this range.
-            $range['status'] .= '<a href="./index.php?do=npc_details&sub=main&npc_id='.$npc.'"><span style="color: yellow;">'.htmlentities($names[$npc]).': Range '.$new['min'].'-'.$new['max'].' is included in '.$range['min'].'-'.$range['max'].'!</span></a><br/>';
+            $range['status'] .= '<a href="./index.php?do=npc_details&sub=main&npc_id='.$npc.'"><span style="color: yellow;">'.htmlentities($names[$npc]).' ('.$sectors[$npc].'): Range '.$new['min'].'-'.$new['max'].' is included in '.$range['min'].'-'.$range['max'].'!</span></a><br/>';
             $current[$i] = $range;
             $finished = true;
             break;
@@ -33,7 +33,7 @@ function sum_ranges($current, $new, $npc, $names) {
             {
                 $npcs[$z] = $names[$id];
             }
-            $range['status'] .= '<a href="./index.php?do=npc_details&sub=main&npc_id='.$npc.'"><span style="color: red;">'.htmlentities($names[$npc]).': Range '.$new['min'].'-'.$new['max'].' is overlapping with '.$range['min'].'-'.$range['max'].'('.implode(', ', $npcs).')!</span></a><br/>';
+            $range['status'] .= '<a href="./index.php?do=npc_details&sub=main&npc_id='.$npc.'"><span style="color: red;">'.htmlentities($names[$npc]).' ('.$sectors[$npc].'): Range '.$new['min'].'-'.$new['max'].' is overlapping with '.$range['min'].'-'.$range['max'].'('.implode(', ', $npcs).')!</span></a><br/>';
             $current[$i] = $range;
             $finished = true;
             break;
@@ -55,12 +55,14 @@ function checktrainers()
     {
         echo '<p class="header">Check Trainers</p>';
         
-        $sql = 'SELECT id, name FROM characters WHERE character_type=1';
+        $sql = 'SELECT c.id, c.name, s.name AS sector_name FROM characters AS c JOIN sectors AS s ON c.loc_sector_id=s.id WHERE character_type=1';
         $query = mysql_query2($sql);
         $names = array();
+        $sectors = array();
         while($row = mysql_fetch_array($query, MYSQL_ASSOC))
         {
             $names[$row['id']] = $row['name'];
+            $sectors[$row['id']] = $row['sector_name'];
         }
         
         $sql = 'SELECT player_id, skill_id, min_rank, max_rank FROM trainer_skills ORDER BY min_rank';
@@ -85,7 +87,7 @@ function checktrainers()
             }
             if(isset($skills[$row['skill_id']]))
             {
-                $skills[$row['skill_id']] = sum_ranges($skills[$row['skill_id']], array('min' => $row['min_rank'], 'max' => $row['max_rank']), $row['player_id'], $names);
+                $skills[$row['skill_id']] = sum_ranges($skills[$row['skill_id']], array('min' => $row['min_rank'], 'max' => $row['max_rank']), $row['player_id'], $names, $sectors);
             }
             else
             {
