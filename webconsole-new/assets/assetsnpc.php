@@ -55,20 +55,20 @@ function assetsnpc()
 		//$sql .= " (select * from character_traits, characters where character_traits.character_id=characters.id and character_type=1)";
 		//$sql .= " as c on t.id=c.trait_id group by t.id,t.name order by num desc ";
 
-		$sql = "SELECT count(ct.trait_id) as num,ct.trait_id, t.name from character_traits ct, characters c, traits t where t.id=ct.trait_id and ct.character_id=c.id and character_type=1 and c.loc_sector_id not in (3,68,69,70,71) group by ct.trait_id order by num desc";
+		$sql = "SELECT count(ct.trait_id) AS num,ct.trait_id, t.name, ri.sex, ri.name AS race FROM character_traits ct, characters c, traits t, race_info ri WHERE t.id=ct.trait_id AND ct.character_id=c.id AND t.race_id = ri.id AND character_type=1 AND c.loc_sector_id NOT IN (3,68,69,70,71) GROUP BY ct.trait_id ORDER BY num DESC";
 
 		echo '<p class="header">Traits available used by NPCs</p>';
 		echo '(excludes npcrooms, sect 3,68,69,70,71)<br><br>';
 
 		$query = mysql_query2($sql);
-		echo "<table><tr><th>Count</th><th>Trait ID</th><th>Trait Name</th></tr>";
+		echo "<table><tr><th>Count</th><th>Trait ID</th><th>Trait Name</th><th>Race</th><th>Gender</th></tr>";
 		$i=0;
 		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
 		{
 				if ($result['num']==0)
-					echo '<tr class="color_a"><td><font color=red>'.$result['num'].'</font></td><td>'.$result['id'].'</td><td>'.$result['name'].'</td></tr>';
+					echo '<tr class="color_a"><td><font color=red>'.$result['num'].'</font></td><td>'.$result['id'].'</td><td>'.$result['name'].'</td><td>' . $result['race'] . '</td><td>' . getGenderFromAbbreviation($result['sex']) . '</td></tr>';
 				else {
-					echo '<tr class="color_a"><td>'.$result['num'].'</td><td>'.$result['trait_id'].'</td><td>'.$result['name'].'</td></tr>';
+					echo '<tr class="color_a"><td>'.$result['num'].'</td><td>'.$result['trait_id'].'</td><td>'.$result['name'].'</td><td>' . $result['race'] . '</td><td>' . getGenderFromAbbreviation($result['sex']) . '</td></tr>';
 					$traits_char_count[$i]=$result['num'];
 					$traits_char_id[$i]=$result['trait_id'];
 					$traits_char_name[$i]=$result['name'];
@@ -76,21 +76,29 @@ function assetsnpc()
 				}
 		}
 		// find traits with no instances
-		$sql = "select id, name from traits";
+		$sql = "SELECT t.id, t.name, ri.sex, ri.name AS race FROM traits t, race_info ri WHERE t.race_id = ri.id";
 		$query = mysql_query2($sql);
 		$i=0;
+		
+		$traits_id = array();
+		$traits_name = array();
+		$traits_sex = array();
+		$traits_race = array();
+		
 		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
 		{
 			$traits_id[$i]=$result['id'];
 			$traits_name[$i]=$result['name'];
+			$traits_sex[$i]=$result['sex'];
+			$traits_race[$i]=$result['race'];
 			$i++;
 		}
 
 		// compare results
 		for ($i = 0; $i < count($traits_id); $i++) {
-			if( in_array($traits_id[$i], $traits_char_id) )
+			if(is_array($traits_char_id) AND in_array($traits_id[$i], $traits_char_id) )
 				continue;
-			echo '<tr class="color_a"><td><font color=red>0</font></td><td>'.$traits_id[$i].'</td><td>'.$traits_name[$i].'</td></tr>';
+			echo '<tr class="color_a"><td><font color=red>0</font></td><td>'.$traits_id[$i].'</td><td>'.$traits_name[$i].'</td><td>' . $traits_race[$i] . '</td><td>' . getGenderFromAbbreviation($traits_sex[$i]) . '</td></tr>';
 		}
 		
 		echo "</table>";
@@ -118,5 +126,13 @@ function getLabelFromTime($time) {
 	else
 		return ">".($time/3600)." hours";
 }
-
-?>
+function getGenderFromAbbreviation($abbr)
+{
+	switch($abbr)
+	{
+		case 'M': return 'Male';
+		case 'F': return 'Female';
+		case 'N': return 'Neuter';
+		default: return 'unknown';
+	}
+}?>
