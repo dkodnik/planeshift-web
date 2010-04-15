@@ -159,7 +159,7 @@ function raceinfo(){
       $query = "SELECT * FROM race_info ORDER BY name, sex";
       $result = mysql_query2($query);
       echo '<table>';
-      echo '<tr><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Scale</th><th>Spawn Points</th>';
+      echo '<tr><th>ID</th><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Scale</th><th>Spawn Points</th>';
       if (checkaccess('rules', 'edit')){
         echo '<th>Actions</th>';
       }
@@ -173,6 +173,7 @@ function raceinfo(){
         }else{
           echo '<tr class="color_b">';
         }
+        echo '<td>'.$row['id'].'</td>';
         echo '<td>'.$row['name'].'</td>';
         echo '<td>'.$row['sex'].'</td>';
         echo '<td>'.$row['size_x'].'/'.$row['size_y'].'/'.$row['size_z'].'</td>';
@@ -244,4 +245,3 @@ function raceinfo(){
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
 }
-?>
