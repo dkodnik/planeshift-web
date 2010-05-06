@@ -40,9 +40,33 @@ function listquests()
         } 
         else  // normal quest listing mode. (chosen by default)
         {
-            echo '<a href="index.php?do=listquests&mode=hier">Show quest scripts in hierarchical view</a><br /><br />';
+            $factionlimit = '';
+            if (isset($_GET['factionLimit'])) {
+                $factionlimit = mysql_real_escape_string($_GET['factionLimit']);
+            }
+            $factions = PrepSelect('factions');
+            echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&mode=hier">Show quest scripts in hierarchical view</a></td>';
+            echo '<td><form method="get" action="index.php">';
+            echo '<input type="hidden" name="do" value="listquests">';
+            if (isset($_GET['sort'])) {
+                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'">';
+            }
+            echo 'limit to: '.DrawSelectBox('factions', $factions, 'factionLimit', $factionlimit, true);
+            echo '<input type="submit" name="submit" value="limit results"></form></td></tr></table><br/>';
             
-            $query = 'SELECT id, name, category, player_lockout_time, quest_lockout_time, prerequisite FROM quests';
+            $query = 'SELECT q.id, q.name, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
+            
+            // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
+            // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between [].
+            // so we get '[\n]Give[^\n]*faction[^\n]*$factionlimit' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
+            // In other words, we are looking for a character sequence that contains a newline, followed by "Give" (so it must be at the start of the line) any amount of characters (a number in a proper script), the word "faction" and 
+            // "$factionlimit" (being one of the factions that exist in the database, if this script was properly used.
+            // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "give **** faction <name>" where *** can be anything or nothing at all (but in practive will prove to be a number).
+
+            if ($factionlimit != '') {
+                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
+            }
+            
             if(!isset($_GET['sort'])){
                 $query .= ' ORDER BY name ASC';
             }
@@ -71,7 +95,12 @@ function listquests()
             }
             $result = mysql_query2($query);
             echo '<table border="1">'."\n";
-            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id">ID</a></th><th><a href="./index.php?do=listquests&amp;sort=category">Category</a></th><th><a href="./index.php?do=listquests&amp;sort=name">Name</a></th><th><a href="./index.php?do=listquests&amp;sort=plock">Player Lockout</a></th><th><a href="./index.php?do=listquests&amp;sort=qlock">Quest Lockout</a></th><th>Prerequisites</th><th>Actions</th></tr>';
+            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">ID</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Category</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Name</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Player Lockout</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
+            echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
             {
                 echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td><td>'.$row['player_lockout_time'];
