@@ -579,14 +579,14 @@ function parse_item($item)
 function parse_command($command, &$assigned, $quest_id, $step)
 {
     global $line_number;
-    if (strncasecmp($command, "assign quest", 12) === 0)
+    if (strncasecmp($command, 'assign quest', 12) === 0)
     {
         $assigned = true;
     }
-    elseif (strncasecmp($command, "fireevent", 9) === 0)
+    elseif (strncasecmp($command, 'fireevent', 9) === 0)
     { // can't check this yet
     }
-    elseif (strncasecmp($command, "complete", 8) === 0)
+    elseif (strncasecmp($command, 'complete', 8) === 0)
     {
         $query = sprintf("SELECT name FROM quests WHERE id = '%s'", mysql_real_escape_string($quest_id));
         $result = mysql_query2($query); // this may bug up if more quests have the same id (which they shouldn't have(?)) (KA scripts are exluded since they can't complete.
@@ -625,22 +625,22 @@ function parse_command($command, &$assigned, $quest_id, $step)
             append_log("parse error, could not determine questname for this script at line $line_number");
         }
     }
-    elseif (strncasecmp($command, "give", 4) === 0)
+    elseif (strncasecmp($command, 'give', 4) === 0)
     {
-        $given = explode(" or ", substr($command, 5));
-        if (count(explode(" or ", strtolower($command))) > count($given))
+        $given = explode(' or ', substr($command, 5));
+        if (count(explode(' or ', strtolower($command))) > count($given))
         {
             append_log("parse error, encountered uppercase \"or\" in give command on line $line_number");
             return;
         }
         for ($i = 0; $i < count($given); $i++)  // a choice may be presented seperated by "or", so we need to validate them all.
         {
-            if (trim($given[$i] == ""))
+            if (trim($given[$i] == ''))
             {
                 append_log("parse error, nothing to give on line $line_number");
                 return;
             }
-            if (($pos = stripos($given[$i], " faction ")) !== false) // faction takes the form "1 faction guards"
+            if (($pos = stripos($given[$i], ' faction ')) !== false) // faction takes the form "1 faction guards"
             {
                 $faction = trim(substr($given[$i], $pos+9));
                 $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", mysql_real_escape_string($faction));
@@ -650,9 +650,9 @@ function parse_command($command, &$assigned, $quest_id, $step)
                     append_log("parse error, no faction ($faction) found in database on line $line_number");
                 }
             } // takes the last 4 chars from the "give" string to see if it's " exp", so it doesn't match "expert cookbook" or something by accident.
-            elseif (strcasecmp(substr(trim($given[$i]), -4) , " exp") === 0)
+            elseif (strcasecmp(substr(trim($given[$i]), -4) , ' exp') === 0)
             {
-                $words = explode(" ", trim($given[$i]));
+                $words = explode(' ', trim($given[$i]));
                 if (count($words) != 2 || !is_numeric(trim($words[0])))
                 {
                     append_log("parse error, invalid experience assignment at line $line_number");
@@ -664,43 +664,43 @@ function parse_command($command, &$assigned, $quest_id, $step)
             }
         }
     }
-    elseif (strncasecmp($command, "norepeat", 8) === 0)
+    elseif (strncasecmp($command, 'norepeat', 8) === 0)
     {
         // valid, nothing to be checked.
     }
-    elseif (strncasecmp($command, "run script", 10) === 0)
+    elseif (strncasecmp($command, 'run script', 10) === 0)
     {
         $script = trim(substr($command, 10));
-        if (strpos($script, "(") === 0)
+        if (strpos($script, '(') === 0)
         {
-            $content = "";
-            cut_block($command, $content, "(", ")");
-            if (trim($content) == "")
+            $content = '';
+            cut_block($command, $content, '(', ')');
+            if (trim($content) == '')
             {
                 append_log("parse error, found no commands in () block at line $line_number");
             }
-            $params = explode(",", $script);
+            $params = explode(',', $script);
             if (count($params) > 3)
             {
                 append_log("warning, more than 3 params found in run script, ignoring above 3 at line $line_number");
             }
             for($i = 0; $i < count($params) && $i < 3; $i++)
             {
-                if (trim($params[$i]) == "")
+                if (trim($params[$i]) == '')
                 {
                     append_log("parse error, found empty parameter in run script on line $line_number");
                 }
             }
         }
-        elseif (strpos($script, "(") !== false || strpos($command, ")") !== false)
+        elseif (strpos($script, '(') !== false || strpos($command, ')') !== false)
         {
             append_log("parse error, found a \"(\" or \")\" on an unexpected location in line $line_number");
         }
     }
-    elseif (strncasecmp($command, "doadmincmd", 10) === 0)
+    elseif (strncasecmp($command, 'doadmincmd', 10) === 0)
     {
         $cmd = substr($command, 10);
-        if (trim($cmd) == "") 
+        if (trim($cmd) == '') 
         {
             append_log("parse error, no admin command found on line $line_number");
             return;
@@ -712,7 +712,7 @@ function parse_command($command, &$assigned, $quest_id, $step)
             append_log("parse error, could not find admin command ($cmd) in the database");
         } // else it's found, do nothing.
     }
-    elseif (strncasecmp($command, "require", 7) === 0) 
+    elseif (strncasecmp($command, 'require', 7) === 0) 
     {
         // Found a "require command"
         $requirements = substr($command, 8); // remove the require part and it's trailing space.
@@ -723,46 +723,54 @@ function parse_command($command, &$assigned, $quest_id, $step)
             $require = $requirement; // we use this one for the error message later if need be.
             // Determine if the next word is "no" or "not" and remove that too. (It's not relevant for the parser to know which is the case, as in 
             // both cases it is whatever that follows that needs to be valid.)
-            if (strncasecmp($require, "not", 3) === 0) // notice the order of not and no (otherwise no will match the first 2 letters of not).
+            if (strncasecmp($require, 'not', 3) === 0) // notice the order of not and no (otherwise no will match the first 2 letters of not).
             {
                 $require = substr($require, 4);
             }
-            elseif (strncasecmp($require, "no ", 2) === 0)
+            elseif (strncasecmp($require, 'no', 2) === 0)
             {
                 $require = substr($require, 3);
             }
             // Now find out which command was used.
-            if (strncasecmp($require, "completion of", 13) === 0) 
+            if (strncasecmp($require, 'completion of', 13) === 0) 
             {
                 check_completion($quest_id, $step, substr($require, 13));
             }
-            elseif (strncasecmp($require, "time of day", 11) === 0)
+            elseif (strncasecmp($require, 'time of day', 11) === 0)
             {
                 validate_time_of_day(substr($require, 11));
             }
-            elseif (strncasecmp($require, "guild", 5) === 0)
+            elseif (strncasecmp($require, 'guild', 5) === 0)
             {
                 // dunno if/how this should be checked.
             }
-            elseif (strncasecmp($require, "active magic", 12) === 0)
+            elseif (strncasecmp($require, 'active magic', 12) === 0)
             {
                 validate_magic(substr($require, 12));
             }
-            elseif (strncasecmp($require, "known spell", 11) === 0)
+            elseif (strncasecmp($require, 'known spell', 11) === 0)
             {
                 validate_magic(substr($require, 11));
             }
-            elseif (strncasecmp($require, "race", 4) === 0)
+            elseif (strncasecmp($require, 'race', 4) === 0)
             {
                 validate_race(substr($require, 4));
             }
-            elseif (strncasecmp($require, "gender", 6) === 0)
+            elseif (strncasecmp($require, 'gender', 6) === 0)
             {
                 validate_gender(substr($require, 6));
             }
-            elseif (strncasecmp($require, "married", 7) === 0)
+            elseif (strncasecmp($require, 'married', 7) === 0)
             {
-                // valid, nothing to check
+                // valid, nothing to check  
+            }
+            elseif (strncasecmp($require, 'possessed', 9) === 0)
+            {
+                parse_item(substr($require, 9));
+            }
+            elseif (strncasecmp($require, 'equipped', 8) === 0)
+            {
+                parse_item(substr($require, 8));
             }
             else 
             {
@@ -770,10 +778,10 @@ function parse_command($command, &$assigned, $quest_id, $step)
             }
         }
     }
-    elseif (strncasecmp($command, "Introduce", 9) === 0)
+    elseif (strncasecmp($command, 'Introduce', 9) === 0)
     {
     }
-    elseif (strncasecmp($command, "Menu", 4) === 0) // This is basically an error catcher, it should be below all other cases.
+    elseif (strncasecmp($command, 'Menu', 4) === 0) // This is basically an error catcher, it should be below all other cases.
     {
         append_log("parse error, no ':' following 'Menu' at line $line_number");
     }
@@ -790,7 +798,7 @@ function parse_command($command, &$assigned, $quest_id, $step)
 function check_completion($quest_id, $step, $quest)
 {
     global $line_number;
-    if (trim($quest) == "")
+    if (trim($quest) == '')
     {
         append_log("parse error, no quest mentioned at line $line_number");
         return;
@@ -820,17 +828,17 @@ function check_completion($quest_id, $step, $quest)
         }
     }// if it's not, we need to check all data.
     $name = $quest;
-    $complete_step = "";
-    if (($pos = stripos($quest, "step")) !== false)
+    $complete_step = '';
+    if (($pos = stripos($quest, 'step')) !== false)
     {
         $name = trim(substr($quest, 0, $pos));
         $complete_step = trim(substr($quest, $pos+4));
-        if ($name == "")
+        if ($name == '')
         {
             append_log("parse error, no quest mentioned at line $line_number");
             return;
         }
-        elseif ($complete_step == "" || $complete_step < 1)
+        elseif ($complete_step == '' || $complete_step < 1)
         {
             append_log("parse error, invalid quest step at line $line_number");
             return;
@@ -843,7 +851,7 @@ function check_completion($quest_id, $step, $quest)
         append_log("Warning, references to another quest are not recommended, only use if you really must: line $line_number");
         $row = mysql_fetch_row($result);
         $id = $row[0];
-        if($complete_step == "")
+        if($complete_step == '')
         {
             // found a matching quest with no steps, we're done checking.
             return;
@@ -854,7 +862,7 @@ function check_completion($quest_id, $step, $quest)
             if (mysql_num_rows($result) > 0)  // found a quest with that name
             {
                 $row = mysql_fetch_row($result);
-                $target_steps = explode("...", $row[0]);
+                $target_steps = explode('...', $row[0]);
                 if ($complete_step > count(target_steps)) // target quest does not have this many steps
                 {
                     append_log("parse error, target quest does not have $complete_step steps at line $line_number");
