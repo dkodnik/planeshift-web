@@ -23,7 +23,7 @@ function editquest(){
       $script = $row['script'];
       echo '</table></p><hr/><p>';
       echo 'Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script."</textarea><br/>\n";
-      echo '<input type="submit" name="submit" value="Update Quest" />';
+      echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" />';
       echo '</p></form>';
     }else{
       $id = mysql_real_escape_string($_GET['id']);
@@ -38,16 +38,18 @@ function editquest(){
       $script = mysql_real_escape_string($_POST['script']);
       $query = "UPDATE quest_scripts SET script='$script' WHERE quest_id='$id'";
       $result = mysql_query2($query);
-?>
-    <SCRIPT language="javascript">
-      document.location = "index.php?do=listquests";
-    </script>
-<?php
+      if (isset($_POST['submit2']))
+      {
+        echo '<SCRIPT language="javascript"> document.location = "index.php?do=editquest&id='.$id.'"; </script>';
+      }
+      else
+      {
+        echo '<SCRIPT language="javascript"> document.location = "index.php?do=listquests"; </script>';
+      }
     exit;
     }
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
-
 }
 ?>
