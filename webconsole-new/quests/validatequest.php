@@ -5,7 +5,7 @@
 *   Author: G. Hofstee
 */
 
-$parse_log = "";
+$parse_log = '';
 $line_number = 0;
 function validatequest()
 {
@@ -50,7 +50,7 @@ to what line in your browser).<br>
 
 
 
-// quest_id is not unique, (KA scripts for example, but others too are not enforeced unique.
+// quest_id is not unique, (KA scripts for example, but others too are not enforced to be unique.
 // So we need to collect them all, and then handle the actual script the next method
 function parseScripts($quest_id, $show_lines) 
 {
@@ -62,20 +62,20 @@ function parseScripts($quest_id, $show_lines)
     }
     for($i = 1; $row = mysql_fetch_row($result); $i++)
     {
-        append_log("<p class=\"error\">");
+        append_log('<p class="error">');
         append_log("parsing script # $i with ID $quest_id"); 
         parseScript($quest_id, $row[0], $show_lines);
         append_log("parsing script # $i with ID $quest_id completed");
-        append_log("</p>");
+        append_log('</p>');
     }
 }
 
 function parseScript($quest_id, $script, $show_lines) 
 {
-    $line = "";
+    $line = '';
     $p_count = 0;
     $m_count = 0;
-    $npc_name = "";
+    $npc_name = '';
     $step = 1;
     $total_steps = count(explode('...', $script));
     $assigned = false; // to check if the quest is already assigned.
@@ -156,7 +156,7 @@ function parseScript($quest_id, $script, $show_lines)
                 }
             }
             
-            if(getTriggerCount($line, $temp_name.":", $count) === false) //get the amount of NPC: tags .":" adds the ":" which is not included in the name.
+            if(getTriggerCount($line, $temp_name.':', $count) === false) //get the amount of NPC: tags .':' adds the ':' which is not included in the name.
             {
                 append_log("parse error, $temp_name:  with no text on line $line_number");
             }
@@ -173,7 +173,7 @@ function parseScript($quest_id, $script, $show_lines)
             checkVariables($line, 'npc');
             
         }
-        elseif(strncasecmp($line, "Player ", 7) === 0) // player does something
+        elseif(strncasecmp($line, 'Player ', 7) === 0) // player does something
         {
             if ($seen_npc_triggers && $p_count > 0) 
             {
@@ -185,7 +185,7 @@ function parseScript($quest_id, $script, $show_lines)
             $seen_npc_triggers = false;
 
         }
-        elseif(strncasecmp($line, "...", 3) === 0) // ... command
+        elseif(strncasecmp($line, '...', 3) === 0) // ... command
         {
             if ($seen_npc_triggers && $p_count > 0) 
             {
@@ -199,15 +199,15 @@ function parseScript($quest_id, $script, $show_lines)
             }
             if (strlen($line) > 3)
             {
-                if (strpos($line, " ") != 3)
+                if (strpos($line, ' ') != 3)
                 {
                     append_log("parse error, no whitespace after ... at line $line_number");
                 }
-                elseif (strcasecmp(substr($line, 4, 8), "norepeat") === 0) 
+                elseif (strcasecmp(substr($line, 4, 8), 'norepeat') === 0) 
                 {
                     // valid, do nothing
                 }
-                elseif (trim(substr($line, 4, 8)) == "") 
+                elseif (trim(substr($line, 4, 8)) == '') 
                 {
                     // valid, do nothing
                 }
@@ -222,10 +222,10 @@ function parseScript($quest_id, $script, $show_lines)
         }
         else // we found a command
         {
-            $commands = explode(".", $line);  // Notice that this also drops the trailing '.' of every command.
+            $commands = explode('.', $line);  // Notice that this also drops the trailing '.' of every command.
             for($i = 0; $i < count($commands); $i++) 
             {
-                if(trim($commands[$i]) != "") 
+                if(trim($commands[$i]) != '') 
                 {
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps);  // using totalsteps now, since we can both require and close future steps now.
                 }
@@ -234,7 +234,7 @@ function parseScript($quest_id, $script, $show_lines)
     }
     if(!$assigned && $quest_id > 0) //ignore KA scripts which are -1
     {
-        append_log("parse error, script never assined any quest.");
+        append_log('parse error, script never assined any quest.');
     }
 }
 
@@ -246,7 +246,7 @@ function getNextLine(&$line, &$script)
 {
     global $line_number; 
     $line_number++;
-    if(trim($script) == "") 
+    if(trim($script) == '') 
     {
         return false;
     }
@@ -258,14 +258,14 @@ function getNextLine(&$line, &$script)
     // if statement, these are both false unless checked like this.
     $line = substr($script, 0, $pos);
     $script = substr($script, $posn+1); //+1 to lose the \n
-    while (trim($script) != "" && isspace(substr($script,0,1))) //if the next line starts with a space char, append it to the previous line
+    while (trim($script) != '' && isspace(substr($script,0,1))) //if the next line starts with a space char, append it to the previous line
     { 
         $line_number++;
         $posn = strpos($script, "\n");
         $posr = strpos($script, "\r");
         if($posn === false) { $posn = strlen($script); }
         $pos = ($posr !== false && $posr < $posn ? $posr : $posn);
-        $line.=substr($script, 0, $pos); // . is a "glue" char, not a method call (for all the c/java ppl out there
+        $line.=substr($script, 0, $pos); // . is a "glue" char, not a method call (for all the c/java ppl out there)
         //+1 to lose the \n, if there is none because this is the last line, $pos is the last char, and substr replace any lenght that takes 
         //it out of bounds by the actual lenght
         $script = substr($script, $posn+1); 
@@ -304,7 +304,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
     $pos = 0;
     while (($pos = stripos($line, $trigger, $pos)) !== false) 
     {
-        if (strcasecmp($trigger, "menu:") === 0) //if we check a menu trigger, check next ones for exact grammar.
+        if (strcasecmp($trigger, 'menu:') === 0) //if we check a menu trigger, check next ones for exact grammar.
         {
             $trigger_without_colon = substr($trigger, 0, strlen($trigger)-1); //check if the second "menu:" has a colon following it.
             if (($temp_pos = stripos($line, $trigger_without_colon, $pos + strlen($trigger))) !== false)
@@ -395,47 +395,47 @@ function check_parenthesis($line)
     global $line_number;
     
     // First we check for file markers ( )
-    $inside = "";
-    cut_block($line, $inside, "(", ")");
-    if($inside != "")
+    $inside = '';
+    cut_block($line, $inside, '(', ')');
+    if($inside != '')
     {
-        $sounds = explode("|", $inside);
+        $sounds = explode('|', $inside);
         for($i = 0; $i < count($sounds); $i++)
         {
-            if (trim($sounds[$i]) == "") 
+            if (trim($sounds[$i]) == '') 
             {
                 append_log("parse error, empty file declaration in $inside at line $line_number");
             }
         }
     }
-    cut_block($line, $inside, "[", "]"); // check for matchin [] blocks too, these are actions
+    cut_block($line, $inside, '[', ']'); // check for matchin [] blocks too, these are actions
     
     // then we check for pronoun markers { }
-    $inside = "";
-    cut_block($line, $inside, "{", "}");
-    if ($inside != "")
+    $inside = '';
+    cut_block($line, $inside, '{', '}');
+    if ($inside != '')
     {
-        $pronouns = explode(",", $inside);
+        $pronouns = explode(',', $inside);
         for ($i = 0; $i < count($pronouns); $i++) 
         {
-            $pronoun = explode(":", $pronouns[$i]);
+            $pronoun = explode(':', $pronouns[$i]);
             if (count($pronoun) != 2) 
             {
                 append_log("pronoun {$pronouns[$i]} does not have the format pronoun:name at line $line_number");
             }
-            if ($pronoun[0] == "him" || $pronoun[0] == "he")
+            if ($pronoun[0] == 'him' || $pronoun[0] == 'he')
             {
                 continue;
             }
-            elseif($pronoun[0] == "her" || $pronoun[0] == "she")
+            elseif($pronoun[0] == 'her' || $pronoun[0] == 'she')
             {
                 continue;
             }
-            elseif($pronoun[0] == "it")
+            elseif($pronoun[0] == 'it')
             {
                 continue;
             }
-            elseif($pronoun[0] == "them" || $pronoun[0] == "they")
+            elseif($pronoun[0] == 'them' || $pronoun[0] == 'they')
             {
                 continue;
             }
@@ -470,7 +470,7 @@ function cut_block ($line, &$inside, $leftchar, $rightchar)
             return false;
         }
         $inside = substr($line, $pos_start+1, $pos_end-$pos_start-1);  // start+1 coz we don't want the starting { or ( or whatever
-        if(trim($inside) == "")
+        if(trim($inside) == '')
         {
             append_log("parse error, no text between $leftchar and $rightchar on line $line_number");
         }
@@ -493,13 +493,13 @@ function cut_block ($line, &$inside, $leftchar, $rightchar)
 function handle_player_action($line)
 {
     global $line_number;
-    $words = explode(" ", $line);
+    $words = explode(' ', $line);
     if(count($words) < 2)
     {
         append_log("parse error, no command following \"player\" at line $line_number");
         return;
     }
-    if (strcasecmp($words[1], "gives") === 0) // "player gives"
+    if (strcasecmp($words[1], 'gives') === 0) // "player gives"
     {
         $name_count = 0;
 
@@ -525,7 +525,7 @@ function handle_player_action($line)
         {
             $items = substr($items, 0, strlen($items)-1);
         }
-        $item = explode(",", $items);
+        $item = explode(',', $items);
         for ($i = 0; $i < count($item); $i++)
         {
             parse_item($item[$i]);
@@ -540,9 +540,9 @@ function handle_player_action($line)
 function parse_item($item)
 {
     global $line_number;
-    $words = explode(" ", trim($item));
-    $item_name = "";
-    if(trim($item) == "") 
+    $words = explode(' ', trim($item));
+    $item_name = '';
+    if(trim($item) == '') 
     {
         append_log("parse error, invalid item list on line $line_number");
         return;
@@ -554,7 +554,7 @@ function parse_item($item)
             append_log("parse error, missing item name on line $line_number");
             return;
         }
-        $item_name = implode(" ", array_slice($words, 1));
+        $item_name = implode(' ', array_slice($words, 1));
     }
     else 
     {
