@@ -28,11 +28,7 @@ to what line in your browser).<br>
 
         if(isset($_POST['submit']))
         {
-            $show_lines = false;
-            if (isset($_POST['show_lines']))
-            {
-                $show_lines = true;
-            }
+            $show_lines = isset($_POST['show_lines']);
             if (is_numeric($id))
             {
                 parseScripts($id, $show_lines);
@@ -97,11 +93,11 @@ function parseScript($quest_id, $script, $show_lines)
         {
             echo "$line_number: $line <BR />\n"; // debug line, shows you all the lines of the script.
         }
-        if(strncasecmp($line, "#", 1) === 0) //comment line
+        if(strncasecmp($line, '#', 1) === 0) //comment line
         {
             continue; //ignore comment lines
         }
-        elseif(strncasecmp($line, "P:", 2) === 0) // P: trigger
+        elseif(strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
             if ($seen_npc_triggers && $p_count > 0) 
             {
@@ -116,7 +112,7 @@ function parseScript($quest_id, $script, $show_lines)
             $m_count = 0;
             $seen_menu_triggers = false;
             $count = 0;
-            if(getTriggerCount($line, "P:", $count) === false) //get the amount of P: tags
+            if(getTriggerCount($line, 'P:', $count) === false) //get the amount of P: tags
             {
                 append_log("parse error, P: with no text on line $line_number");
             }
@@ -863,7 +859,7 @@ function check_completion($quest_id, $step, $quest)
             {
                 $row = mysql_fetch_row($result);
                 $target_steps = explode('...', $row[0]);
-                if ($complete_step > count(target_steps)) // target quest does not have this many steps
+                if ($complete_step > count($target_steps)) // target quest does not have this many steps
                 {
                     append_log("parse error, target quest does not have $complete_step steps at line $line_number");
                 }
