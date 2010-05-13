@@ -11,13 +11,13 @@ function listquests()
             echo '<a href="index.php?do=listquests">Show quest scripts as simple list</a><br />';
             echo '<p> Please notice that this view only relates those scripts that have each other listed in the "pre-requisites" field, not in the actual quest script.</p>';
             // build an array with parentname | childname | child data
-            $query = "SELECT id, name, prerequisite FROM quests ORDER BY name";
+            $query = "SELECT id, name, category, prerequisite FROM quests ORDER BY name";
             $result = mysql_query2($query);
-            while ($line = mysql_fetch_array($result, MYSQL_NUM)){
-                $data =  array($line[0],  $line[1]); // store id and name in $data
-                $parent_name = parsePrereqScript($line[2]);
+            while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
+                $data =  array($line['id'],  $line['prerequisite'], $line['category']); // store id, name and category in $data
+                $parent_name = parsePrereqScript($line['prerequisite']);
                 $data2 = array($data, $parent_name); // make a $data2 with the whole set of data as [0] and the name of the parent as [1] (or null if not found)
-                $questarray[$line[1]] = $data2; // add the quest to  an array indexed by it's name.
+                $questarray[$line['name']] = $data2; // add the quest to  an array indexed by it's name.
             }
             echo '<ul>';
             // recurse on nodes
@@ -27,11 +27,11 @@ function listquests()
                     $data = $data2[0];
                     if(checkaccess('quests', 'edit')) // list list node links depending on access
                     {
-                        echo '<li> <a href="index.php?do=editquest&id='.$data[0].'">'.$key.'</a></li>';
+                        echo '<li> <a href="index.php?do=editquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
                     }
                     else 
                     {
-                        echo '<li><a href="index.php?do=readquest&id='.$data[0].'">'.$key.'</a></li>';
+                        echo '<li><a href="index.php?do=readquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
                     }
                     display_children($questarray,$key); // List children (if any).
                 }
@@ -174,11 +174,11 @@ function display_children($questarray, $current)
             $data = $data2[0]; // notice that data2[0] is an array itself containing all information about the quests.
             if(checkaccess('quests', 'edit')) // Determine access and give proper links.
             {
-                echo '<li><a href="./index.php?do=editquest&id='.$data[0].'">'.$key.'</a></li>';
+                echo '<li><a href="./index.php?do=editquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
             }
             else 
             {
-                echo '<li><a href="./index.php?do=readquest&id='.$data[0].'">'.$key.'</a></li>';
+                echo '<li><a href="./index.php?do=readquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
             }
             display_children($questarray,$key);
         }
