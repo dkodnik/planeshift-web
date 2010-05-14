@@ -11,6 +11,7 @@ SetUpDB($db_hostname, $db_username, $db_password, $db_name);
 date_default_timezone_set('UTC');
 session_save_path($pathToWC.'sessions');
 session_start();
+StripInput();
 if (!isset($_SESSION['totalq']))
 {
     $_SESSION['totalq'] = "SQL Queries Performed:";
