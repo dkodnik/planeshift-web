@@ -1,4 +1,3 @@
-
 <?php
 /*
  * This script is designed to operate outside the regular context of the WC, the path mentioned below can be used to point it to its files.
