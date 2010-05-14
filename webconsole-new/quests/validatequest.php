@@ -66,7 +66,7 @@ function parseScripts($quest_id, $show_lines)
     }
 }
 
-function parseScript($quest_id, $script, $show_lines) 
+function parseScript($quest_id, $script, $show_lines, $quest_name='') 
 {
     $line = '';
     $p_count = 0;
@@ -223,7 +223,7 @@ function parseScript($quest_id, $script, $show_lines)
             {
                 if(trim($commands[$i]) != '') 
                 {
-                    parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps);  // using totalsteps now, since we can both require and close future steps now.
+                    parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
                 }
             }
         }
@@ -572,7 +572,11 @@ function parse_item($item)
     }
 }
 
-function parse_command($command, &$assigned, $quest_id, $step)
+/*
+ * Quest name got added for the prospect validator, in which case the quest is not in the database. ($quest_id = 0) Then in the case of "complete quest" and
+ * "require completion of quest", we should check first if id==0 and name==name, before looking on the database.
+ */
+function parse_command($command, &$assigned, $quest_id, $step, $quest_name)  
 {
     global $line_number;
     if (strncasecmp($command, 'assign quest', 12) === 0)
@@ -584,6 +588,34 @@ function parse_command($command, &$assigned, $quest_id, $step)
     }
     elseif (strncasecmp($command, 'complete', 8) === 0)
     {
+        if ($quest_id == 0) 
+        {
+            if (strcasecmp(trim($command), "complete $quest_name") === 0)
+            {
+                // valid, do nothing
+            }
+            elseif (strncasecmp($command, "complete $quest_name step", 14+strlen($quest_name)) === 0)
+            {
+                $split_complete = explode(' ', substr(trim($command), 15+strlen($quest_name)));
+                if (count($split_complete) > 1) 
+                {
+                    append_log("parse error, illegal text following 'complete $quest_name step {$split_complete[0]}' on line $line_number");
+                }
+                elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
+                {
+                    // valid, do nothing
+                }
+                else
+                {
+                    append_log("parse error, completing a step that is higher than the total number of steps in this quest on line $line_number");
+                }
+            }
+            else
+            {
+                append_log("parse error, invallid questname ($command) at line $line_number");
+            }
+            return; // in all cases, when $quest_id is 0, do not go further than here. (the other checks are on the database, and thus will fail.
+        }
         $query = sprintf("SELECT name FROM quests WHERE id = '%s'", mysql_real_escape_string($quest_id));
         $result = mysql_query2($query); // this may bug up if more quests have the same id (which they shouldn't have(?)) (KA scripts are exluded since they can't complete.
         if(mysql_num_rows($result) > 0)
@@ -730,7 +762,7 @@ function parse_command($command, &$assigned, $quest_id, $step)
             // Now find out which command was used.
             if (strncasecmp($require, 'completion of', 13) === 0) 
             {
-                check_completion($quest_id, $step, substr($require, 13));
+                check_completion($quest_id, $step, substr($require, 13), $quest_name);
             }
             elseif (strncasecmp($require, 'time of day', 11) === 0)
             {
@@ -791,7 +823,7 @@ function parse_command($command, &$assigned, $quest_id, $step)
     }
 }
 
-function check_completion($quest_id, $step, $quest)
+function check_completion($quest_id, $step, $quest, $quest_name)
 {
     global $line_number;
     if (trim($quest) == '')
@@ -799,12 +831,33 @@ function check_completion($quest_id, $step, $quest)
         append_log("parse error, no quest mentioned at line $line_number");
         return;
     }
+    if ($quest_id == 0) // special number used for prospect console. Means the quest itself is not in the database, so lets check if it is valid with the name that was given.
+    {
+        if (strcasecmp(trim($quest), $quest_name) === 0)
+        {
+            return; //valid, nothing else to do.
+        }
+        else if (strncasecmp(trim($quest), "$quest_name step", 5+strlen($quest_name)) === 0)
+        {
+            if (trim(substr(trim($quest), 5+strlen($quest_name))) <= $step)
+            {
+                // valid too
+                return;
+            }
+            else
+            {
+                append_log("parse error, you can't refer to quest steps that exceed the total number of steps at line $line_number");
+                return;
+            }
+        }
+        // else we need to run past the rest of the checks, though the next one is guaranteed to fail with quest_id 0, the one after that may pass.
+    }
     $result = mysql_query2("SELECT name FROM quests WHERE id = '$quest_id'"); // this may bug up if more quests have the same id (which they shouldn't have(?))
     if (mysql_num_rows($result) > 0) // First we check if it's a reference to this script (most of them are)
     {
         $row = mysql_fetch_row($result);
         $name = $row[0];
-        if (strcasecmp(trim($quest), "$name") === 0)
+        if (strcasecmp(trim($quest), $name) === 0)
         {
             // valid, nothing else to do
             return;

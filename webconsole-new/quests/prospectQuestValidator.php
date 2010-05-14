@@ -16,6 +16,7 @@ if (!isset($_SESSION['totalq']))
     $_SESSION['totalq'] = "SQL Queries Performed:";
 }
 $script = (isset($_POST['script']) ? $_POST['script'] : '');
+$quest_name = (isset($_POST['quest_name']) ? $_POST['quest_name'] : '');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
@@ -27,8 +28,9 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
     </head>
     <body>
         <div class="container">';
-echo '          <p> Please note that this validator will give errors like "no such quest in database" when you try to complete/require any step of the quest itself, since, it is indeed not in the database yet when you use this script.<br />
+echo '          <p> 
                 <form name="prospectscript" method="post" action="'.$_SERVER['PHP_SELF'].'">
+                Quest name: <input type="text" name="quest_name" value="'.$quest_name.'"> <br />
                 Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script.'</textarea><br />
                 <input type="checkbox" name="show_lines">Show script lines?<br />
                 <input type="submit" name="submit" value="submit"></form></p>';
@@ -37,7 +39,7 @@ if ($script != '')
 {
     append_log('<p class="error">');
     append_log("parsing script");
-    parseScript(0, $script, isset($_POST['show_lines'])); // using 0 as ID is a bit "hackish" to signify the script is not in the database (script 0 does not exist).
+    parseScript(0, $script, isset($_POST['show_lines']), $quest_name); // using 0 as ID is a bit "hackish" to signify the script is not in the database (script 0 does not exist).
     append_log("parsing script completed");
     append_log('</p>');
     echo $parse_log;
