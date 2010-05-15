@@ -29,12 +29,11 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
     </head>
     <body>
         <div class="container">';
-echo '          <p> 
-                <form name="prospectscript" method="post" action="'.$_SERVER['PHP_SELF'].'">
-                Quest name: <input type="text" name="quest_name" value="'.$quest_name.'"> <br />
+echo '          <form method="post" action="'.$_SERVER['PHP_SELF'].'"><p>
+                Quest name: <input type="text" name="quest_name" value="'.$quest_name.'" /> <br />
                 Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script.'</textarea><br />
-                <input type="checkbox" name="show_lines">Show script lines?<br />
-                <input type="submit" name="submit" value="submit"></form></p>';
+                <input type="checkbox" name="show_lines" />Show script lines?<br />
+                <input type="submit" name="submit" value="submit" /></p></form>';
 
 if ($script != '') 
 {
@@ -46,12 +45,11 @@ if ($script != '')
     echo $parse_log;
 }
 
-echo '</div><hr/>This is Debugging Information Only: '.($_SESSION['totalq']);
+echo '</div><hr/><p>This is Debugging Information Only: '.($_SESSION['totalq']).'</p>';
 unset($_SESSION['totalq']);
 echo '<div class="footer">
 All material found here is (c) Atomic Blue.<br/>
-</div>
-</div> <!-- end container -->
+</div> 
 </body>
 </html>';
 ?>

@@ -15,15 +15,16 @@ function validatequest()
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
         echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
-to what line in your browser).<br>
-    <form name="singlescript" method="post" action="./index.php?do=validatequest&id='.$id.'">
+to what line in your browser).</p>
+<form method="post" action="./index.php?do=validatequest&amp;id='.$id.'">
+    <div>
         <table>
-            <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'"></td></tr>
-            <tr><td><input type="checkbox" name="show_lines">Show script lines?</td><td></td></tr>
+            <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'" /></td></tr>
+            <tr><td><input type="checkbox" name="show_lines" />Show script lines?</td><td></td></tr>
         </table>
-        <input type="submit" name="submit" value="submit">
-    </form>
-</p>
+        <input type="submit" name="submit" value="submit" />
+    </div>
+</form>
 ';
 
         if(isset($_POST['submit']))
@@ -82,16 +83,16 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     
     if($show_lines)
     {
-        echo "<BR />\n";
-        echo "<BR />\n";
-        echo "Quest ID: $quest_id <BR />\n";
+        echo "<br />\n";
+        echo "<br />\n";
+        echo "Quest ID: $quest_id <br />\n";
     }
     
     while(getNextLine($line, $script)) 
     {
         if($show_lines)
         {
-            echo "$line_number: $line <BR />\n"; // debug line, shows you all the lines of the script.
+            echo "$line_number: $line <br />\n"; // debug line, shows you all the lines of the script.
         }
         if(strncasecmp($line, '#', 1) === 0) //comment line
         {
@@ -287,7 +288,7 @@ function isspace($char)
 function append_log($msg) 
 {
     global $parse_log;
-    $parse_log.=$msg."<BR />\n";
+    $parse_log.=$msg."<br />\n";
 }
 
 /**

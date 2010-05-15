@@ -27,13 +27,14 @@ function listquests()
                     $data = $data2[0];
                     if(checkaccess('quests', 'edit')) // list list node links depending on access
                     {
-                        echo '<li> <a href="index.php?do=editquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
+                        echo '<li> <a href="index.php?do=editquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
                     }
                     else 
                     {
-                        echo '<li><a href="index.php?do=readquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
+                        echo '<li><a href="index.php?do=readquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
                     }
                     display_children($questarray,$key); // List children (if any).
+                    echo '</li>';
                 }
             }
             echo '</ul>';
@@ -45,14 +46,14 @@ function listquests()
                 $factionlimit = mysql_real_escape_string($_GET['factionLimit']);
             }
             $factions = PrepSelect('factions');
-            echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&mode=hier">Show quest scripts in hierarchical view</a></td>';
-            echo '<td><form method="get" action="index.php">';
-            echo '<input type="hidden" name="do" value="listquests">';
+            echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>';
+            echo '<td><form method="get" action="index.php"><div>';
+            echo '<input type="hidden" name="do" value="listquests" />';
             if (isset($_GET['sort'])) {
-                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'">';
+                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'" />';
             }
             echo 'limit to: '.DrawSelectBox('factions', $factions, 'factionLimit', $factionlimit, true);
-            echo '<input type="submit" name="submit" value="limit results"></form></td></tr></table><br/>';
+            echo '<input type="submit" name="submit" value="limit results" /></div></form></td></tr></table><br/>';
             
             $query = 'SELECT q.id, q.name, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
             
@@ -95,11 +96,11 @@ function listquests()
             }
             $result = mysql_query2($query);
             echo '<table border="1">'."\n";
-            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">ID</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Category</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Name</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Player Lockout</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.($factionlimit==''?'':'&factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
+            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">ID</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Category</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Name</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Player Lockout</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
             {
@@ -174,13 +175,14 @@ function display_children($questarray, $current)
             $data = $data2[0]; // notice that data2[0] is an array itself containing all information about the quests.
             if(checkaccess('quests', 'edit')) // Determine access and give proper links.
             {
-                echo '<li><a href="./index.php?do=editquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
+                echo '<li><a href="./index.php?do=editquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
             }
             else 
             {
-                echo '<li><a href="./index.php?do=readquest&id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )</li>';
+                echo '<li><a href="./index.php?do=readquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
             }
             display_children($questarray,$key);
+            echo '</li>';
         }
     }
     if ($list_started) 
@@ -270,7 +272,7 @@ function npcquests()
 
             if (checkaccess('npc', 'edit')) 
             {
-                echo '<tr><td><a href="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'">'.$fullname.'</a> - ';
+                echo '<tr><td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['id'].'">'.$fullname.'</a> - ';
             }
             else 
             {
