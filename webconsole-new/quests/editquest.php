@@ -1,7 +1,7 @@
 <?php
 function editquest()
 {
-    if(checkaccess('quests', 'read'))
+    if(checkaccess('quests', 'edit'))
     {
         if(!isset($_GET['id']))
         {
@@ -18,7 +18,7 @@ function editquest()
             $row = mysql_fetch_array($result, MYSQL_ASSOC);
             $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
             $script = $row2['script'];
-            echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit" method="post"><p><table border="0">';
+            echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit" method="post"><div><table border="0">';
             echo '<tr><td>Quest ID:</td><td> '.$id."</td></tr>\n";
             echo '<tr><td>Quest Name:</td><td> <input type="text" name="name" value="'.$row['name'].'" />'."</td></tr>\n";
             echo '<tr><td>Quest Category:</td><td> <input type="text" name="category" value="'.$row['category'].'" />'."</td></tr>\n";
@@ -26,7 +26,7 @@ function editquest()
             echo '<tr><td>Player Lockout Time:</td><td> <input type="text" name="player_lockout_time" value="'.$row['player_lockout_time'].'" />'."</td></tr>\n";
             echo '<tr><td>Quest Lockout Time:</td><td> <input type="text" name="quest_lockout_time" value="'.$row['quest_lockout_time'].'" />'."</td></tr>\n";
             echo '<tr><td>Prerequisites:</td><td> <textarea name="prerequisite" rows="2" cols="50">'.htmlspecialchars($row['prerequisite'])."</textarea></td></tr>\n";
-            echo '</table></p><hr/>';
+            echo '</table></div><hr/>';
             echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script."</textarea><br />\n";
             echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" />';
             echo '</p></form>';

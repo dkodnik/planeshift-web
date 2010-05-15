@@ -4,13 +4,13 @@ function createquest(){
     if(!isset($_GET['commit'])){
       echo '<p class="header">Creating a new Quest</p>';
       echo '<form action="index.php?do=createquest&amp;commit" method="post">';
-      echo '<p class="bold">Quest ID will be generated automatically';
-      echo '<table border="0"> <tr><td>Quest Name:</td><td> <input type="text" name="name" size="30"/></td></tr>';
+      echo '<p class="bold">Quest ID will be generated automatically</p>';
+      echo '<div><table border="0"> <tr><td>Quest Name:</td><td> <input type="text" name="name" size="30"/></td></tr>';
       echo '<tr><td>Category:</td><td> <input type="text" name="category" size="30"/></td></tr>';
       echo '<tr><td>Player Lockout:</td><td> <input type="text" name="player_lockout" size="30"/></td></tr>';
       echo '<tr><td>Quest Lockout:</td><td> <input type="text" name="quest_lockout" size="30"/></td></tr>';
       echo '<tr><td>Quest Description:</td><td> <textarea rows="2" cols="40" name="description"></textarea></td></tr>';
-      echo '<tr><td><input type="submit" name="submit" value="Create Quest" /></td><td></td></tr></table></p>';
+      echo '<tr><td><input type="submit" name="submit" value="Create Quest" /></td><td></td></tr></table></div>';
       echo '</form>';
     }else{
  //Here we create the quest
