@@ -505,7 +505,7 @@ function showitemusage()
     // In other words, we are looking for a character sequence that contains a newline, followed by "Player Gives" (so it must be at the start of the line) and "item_name" with any amount of characters between them 
     // that are not newlines. This effectively means they have to be on the same line, in the form of "give **** <item> ****" where *** can be anything or nothing at all.
     $escaped_item_name = mysql_real_escape_string($my_item_name);
-    $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give|Require Equipped|Require not Equipped|Require Possessed|Require not Possessed)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
+    $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give|Require Equipped|Require not Equipped|Require no Equipped|Require Possessed|Require not Possessed|Require no Possessed)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
     $result = mysql_query2($query);
     if (mysql_num_rows($result) > 0)
     {
