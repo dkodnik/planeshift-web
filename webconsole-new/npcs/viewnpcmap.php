@@ -208,7 +208,7 @@ else
 		while ( !feof($handle) )
 		{
 			$buffer = fgets($handle, 4096);
-			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
 				$found = FALSE;
 				foreach($data[5] as $sectorname)
 				{
@@ -224,7 +224,7 @@ else
 					echo "<img border=0 src=$ball width=8 height=8></div>\n";
 				}
 			}
-			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos=\"(?P<x>.*?),.*?,(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
 				$found = FALSE;
 				foreach($data[5] as $sectorname)
 				{
