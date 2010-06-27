@@ -953,11 +953,9 @@ function npc_specific(){
             echo '<input type="submit" name="commit" value="Remove" />';
             echo '</form></td></tr>'."\n";
           }
-          echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">Create New Trigger:<br/><input type="text" name="trigger_text" /><br/><input type="submit" name="commit" value="Create New Trigger" /></form></td>';
-          echo '<td>&nbsp;</td><td>&nbsp;</td>';
-          echo '</tr></table>';
+          echo '</table>';
         }
-       //add new here
+        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">Create New Trigger:<br/><input type="text" name="trigger_text" /><br/><input type="submit" name="commit" value="Create New Trigger" /></form>';
       }
     }else{
       echo '<p class="error">Error: No npc id</p>';
