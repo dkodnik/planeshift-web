@@ -432,7 +432,9 @@ function npc_kas(){
           $names[] = $row['name'].' '.$row['lastname'];
         }
         }
-        $display = array_values(array_diff($areas, $names));
+        /* what this does is creating a list of all KA areas (areas of conversation), and then subtracting the list of all known npcs from that
+           (since those are "personal" scripts). Then, it offers whatever is left to be assigned as "general" scripts. */
+        $display = array_values(array_diff($areas, $names)); 
         echo '<p>Add a Knowledge Area to this NPC:</p><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
         echo '<select name="area">';
         echo '<option value="SELF">[Add KA of this NPC]</option>';
