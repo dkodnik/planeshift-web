@@ -410,40 +410,40 @@ function npc_kas(){
             echo '</tr>';
           }
           echo '</table>';
-          $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";
-          $result = mysql_query2($query);
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-            $areas[] = $row['area'];
-          }
-          $query = "SELECT DISTINCT name, lastname FROM characters WHERE character_type=1 ORDER by name";
-          $result = mysql_query2($query);
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-            if ($row['lastname'] == ""){
-              $names[] = $row['name'];
-            }else{
-              $names[] = $row['name'].' '.$row['lastname'];
-            }
-          }
-          $display = array_values(array_diff($areas, $names));
-          echo '<p>Add a Knowledge Area to this NPC:</p><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
-          echo '<select name="area">';
-          echo '<option value="SELF">[Add KA of this NPC]</option>';
-          foreach ($display as $name){
-            echo '<option value="'.$name.'">'.$name.'</option>';
-          }
-          echo '</select>';
-          echo '<select name="priority">';
-          $i = 1;
-          while ($i <= 10){
-            echo '<option value="'.$i.'">'.$i.'</option>';
-            $i++;
-          }
-          echo '</select>';
-          echo '<input type="submit" name="commit" value="Add KA" />';
-          echo '</form>';
         }else{
           echo '<p class="error">NPC has no KAs Assigned</p>';
         }
+        $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";
+        $result = mysql_query2($query);
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        $areas[] = $row['area'];
+        }
+        $query = "SELECT DISTINCT name, lastname FROM characters WHERE character_type=1 ORDER by name";
+        $result = mysql_query2($query);
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        if ($row['lastname'] == ""){
+          $names[] = $row['name'];
+        }else{
+          $names[] = $row['name'].' '.$row['lastname'];
+        }
+        }
+        $display = array_values(array_diff($areas, $names));
+        echo '<p>Add a Knowledge Area to this NPC:</p><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
+        echo '<select name="area">';
+        echo '<option value="SELF">[Add KA of this NPC]</option>';
+        foreach ($display as $name){
+        echo '<option value="'.$name.'">'.$name.'</option>';
+        }
+        echo '</select>';
+        echo '<select name="priority">';
+        $i = 1;
+        while ($i <= 10){
+        echo '<option value="'.$i.'">'.$i.'</option>';
+        $i++;
+        }
+        echo '</select>';
+        echo '<input type="submit" name="commit" value="Add KA" />';
+        echo '</form>';
       }
     }else{
       echo '<p class="error">Error: No npc id</p>';
