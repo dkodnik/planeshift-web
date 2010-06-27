@@ -21,6 +21,13 @@ function ka_trigger(){
       }
     }
     echo '</table>';
+    echo '<table border="1">';
+    // area=dummy_place_holder gets sent because the next script expects a GET['area'] even though we use the post later on. Eventually this will need to be redesigned.
+    echo '<form action="./index.php?do=ka_detail&amp;area=dummy_place_holder" method="post">Create New Trigger:';
+    echo '<tr><td>KA area name: </td><td><input type="text" name="area" value="" /></td></tr>';
+    echo '<tr><td>KA trigger text: </td><td><input type="text" name="trigger_text" /></td></tr>';
+    echo '<tr><td><input type="submit" name="commit" value="Create New KA Area" /></td><td></td></tr></form>';
+    echo '</table>';    
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
@@ -30,7 +37,7 @@ function ka_detail(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['area'])){
       $area = mysql_real_escape_string(urldecode($_GET['area']));
-      if (isset($_POST['commit']) && (checkaccess('npcs', 'edit'))){
+      if ((isset($_POST['commit']) || isset($_GET['commit'])) && (checkaccess('npcs', 'edit'))){
         if ($_POST['commit'] == "Update Trigger"){
           $tid = mysql_real_escape_string($_POST['trigger_id']);
           $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
@@ -138,13 +145,6 @@ function ka_detail(){
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
             $tid_o = mysql_real_escape_string($_POST['trigger_id']);
             $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
-            $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-            $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
-            $npcname = $row['name'];
-            if ($row['lastname'] != ''){
-            $npcname = $npcname . ' ' .$row['lastname'];
-          }
           $tid = GetNextId('npc_triggers');
           $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '$tid_o', '$area')";
           $result = mysql_query2($query);
@@ -156,17 +156,23 @@ function ka_detail(){
           $query = "DELETE FROM npc_responses WHERE trigger_id='$tid'";
         }else if ($_POST['commit'] == "Create New Trigger"){
           $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
-          $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-          $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
-          $npcname = $row['name'];
-          if ($row['lastname'] != ''){
-            $npcname = $npcname . ' ' .$row['lastname'];
-          }
           $tid = GetNextId('npc_triggers');
           $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '0', '$area')";
           $result = mysql_query2($query);
           $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
+        }else if ($_POST['commit'] == "Create New KA Area")
+        {  // This one is identical to the one above, save for the use of POST area instead of GET. (and of course the redirect)
+            $area = mysql_real_escape_string($_POST['area']);
+            $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+            $tid = GetNextId('npc_triggers');
+            $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '0', '$area')";
+            $result = mysql_query2($query);
+            $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
+            $result = mysql_query2($query);
+            echo '<p class="error">Area Addition Successful</p>';
+            unset($_GET);
+            ka_trigger();
+            exit();
         }else if ($_POST['commit'] == "Delete KA"){
           $query = "SELECT id FROM npc_triggers WHERE area='$area'";
           $result = mysql_query2($query);
