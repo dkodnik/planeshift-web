@@ -4,10 +4,11 @@ function npc_main(){
     if (isset($_GET['npc_id'])){
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
+        $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
+        echo '<tr><td>First Name/Last Name:</td><td><input type="text" name="first_name" value="'.$row['name'].'" />/<input type="text" name="last_name" value="'.$row['lastname'].'" /></td></tr>';
         echo '<tr><td>Description:</td><td><textarea name="description" rows="4" cols="50">'.$row['description'].'</textarea></td></tr>';
         echo '<tr><td>OOC Description:</td><td><textarea name="description_ooc" rows="4" cols="50">'.$row['description_ooc'].'</textarea></td></tr>';
         echo '<tr><td>Creation Info:</td><td><textarea name="creation_info" rows="4" cols="50">'.$row['creation_info'].'</textarea></td></tr>';
@@ -98,6 +99,10 @@ function npc_main(){
         $query = "UPDATE characters SET ";
         $description = mysql_real_escape_string($_POST['description']);
         $query .= "description = '$description', ";
+        $firstname = mysql_real_escape_string($_POST['first_name']);
+        $query .= "name = '$firstname', ";
+        $lastname = mysql_real_escape_string($_POST['last_name']);
+        $query .= "lastname = '$lastname', ";
         $description_ooc = mysql_real_escape_string($_POST['description_ooc']);
         $query .= "description_ooc = '$description_ooc', ";
         $creation_info = mysql_real_escape_string($_POST['creation_info']);
