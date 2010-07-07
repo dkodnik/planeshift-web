@@ -11,10 +11,10 @@ function listquests()
             echo '<a href="index.php?do=listquests">Show quest scripts as simple list</a><br />';
             echo '<p> Please notice that this view only relates those scripts that have each other listed in the "pre-requisites" field, not in the actual quest script.</p>';
             // build an array with parentname | childname | child data
-            $query = "SELECT id, name, category, prerequisite FROM quests ORDER BY name";
+            $query = "SELECT id, name, flags, category, prerequisite FROM quests ORDER BY name";
             $result = mysql_query2($query);
             while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
-                $data =  array($line['id'],  $line['prerequisite'], $line['category']); // store id, name and category in $data
+                $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags']); // store id, name and category in $data
                 $parent_name = parsePrereqScript($line['prerequisite']);
                 $data2 = array($data, $parent_name); // make a $data2 with the whole set of data as [0] and the name of the parent as [1] (or null if not found)
                 $questarray[$line['name']] = $data2; // add the quest to  an array indexed by it's name.
@@ -25,14 +25,11 @@ function listquests()
                 if ($data2[1]==null)  
                 {
                     $data = $data2[0];
-                    if(checkaccess('quests', 'edit')) // list list node links depending on access
-                    {
-                        echo '<li> <a href="index.php?do=editquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
-                    }
-                    else 
-                    {
-                        echo '<li><a href="index.php?do=readquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
-                    }
+                    $disabled = ($data[3] == 1 ? 'class="red"' : ''); // determine if the quest is disabled, if so, make it red.
+                    $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
+                    
+                    echo '<li><a href="'.$quest_url.'&amp;id='.$data[0].'" '.$disabled.'>'.$key.'</a> ( '.$data[2].' )';
+                    
                     display_children($questarray,$key); // List children (if any).
                     echo '</li>';
                 }
@@ -55,7 +52,7 @@ function listquests()
             echo 'limit to: '.DrawSelectBox('factions', $factions, 'factionLimit', $factionlimit, true);
             echo '<input type="submit" name="submit" value="limit results" /></div></form></td></tr></table><br/>';
             
-            $query = 'SELECT q.id, q.name, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
+            $query = 'SELECT q.id, q.name, q.flags, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
             
             // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
             // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between [].
@@ -104,7 +101,16 @@ function listquests()
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
             {
-                echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td><td>'.$row['player_lockout_time'];
+                echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td>';
+                if ($row['flags'] == 1) // if flag is 1, quest is disabled.
+                {
+                    echo '<td><span class="red">'.$row['name'].'</span></td>';
+                }
+                else
+                {
+                    echo '<td>'.$row['name'].'</td>';
+                }
+                echo '<td>'.$row['player_lockout_time'];
                 echo '</td><td>'.$row['quest_lockout_time'].'</td><td>'.htmlspecialchars($row['prerequisite']).'</td>';
                 echo '<td><a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';
                 echo '<br /><a href="./index.php?do=validatequest&amp;id='.$row['id'].'">Validate</a>';
@@ -119,6 +125,7 @@ function listquests()
                 echo '</td></tr>';
             }
             echo '</table>'."\n";
+            echo '<p>Any quest with a red name, is disabled on the server</p>';
         }
     }
     else
@@ -139,14 +146,23 @@ function parsePrereqScript($prereq)
     // parse trigger
     if ($istrigger==1)
     {
-        $pos = strpos($prereq, '<completed');
+        /*
+            notice that there is also the posibility to complete a category, we ignore that here. Also, in case of multiple or complex
+            requirements, this script ignores any "not" "and" or "or" tags, and further only looks at the first "completed quest" tag.
+        */
+        $pos = strpos($prereq, '<completed quest'); 
         if ( $pos != 0) // If some quest got completed, there is a parent, so grab the name
         {
+            $prereq = substr($prereq, $pos); // there could have been " marks before "completed quest", so we need to exclude those.
             $pos = strpos($prereq, '"');
             $endname = substr($prereq,$pos+1);
             $pos = strpos($endname, '"');
             $endname = substr($endname,0,$pos);
             $quest_name = $endname;  // and set the name in the variable.
+        }
+        else // Nothing got completed, so there is no parent, thus we set name to null again.
+        {
+            $quest_name = null;
         }
     }
     return $quest_name; // returns null if nothing was found and the name of the parent quest if it found one.
@@ -172,15 +188,13 @@ function display_children($questarray, $current)
                 echo '<ul>';
                 $list_started = true;
             }
+            // When editing any of this, remember "display_children" has the same code.
             $data = $data2[0]; // notice that data2[0] is an array itself containing all information about the quests.
-            if(checkaccess('quests', 'edit')) // Determine access and give proper links.
-            {
-                echo '<li><a href="./index.php?do=editquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
-            }
-            else 
-            {
-                echo '<li><a href="./index.php?do=readquest&amp;id='.$data[0].'">'.$key.'</a> ( '.$data[2].' )';
-            }
+            $disabled = ($data[3] == 1 ? 'class="red"' : ''); // determine if the quest is disabled, if so, make it red.
+            $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
+            
+            echo '<li><a href="'.$quest_url.'&amp;id='.$data[0].'" '.$disabled.'>'.$key.'</a> ( '.$data[2].' )';
+            
             display_children($questarray,$key);
             echo '</li>';
         }

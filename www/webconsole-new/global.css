@@ -123,3 +123,19 @@ a:visited{
 a:active{
   color:white;
 }
+
+a:link.red{
+  color:red;
+}
+
+a:visited.red{
+  color:red;
+}
+
+a:active.red{
+  color:red;
+}
+
+.red{
+  color:red;
+}
