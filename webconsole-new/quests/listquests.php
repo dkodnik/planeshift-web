@@ -15,8 +15,10 @@ function listquests()
             $result = mysql_query2($query);
             while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
                 $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags']); // store id, name and category in $data
-                $parent_name = parsePrereqScript($line['prerequisite']);
-                $data2 = array($data, $parent_name); // make a $data2 with the whole set of data as [0] and the name of the parent as [1] (or null if not found)
+                $prereqs = parsePrereqScript($line['prerequisite']);
+                $parent_name = $prereqs[0];
+                $errors = $prereqs[1];
+                $data2 = array($data, $parent_name, $errors); // make a $data2 with the whole set of data as [0] and the name of the parent as [1] (or null if not found) and [2] the errors made while parsing the prereqs.
                 $questarray[$line['name']] = $data2; // add the quest to  an array indexed by it's name.
             }
             echo '<ul>';
@@ -24,17 +26,22 @@ function listquests()
             foreach ($questarray as $key => $data2) {
                 if ($data2[1]==null)  
                 {
+                    // When editing any of this, remember "display_children" has the same code.
                     $data = $data2[0];
-                    $disabled = ($data[3] == 1 ? 'class="red"' : ''); // determine if the quest is disabled, if so, make it red.
+                    $quest_name = ($data[3] == 1 ? '<span class="red">'.$key.'</span>' : $key);
                     $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
-                    
-                    echo '<li><a href="'.$quest_url.'&amp;id='.$data[0].'" '.$disabled.'>'.$key.'</a> ( '.$data[2].' )';
-                    
+            
+                    echo '<li>'.$data2[2].' <a href="'.$quest_url.'&amp;id='.$data[0].'" >'.$quest_name.'</a> ( '.$data[2].' )';
+            
                     display_children($questarray,$key); // List children (if any).
                     echo '</li>';
                 }
             }
             echo '</ul>';
+            echo '<p>Any quest with a red name, is disabled on the server.<br />';
+            echo 'Any quest prefixed with [!1] requires completion of a category.<br />';
+            echo 'Any quest prefixed with [!2] is a complex script (containing either multiple quests, or and/or/not tags).<br />';
+            echo 'Quests with a prefix may be listed at a place that is either incorrect, or not the only place they belong, please check their prereq scripts yourself by clicking on the link.</p>';
         } 
         else  // normal quest listing mode. (chosen by default)
         {
@@ -125,7 +132,10 @@ function listquests()
                 echo '</td></tr>';
             }
             echo '</table>'."\n";
-            echo '<p>Any quest with a red name, is disabled on the server</p>';
+            echo '<p>Any quest with a red name, is disabled on the server.<br />';
+            echo 'Any quest prefixed with [!1] requires completion of a category.<br />';
+            echo 'Any quest prefixed with [!2] is a complex script (containing either multiple quests, or and/or/not tags).<br />';
+            echo 'Quests with a prefix may be listed at a place that is either incorrect, or not the only place they belong, please check their prereq scripts yourself by clicking on the link.</p>';
         }
     }
     else
@@ -138,6 +148,7 @@ function parsePrereqScript($prereq)
 	$pos = stristr($prereq, '<pre>');
 	$istrigger = 0;
 	$quest_name = null;
+    $error = '';
 	if ($pos != false) {
 		$istrigger = 1;
 		$quest_name = 1;
@@ -147,25 +158,36 @@ function parsePrereqScript($prereq)
     if ($istrigger==1)
     {
         /*
-            notice that there is also the posibility to complete a category, we ignore that here. Also, in case of multiple or complex
-            requirements, this script ignores any "not" "and" or "or" tags, and further only looks at the first "completed quest" tag.
+            check for complete cat, check for complex tags (<and><not><or> and multiple <completed quest" tags. If we find
+            a category, we make an error [!1], if we find a "complex" script, we give error [!2].
         */
         $pos = strpos($prereq, '<completed quest'); 
-        if ( $pos != 0) // If some quest got completed, there is a parent, so grab the name
+        if ( $pos !== false) // If some quest got completed, there is a parent, so grab the name
         {
-            $prereq = substr($prereq, $pos); // there could have been " marks before "completed quest", so we need to exclude those.
-            $pos = strpos($prereq, '"');
-            $endname = substr($prereq,$pos+1);
+            $my_prereq = substr($prereq, $pos); // there could have been " marks before "completed quest", so we need to exclude those.
+            $pos = strpos($my_prereq, '"');
+            $endname = substr($my_prereq,$pos+1);
             $pos = strpos($endname, '"');
             $endname = substr($endname,0,$pos);
             $quest_name = $endname;  // and set the name in the variable.
+            $my_prereq = substr($my_prereq, $pos); // change this to exclude our first "completed quest"
+            if (strpos($prereq, '<and>') !== false || strpos($prereq, '<or>') !== false || strpos($prereq, '<not>') !== false || 
+                strpos($my_prereq, '<completed quest') !== false)
+            {
+                $error = '[!2]';
+            }
         }
         else // Nothing got completed, so there is no parent, thus we set name to null again.
         {
             $quest_name = null;
+            if (strpos($prereq, '<completed category') !== false)
+            {
+                $error = '[!1]';
+            }
         }
     }
-    return $quest_name; // returns null if nothing was found and the name of the parent quest if it found one.
+    // returns null if nothing was found and the name of the parent quest if it found one in $quest_name. Also returns an error if found.
+    return array($quest_name, $error); 
 }
 
 
@@ -188,12 +210,12 @@ function display_children($questarray, $current)
                 echo '<ul>';
                 $list_started = true;
             }
-            // When editing any of this, remember "display_children" has the same code.
+            // When editing any of this, remember "list_quests" has the same code.
             $data = $data2[0]; // notice that data2[0] is an array itself containing all information about the quests.
-            $disabled = ($data[3] == 1 ? 'class="red"' : ''); // determine if the quest is disabled, if so, make it red.
+            $quest_name = ($data[3] == 1 ? '<span class="red">'.$key.'</span>' : $key);
             $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
             
-            echo '<li><a href="'.$quest_url.'&amp;id='.$data[0].'" '.$disabled.'>'.$key.'</a> ( '.$data[2].' )';
+            echo '<li>'.$data2[2].' <a href="'.$quest_url.'&amp;id='.$data[0].'" >'.$quest_name.'</a> ( '.$data[2].' )';
             
             display_children($questarray,$key);
             echo '</li>';
