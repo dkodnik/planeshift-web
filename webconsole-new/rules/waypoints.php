@@ -144,7 +144,7 @@ function listwaypoints(){
         $id = mysql_real_escape_string($_GET['id']);
         $query .= " WHERE w.id='$id'";
       }
-      elseif (isset($_GET['sector']) && $_GET['sector']!=''){
+      elseif (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != 0){
         $sec = mysql_real_escape_string($_GET['sector']);
         $query .= " WHERE w.loc_sector_id='$sec'";
       }
@@ -166,34 +166,41 @@ function listwaypoints(){
         $query .= ' ORDER BY sector, name';
       }
       if (isset($_GET['limit']) && is_numeric($_GET['limit'])){
-        $lim = $_GET['limit'] - 30;
-        $finlim = $lim + 30;
-        $query = $query . " LIMIT $lim, $finlim";
+        $prev_lim = $_GET['limit'] - 30;
+        $lim = $_GET['limit'];
+        $query = $query . " LIMIT $prev_lim, 30"; // limit 1, 10 is offset 1, taking 10 records.
       }else{
         $query = $query . " LIMIT 30";
-        $_GET['limit'] = 30;
+        $lim = 30;
+        $prev_lim = 0;
       }
       $result = mysql_query2($query);
       if (mysql_numrows($result) == 0){
         echo '<p class="error">No Waypoints</p>';
       }else{
-        if ($_GET['limit'] > 30){
-          echo '<a href="./index.php?do=waypoint';
-          if (isset($_GET['sort'])){
-            echo '&amp;sort='.$_GET['sort'];
-          }
-          $lim = $_GET['limit'] -30;
-          echo '&amp;limit='.$lim.'">Previous Page</a> ';
+        $sid = 0;
+        if (isset($_GET['sector']))
+        {
+            $sid = $_GET['sector'];
         }
-        $lim = $_GET['limit'] - 30;
-        echo ' - Displaying records '.$lim.' through '.$_GET['limit'].' - ';
-        if (mysql_numrows($result) == 30){
+        if ($lim > 30){
           echo '<a href="./index.php?do=waypoint';
           if (isset($_GET['sort'])){
             echo '&amp;sort='.$_GET['sort'];
           }
-          $lim = $_GET['limit'] +30;
-          echo '&amp;limit='.$lim.'">Next Page</a>';
+          echo '&amp;limit='.$prev_lim.'&amp;sector='.$sid.'">Previous Page</a> ';
+        }
+        echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
+        $where = ($sid == 0 ? '' : " WHERE w.loc_sector_id=$sid");
+        $result2 = mysql_query2('select count(w.id) AS mylimit FROM sc_waypoints AS w'.$where);
+        $row2 = mysql_fetch_array($result2);
+        if ($row2['mylimit'] > $lim)
+        {
+          echo '<a href="./index.php?do=waypoint';
+          if (isset($_GET['sort'])){
+            echo '&amp;sort='.$_GET['sort'];
+          }
+          echo '&amp;limit='.($lim+30).'&amp;sector='.$sid.'">Next Page</a>';
         }
         $Sectors = PrepSelect('sectorid');
         if (!isset($_GET['sector'])){

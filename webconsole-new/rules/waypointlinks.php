@@ -37,8 +37,8 @@ function listwaypointlinks()
         if (isset($_GET['limit']) && is_numeric($_GET['limit']))
         {
             $start = $_GET['limit'] - 30;
-            $limit = $_GET['limit'];
-            $query = $query . " LIMIT $start, $limit";
+            $limit = $_GET['limit']; 
+            $query = $query . " LIMIT $start, 30"; // mysql usage: limit 1, 10  starts at 1, lasts 10 records, so we want this hardcoded as 30, since we don't allow step sizes here yet.
         }
         else
         {
@@ -51,6 +51,11 @@ function listwaypointlinks()
         }
         else
         {
+            $sid = 0;
+            if (isset($_GET['sector']))
+            {
+                $sid = $_GET['sector'];
+            }
             $prev_lim = $limit - 30;
             if ($limit > 30)
             {
@@ -59,10 +64,13 @@ function listwaypointlinks()
                 {
                     echo '&amp;sort='.$_GET['sort'];
                 }
-                echo '&amp;limit='.$prev_lim.'">Previous Page</a> ';
+                echo '&amp;limit='.$prev_lim.'&amp;sector='.$sid.'">Previous Page</a> ';
             }
             echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
-            if (mysql_numrows($result) == 30)
+            $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
+            $result2 = mysql_query2('select count(wl.id) AS mylimit FROM sc_waypoint_links AS wl'.$where);
+            $row2 = mysql_fetch_array($result2);
+            if ($row2['mylimit'] > $limit)
             {
                 echo '<a href="./index.php?do=listwaypointlinks';
                 if (isset($_GET['sort']))
@@ -70,16 +78,11 @@ function listwaypointlinks()
                     echo '&amp;sort='.$_GET['sort'];
                 }
                 $next_lim = $limit + 30;
-                echo '&amp;limit='.$next_lim.'">Next Page</a>';
+                echo '&amp;limit='.$next_lim.'&amp;sector='.$sid.'">Next Page</a>';
             }
             
             $sectors = PrepSelect('sectorid');
             echo '<form action="./index.php" method="get"><input type="hidden" name="do" value="listwaypointlinks"/>';
-            $sid = 0;
-            if (isset($_GET['sector']))
-            {
-                $sid = $_GET['sector'];
-            }
             if (isset($_GET['sort']))
             {
                 echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'"/>';

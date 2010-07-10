@@ -115,7 +115,7 @@ function listlocations(){
       if (isset($_GET['limit'])){
         $lim = mysql_real_escape_string($_GET['limit']);
         $ll = $lim - 30;
-        $query = $query . " LIMIT $ll, $lim";
+        $query = $query . " LIMIT $ll, 30"; // limit 1, 10 uses offset 1, then 10 records.
       }else{
         $query = $query . " LIMIT 0, 30";
         $ll = 0;
@@ -133,7 +133,10 @@ function listlocations(){
           echo '&amp;limit='.$ll.'">Previous Page</a>';
         }
         echo ' - Displaying records '.$ll.' through '.$lim.' - ';
-        if (mysql_numrows($result) == 30){
+        $result2 = mysql_query2('select count(id) AS mylimit FROM sc_locations');
+        $row2 = mysql_fetch_array($result2);
+        if ($row2['mylimit'] > $lim)
+        {
           echo '<a href="./index.php?do=location';
           if (isset($_GET['sort'])){
             echo '&amp;sort='.$_GET['sort'];
