@@ -37,7 +37,7 @@ function listpathpoints()
         {
             $start = $_GET['limit'] - 30;
             $limit = $_GET['limit'];
-            $query = $query . " LIMIT $start, $limit";
+            $query = $query . " LIMIT $start, 30"; // limit 1, 10 is offset 1, 30 records.
         }
         else
         {
@@ -50,6 +50,11 @@ function listpathpoints()
         }
         else
         {
+            $sid = 0;
+            if (isset($_GET['sector']))
+            {
+                $sid = $_GET['sector'];
+            }
             $prev_lim = $limit - 30;
             if ($limit > 30)
             {
@@ -58,10 +63,13 @@ function listpathpoints()
                 {
                     echo '&amp;sort='.$_GET['sort'];
                 }
-                echo '&amp;limit='.$prev_lim.'">Previous Page</a> ';
+                echo '&amp;limit='.$prev_lim.'&amp;sector='.$sid.'">Previous Page</a> ';
             }
             echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
-            if (mysql_numrows($result) == 30)
+            $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
+            $result2 = mysql_query2('select count(p.id) AS mylimit FROM sc_path_points AS p'.$where);
+            $row2 = mysql_fetch_array($result2);
+            if ($row2['mylimit'] > $limit)
             {
                 echo '<a href="./index.php?do=listpathpoints';
                 if (isset($_GET['sort']))
@@ -69,7 +77,7 @@ function listpathpoints()
                     echo '&amp;sort='.$_GET['sort'];
                 }
                 $next_lim = $limit + 30;
-                echo '&amp;limit='.$next_lim.'">Next Page</a>';
+                echo '&amp;limit='.$next_lim.'&amp;sector='.$sid.'">Next Page</a>';
             }
             $sectors = PrepSelect('sectorid');
             echo '<form action="./index.php" method="get"><input type="hidden" name="do" value="listpathpoints"/>';
