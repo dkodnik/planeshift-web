@@ -471,7 +471,7 @@ function npc_items(){
         }else if ($_POST['commit'] == 'Change Location'){
           $inst_id = mysql_real_escape_string($_POST['id']);
           $slot = mysql_real_escape_string($_POST['slot']);
-          $query = "UPDATE item_instances SET location_in_parent='$slot', WHERE id='$inst_id'";
+          $query = "UPDATE item_instances SET location_in_parent='$slot' WHERE id='$inst_id'";
         }else if ($_POST['commit'] == 'Add'){
           $item = mysql_real_escape_string($_POST['item_id']);
           $query = "SELECT MAX(location_in_parent) AS loc FROM item_instances WHERE char_id_owner='$id' AND location_in_parent>15";
