@@ -41,6 +41,7 @@ function listals(){
           echo '</select><br/>';
           echo 'Script: <textarea name="response" rows="4" cols="50">'.$row['response'].'</textarea><br/>';
           echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)<br/>';
+          echo 'Instance: <input type="text" name="pos_instance" value="'.$row['pos_instance'] .'" /> -- (Indicates from which istance this AL will be accessible. Default: 4294967295 means "all instances".)<br/>';
           echo '<input type="submit" name="submit" value="Update" />';
           if (checkaccess('als', 'delete')){
             echo '</form> -- <form action="./index.php?do=deleteal" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="delete" value="Delete AL" />';
@@ -79,7 +80,8 @@ function edital(){
       $triggertype = mysql_real_escape_string($_POST['radius']);
       $responsetype = mysql_real_escape_string($_POST['responsetype']);
       $response = mysql_real_escape_string($_POST['response']);
-      $query = "UPDATE action_locations SET master_id='$master_id', name='$name', meshname='$meshname', polygon='$polygon', radius='$radius', triggertype='$triggertype', responsetype='$responsetype', response='$response' WHERE id='$id'";
+      $pos_instance = mysql_real_escape_string($_POST['pos_instance']);
+      $query = "UPDATE action_locations SET master_id='$master_id', name='$name', meshname='$meshname', polygon='$polygon', radius='$radius', triggertype='$triggertype', responsetype='$responsetype', response='$response', pos_instance='$pos_instance' WHERE id='$id'";
       $result = mysql_query2($query);
       $_GET['sector'] = $_POST['sector'];
       echo '<p class="error">Update Successful</p>';

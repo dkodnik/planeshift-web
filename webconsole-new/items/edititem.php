@@ -60,6 +60,7 @@ function edititem(){
         echo '<tr><td>cstr_gfx_texture</td><td><input type="text" name="cstr_gfx_texture" value="'.$row['cstr_gfx_texture'].'"/></td></tr>';
         echo '<tr><td>cstr_part</td><td><input type="text" name="cstr_part" value="'.$row['cstr_part'].'"/></td></tr>';
         echo '<tr><td>cstr_part_mesh</td><td><input type="text" name="cstr_part_mesh" value="'.$row['cstr_part_mesh'].'"/></td></tr>';
+        echo '<tr><td>removed_mesh</td><td><input type="text" name="removed_mesh" value="'.$row['removed_mesh'].'"/></td></tr>';
         echo '<tr><td>armorvsweapon_type</td><td><input type="text" name="armorvsweapon_type" value="'.$row['armorvsweapon_type'].'" /></td></tr>';
         $category_result = PrepSelect('category');
         echo '<tr><td>category_id</td><td>'.DrawSelectBox('category', $category_result, 'category_id', $row['category_id']).'</td></tr>';
@@ -90,6 +91,17 @@ function edititem(){
         echo '</td></tr>';
         echo '<tr><td>max_charges</td><td><input type="text" name="max_charges" value="'.$row['max_charges'].'" /></td></tr>';
         echo '<tr><td>weapon_range</td><td><input type="text" name="weapon_range" value="'.$row['weapon_range'].'" /></td></tr>';
+        echo '<tr><td>assigned_command</td><td><input type="text" name="assigned_command" value="'.$row['assigned_command'].'" /></td></tr>';
+        echo '<tr><td>spawnable</td><td>';
+        if ($row['spawnable'] == "Y")
+        {
+            echo '<select name="spawnable"><option value="N">False</option><option value="Y" selected="true">True</option></select>';
+        }
+        else
+        {
+            echo '<select name="spawnable"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
+        }
+        echo '</td></tr>';
         echo '</table>';
         echo '<input type="submit" name="submit" value="Submit Changes" />';
         echo '</form>';
@@ -174,7 +186,9 @@ function edititem(){
       $cstr_part = mysql_real_escape_string($_POST['cstr_part']);
       $query = $query . "cstr_part='$cstr_part', ";
       $cstr_part_mesh = mysql_real_escape_string($_POST['cstr_part_mesh']);
-      $query = $query . "cstr_part_mesh='$cstr_part_mesh', ";
+      $query = $query . "cstr_part_mesh='$cstr_part_mesh', ";  
+      $removed_mesh = mysql_real_escape_string($_POST['removed_mesh']);
+      $query = $query . "removed_mesh='$removed_mesh', ";
       $armorvsweapon_type = mysql_real_escape_string($_POST['armorvsweapon_type']);
       $query = $query . "armorvsweapon_type='$armorvsweapon_type', ";
       $category_id = mysql_real_escape_string($_POST['category_id']);
@@ -220,7 +234,11 @@ function edititem(){
       $max_charges = mysql_real_escape_string($_POST['max_charges']);
       $query = $query . "max_charges='$max_charges', ";
       $weapon_range = mysql_real_escape_string($_POST['weapon_range']);
-      $query = $query . "weapon_range='$weapon_range' ";
+      $query = $query . "weapon_range='$weapon_range', ";
+      $assigned_command = mysql_real_escape_string($_POST['assigned_command']);
+      $query = $query . "assigned_command='$assigned_command', ";
+      $spawnable = mysql_real_escape_string($_POST['spawnable']);
+      $query = $query . "spawnable='$spawnable' ";
       $query = $query . "WHERE id=$id";
       $result = mysql_query2($query);
       if (isset($new_id))

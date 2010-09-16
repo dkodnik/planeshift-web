@@ -34,13 +34,14 @@ function raceinfo(){
         $base_mental_regen_still = mysql_real_escape_string($_POST['base_mental_regen_still']);
         $base_mental_regen_walk = mysql_real_escape_string($_POST['base_mental_regen_walk']);
         $armor_id = mysql_real_escape_string($_POST['armor_id']);
+        $weapon_id = mysql_real_escape_string($_POST['weapon_id']);
         $helm = mysql_real_escape_string($_POST['helm']);
         $bracer = mysql_real_escape_string($_POST['bracer']);
         $belt = mysql_real_escape_string($_POST['belt']);
         $cloak = mysql_real_escape_string($_POST['cloak']);
         $speed_modifier = mysql_real_escape_string($_POST['speed_modifier']);
         $scale = mysql_real_escape_string($_POST['scale']);
-        $query = "UPDATE race_info SET name='$name', sex='$sex', size_x='$size_x', size_y='$size_y', size_z='$size_z', initial_cp='$initial_cp', start_str='$start_str', start_end='$start_end', start_agi='$start_agi', start_int='$start_int', start_will='$start_will', start_cha='$start_cha', base_physical_regen_still='$base_physical_regen_still', base_physical_regen_walk='$base_physical_regen_walk', base_mental_regen_still='$base_mental_regen_still', base_mental_regen_walk='$base_mental_regen_walk', armor_id='$armor_id', helm='$helm', bracer='$bracer', belt='$belt', cloak='$cloak', speed_modifier='$speed_modifier', scale='$scale' WHERE id='$id'";
+        $query = "UPDATE race_info SET name='$name', sex='$sex', size_x='$size_x', size_y='$size_y', size_z='$size_z', initial_cp='$initial_cp', start_str='$start_str', start_end='$start_end', start_agi='$start_agi', start_int='$start_int', start_will='$start_will', start_cha='$start_cha', base_physical_regen_still='$base_physical_regen_still', base_physical_regen_walk='$base_physical_regen_walk', base_mental_regen_still='$base_mental_regen_still', base_mental_regen_walk='$base_mental_regen_walk', armor_id='$armor_id', weapon_id='$weapon_id', helm='$helm', bracer='$bracer', belt='$belt', cloak='$cloak', speed_modifier='$speed_modifier', scale='$scale' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -113,7 +114,10 @@ function raceinfo(){
         echo '<tr><td>Base Charisma:</td><td><input type="text" name="start_cha" value="'.$row['start_cha'].'"/></td></tr>';
         echo '<tr><td>Physical Rengeneration (Standing/Walking):</td><td><input type="text" name="base_physical_regen_still" value="'.$row['base_physical_regen_still'].'"/> / <input type="text" name="base_physical_regen_walk" value="'.$row['base_physical_regen_walk'].'" /></td></tr>';
         echo '<tr><td>Mental Regeneration (Standing/Walking):</td><td><input type="text" name="base_mental_regen_still" value="'.$row['base_mental_regen_still'].'"/> / <input type="text" name="base_mental_regen_walk" value="'.$row['base_mental_regen_walk'].'" /></td></tr>';
-        echo '<tr><td>Armor ID:</td><td><input type="text" name="armor_id" value="'.$row['armor_id'].'"/></td></tr>';
+        $armors = PrepSelect('armor');
+        $weapons = PrepSelect('weapon');
+        echo '<tr><td>Armor ID:</td><td>'.DrawSelectBox('armor', $armors, 'armor_id', $row['armor_id'], true).'</td></tr>';
+        echo '<tr><td>Weapon ID:</td><td>'.DrawSelectBox('weapon', $weapons, 'weapon_id', $row['weapon_id'], true).'</td></tr>';
         echo '<tr><td>Helm:</td><td><input type="text" name="helm" value="'.$row['helm'].'"/></td></tr>';
         echo '<tr><td>Bracer:</td><td><input type="text" name="bracer" value="'.$row['bracer'].'"/></td></tr>';
         echo '<tr><td>Belt:</td><td><input type="text" name="belt" value="'.$row['belt'].'"/></td></tr>';  
@@ -156,10 +160,10 @@ function raceinfo(){
         $Spawns[$raceid][$i]['sector_id'] = $row['sector_id'];
         $Spawns[$raceid][$i]['sector_name'] = $row['name'];
       }
-      $query = "SELECT * FROM race_info ORDER BY name, sex";
+      $query = "SELECT ri.*, ist.name AS armor_name, ist.category_id AS armor_cat, iss.name AS weapon_name, iss.category_id AS weapon_cat FROM race_info AS ri LEFT JOIN item_stats AS ist ON ist.id=ri.armor_id LEFT JOIN item_stats AS iss ON iss.id=ri.weapon_id ORDER BY name, sex";
       $result = mysql_query2($query);
       echo '<table>';
-      echo '<tr><th>ID</th><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Scale</th><th>Spawn Points</th>';
+      echo '<tr><th>ID</th><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>weapon_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Scale</th><th>Spawn Points</th>';
       if (checkaccess('rules', 'edit')){
         echo '<th>Actions</th>';
       }
@@ -186,7 +190,8 @@ function raceinfo(){
         echo '<td>'.$row['start_cha'].'</td>';
         echo '<td>'.$row['base_physical_regen_still'].' / '.$row['base_physical_regen_walk'].'</td>';
         echo '<td>'.$row['base_mental_regen_still'].' / '.$row['base_mental_regen_walk'].'</td>';
-        echo '<td>'.$row['armor_id'].'</td>';
+        echo '<td><a href="./index.php?do=listitems&amp;category='.$row['armor_cat'].'&amp;item='.$row['armor_id'].'">'.$row['armor_name'].'</a></td>';
+        echo '<td><a href="./index.php?do=listitems&amp;category='.$row['weapon_cat'].'&amp;item='.$row['weapon_id'].'">'.$row['weapon_name'].'</a></td>';
         echo '<td>'.$row['helm'].'</td>';
         echo '<td>'.$row['bracer'].'</td>';
         echo '<td>'.$row['belt'].'</td>'; 
