@@ -979,7 +979,18 @@ function npcdetails(){
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         echo '<form action="index.php?do=deletenpc&id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
-        echo '<input type="submit" value="delete NPC"></form>';
+        if (checkaccess('npcs', 'delete'))
+        {
+            if ($row['character_type'] == 1 || $row['character_type'] == 3) 
+            {
+                echo '<input type="submit" value="delete NPC">';
+            }
+            else
+            {
+                echo '<br />';
+            }
+        }
+        echo '</form>';
         $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
       }
     }
