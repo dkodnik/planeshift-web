@@ -178,6 +178,11 @@ function createitem(){
         $cstr_part_mesh = mysql_real_escape_string($_POST['cstr_part_mesh']);
         $cols = $cols . ', cstr_part_mesh';
         $values = $values . ", '$cstr_part_mesh'";
+      } 
+      if (isset($_POST['removed_mesh'])){
+        $removed_mesh = mysql_real_escape_string($_POST['removed_mesh']);
+        $cols = $cols . ', removed_mesh';
+        $values = $values . ", '$removed_mesh'";
       }
       if (isset($_POST['armorvsweapon_type'])){
         $armorvsweapon_type = mysql_real_escape_string($_POST['armorvsweapon_type']);
@@ -289,6 +294,16 @@ function createitem(){
         $cols = $cols . ', weapon_range';
         $values = $values . ", '$weapon_range'";
       }
+      if (isset($_POST['assigned_command']) && trim($_POST['assigned_command']) != ""){
+        $assigned_command = mysql_real_escape_string($_POST['assigned_command']);
+        $cols = $cols . ', assigned_command';
+        $values = $values . ", '$assigned_command'";
+      }
+      if (isset($_POST['spawnable']) && trim($_POST['spawnable']) != ""){
+        $spawnable = mysql_real_escape_string($_POST['spawnable']);
+        $cols = $cols . ', spawnable';
+        $values = $values . ", '$spawnable'";
+      }
    // Finish preparing the query
       $query = $query . $cols . ')' . $values . ')';
       $result = mysql_query2($query);
@@ -340,6 +355,7 @@ function createitem(){
       echo '<tr><td>cstr_gfx_texture</td><td><input type="text" name="cstr_gfx_texture"/></td></tr>';
       echo '<tr><td>cstr_part</td><td><input type="text" name="cstr_part"/></td></tr>';
       echo '<tr><td>cstr_part_mesh</td><td><input type="text" name="cstr_part_mesh"/></td></tr>';
+      echo '<tr><td>removed_mesh</td><td><input type="text" name="removed_mesh"/></td></tr>';
       echo '<tr><td>armorvsweapon_type</td><td><input type="text" name="armorvsweapon_type" /></td></tr>';
       $category_result = PrepSelect('category');
       echo '<tr><td>category_id</td><td>'.DrawSelectBox('category', $category_result, 'category_id', '').'</td></tr>';
@@ -366,6 +382,8 @@ function createitem(){
       echo '</td></tr>';
       echo '<tr><td>max_charges</td><td><input type="text" name="max_charges" /></td></tr>';
       echo '<tr><td>weapon_range</td><td><input type="text" name="weapon_range" /></td></tr>';
+      echo '<tr><td>assigned_command</td><td><input type="text" name="assigned_command" /></td></tr>';
+      echo '<tr><td>spawnable</td><td><select name="spawnable"><option value="N">False</option><option value="Y" selected="true">True</option></select></td></tr>';
       echo '</table>';
       echo '<input type="submit" name="submit" value="Submit Changes" />';
       echo '</form>';

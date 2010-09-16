@@ -46,14 +46,15 @@ function listspawnrules(){
       if (checkaccess('npcs', 'edit')){
         echo '<form action="./index.php?do=editspawnrule" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/><table>';
         echo '<tr><td>Min Spawn Time:</td><td><input type="text" name="min_spawn_time" value="'.$row['min_spawn_time'].'"/></td><td>Max Spawn Time:</td><td><input type="text" name="max_spawn_time" value="'.$row['max_spawn_time'].'"/></td></tr>';
-        echo '<tr><td>Substitute Spawn Odds:</td><td><input type="text" name="subsitute_spawn_odds" value="'.$row['substitute_spawn_odds'].'"/></td><td>Substitute NPC:</td><td><input type="text" name="substitute_player" value="'.$row['substitute_player'].'"/></td></tr>';
+        echo '<tr><td>Substitute Spawn Odds:</td><td><input type="text" name="substitute_spawn_odds" value="'.$row['substitute_spawn_odds'].'"/></td><td>Substitute NPC:</td><td><input type="text" name="substitute_player" value="'.$row['substitute_player'].'"/></td></tr>';
         echo '<tr><td>Fixed X:</td><td><input type="text" name="fixed_spawn_x" value="'.$row['fixed_spawn_x'].'"/></td><td>Fixed Y:</td><td><input type="text" name="fixed_spawn_y" value="'.$row['fixed_spawn_y'].'"/></td></tr>';
         echo '<tr><td>Fixed Z:</td><td><input type="text" name="fixed_spawn_z" value="'.$row['fixed_spawn_z'].'"/></td><td>Fixed Rot:</td><td><input type="text" name="fixed_spawn_rot" value="'.$row['fixed_spawn_rot'].'"/></td></tr>';
-        echo '<tr><td>Fixed sector:</td><td><input type="text" name="fixed_spawn_sector" value="'.$row['fixed_spawn_sector'].'"/></td><td>Fixed instance:</td><td><input type="text" name="fixed_spawn_intstance" value="'.$row['fixed_spawn_instance'].'"/></td></tr>';
+        echo '<tr><td>Fixed sector:</td><td><input type="text" name="fixed_spawn_sector" value="'.$row['fixed_spawn_sector'].'"/></td><td>Fixed instance:</td><td><input type="text" name="fixed_spawn_instance" value="'.$row['fixed_spawn_instance'].'"/></td></tr>';
         if (!isset($loot_result)){
           $loot_result = PrepSelect('loot');
         }
         echo '<tr><td>Loot Category ID:</td><td>'.DrawSelectbox('loot', $loot_result, 'loot_category_id', $row['loot_category_id'], TRUE).'</td><td>Dead Time</td><td><input type="text" name="dead_remain_time" value="'.$row['dead_remain_time'].'"/></td></tr>';
+        echo '<tr><td>Minimal Spawn Spacing Disatance: </td><td><input type="text" name="min_spawn_spacing_dist" value="'.$row['min_spawn_spacing_dist'].'" /></td><td></td><td></td></tr>';
         echo '</table><input type="submit" name="commit" value="Update Spawn Rule"/></form>';
       }else{
         echo '<table>';
@@ -63,6 +64,7 @@ function listspawnrules(){
         echo '<tr><td>Fixed Z:</td><td>'.$row['fixed_spawn_z'].'</td><td>Fixed Rot:</td><td>'.$row['fixed_spawn_rot'].'</td></tr>';
         echo '<tr><td>Fixed sector:</td><td>'.$row['fixed_spawn_sector'].'</td><td>Fixed instance:</td><td>'.$row['fixed_spawn_instance'].'</td></tr>';
         echo '<tr><td>Loot Category ID:</td><td>'.$row['loot_category_id'].'</td><td>Dead Time</td><td>'.$row['dead_remain_time'].'</td></tr>';
+        echo '<tr><td>Minimal Spawn Spacing Disatance: </td><td>'.$row['min_spawn_spacing_dist'].'</td><td></td><td></td></tr>';
         echo '</table>';
       }
       echo '<hr/>';
@@ -167,7 +169,8 @@ function editspawnrule(){
         $fixed_spawn_instance = mysql_real_escape_string($_POST['fixed_spawn_instance']);
         $loot_category_id = mysql_real_escape_string($_POST['loot_category_id']);
         $dead_remain_time = mysql_real_escape_string($_POST['dead_remain_time']);
-        $query = "UPDATE npc_spawn_rules SET min_spawn_time='$min_spawn_time', max_spawn_time='$max_spawn_time', substitute_spawn_odds='$substitute_spawn_odds', substitute_player='$substitute_player', fixed_spawn_x='$fixed_spawn_x', fixed_spawn_y='fixed_spawn_y', fixed_spawn_z='fixed_spawn_z', fixed_spawn_rot='$fixed_spawn_rot', fixed_spawn_sector='$fixed_spawn_sector', fixed_spawn_instance='$fixed_spawn_instance', loot_category_id='$loot_category_id', dead_remain_time='$dead_remain_time' WHERE id='$id'";
+        $min_spawn_spacing_dist = mysql_real_escape_string($_POST['min_spawn_spacing_dist']);
+        $query = "UPDATE npc_spawn_rules SET min_spawn_time='$min_spawn_time', max_spawn_time='$max_spawn_time', substitute_spawn_odds='$substitute_spawn_odds', substitute_player='$substitute_player', fixed_spawn_x='$fixed_spawn_x', fixed_spawn_y='$fixed_spawn_y', fixed_spawn_z='$fixed_spawn_z', fixed_spawn_rot='$fixed_spawn_rot', fixed_spawn_sector='$fixed_spawn_sector', fixed_spawn_instance='$fixed_spawn_instance', loot_category_id='$loot_category_id', dead_remain_time='$dead_remain_time', min_spawn_spacing_dist='$min_spawn_spacing_dist' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
