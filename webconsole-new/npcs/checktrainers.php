@@ -55,7 +55,7 @@ function checktrainers()
     {
         echo '<p class="header">Check Trainers</p>';
         
-        $sql = 'SELECT c.id, c.name, s.name AS sector_name FROM characters AS c JOIN sectors AS s ON c.loc_sector_id=s.id WHERE character_type=1';
+        $sql = 'SELECT c.id, c.name, s.name AS sector_name FROM characters AS c JOIN sectors AS s ON c.loc_sector_id=s.id WHERE character_type=1 AND s.name!="NPCroom" AND s.name!="NPCroom1" AND s.name!="NPCroom2" AND s.name!="NPCroom3"';
         $query = mysql_query2($sql);
         $names = array();
         $sectors = array();
