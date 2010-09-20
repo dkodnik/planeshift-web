@@ -188,7 +188,8 @@
   </p>
   
   <?php
-  echo recaptcha_get_html($publickey, $error);
+  if($publickey != null && $publickey != '')
+    echo recaptcha_get_html($publickey, $error);
   ?>
 
   <p>
