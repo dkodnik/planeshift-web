@@ -184,8 +184,8 @@ function PrepSelect($a){
   $typevals["patterns"] = "SELECT id, pattern_name FROM trade_patterns ORDER BY pattern_name";
   $typevals["mind_slot_items"] = "SELECT id, name FROM item_stats WHERE stat_type='B' AND valid_slots LIKE '%MIND%' ORDER BY name";
   $typevals["waypoints"] = "SELECT w.id, CONCAT(s.name, ' -- ', w.name, ' -- ', ' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) FROM sc_waypoints AS w LEFT JOIN sectors AS s ON w.loc_sector_id=s.id ORDER BY s.name, w.name";
-  $typevals["weapon"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name = 'Weapons' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
-  $typevals["armor"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name = 'Armor' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
+  $typevals["weapon"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Weapons%' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
+  $typevals["armor"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Armor%' AND c.name!= 'Armor Parts' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["factions"] = "SELECT faction_name, faction_name FROM factions";
   
   $query = $typevals[$type];
