@@ -55,7 +55,12 @@ function listspawnrules(){
         }
         echo '<tr><td>Loot Category ID:</td><td>'.DrawSelectbox('loot', $loot_result, 'loot_category_id', $row['loot_category_id'], TRUE).'</td><td>Dead Time</td><td><input type="text" name="dead_remain_time" value="'.$row['dead_remain_time'].'"/></td></tr>';
         echo '<tr><td>Minimal Spawn Spacing Disatance: </td><td><input type="text" name="min_spawn_spacing_dist" value="'.$row['min_spawn_spacing_dist'].'" /></td><td></td><td></td></tr>';
-        echo '</table><input type="submit" name="commit" value="Update Spawn Rule"/></form>';
+        echo '<tr><td><input type="submit" name="commit" value="Update Spawn Rule"/></form></td><td>';
+        if (checkaccess('npcs', 'delete')){
+            echo '<form action="./index.php?do=editspawnrule" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
+            echo '<input type="submit" name="commit" value="Delete Spawn Rule"/></form>';
+        }
+        echo '</td></tr></table>';
       }else{
         echo '<table>';
         echo '<tr><td>Min Spawn Time:</td><td>'.$row['min_spawn_time'].'</td><td>Max Spawn Time:</td><td>'.$row['max_spawn_time'].'</td></tr>';
@@ -187,6 +192,9 @@ function editspawnrule(){
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else if ($_POST['commit'] == "Create New Rule"){
+        if (!checkaccess('npcs', 'create')) {
+            echo '<p class="error">You are not authorized to use these functions</p>';
+        }
         $name = mysql_real_escape_string($_POST['name']);
         $query = "INSERT INTO npc_spawn_rules (name) VALUES ('$name')";
         $result = mysql_query2($query);
@@ -210,6 +218,16 @@ function editspawnrule(){
         $radius = mysql_real_escape_string($_POST['radius']);
         $query = "INSERT INTO npc_spawn_ranges (npc_spawn_rule_id, x1, y1, z1, x2, y2, z2, sector_id, range_type_code, radius) VALUES ('$id', '$x1', '$y1', '$z1', '$x2', '$y2', '$z2', '$sector_id', '$range_type_code', '$radius')";
         $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        listspawnrules();
+      } else if ($_POST['commit'] == "Delete Spawn Rule"){  
+        if (!checkaccess('npcs', 'delete')) {
+            echo '<p class="error">You are not authorized to use these functions</p>';
+        }
+        $query = "DELETE FROM npc_spawn_ranges WHERE npc_spawn_rule_id='$id'";
+        mysql_query2($query);
+        $query = "DELETE FROM npc_spawn_rules WHERE id='$id'";
+        mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else{
