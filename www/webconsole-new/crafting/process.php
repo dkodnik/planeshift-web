@@ -120,7 +120,7 @@ function editprocess(){
     if (mysql_num_rows($result) > 0)  
     {
         echo '<p>Transformations using this process:</p>';
-        echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
+        echo '<table><tr><th>Pattern</th><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
         $alt = false;
         while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
             $alt = !$alt;
