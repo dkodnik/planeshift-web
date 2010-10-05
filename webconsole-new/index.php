@@ -447,6 +447,12 @@
         rulesmain();
         listwaypoints();
         break;
+      case 'waypointalias':
+        include('./rules/rulesmain.php');
+        include('./rules/waypointaliases.php');
+        rulesmain();
+        listwaypointaliases();
+        break;
       case 'listwaypointlinks':
         include('./rules/rulesmain.php');
         include('./rules/waypointlinks.php');
