@@ -63,14 +63,15 @@ function edititem(){
         echo '<tr><td>removed_mesh</td><td><input type="text" name="removed_mesh" value="'.$row['removed_mesh'].'"/></td></tr>';
         echo '<tr><td>armorvsweapon_type</td><td><input type="text" name="armorvsweapon_type" value="'.$row['armorvsweapon_type'].'" /></td></tr>';
         $category_result = PrepSelect('category');
+        $skillname_result = PrepSelect('skillnames');
         echo '<tr><td>category_id</td><td>'.DrawSelectBox('category', $category_result, 'category_id', $row['category_id']).'</td></tr>';
         echo '<tr><td>base_sale_price</td><td><input type="text" name="base_sale_price" value="'.$row['base_sale_price'].'"/></td></tr>';
         echo '<tr><td>item_type</td><td><input type="text" name="item_type" value="'.$row['item_type'].'" /></td></tr>';
-        echo '<tr><td>requirement_1_name</td><td>'.DrawSelectBox('skill', $skill_result, 'requirement_1_name', $row['requirement_1_name'], 'true').'</td></tr>';
+        echo '<tr><td>requirement_1_name</td><td>'.DrawSelectBox('skillnames', $skillname_result, 'requirement_1_name', $row['requirement_1_name'], 'true').'</td></tr>';
         echo '<tr><td>requirement_1_value</td><td><input type="text" name="requirement_1_value" value="'.$row['requirement_1_value'].'"/></td></tr>';
-        echo '<tr><td>requirement_2_name</td><td>'.DrawSelectBox('skill', $skill_result, 'requirement_2_name', $row['requirement_2_name'], 'true').'</td></tr>';
+        echo '<tr><td>requirement_2_name</td><td>'.DrawSelectBox('skillnames', $skillname_result, 'requirement_2_name', $row['requirement_2_name'], 'true').'</td></tr>';
         echo '<tr><td>requirement_2_value</td><td><input type="text" name="requirement_2_value" value="'.$row['requirement_2_value'].'"/></td></tr>';
-        echo '<tr><td>requirement_3_name</td><td>'.DrawSelectBox('skill', $skill_result, 'requirement_3_name', $row['requirement_3_name'], 'true').'</td></tr>';
+        echo '<tr><td>requirement_3_name</td><td>'.DrawSelectBox('skillnames', $skillname_result, 'requirement_3_name', $row['requirement_3_name'], 'true').'</td></tr>';
         echo '<tr><td>requirement_3_value</td><td><input type="text" name="requirement_3_value" value="'.$row['requirement_3_value'].'"/></td></tr>';
         echo '<tr><td>item_type_id_ammo</td><td><input type="text" name="item_type_id_ammo" value="'.$row['item_type_id_ammo'].'"/></td></tr>';
         echo '<tr><td>spell_id_on_hit</td><td><input type="text" name="spell_id_on_hit" value="'.$row['spell_id_on_hit'].'"/></td></tr>';
