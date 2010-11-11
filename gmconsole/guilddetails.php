@@ -88,12 +88,14 @@
                             <th>Guild level</th>
                             <th>First name</th>
                             <th>Last name</th>
+                            <th>Last login</th>
 <?php
                             foreach ($members as $member) {
                                 echo '<tr>';
                                 echo '<td>' . $member->GuildLevel . '</td>';
                                 echo '<td><a href="javascript:setCharId(' . $member->ID . ');">' . $member->FirstName. '</a></td>';
                                 echo '<td>' . $member->LastName . '</td>';
+                                echo '<td>' . $member->LastLogin . '</td>';
                                 echo '</tr>';
                             }
 ?>
