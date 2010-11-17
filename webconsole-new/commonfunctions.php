@@ -328,10 +328,10 @@ function getDataFromArea($area) {
       $data[5] = array('hydlaa_winch');
   } else if ($area=='sewers') {
       $data[0] = 'loc_sector_id>26 and loc_sector_id<38';
-      $data[1] = 645;
-      $data[2] = 175;
-      $data[3] = 2.5;
-      $data[4] = 2.5;
+      $data[1] = 203;
+      $data[2] = -465;
+      $data[3] = 2.3;
+      $data[4] = 2.3;
       $data[5] = array('swr-pink', 'swr-lightgreen', 'swr-yellow', 'swr-purple', 'swr-red', 'swr-blue', 'swr-orange', 'swr-darkgreen01', 'swr-darkgreen02', 'swr-lightblue01', 'swr-lightblue02');
   } else if ($area=='laanxdungeon') {
       $data[0] = 'loc_sector_id>43 and loc_sector_id<49';
