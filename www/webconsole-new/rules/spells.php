@@ -319,7 +319,7 @@ function createspell(){
       $pos1 = mysql_real_escape_string($_POST['position-1']);
       $pos2 = mysql_real_escape_string($_POST['position-2']);
       $pos3 = mysql_real_escape_string($_POST['position-3']);
-      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', range='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
+      $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', `range`='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
       $result = mysql_query2($query);
       $query = "SELECT id FROM spells WHERE name='$name'";
       $result = mysql_query2($query);
