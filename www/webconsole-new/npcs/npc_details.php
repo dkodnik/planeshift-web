@@ -1001,6 +1001,7 @@ function npcdetails(){
     if ($row['character_type'] > 0)   // don't display for players
     {
         echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
+        echo '<a href="./index.php?do=npcquests&amp;npc_id='.$_GET['npc_id'].'">Quests</a><br/>';
     }
     echo '<a href="'.$uri_string.'&amp;sub=items">items</a><br/>';
     if ($row['character_type'] > 0)   // don't display for players
