@@ -268,20 +268,25 @@ function npcquests()
     {
         //Select all NPCs
         $query = 'SELECT c.id, c.name, c.lastname, s.name AS sector FROM characters AS c LEFT JOIN sectors AS s ON c.loc_sector_id = s.id WHERE account_id=9 AND racegender_id<22';
+        if (isset($_GET['npc_id']))
+        {
+            $id = mysql_real_escape_string($_GET['npc_id']);
+            $query .= " AND c.id='$id'";
+        }
         if (isset($_GET['sort']))
         {
             if ($_GET['sort'] == 'npc')
             {
-                $query = $query . ' ORDER BY c.name';
+                $query .= ' ORDER BY c.name';
             }
             else if ($_GET['sort'] == 'sector')
             {
-                $query = $query . ' ORDER BY sector, c.name';
+                $query .= ' ORDER BY sector, c.name';
             }
         }
         else
         {
-            $query = $query . ' ORDER BY c.name';
+            $query .= ' ORDER BY c.name';
         }
         $result = mysql_query2($query);
         $query = 'SELECT q.name, q.id, s.script FROM quests AS q LEFT JOIN quest_scripts AS s ON q.id=s.quest_id';
@@ -341,9 +346,14 @@ function npcquests()
                 foreach($StartQuests as $q_id => $q_name)
                 {
                     echo $q_name . ' - <a href="./index.php?do=readquest&amp;id='.$q_id.'">Read</a>';
+                    echo ' - <a href="./index.php?do=validatequest&amp;id='.$row['id'].'">Validate</a>';
                     if (checkaccess('quests', 'edit'))
                     {
                         echo ' - <a href="./index.php?do=editquest&amp;id='.$q_id.'">Edit</a>';
+                    }
+                    if (checkaccess('quests', 'delete'))
+                    {
+                        echo ' - <a href="./index.php?do=deletequest&amp;id='.$row['id'].'">Delete</a>';
                     }
                     echo '<br/>';
                 }
