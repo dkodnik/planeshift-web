@@ -106,6 +106,21 @@ function listwaypoints(){
         }else{
           echo 'INDOOR: <input type="checkbox" name="flags[]" value="INDOOR" /><br/>';
         }
+        if (strpos($flags, 'PATH')){
+          echo 'PATH: <input type="checkbox" name="flags[]" value="PATH" checked="true"/><br/>';
+        }else{
+          echo 'PATH: <input type="checkbox" name="flags[]" value="PATH" /><br/>';
+        }
+        if (strpos($flags, 'ROAD')){
+          echo 'ROAD: <input type="checkbox" name="flags[]" value="ROAD" checked="true"/><br/>';
+        }else{
+          echo 'ROAD: <input type="checkbox" name="flags[]" value="ROAD" /><br/>';
+        }
+        if (strpos($flags, 'GROUND')){
+          echo 'GROUND: <input type="checkbox" name="flags[]" value="GROUND" checked="true"/><br/>';
+        }else{
+          echo 'GROUND: <input type="checkbox" name="flags[]" value="GROUND" /><br/>';
+        }
 
         echo '</td></tr>';
         echo '</table>';
@@ -289,6 +304,9 @@ function listwaypoints(){
           echo 'PUBLIC: <input type="checkbox" name="flags[]" value="PUBLIC" /><br/>';
           echo 'CITY: <input type="checkbox" name="flags[]" value="CITY" /><br/>';
           echo 'INDOOR: <input type="checkbox" name="flags[]" value="INDOOR" /><br/>';
+          echo 'PATH: <input type="checkbox" name="flags[]" value="PATH" /><br/>';
+          echo 'ROAD: <input type="checkbox" name="flags[]" value="ROAD" /><br/>';
+          echo 'GROUND: <input type="checkbox" name="flags[]" value="GROUND" /><br/>';
         echo '</td></tr>';
         echo '</table>';
         echo '<input type="submit" name="commit" value="Create Waypoint" />';

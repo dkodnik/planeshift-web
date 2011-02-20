@@ -130,6 +130,8 @@ else
 echo "<h1>LIVE Map View $sector</h1>";
 }
 
+if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+
 echo "<div id=Layer2 style=\"position:relative; \">";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:90px\">";
 
