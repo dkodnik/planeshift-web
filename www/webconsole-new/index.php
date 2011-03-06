@@ -894,7 +894,7 @@
         echo "Server Load:<br/>\n";
         echo exec("uptime")."<br/>\n";
         echo "Mysql Status:<br/>\n";
-        echo exec("mysqladmin status")."<br/>\n";
+        echo exec("mysqladmin status -u ".$db_username."-p".$db_password."--host ".$db_hostname)."<br/>\n";
     }
   }
   echo "</div><hr/>This is Debugging Information Only: ".($_SESSION['totalq']);
