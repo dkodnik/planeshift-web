@@ -145,11 +145,10 @@ function listwaypointlinks()
         $waypoints = PrepSelect('waypoints');
         echo '<tr><td>Waypoint 1</td><td>'.DrawSelectBox('waypoints', $waypoints, 'wp1', '', false).'</td></tr>';
         echo '<tr><td>Waypoint 2</td><td>'.DrawSelectBox('waypoints', $waypoints, 'wp2', '', false).'</td></tr>';
-        echo '<tr><td>Flags</td><td>';
-        $flags = ' '.$row['flags'];
-       
+        echo '<tr><td>Flags</td><td>';       
         echo '<input type="checkbox" name="flags[]" value="ONEWAY" /> ONEWAY<br/>';
         echo '<input type="checkbox" name="flags[]" value="NO_WANDER" /> NO_WANDER<br/>';
+        echo '<input type="checkbox" name="flags[]" value="TELEPORT" /> TELEPORT<br/>';
         echo '</td></tr>';
         echo '</table>';
         echo '<input type="submit" name="commit" value="Create Waypoint Link" />';
@@ -230,6 +229,7 @@ function editwaypointlink()
        
         echo '<input type="checkbox" name="flags[]" value="ONEWAY" '.(strpos($flags, 'ONEWAY') !== false ? 'checked="true"' : '').' /> ONEWAY<br/>';
         echo '<input type="checkbox" name="flags[]" value="NO_WANDER" '.(strpos($flags, 'NO_WANDER') !== false ? 'checked="true"' : '').' /> NO_WANDER<br/>';
+        echo '<input type="checkbox" name="flags[]" value="TELEPORT" '.(strpos($flags, 'TELEPORT') !== false ? 'checked="true"' : '').' /> TELEPORT<br/>';
         echo '</td></tr>';
         echo '</table>';
         echo '<input type="submit" name="commit" value="Update Waypoint Link" />';
