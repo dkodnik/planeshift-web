@@ -703,9 +703,8 @@ function npc_items(){
           echo '<p class="error">NPC Has no items in Inventory</p>';
         }
         echo '<p>Add a new Item to this NPC</p>';
-        $Items = PrepSelect('items');
         echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post">';
-        echo DrawSelectBox('items', $Items, 'item_id', '');
+        echo DrawItemSelectBox('item_id');
         echo '<input type="submit" name="commit" value="Add" />';
         echo '</form>';
       }
