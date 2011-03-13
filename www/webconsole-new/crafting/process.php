@@ -223,10 +223,9 @@ function editsubprocess()
       echo '<tr><td>Name:</td><td><input type="hidden" name="name" value="'.$row['name'].'">'.$row['name'].'</td></tr>';
       echo '<tr><td>Description:</td><td><input type="text" name="description" value="'.$row['description'].'" /></td></tr>';
       echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td></tr>';
-      $Items = PrepSelect('items');
-      echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $Items, 'workitem_id', $row['workitem_id'], true).'</td></tr>';
-      echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $Items, 'equipment_id', $row['equipment_id'], true).'</td></tr>';
-      echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $Items, 'garbage_id', $row['garbage_id'], true).'</td></tr>';
+      echo '<tr><td>Work Item:</td><td>'.DrawItemSelectBox('workitem_id', $row['workitem_id'], false).'</td></tr>';
+      echo '<tr><td>Equipment:</td><td>'.DrawItemSelectBox('equipment_id', $row['equipment_id'], false).'</td></tr>';
+      echo '<tr><td>Garbage Item:</td><td>'.DrawItemSelectBox('garbage_id', $row['garbage_id']).'</td></tr>';
       echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="'.$row['garbage_qty'].'" /></td></tr>';
       $Skills = PrepSelect('skill');
       echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'primary_skill_id', $row['primary_skill_id'], true).'</td></tr>';

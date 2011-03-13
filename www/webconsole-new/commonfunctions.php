@@ -165,6 +165,7 @@ function GetNextID($a){
 function PrepSelect($a){
   $type = strtolower($a);
   $typevals["items"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name, i.name"; 
+  $typevals["items_cat"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name), i.category_id, c.name as cat FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' ORDER BY c.name, i.name";
   $typevals["items_resource"] = "SELECT i.id, CONCAT_WS(' - ', c.name, i.name) FROM item_stats AS i LEFT JOIN item_categories AS c ON i.category_id=c.category_id WHERE i.stat_type='B' AND (c.category_id='12' OR c.category_id='16' OR c.category_id='26' OR c.category_id='27' OR c.category_id='29') ORDER BY c.name, i.name";
   $typevals["skill"] = "SELECT skill_id, name FROM skills ORDER BY name";
   $typevals["skillnames"] = "SELECT name, name FROM skills ORDER BY name";
@@ -244,6 +245,171 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   }
   $string = $string . '</select>';
   return $string;
+}
+
+/**
+ * Takes a normal (multidimensional if so) php array, and converts it to a JavaScript object.
+ * @param input array
+ * @param internal used in recursion
+ * @param internal used in recursion
+ */
+function arrayToJSObject ($array, $varname = '', $sub = -1)
+{
+	$sub++;
+	$jsarray = $sub >= 0 ? $varname . '{' : '{';
+
+	while (list($key, $value) = each($array))
+	{
+		$jskey = '"' . $key . '":';
+
+		if (is_array($value))
+		{
+			$temp[] = arrayToJSObject($value, $jskey, $sub);
+		}
+		else
+		{
+			if (is_numeric($value))
+			{
+				$jskey .= $value;
+			}
+			elseif (is_bool($value))
+			{
+				$jskey .= ($value ? 'true' : 'false');
+			}
+			elseif ($value === null)
+			{
+				$jskey .= 'null';
+			}
+			else
+			{
+				static $pattern = array("\\", '"');
+				static $replace = array('\\', '\\"');
+				$jskey .= '"' . str_replace($pattern, $replace, $value) . '"';
+			}
+			$temp[] = $jskey;
+		}
+	}
+	$jsarray .= implode(",", $temp);
+
+	$jsarray .= '}';
+	if ($sub == 0)
+	{
+		$jsarray .= ';';
+	}
+	return $jsarray;
+}
+
+/**
+ * Draw a double select box for items.
+ * @param the name of the select list
+ * @param the the selected item id
+ * @param bool is this the last select box on the page?
+ */
+function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = true)
+{
+	$GLOBALS['DrawItemSelectBox'][] = array($name, $selected_item);
+	
+	if ($is_last_on_page)
+	{
+		$result = PrepSelect('items_cat');
+		$return = '';
+		$arr = array();
+		$item_cat = array();
+		mysql_data_seek($result, 0);
+		while ($row = mysql_fetch_row($result))
+		{
+			$item_cat[$row[0]] = $row[2];
+			if ($lastCat != $row[2])
+			{
+				$arr['k' . $row[2]]['name'] = $row[3];
+				$lastCat = $row[2];
+			}
+			$arr['k' . $row[2]]['items']['k' . $row[0]] = $row[1];
+		}
+	
+		$test = ('var obj = ' . arrayToJSObject($arr));
+	
+		$return .= '<script>
+' . $test;
+		foreach ($GLOBALS['DrawItemSelectBox'] as $value)
+		{
+			if ($value[1])
+			{
+				$return .= "var category_id_{$value[0]} = {$item_cat[$value[1]]}, item_id_{$value[0]} = {$value[1]};\n";
+			}
+			else 
+			{
+				$return .= "var category_id_{$value[0]} = 0, item_id_{$value[0]} = 0;\n";
+			}
+		}
+		$return .= '
+
+function fillItems (is_first, currentIdAppend) {
+	var box1 = document.getElementById("item_category_" + currentIdAppend);
+	var box2 = document.getElementById("item_item_" + currentIdAppend);
+	var sele = box1.childNodes[box1.selectedIndex].getAttribute("value");
+	if (box2.hasChildNodes()) {
+		while (box2.childNodes.length >= 1) {
+			box2.removeChild(box2.firstChild);
+		}
+	}
+	for (var key in obj) {
+		if (key == "k" + sele) {
+			var newObj = obj[key].items;
+			for (var key2 in newObj) {
+				var x = document.createElement("option");
+				var y = document.createTextNode(newObj[key2]);
+				x.setAttribute("value", key2.substr(1));
+				if ((typeof is_first == "string") && (is_first == "first") && (eval("item_id_" + currentIdAppend) == key2.substr(1))) {
+					x.setAttribute("selected", "selected");
+				}
+				x.appendChild(y);
+				box2.appendChild(x);
+			}
+		}
+	}
+	box1.style.visibility = "visible";
+	box2.style.visibility = "visible";
+}
+
+function init () {
+	if (!document.getElementsByClassName) {
+		document.getElementsByClassName = function(cn) {
+			var allT = document.getElementsByTagName("*"), allCN=[], i=0, a;
+			while (a = allT[i++]) {
+				a.className==cn?allCN[allCN.length]=a:null;
+			}
+		return allCN
+		}
+	}
+	var boxes = document.getElementsByClassName("item_category");
+	var currentIdAppend = "";
+	for (var box in boxes) {
+		if (boxes[box].id != undefined) {
+			currentIdAppend = boxes[box].id.substr(14);
+			for (var key in obj) {
+				var x = document.createElement("option");
+				var y = document.createTextNode(obj[key].name);
+				x.setAttribute("value", key.substr(1));
+				if (eval("category_id_" + currentIdAppend) == key.substr(1)) {
+					x.setAttribute("selected", "selected");
+				}
+				x.appendChild(y);
+				boxes[box].appendChild(x);
+			}
+			fillItems("first", currentIdAppend);
+		}
+	}
+}
+
+window.onload = init;
+</script>';
+	}
+	//category_id_workitem_id = 3, item_id_workitem_id = 70;
+	//item_category_workitem_id
+	$return .= '<select id="item_category_' . $name . '" class="item_category" name="item_category_' . $name . '" onchange="fillItems(false, \'' . $name . '\')"></select>';
+	$return .= '<select id="item_item_' . $name . '" name="' . $name . '"></select>';
+	return $return;
 }
 
 /*SelectAreas() creates and returns the string for the <select> of areas which include multiple sectors*/
