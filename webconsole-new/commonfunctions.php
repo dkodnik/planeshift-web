@@ -305,21 +305,21 @@ function arrayToJSObject ($array, $varname = '', $sub = -1)
  * @param the the selected item id
  * @param bool is this the last select box on the page?
  */
-function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = true)
+function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = true, $includenull = false)
 {
-	$GLOBALS['DrawItemSelectBox'][] = array($name, $selected_item);
-	
+	$GLOBALS['DrawItemSelectBox'][] = array($name, $selected_item, $includenull);
+	$return = '';
+
 	if ($is_last_on_page)
 	{
 		$result = PrepSelect('items_cat');
-		$return = '';
 		$arr = array();
 		$item_cat = array();
 		mysql_data_seek($result, 0);
 		while ($row = mysql_fetch_row($result))
 		{
 			$item_cat[$row[0]] = $row[2];
-			if ($lastCat != $row[2])
+			if ((!isset($lastCat)) || ($lastCat != $row[2]))
 			{
 				$arr['k' . $row[2]]['name'] = $row[3];
 				$lastCat = $row[2];
@@ -335,11 +335,19 @@ function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = tr
 		{
 			if ($value[1])
 			{
-				$return .= "var category_id_{$value[0]} = {$item_cat[$value[1]]}, item_id_{$value[0]} = {$value[1]};\n";
+				$return .= "var category_id_{$value[0]} = {$item_cat[$value[1]]}, item_id_{$value[0]} = {$value[1]}, ";
 			}
 			else 
 			{
-				$return .= "var category_id_{$value[0]} = 0, item_id_{$value[0]} = 0;\n";
+				$return .= "var category_id_{$value[0]} = 0, item_id_{$value[0]} = 0, ";
+			}
+			if ($value[2])
+			{
+				$return .= "includenull_{$value[0]} = true;\n";
+			}
+			else 
+			{
+				$return .= "includenull_{$value[0]} = false;\n";
 			}
 		}
 		$return .= '
@@ -352,6 +360,13 @@ function fillItems (is_first, currentIdAppend) {
 		while (box2.childNodes.length >= 1) {
 			box2.removeChild(box2.firstChild);
 		}
+	}
+	if ((eval("includenull_" + currentIdAppend)) && (box1.options[box1.selectedIndex].value == "")) {
+		var x = document.createElement("option");
+		var y = document.createTextNode("--");
+		x.setAttribute("value", "");
+		x.appendChild(y);
+		box2.appendChild(x);
 	}
 	for (var key in obj) {
 		if (key == "k" + sele) {
@@ -387,6 +402,13 @@ function init () {
 	for (var box in boxes) {
 		if (boxes[box].id != undefined) {
 			currentIdAppend = boxes[box].id.substr(14);
+			if (eval("includenull_" + currentIdAppend)) {
+				var x = document.createElement("option");
+				var y = document.createTextNode("NONE");
+				x.setAttribute("value", "");
+				x.appendChild(y);
+				boxes[box].appendChild(x);
+			}
 			for (var key in obj) {
 				var x = document.createElement("option");
 				var y = document.createTextNode(obj[key].name);
