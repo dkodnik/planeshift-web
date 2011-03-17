@@ -43,9 +43,9 @@ function edittransform(){
       echo '<form action="./index.php?do=transform&amp;id='.$id.'" method="post"><table>';
       echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
       echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
-      echo '<tr><td>Source Item</td><td><input type="text" name="item_qty" value="'.$row['item_qty'].'" size="4"/> '.DrawItemSelectBox('item_id', $row['item_id'], false).'</td></tr>';
+      echo '<tr><td>Source Item</td><td><input type="text" name="item_qty" value="'.$row['item_qty'].'" size="4"/> '.DrawItemSelectBox('item_id', $row['item_id'], false, true).'</td></tr>';
       echo '<tr><td>Process</td><td>'.DrawSelectBox('process', $process, 'process_id', $row['process_id']).'</td></tr>';
-      echo '<tr><td>Result Item</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" size="4"/> '.DrawItemSelectBox('result_id', $row['result_id']).'</td></tr>';
+      echo '<tr><td>Result Item</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" size="4"/> '.DrawItemSelectBox('result_id', $row['result_id'], true, true).'</td></tr>';
       echo '<tr><td>Description</td><td><textarea name="description" rows="4" cols="40">'.$row['description'].'</textarea></td></tr>';
       echo '<tr><td>Time Taken</td><td><input type="text" name="trans_points" value="'.$row['trans_points'].'"/></td></tr>';
       echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penalty_pct" value="'.$row['penalty_pct'].'"/></td></tr>';
