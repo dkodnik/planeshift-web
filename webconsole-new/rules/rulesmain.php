@@ -2,7 +2,6 @@
 function rulesmain(){
   if (checkaccess('rules', 'read')){
     echo '<div class="menu_left">';
-    echo '<a href="./index.php?do=scripts&amp;type=RL">List RandomLoot Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=SI">List SimpleItem Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=CG">List CharGen Scripts</a> <br/>';
     echo '<a href="./index.php?do=scripts&amp;type=S">List Spell Scripts</a> <br/>';

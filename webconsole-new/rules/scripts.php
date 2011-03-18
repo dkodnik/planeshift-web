@@ -46,10 +46,10 @@ function rule_scripts(){
       $query = "SELECT name, event_script FROM progression_events";
       if (isset($_GET['type'])){
         switch ($_GET['type']){
-          case 'RL':
+          /*case 'RL':
             echo '<p class="error">Listing only RandomItem scripts</p>';
             $query = $query. " WHERE name LIKE 'randomitem%'";
-            break;
+            break;*/
           case 'SI':
             echo '<p class="error">Listing only SimpleItem scripts</p>';
             $query = $query. " WHERE name LIKE 'simpleitem%'";
@@ -64,7 +64,7 @@ function rule_scripts(){
             break;
           case 'O':
             echo '<p class="error">Listing only "Other" scripts</p>';
-            $query = $query. " WHERE name NOT LIKE 'randomitem%' AND name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%'";
+            $query = $query. " WHERE name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%'";
             break;
           default:
             echo '<p class="error">Unsupported type specified, not limiting listing</p>';
@@ -135,9 +135,9 @@ function rule_scripts(){
             echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
             switch ($_GET['type'])
             {
-                case 'RL':
+                /*case 'RL':
                     $prefix .= '"randomitem"';
-                    break;
+                    break;*/
                 case 'SI':
                     $prefix .= '"simpleitem"';
                     break;
