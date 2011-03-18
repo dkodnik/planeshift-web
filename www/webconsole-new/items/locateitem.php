@@ -5,7 +5,7 @@ function locateitem(){
         $display_item = false;
         if (isset($_POST['search']))
         {
-            $query = 'SELECT i.id, s.name, i.char_id_owner, i.char_id_guardian, i.parent_item_id, i.location_in_parent, i.stack_count, sec.name as sector, i.loc_x, i.loc_y, i.loc_z, i.loc_xrot, i.loc_zrot, i.loc_instance, i.flags FROM item_instances AS i LEFT JOIN sectors AS sec ON i.loc_sector_id=sec.id LEFT JOIN item_stats AS s ON i.item_stats_id_standard=s.id WHERE ';
+            $query = 'SELECT i.id, s.name, i.char_id_owner, c_owner.name AS owner_name, i.char_id_guardian, c_guardian.name AS guardian_name, i.parent_item_id, i.location_in_parent, i.stack_count, sec.name as sector, i.loc_x, i.loc_y, i.loc_z, i.loc_xrot, i.loc_zrot, i.loc_instance, i.flags FROM item_instances AS i LEFT JOIN sectors AS sec ON i.loc_sector_id=sec.id LEFT JOIN item_stats AS s ON i.item_stats_id_standard=s.id LEFT JOIN characters AS c_owner ON i.char_id_owner=c_owner.id LEFT JOIN characters AS c_guardian ON i.char_id_guardian=c_guardian.id WHERE ';
             if ($_POST['search'] == "Find Items")  // these first 3 all give the same results with another "where", so we print them all at the end in the same code.
             {
                 echo 'Finding item';
@@ -40,7 +40,7 @@ function locateitem(){
             }
             else if ($_POST['search'] == "Find Merchants") // This one is different, so it gets it's own print.
             {
-                $itemid = mysql_real_escape_string($_POST['vendoritemid']); // Don't make "is" "iss" (like it should logically be) since "is" is a reserved keyword in mysql.
+                $itemid = mysql_real_escape_string($_POST['vendoritemid']); // Don't make "iss" "is" (like it should logically be) since "is" is a reserved keyword in mysql.
                 $query = "SELECT DISTINCT c.id, c.name, c.lastname, iss.name AS item_name FROM merchant_item_categories AS m LEFT JOIN characters AS c ON c.id=m.player_id LEFT JOIN item_instances AS i ON i.char_id_owner=m.player_id LEFT JOIN item_stats AS iss ON iss.id=i.item_stats_id_standard WHERE i.location_in_parent > '15' AND i.item_stats_id_standard='$itemid' AND iss.category_id=m.category_id ORDER BY iss.name";
                 $result = mysql_query2($query);
                 if (mysql_num_rows($result) == 0)
@@ -77,8 +77,22 @@ function locateitem(){
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
                 echo '<tr><td>'.$row['id'].'</td>';
                 echo '<td>'.$row['name'].'</td>';
-                echo '<td>'.$row['char_id_owner'].'</td>';
-                echo '<td>'.$row['char_id_guardian'].'</td>';
+                if ($row['char_id_owner'] == 0) 
+                {
+                    echo '<td>'.$row['char_id_owner'].'</td>';
+                }
+                else
+                {
+                    echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['char_id_owner'].'">'.$row['owner_name'].'</a></td>';
+                }
+                if ($row['char_id_guardian'] == 0) 
+                {
+                    echo '<td>'.$row['char_id_guardian'].'</td>';
+                }
+                else
+                {
+                    echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['char_id_guardian'].'">'.$row['guardian_name'].'</a></td>';
+                }
                 echo '<td>'.$row['parent_item_id'].'</td>';
                 echo '<td>'.LocationToString($row['location_in_parent']).'</td>';
                 echo '<td>'.$row['stack_count'].'</td>';
