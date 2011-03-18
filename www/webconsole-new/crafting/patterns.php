@@ -93,6 +93,8 @@ function editpattern(){
             echo '<tr><td>Pattern Description:</td><td>'.$row['description'].'</td></tr>';
             $i = $row['designitem_id'];
             echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
+            echo '<tr><td>Difficulty Factor:</td><td>'.$row['k_factor'].'</td></tr>';
+            echo '</table>';
         }
     }
     else
@@ -102,7 +104,12 @@ function editpattern(){
     echo '<p class="bold">Available Transforms</p>';
     $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, ii.name, i.name";
     $result = mysql_query2($query);
-    echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
+    echo '<table><tr><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th>';
+    if (checkaccess('crafting', 'edit'))
+    {
+        echo '<th>Actions</th>';
+    }
+    echo '</tr>';
     $alt = false;
     while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
     {
@@ -138,7 +145,10 @@ function editpattern(){
         echo '<td>'.$row['result_cat'].'</td>';
         echo '<td>'.$row['trans_points'].'</td>';
         echo '<td>'.$row['penalty_pct'].'</td>';
-        echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
+        if (checkaccess('crafting', 'edit')) 
+        {
+            echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
+        }
         echo '</tr>';
     }
     echo '</table>';
@@ -150,14 +160,23 @@ function editpattern(){
     $result = mysql_query2($query);
     if (mysql_num_rows($result) != 0)
     {
-        echo '<table><tr><th colspan="2">Result Item</th><th>Category</th><th>Source Items</th><th>Actions</th></tr>';
+        echo '<table><tr><th colspan="2">Result Item</th><th>Category</th><th>Source Items</th>';
+        if (checkaccess('crafting', 'edit'))
+        {
+            echo '<th>Actions</th>';
+        }
+        echo '</tr>';
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
         {
             if ($item != $row['result_id'])
             {
                 if ($item != '-1')
                 {
-                    echo '</td><td><a href="./index.php?do=editcombine&amp;id='.$item.'&amp;pattern_id='.$_GET['id'].'">Edit</a></td></tr>'."\n";
+                    if (checkaccess('crafting', 'edit'))
+                    {
+                        echo '</td><td><a href="./index.php?do=editcombine&amp;id='.$item.'&amp;pattern_id='.$_GET['id'].'">Edit</a>';
+                    }
+                    echo '</td></tr>'."\n";
                 }
                 $item = $row['result_id'];
                 $alt = !$alt;
