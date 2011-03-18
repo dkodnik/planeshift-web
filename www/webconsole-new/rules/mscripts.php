@@ -42,8 +42,30 @@ function rule_mscripts(){
       $query = "SELECT name, math_script FROM math_scripts ORDER BY name";
       $result = mysql_query2($query);
       if (mysql_num_rows($result) > 0){
-        echo '<table border="1">';
-        echo '<tr><th>Name</th><th>Script</th>';
+      	echo '<script>
+function init() {
+	if (!document.getElementsByClassName) {
+		document.getElementsByClassName = function(cn) {
+			var allT = document.getElementsByTagName("*"), allCN=[], i=0, a;
+			while (a = allT[i++]) {
+				a.className==cn?allCN[allCN.length]=a:null;
+			}
+		return allCN
+		}
+	}
+	
+	scriptColFix = document.getElementsByClassName("scriptCol");
+	scriptCol = scriptColFix[0];
+	scriptBoxesWidth = scriptCol.offsetWidth - 50;
+	scriptBoxes = document.getElementsByClassName("scriptBox");
+	for (var box in scriptBoxes) {
+		scriptBoxes[box].style.width = scriptBoxesWidth + "px";
+	}
+}
+window.onload = init;
+</script>';
+        echo '<table border="1" width="100%">';
+        echo '<tr><th>Name</th><th width="100%" class="scriptCol">Script</th>';
         if (checkaccess('rules', 'delete')){
           echo '<th>Actions</th></tr>';
         }else{
@@ -55,7 +77,7 @@ function rule_mscripts(){
             echo '<td><form action="index.php?do=mscripts" method="post">';
             echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
             echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
-            echo '<textarea name="math_script" rows="6" cols="55">'.htmlspecialchars($row['math_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
+            echo '<textarea name="math_script" rows="6" cols="55" class="scriptBox">'.htmlspecialchars($row['math_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
             if (checkaccess('rules', 'delete')){
               echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
               echo '<input type="submit" name="commit" value="Delete"/>';
