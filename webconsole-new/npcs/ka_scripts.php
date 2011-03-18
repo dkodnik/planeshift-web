@@ -26,6 +26,10 @@ function ka_scripts(){
       }
       echo '</table>';
     }else{
+      if (!checkaccess('npcs', 'edit')) {
+        echo '<p class="error">Error: You are not authorized to use this function.</p>';
+        return;
+      }
       if (isset($_GET['areaid'])){
         $areaid = mysql_real_escape_string($_GET['areaid']);
       }
@@ -97,7 +101,7 @@ function ka_scripts(){
       }
     }
   }else{
-    echo '<p class="error">You are not authorized to use thes functions</p>';
+    echo '<p class="error">You are not authorized to use these functions</p>';
   }
 }
 ?>
