@@ -383,21 +383,11 @@ function fillItems (is_first, currentIdAppend) {
 			}
 		}
 	}
-	box1.style.visibility = "visible";
-	box2.style.visibility = "visible";
+	$("#item_category_" + currentIdAppend).hide().show();
 }
 
-function init () {
-	if (!document.getElementsByClassName) {
-		document.getElementsByClassName = function(cn) {
-			var allT = document.getElementsByTagName("*"), allCN=[], i=0, a;
-			while (a = allT[i++]) {
-				a.className==cn?allCN[allCN.length]=a:null;
-			}
-		return allCN
-		}
-	}
-	var boxes = document.getElementsByClassName("item_category");
+jQuery(function($) {
+	var boxes = $(".item_category");
 	var currentIdAppend = "";
 	for (var box in boxes) {
 		if (boxes[box].id != undefined) {
@@ -422,9 +412,7 @@ function init () {
 			fillItems("first", currentIdAppend);
 		}
 	}
-}
-
-window.onload = init;
+});
 </script>';
 	}
 	//category_id_workitem_id = 3, item_id_workitem_id = 70;
