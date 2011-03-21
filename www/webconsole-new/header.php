@@ -14,6 +14,7 @@
     echo ": $Header";
 ?>
 </title>
+<script type="text/javascript" src="./jquery.js"></script> 
 </head>
 <body>
 <div class="container">

@@ -1,6 +1,19 @@
 <?php
 function rule_mscripts(){
   if (checkaccess('rules', 'read')){
+      	echo '<script>
+function fixWidth () {
+	$(".scriptBox").width(50);
+	$("#scriptCol").width("100%");
+	$(".scriptBox").width($("#scriptCol").width() - 50);
+}
+jQuery(function($) {
+	fixWidth();
+	$(window).resize(function() {
+		fixWidth();
+	});
+});
+</script>';
     if (isset($_POST['commit'])){
       if (($_POST['commit']=='Change Name') && (checkaccess('rules', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
@@ -42,30 +55,8 @@ function rule_mscripts(){
       $query = "SELECT name, math_script FROM math_scripts ORDER BY name";
       $result = mysql_query2($query);
       if (mysql_num_rows($result) > 0){
-      	echo '<script>
-function init() {
-	if (!document.getElementsByClassName) {
-		document.getElementsByClassName = function(cn) {
-			var allT = document.getElementsByTagName("*"), allCN=[], i=0, a;
-			while (a = allT[i++]) {
-				a.className==cn?allCN[allCN.length]=a:null;
-			}
-		return allCN
-		}
-	}
-	
-	scriptColFix = document.getElementsByClassName("scriptCol");
-	scriptCol = scriptColFix[0];
-	scriptBoxesWidth = scriptCol.offsetWidth - 50;
-	scriptBoxes = document.getElementsByClassName("scriptBox");
-	for (var box in scriptBoxes) {
-		scriptBoxes[box].style.width = scriptBoxesWidth + "px";
-	}
-}
-window.onload = init;
-</script>';
         echo '<table border="1" width="100%">';
-        echo '<tr><th>Name</th><th width="100%" class="scriptCol">Script</th>';
+        echo '<tr><th>Name</th><th id="scriptCol">Script</th>';
         if (checkaccess('rules', 'delete')){
           echo '<th>Actions</th></tr>';
         }else{
@@ -95,7 +86,7 @@ window.onload = init;
       if (checkaccess('rules', 'create')){
         echo '<hr/><p>Create new math script</p>';
         echo '<form action="index.php?do=mscripts" method="post">Name: <input type="text" name="name" /><br/>';
-        echo 'Script: <textarea name="math_script" rows="6" cols="55"></textarea><br/>';
+        echo 'Script: <textarea name="math_script" rows="6" cols="55" class="scriptBox"></textarea><br/>';
         echo '<input type="submit" name="commit" value="Create Script" /></form>';
       }
     }
