@@ -997,6 +997,7 @@ function npcdetails(){
     echo '<a href="'.$uri_string.'&amp;sub=main">Main</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=skills">skills</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=traits">traits</a><br/>';
+    echo '<a href="'.$uri_string.'&amp;sub=factions">Factions</a><br/>';
     if ($row['character_type'] > 0)   // don't display for players
     {
         echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
@@ -1012,6 +1013,9 @@ function npcdetails(){
     echo '</div><div class="main_npc">';
     if (isset($_GET['sub'])){
       switch ($_GET['sub']){
+        case 'factions':
+          npc_factions();
+          break;
         case 'main':
           npc_main();
           break;
@@ -1046,5 +1050,88 @@ function npcdetails(){
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
+}
+
+function npc_factions()
+{
+    if (checkaccess('npcs', 'edit'))
+    {
+        if (isset($_GET['npc_id']))
+        {
+            if (isset($_POST['commit']))
+            {
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $faction_id = mysql_real_escape_string($_POST['faction_id']);
+                $query = '';
+                if ($_POST['commit'] == 'Remove')
+                {
+                    $query = "DELETE FROM character_factions WHERE character_id='$id' AND faction_id='$faction_id'";
+                }
+                else if($_POST['commit'] == 'Add Faction')
+                {
+                    $faction_value = mysql_real_escape_string($_POST['faction_value']);
+                    $query = "INSERT INTO character_factions (character_id, faction_id, value) VALUES ('$id', '$faction_id', '$faction_value') ON DUPLICATE KEY UPDATE value='$faction_value'";
+                }
+                else if($_POST['commit'] == 'Edit')
+                {
+                    $faction_value = mysql_real_escape_string($_POST['faction_value']);
+                    $query = "UPDATE character_factions SET value='$faction_value'WHERE character_id='$id' AND faction_id='$faction_id'";
+                }
+                else
+                {
+                    echo '<p class="error">Invalid commit!</p>';
+                    return;
+                }
+                $result = mysql_query2($query);
+                unset($_POST);
+                echo '<p class="error">Update Successful</p>';
+                npc_factions();
+            }
+            else
+            {
+                $faction_result = PrepSelect('factions');
+                while ($row = mysql_fetch_array($faction_result, MYSQL_ASSOC))
+                {
+                    $f_id = $row['id'];
+                    $factions[$f_id] = $row['faction_name'];
+                }
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $query = 'SELECT faction_id, value FROM character_factions WHERE character_id='.$id.' ORDER BY faction_id';
+                $result = mysql_query2($query);
+                echo '<table border="1"><tr><th>Faction</th><th>Value</th><th>Actions</th></tr>';
+                if (mysql_num_rows($result) > 0)
+                {
+                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    {
+                        $f_id = $row['faction_id'];
+                        echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=factions" method="post">';
+                        echo '<input type="hidden" name="faction_id" value="'.$f_id.'" />'.$factions[$f_id].'</td>';
+                        echo '<td><input type="text" size="9" name="faction_value" value="'.$row['value'].'" /></td>';
+                        echo '<td><input type="submit" name="commit" value="Edit" /></form>';
+                        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=factions" method="post">';
+                        echo '<input type="hidden" name="faction_id" value="'.$f_id.'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
+                    }
+                    echo '</table>';
+                }
+                else
+                {
+                    echo '</table>';
+                    echo '<p class="error">NPC has no factions</p>';
+                }
+                echo '<p>Add a Faction to this NPC</p>';
+                echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=factions" method="post">';
+                echo '<table border="1"><tr><th>Faction</th><th>Value</th><th>Actions</th></tr>';
+                echo '<tr><td>'.DrawSelectBox('factions', $faction_result, 'faction_id', '').'</td><td><input type="text" name="faction_value" size="7" /></td><td>';
+                echo '<input type="submit" name="commit" value="Add Faction" /></td></tr></table></form>';
+            }
+        }
+        else
+        {
+            echo '<p class="error">Error: No NPC Selected</p>';
+        }
+    }else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+    }
 }
 ?>
