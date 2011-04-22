@@ -43,10 +43,6 @@
   if (checkaccess('items', 'read')){
     echo '<a href="./index.php?do=items">Items</a> -- ';
   }
-  if (checkaccess('factions','read'))
-  {
-    echo '<a href="./index.php?do=factions-me">Factions</a> -- ';
-  }
   if (checkaccess('als', 'read')){
     echo '<a href="./index.php?do=als">Action Locations</a> -- ';
   }
@@ -72,41 +68,6 @@
   echo '</div><hr/>';
   if (isset($_GET['do'])){
     switch ($_GET['do']){
-      case 'factions-me':
-        include('./factions/factionsmain.php');
-        include('./factions/listfactions.php');
-        factionsmain();	
-        break;
-      case 'listfactions':
-        include('./factions/factionsmain.php');
-        include('./factions/listfactions.php');
-        factionsmain();
-        listfactions();
-        break;
-      case 'listfactionplayers':
-        include('./factions/factionsmain.php');
-        include('./factions/listfactions.php');
-        factionsmain();
-        listfactionplayers();
-       break;
-      case 'editfaction':
-        include('./factions/factionsmain.php');
-        include('./factions/editfaction.php');
-        factionsmain();
-        editfaction();
-        break;
-      case 'createfaction':
-        include('./factions/factionsmain.php');
-        include('./factions/createfaction.php');
-        factionsmain();
-        createfaction();
-        break;
-      case 'deletefaction':
-        include('./factions/factionsmain.php');
-        include('./factions/deletefaction.php');
-        factionsmain();
-        deletefaction();
-        break;
       case 'quests':
         include('./quests/questmain.php');
         include('./quests/listquests.php');
