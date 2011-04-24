@@ -257,7 +257,7 @@ else
   echo '  <FORM action="index.php" METHOD="GET"><input type="hidden" name="do" value="viewnpcmap">';
   echo '  <b>Select one area:</b> <br><br> Area: ';
   //echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
-  SelectAreas('','sector');
+  SelectAreas($sector,'sector');
   echo ' <br><input type="checkbox" name="live" value="yes">LIVE view <br><br><INPUT type="submit" value="view"><br><br>';
   echo '</FORM>';
   echo '</div>';

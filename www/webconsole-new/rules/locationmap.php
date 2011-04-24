@@ -196,7 +196,7 @@ foreach($peoples as $people) {
   echo '  <FORM action="index.php?do=locationmap" METHOD=POST>';
   echo '  <b>Select one area:</b> <br><br> Area: ';
   //echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
-  SelectAreas('','sector');
+  SelectAreas($sector,'sector');
   echo ' <br><br><INPUT type=submit value=view><br><br>';
   echo '</FORM>';
   echo '</div>';
