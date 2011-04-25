@@ -482,12 +482,12 @@ function getDataFromArea($area) {
   // sectors
   $data;
   if ($area=='hydlaa_plaza') {
-      $data[0] = 'loc_sector_id=15 or loc_sector_id=52';
+      $data[0] = 'loc_sector_id=15 or loc_sector_id=52 or loc_sector_id=41 or loc_sector_id=42';
       $data[1] = 535;
       $data[2] = 180;
       $data[3] = 2.2;
       $data[4] = 2.2;
-      $data[5] = array('hydlaa_plaza', 'tavern_de_kadel');
+      $data[5] = array('hydlaa_plaza', 'tavern_de_kadel', 'laanxentrance','laanxmain');
   } else if ($area=='hydlaa_jayose') {
       $data[0] = 'loc_sector_id=49 or loc_sector_id=40';
       $data[1] = -250;

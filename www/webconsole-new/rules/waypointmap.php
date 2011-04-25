@@ -132,13 +132,22 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=waypoint\" >";
 
   $data = getDataFromArea($sector);
   $sectors = $data[0];
-  $query = "select id,x,y,z, radius, flags, name from sc_waypoints where ".$sectors;
+  $query = "select id,x,y,z, radius, flags, name,wp_group from sc_waypoints where ".$sectors;
   //echo "query is $query";
   $res = mysql_query2($query);
 
   $result="";
-  while ($line = mysql_fetch_array($res, MYSQL_NUM)){
-    $elem = $line[0] . "|I: ".$line[0]." N:" . $line[6] . " R:".$line[4]." F:".$line[5]."|x|" . $line[1]  . "|" . $line[2]."|".$line[3]."|".$line[5];
+  while ($line = mysql_fetch_array($res, MYSQL_NUM))
+  {
+    $aliases = "";
+    $aliasQuery = "select alias from sc_waypoint_aliases where wp_id = ".$line[0];
+    $aliasResult = mysql_query2($aliasQuery);
+    while ($alias = mysql_fetch_array($aliasResult, MYSQL_NUM))
+    {
+      $aliases=$aliases." ".$alias[0];
+    }
+
+    $elem = $line[0] . "|I: ".$line[0]." N:" . $line[6] . " R:".$line[4]." F:".$line[5]." A:".$aliases." G: ".$line[7]."|x|" . $line[1]  . "|" . $line[2]."|".$line[3]."|".$line[5];
 
     $result .= ($elem . "\n");
    }
