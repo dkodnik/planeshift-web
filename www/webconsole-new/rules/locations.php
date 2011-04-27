@@ -68,7 +68,8 @@ function listlocations(){
         echo '<tr><td>Flags:</td><td>Not Supported</td></tr>';
         $Locations = PrepSelect('locations');
         echo '<tr><td>Previous Location</td><td>'.DrawSelectBox('locations', $Locations, 'previous', $row['id_prev_loc_in_region'], true).'</td></tr>';
-        echo '<tr><td>Type</td><td><input type="text" name="type" value="'.$row['type_id'].'" /></td></tr>';
+        $location_type = PrepSelect('location_type');
+        echo '<tr><td>Type</td><td>'.DrawSelectBox('location_type', $location_type, 'type', '', false).'</td></tr>';
         echo '</table><input type="submit" name="commit" value="Update Location"/>';
         echo '</form>';
       }else if ($_POST['action'] == "Delete" && checkaccess('rules', 'delete')){
@@ -86,7 +87,7 @@ function listlocations(){
         return;
       }
     }else{
-      $query = "SELECT l.id, l.type_id, l.id_prev_loc_in_region, l.name, l.x, l.y, l.z, l.radius, l.angle, l.flags, l.loc_sector_id, s.name AS sector FROM sc_locations AS l LEFT JOIN sectors AS s ON l.loc_sector_id = s.id";
+      $query = "SELECT l.id, l.type_id, lt.name AS type_name, l.id_prev_loc_in_region, l.name, l.x, l.y, l.z, l.radius, l.angle, l.flags, l.loc_sector_id, s.name AS sector FROM sc_locations AS l LEFT JOIN sectors AS s ON l.loc_sector_id = s.id LEFT JOIN sc_location_type AS lt ON l.type_id = lt.id";
       if (isset($_GET['id']))
       {
         $id = mysql_real_escape_string($_GET['id']);
@@ -182,7 +183,7 @@ function listlocations(){
           echo '<td>'.$row['angle'].'</td>';
           echo '<td>'.$row['flags'].'</td>';
           echo '<td>'.$row['id_prev_loc_in_region'].'</td>';
-          echo '<td>'.$row['type_id'].'</td>';
+          echo '<td>'.$row['type_name'].'</td>';
           if (checkaccess('rules', 'edit')){
             echo '<td><form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
             echo '<input type="submit" name="action" value="Edit"/>';
@@ -207,7 +208,8 @@ function listlocations(){
           echo '<tr><td>Flags:</td><td>Not Supported</td></tr>';
           $Locations = PrepSelect('locations');
           echo '<tr><td>Previous Location</td><td>'.DrawSelectBox('locations', $Locations, 'previous', '', true).'</td></tr>';
-          echo '<tr><td>Type</td><td><input type="text" name="type" /></td></tr>';
+          $location_type = PrepSelect('location_type');
+          echo '<tr><td>Type</td><td>'.DrawSelectBox('location_type', $location_type, 'type', '', false).'</td></tr>';
           echo '</table><input type="submit" name="commit" value="Create Location"/>';
           echo '</form>';
         }
