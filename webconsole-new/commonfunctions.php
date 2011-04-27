@@ -189,6 +189,7 @@ function PrepSelect($a){
   $typevals["weapon"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Weapons%' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["armor"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Armor%' AND c.name!= 'Armor Parts' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["factions"] = "SELECT id, faction_name FROM factions";
+  $typevals["location_type"] = "SELECT id, name FROM sc_location_type";
   
   $query = $typevals[$type];
 
@@ -223,6 +224,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["weapon"] = '"0"';
   $typevals["armor"] = '"0"';
   $typevals["factions"] = '""';
+  $typevals["location_type"] = '"0"';
   
   $nullval = $typevals[$type];
 
