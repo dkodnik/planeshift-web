@@ -70,6 +70,8 @@ function draw_map($sector, $type)
     $orange     = imagecolorallocate($im, 255, 128,   0);
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
+    $brown      = imagecolorallocate($im, 165,  42,  42);
+    $cyan       = imagecolorallocate($im,   0, 255, 255);
 
     $type = strtolower($type);
 
@@ -88,6 +90,14 @@ function draw_map($sector, $type)
     if (strpos($type, 'resource')!==FALSE)
     {
         draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
+    }
+    if (strpos($type, 'spawn')!==FALSE)
+    {
+        draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$brown,$cyan);
+    }
+    if (strpos($type, 'tribe')!==FALSE)
+    {
+        draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$blue,$dark_green);
     }
     if (strpos($type, 'live')!==FALSE)
     {
@@ -124,6 +134,76 @@ function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$sc
         $ivr = $vis_radius*$scalefactorx;
         imagearc($im,$ix,$iy,$ivr,$ivr,0,360,$bg_color);
 
+    }
+}
+
+function draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
+    $spawn_sectors = str_replace("loc_sector_id","sector_id",$sectors);
+    $query = "SELECT id,x1,y1,z1,x2,y2,z2,radius,range_type_code FROM npc_spawn_ranges WHERE ". $spawn_sectors;
+    $res = mysql_query2($query);
+
+    // exit if there is no data
+    $num = mysql_num_rows($res);
+    if ($num==0)
+      return;
+
+    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+        $id          = $line[0];
+        $x1          = $line[1];
+        $y1          = $line[2];
+        $z1          = $line[3];
+        $x2          = $line[4];
+        $y2          = $line[5];
+        $z2          = $line[6];
+        $radius      = $line[7];
+        $range_type  = $line[8];
+
+	$ix1 = $centerx+($x1*$scalefactorx);
+	$iy1 = $centery-($z1*$scalefactory);
+	$ix2 = $centerx+($x2*$scalefactorx);
+	$iy2 = $centery-($z2*$scalefactory);
+        $ir = $radius*$scalefactorx;
+        if ($range_type == "C") // Circle
+        {
+            imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
+        } else if ($range_type == "A") // Area
+        {
+            imageline($im,$ix1,$iy1,$ix1,$iy2 , $fg_color);
+            imageline($im,$ix1,$iy2,$ix2,$iy2 , $fg_color);
+            imageline($im,$ix2,$iy2,$ix2,$iy1 , $fg_color);
+            imageline($im,$ix2,$iy1,$ix1,$iy1 , $fg_color);
+        } else if ($range_type == "L") // Line with round edges
+        {
+            imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
+            imageline($im,$ix1,$iy1,$ix2,$iy2 , $fg_color);
+            imagearc($im,$ix2,$iy2,$ir,$ir,0,360,$fg_color);
+        }
+    }
+
+}
+
+function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
+    $tribe_sectors = str_replace("loc_sector_id","home_sector_id",$sectors);
+    $query = "SELECT id,home_x,home_y,home_z,home_radius from tribes where ". $tribe_sectors;
+    $res = mysql_query2($query);
+
+    // exit if there is no data
+    $num = mysql_num_rows($res);
+    if ($num==0)
+      return;
+
+    $i=0;
+    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+        $id          = $line[0];
+        $x           = $line[1];
+        $y           = $line[2];
+        $z           = $line[3];
+        $radius      = $line[4];
+
+	$ix = $centerx+($x*$scalefactorx);
+	$iy = $centery-($z*$scalefactory);
+        $ir = $radius*$scalefactorx;
+        imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
     }
 }
 

@@ -128,11 +128,13 @@ echo "<font color=\"white\">Path points</font> ";
 echo "<font color=\"red\">Locations</font> ";
 echo "<font color=\"lightgreen\">Resources inner</font> ";
 echo "<font color=\"green\">Resources edge</font> ";
+echo "<font color=\"blue\">Tribe home</font> ";
+echo "<font color=\"brown\">Spawn</font> ";
 
 
 echo "<div id=Layer2 style=\"position:relative; \">";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:250px\">";    
-echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint,resource,location\" >";
+echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint,resource,location,tribe,spawn\" >";
 }
 
  $sectors_list = PrepSelect('sector');
