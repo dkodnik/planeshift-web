@@ -194,8 +194,8 @@ foreach((array) $peoples as $people) {
  $sectors_list = PrepSelect('sector');
   echo '  <FORM action="index.php?do=resourcemap" METHOD=POST>';
   echo '  <b>Select one area:</b> <br><br> Area: ';
-  echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
-  //SelectAreas('','sector');
+//  echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
+  SelectAreas($sector,'sector');
   echo ' <br><br><INPUT type=submit value=view><br><br>';
   echo '</FORM>';
   echo '</div>';
