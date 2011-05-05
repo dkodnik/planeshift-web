@@ -71,28 +71,27 @@ function draw_map($sector, $type)
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
 
-    if ($type == 'location')
+    $type = strtolower($type);
+
+    if (strpos($type,'location')!==FALSE)
     {
         draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$red);
     }
-    elseif ($type == 'waypoint')
+    if (strpos($type, 'waypoint')!==FALSE)
     {
         draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$orange,$blue);
     }
-    elseif ($type == 'path')
+    if (strpos($type, 'path')!==FALSE)
     {
         draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
     }
-    elseif ($type == 'resource')
+    if (strpos($type, 'resource')!==FALSE)
     {
         draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$green,$dark_green);
     }
-    elseif ($type == 'live')
+    if (strpos($type, 'live')!==FALSE)
     {
         draw_live_paths($im,$data[5],$centerx,$centery,$scalefactorx,$scalefactory, array($red, $green, $dark_green, $orange, $gray, $blue));
-    }
-    else // do nothing if we don't know the command.
-    {
     }
     
     imagepng($im);
@@ -225,6 +224,7 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
         $ir = $radius;
         imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
 
+        $line_color = $fg_color;
 	if ($line[4] != 0)
         {
             $query2 = "select p1.x,p1.y,p1.z,p2.x,p2.y,p2.z from sc_path_points p1, sc_path_points p2 where p1.id = p2.prev_point and p2.id = ".$id;
@@ -241,12 +241,23 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
                 $iy1 = $centery-($z1*$scalefactory);
                 $ix2 = $centerx+($x2*$scalefactorx);
                 $iy2 = $centery-($z2*$scalefactory);
-
-                $line_color = $fg_color;
  
                 imageline($im,$ix1,$iy1,$ix2,$iy2 , $line_color);
             }           
         }
+        else
+        {
+            // Draw from start wp to first point
+            $query2 = "select w.x,w.z  from sc_waypoints w, sc_waypoint_links wl, sc_path_points pp where w.id = wl.wp1 and wl.id=pp.path_id and pp.id=".$id;
+            $res2=mysql_query($query2);
+            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM)){
+                $x1 = $line2[0];
+                $z1 = $line2[1];
+                $ix1 = $centerx+($x1*$scalefactorx);
+                $iy1 = $centery-($z1*$scalefactory);
+                imageline($im,$ix1,$iy1,$ix,$iy , $line_color);
+            }
+        } 
 
     }
 }

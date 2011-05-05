@@ -136,7 +136,7 @@ echo "<div id=Layer2 style=\"position:relative; \">";
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:90px\">";
 
 if(!isset($_GET['live']))
-	echo "<img src=\"rules/draw_map.php?sector=$sector&type=path\" >";
+	echo "<img src=\"rules/draw_map.php?sector=$sector&type=waypoint,path\" >";
 else
 	echo "<img src=\"rules/draw_map.php?sector=$sector&type=live\" >";
 

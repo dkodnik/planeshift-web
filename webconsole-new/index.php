@@ -489,6 +489,12 @@
         rulesmain();
         listpathpoints();
         break;
+      case 'rulesmap':
+        include('./rules/rulesmain.php');
+        include('./rules/map.php');
+        rulesmain();
+        rulesmap();
+        break;
       case 'editpathpoint':
         include('./rules/rulesmain.php');
         include('./rules/pathpoints.php');
@@ -512,6 +518,12 @@
         include('./rules/locations.php');
         rulesmain();
         listlocations();
+        break;
+      case 'locationtype':
+        include('./rules/rulesmain.php');
+        include('./rules/locationtypes.php');
+        rulesmain();
+        listlocationtypes();
         break;
       case 'locationmap':
         include('./rules/rulesmain.php');

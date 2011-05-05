@@ -1,7 +1,7 @@
 <?php
 // *almost* identical to all the other /rules/*map.php files
 // This file requires rules/ball01m.gif and rules/ball04m.gif to exist.
-function waypoint_map(){
+function rulesmap(){
   if (!checkAccess('rules', 'read'))
   {
     echo 'You do not have permission to use this page.';
@@ -122,88 +122,21 @@ document.onmousemove=positiontip;
 
 <?PHP
 
-echo "<h1>Waypoint Map View $sector</h1>";
-echo 'NPC Waypoints painted in orange<br>';
+echo "<h1>Map View $sector</h1>";
+echo "<font color=\"orange\">Waypoints points</font> ";
+echo "<font color=\"white\">Path points</font> ";
+echo "<font color=\"red\">Locations</font> ";
+echo "<font color=\"lightgreen\">Resources inner</font> ";
+echo "<font color=\"green\">Resources edge</font> ";
+
 
 echo "<div id=Layer2 style=\"position:relative; \">";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:250px\">";    
-echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint\" >";
-
-
-  $data = getDataFromArea($sector);
-  $sectors = $data[0];
-  $query = "select id,x,y,z, radius, flags, name,wp_group from sc_waypoints where ".$sectors;
-  //echo "query is $query";
-  $res = mysql_query2($query);
-
-  $result="";
-  while ($line = mysql_fetch_array($res, MYSQL_NUM))
-  {
-    $aliases = "";
-    $aliasQuery = "select alias from sc_waypoint_aliases where wp_id = ".$line[0];
-    $aliasResult = mysql_query2($aliasQuery);
-    while ($alias = mysql_fetch_array($aliasResult, MYSQL_NUM))
-    {
-      $aliases=$aliases." ".$alias[0];
-    }
-
-    $elem = $line[0] . "|I: ".$line[0]." N:" . $line[6] . " R:".$line[4]." F:".$line[5]." A:".$aliases." G: ".$line[7]."|x|" . $line[1]  . "|" . $line[2]."|".$line[3]."|".$line[5];
-
-    $result .= ($elem . "\n");
-   }
-// get each line
-$tok = strtok($result, "\n");
-$peoples = null;
-while ($tok !== false) {
-   $peoples[]=$tok;
-   $tok = strtok("\n");
-}
-
-// get all info for each line
-foreach((array) $peoples as $people) {
-
-   // skips commented lines
-   $pos = strstr($people, '#');
-
-   if ($pos=="0") {
-     $tok2 = strtok($people, '|');
-     $infos[] = "";
-     $count = 1;
-     while ($tok2) {
-      $tok2 = str_replace("\n", '', $tok2);
-      $tok2 = str_replace("\r", '', $tok2);
-      $infos[$count]=$tok2;
-      $tok2 = strtok("|");
-      $count++;
-     }
-
-    $centerx = $data[1];
-    $centery = $data[2];
-    $scalefactorx = $data[3];
-    $scalefactory = $data[4];
-
-        $x = $centerx+($infos[4]*$scalefactorx)-5;
-        $y = $centery-($infos[6]*$scalefactory)-5;
-     
-        if ($infos[7] == "ALLOW_RETURN") {
-          $ball = 'img/ball04m.gif';
-          echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?do=waypoint&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
-
-        } else {
-          $ball = 'img/ball01m.gif';
-          echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-          echo "<A HREF=index.php?do=waypoint&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
-        }
-
-  }
-}
-
-
+echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint,resource,location\" >";
 }
 
  $sectors_list = PrepSelect('sector');
-  echo '  <FORM action="index.php?do=waypointmap" METHOD=POST>';
+  echo '  <FORM action="index.php?do=rulesmap" METHOD=POST>';
   echo '  <b>Select one area:</b> <br><br> Area: ';
   //echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
   SelectAreas($sector,'sector');

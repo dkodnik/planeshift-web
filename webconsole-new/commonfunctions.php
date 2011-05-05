@@ -182,6 +182,7 @@ function PrepSelect($a){
   $typevals["cast_events"] = "SELECT name, name FROM progression_events WHERE name LIKE 'cast %'";
   $typevals["glyphs"] = "SELECT id, name FROM item_stats WHERE category_id='5' ORDER BY name";
   $typevals["locations"] = "SELECT id, name FROM sc_locations ORDER BY name";
+  $typevals["location_type"] = "SELECT id, name FROM sc_location_type ORDER BY name";
   $typevals["process"] = "SELECT DISTINCT process_id, CONCAT(process_id, ' - ', name) FROM trade_processes ORDER BY name";
   $typevals["patterns"] = "SELECT id, pattern_name FROM trade_patterns ORDER BY pattern_name";
   $typevals["mind_slot_items"] = "SELECT id, name FROM item_stats WHERE stat_type='B' AND valid_slots LIKE '%MIND%' ORDER BY name";
@@ -189,7 +190,6 @@ function PrepSelect($a){
   $typevals["weapon"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Weapons%' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["armor"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Armor%' AND c.name!= 'Armor Parts' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["factions"] = "SELECT id, faction_name FROM factions";
-  $typevals["location_type"] = "SELECT id, name FROM sc_location_type";
   
   $query = $typevals[$type];
 
