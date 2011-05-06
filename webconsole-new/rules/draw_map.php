@@ -286,7 +286,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
 }
 
 function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
-    $query = "select distinct wl.id,wl.flags from sc_waypoint_links wl, sc_waypoints wp where wp.id = wl.wp1 or wp.id=wl.wp2 and ".$sectors;
+    $query = "select distinct wl.id,wl.flags from sc_waypoint_links wl, sc_waypoints wp where (wp.id = wl.wp1 or wp.id=wl.wp2) and ".$sectors;
     //echo $query;
     $res = mysql_query($query);
 
