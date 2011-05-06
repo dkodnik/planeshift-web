@@ -85,7 +85,7 @@ function draw_map($sector, $type)
     }
     if (strpos($type, 'path')!==FALSE)
     {
-        draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$blue);
+        draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$gray,$orange);
     }
     if (strpos($type, 'resource')!==FALSE)
     {
@@ -263,7 +263,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
                 $iy2 += 16; 
             } else
             {
-                imageline($im,$ix1,$iy1,$ix2,$iy2 , $line_color);
+                //imageline($im,$ix1,$iy1,$ix2,$iy2 , $line_color);
             }
             if (stristr($flags, 'ONEWAY') != FALSE)
             {
@@ -281,8 +281,8 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
     }
 }
 
-function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$fg_color_no_wander){
-    $query = " select id,x,y,z,prev_point from sc_path_points where " . $sectors;
+function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
+    $query = "select distinct wl.id,wl.flags from sc_waypoint_links wl, sc_waypoints wp where wp.id = wl.wp1 or wp.id=wl.wp2 and ".$sectors;
     //echo $query;
     $res = mysql_query($query);
 
@@ -291,51 +291,88 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
     if ($num==0)
       return;
 
-    $i=0;
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
-        $id      = $line[0];
-        $x       = $line[1];
-        $y       = $line[2];
-        $z       = $line[3];
-        $radius  = 5;
+    while ($line = mysql_fetch_array($res, MYSQL_NUM))
+    {
+       $path_id = $line[0];
+       $flags   = $line[1];
+       
+       $style = array($bg_color,$bg_color,$bg_color);
 
-	$ix = $centerx+($x*$scalefactorx);
-	$iy = $centery-($z*$scalefactory);
-        $ir = $radius;
-        imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
+       if (stristr($flags, "NO_WANDER"))
+       {
+          $red = imagecolorallocate($im, 255, 0, 0);
+          $style = array_merge($style,array($red,$red,$red));
+       }
+       if (stristr($flags, "TELEPORT"))
+       {
+          $blue = imagecolorallocate($im, 0, 255, 0);
+          $style = array_merge($style,array($blue,$blue,$blue));
+       }
 
-        $line_color = $fg_color;
-	if ($line[4] != 0)
-        {
-            $query2 = "select p1.x,p1.y,p1.z,p2.x,p2.y,p2.z from sc_path_points p1, sc_path_points p2 where p1.id = p2.prev_point and p2.id = ".$id;
-            $res2=mysql_query($query2); 
-            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM)){
-                $x1 = $line2[0];
-                $y1 = $line2[1];
-                $z1 = $line2[2];
-                $x2 = $line2[3];
-                $y2 = $line2[4];
-                $z2 = $line2[5];
+       imagesetstyle($im,$style);
 
-                $ix1 = $centerx+($x1*$scalefactorx);
-                $iy1 = $centery-($z1*$scalefactory);
-                $ix2 = $centerx+($x2*$scalefactorx);
-                $iy2 = $centery-($z2*$scalefactory);
- 
-                imageline($im,$ix1,$iy1,$ix2,$iy2 , $line_color);
-            }           
-        }
-        else
-        {
+       $ix2 = 0;
+       $iy2 = 0;
+       // Get start point, from waypoint
+       {
             // Draw from start wp to first point
-            $query2 = "select w.x,w.z  from sc_waypoints w, sc_waypoint_links wl, sc_path_points pp where w.id = wl.wp1 and wl.id=pp.path_id and pp.id=".$id;
+            $query2 = "select w.x,w.z from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp1 and wl.id=".$path_id;
             $res2=mysql_query($query2);
-            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM)){
+            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+            {
                 $x1 = $line2[0];
                 $z1 = $line2[1];
-                $ix1 = $centerx+($x1*$scalefactorx);
-                $iy1 = $centery-($z1*$scalefactory);
-                imageline($im,$ix1,$iy1,$ix,$iy , $line_color);
+                $ix2 = $centerx+($x1*$scalefactorx);
+                $iy2 = $centery-($z1*$scalefactory);
+            }
+       }
+       // Get path points and draw line from last point
+       {
+            $point_id = 0;
+            $found = false;
+            do
+            {
+                $found = false;
+		// Draw from start wp to first point
+            	$query2 = "select id,x,z from sc_path_points where path_id=".$path_id." and prev_point=".$point_id;
+            	$res2=mysql_query($query2);
+            	while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+	    	{
+                    $found = true;
+
+		    // Shift the start point    
+                    $ix1 = $ix2;
+                    $iy1 = $iy2;
+
+		    $point_id = $line2[0];
+                    $x1 = $line2[1];
+                    $z1 = $line2[2];
+                    $ix2 = $centerx+($x1*$scalefactorx);
+                    $iy2 = $centery-($z1*$scalefactory);
+
+                    $ir = 3;
+                    imageline($im,$ix1,$iy1,$ix2,$iy2,  IMG_COLOR_STYLED );
+                    imagearc($im,$ix2,$iy2,$ir,$ir,0,360,$fg_color);
+                }
+            } while ($found);
+        }
+            
+        {
+            // Draw from start wp to first point
+            $query2 = "select w.x,w.z  from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp2 and wl.id=".$path_id;
+            $res2=mysql_query($query2);
+            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+            {
+                // Shift the start point    
+                $ix1 = $ix2;
+                $iy1 = $iy2;
+
+                $x1 = $line2[0];
+                $z1 = $line2[1];
+                $ix2 = $centerx+($x1*$scalefactorx);
+                $iy2 = $centery-($z1*$scalefactory);
+
+                imageline($im, $ix1, $iy1, $ix2, $iy2, IMG_COLOR_STYLED );
             }
         } 
 
