@@ -125,6 +125,8 @@ document.onmousemove=positiontip;
 echo "<h1>Waypoint Map View $sector</h1>";
 echo 'NPC Waypoints painted in orange<br>';
 
+if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+
 echo "<div id=Layer2 style=\"position:relative; \">";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:250px\">";    
 echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint\" >";

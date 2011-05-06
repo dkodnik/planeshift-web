@@ -123,6 +123,9 @@ document.onmousemove=positiontip;
 <?PHP
 
 echo "<h1>Location Map View $sector</h1>";
+
+if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+
 echo "NPC Locations painted in red<br><br>";
 
 echo "<div id=Layer2 style=\"position:relative; \">";    

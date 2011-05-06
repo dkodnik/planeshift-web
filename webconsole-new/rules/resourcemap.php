@@ -123,6 +123,9 @@ document.onmousemove=positiontip;
 <?PHP
 
 echo "<h1>Natural Resources Map View $sector</h1>";
+
+if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+
 echo 'Natural Resources painted in green<br>';
 
 echo "<div id=Layer2 style=\"position:relative; \">";    
