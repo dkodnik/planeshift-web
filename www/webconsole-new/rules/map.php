@@ -123,6 +123,9 @@ document.onmousemove=positiontip;
 <?PHP
 
 echo "<h1>Map View $sector</h1>";
+
+if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+
 echo "<font color=\"orange\">Waypoints points</font> ";
 echo "<font color=\"white\">Path points</font> ";
 echo "<font color=\"red\">Locations</font> ";
