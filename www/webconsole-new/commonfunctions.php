@@ -484,14 +484,14 @@ function getDataFromArea($area) {
   // sectors
   $data;
   if ($area=='hydlaa_plaza') {
-      $data[0] = 'loc_sector_id=15 or loc_sector_id=52 or loc_sector_id=41 or loc_sector_id=42';
+      $data[0] = '(loc_sector_id=15 or loc_sector_id=52 or loc_sector_id=41 or loc_sector_id=42)';
       $data[1] = 535;
       $data[2] = 180;
       $data[3] = 2.2;
       $data[4] = 2.2;
       $data[5] = array('hydlaa_plaza', 'tavern_de_kadel', 'laanxentrance','laanxmain');
   } else if ($area=='hydlaa_jayose') {
-      $data[0] = 'loc_sector_id=49 or loc_sector_id=40';
+      $data[0] = '(loc_sector_id=49 or loc_sector_id=40)';
       $data[1] = -250;
       $data[2] = -150;
       $data[3] = 3.2;
@@ -505,7 +505,7 @@ function getDataFromArea($area) {
       $data[4] = 2.2;
       $data[5] = array('hydlaa_winch');
   } else if ($area=='sewers') {
-      $data[0] = 'loc_sector_id>26 and loc_sector_id<38';
+      $data[0] = '(loc_sector_id>26 and loc_sector_id<38)';
       $data[1] = 203;
       $data[2] = -465;
       $data[3] = 2.3;
@@ -519,63 +519,63 @@ function getDataFromArea($area) {
       $data[4] = 6.73;
       $data[5] = array('laanxdungeon', 'wtowerdung', 'wtower', 'wtowerexit', 'wtowertop');
   } else if ($area=='arena') {
-      $data[0] = 'loc_sector_id>3 and loc_sector_id<15';
+      $data[0] = '(loc_sector_id>3 and loc_sector_id<15)';
       $data[1] = 470;
       $data[2] = 456;
       $data[3] = 4.43;
       $data[4] = 4.43;
       $data[5] = array('hall', 'trans1', 'dngn', 'cntr', 'trans2', 'merc', 'upper', 'entr', 'outer', 'hycorr1', 'hycorr2');
   } else if ($area=='ojaroad1') {
-      $data[0] = 'loc_sector_id=22';
+      $data[0] = '(loc_sector_id=22)';
       $data[1] = 603;
       $data[2] = 600;
       $data[3] = 0.9;
       $data[4] = 0.9;
       $data[5] = array('ojaroad1');
   } else if ($area=="ojaroad2") {
-      $data[0] = 'loc_sector_id=59';
+      $data[0] = '(loc_sector_id=59)';
       $data[1] = 632;
       $data[2] = 625;
       $data[3] = 1;
       $data[4] = 1;
       $data[5] = array('ojaroad2');
   } else if ($area=='akkaio') {
-      $data[0] = 'loc_sector_id>16 and loc_sector_id<20';
+      $data[0] = '(loc_sector_id>16 and loc_sector_id<20)';
       $data[1] = 445;
       $data[2] = 465;
       $data[3] = 5.3;
       $data[4] = 5.3;
       $data[5] = array('ojapath', 'Akk-Central', 'Akk-East');
   } else if ($area=='bdroad1') {
-      $data[0] = 'loc_sector_id=60';
+      $data[0] = '(loc_sector_id=60)';
       $data[1] = 491;
       $data[2] = 493;
       $data[3] = 0.76;
       $data[4] = 0.76;
       $data[5] = array('bdroad1');
   } else if ($area=='bdroad2') {
-      $data[0] = 'loc_sector_id=61';
+      $data[0] = '(loc_sector_id=61)';
       $data[1] = 669;
       $data[2] = 667;
       $data[3] = 1.07;
       $data[4] = 1.07;
       $data[5] = array('bdroad2');
   } else if ($area=='bdoorsout') {
-      $data[0] = 'loc_sector_id=67';
+      $data[0] = '(loc_sector_id=67)';
       $data[1] = 832;
       $data[2] = -749;
       $data[3] = 0.55;
       $data[4] = 0.55;
       $data[5] = array('bdoorsout');
   } else if ($area=='bdoorsin') {
-      $data[0] = 'loc_sector_id=66';
+      $data[0] = '(loc_sector_id=66)';
       $data[1] = 656;
       $data[2] = -977;
       $data[3] = 2.2;
       $data[4] = 2.2;
       $data[5] = array('bdoorsin');
   } else if ($area=='gugrontid') {
-      $data[0] = 'loc_sector_id=77';
+      $data[0] = '(loc_sector_id=77)';
       $data[1] = 240;
       $data[2] = 673;
       $data[3] = 1.3;
@@ -587,26 +587,26 @@ function getDataFromArea($area) {
       $data[3] = 2.7;
       $data[4] = 2.7;
   } else if ($area=='bdroadcave02') {
-      $data[0] = 'loc_sector_id=76';
+      $data[0] = '(loc_sector_id=76)';
       $data[1] = 1254;
       $data[2] = 759;
       $data[3] = 1.3;
       $data[4] = 1.3;
   } else if ($area=='caves03') {
-      $data[0] = 'loc_sector_id=16';
+      $data[0] = '(loc_sector_id=16)';
       $data[1] = 2200;
       $data[2] = 726;
       $data[3] = 1.3;
       $data[4] = 1.3;
   }  else if ($area=='npcroom1') {
-      $data[0] = 'loc_sector_id=3';
+      $data[0] = '(loc_sector_id=3)';
       $data[1] =  321.94;
       $data[2] = -371.05;
       $data[3] =    3.22;
       $data[4] =    3.26;
       $data[5] = array('NPCroom');
   } else if ($area=='npcroom2') {
-      $data[0] = 'loc_sector_id=70 or loc_sector_id=71';
+      $data[0] = '(loc_sector_id=70 or loc_sector_id=71)';
       $data[1] = 700;
       $data[2] = 293;
       $data[3] = 3;
