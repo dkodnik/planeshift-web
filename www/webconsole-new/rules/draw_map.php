@@ -212,7 +212,7 @@ function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
 }
 
 function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$fg_color_no_wander){
-    $query = " select id,x,y,z,radius from sc_waypoints where " . $sectors;
+    $query = " select id,x,y,z,radius,flags from sc_waypoints where " . $sectors;
     //echo $query;
     $res = mysql_query($query);
 
@@ -228,11 +228,62 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         $y       = $line[2];
         $z       = $line[3];
         $radius  = $line[4];
+        $flags   = $line[5];
 
 	$ix = $centerx+($x*$scalefactorx);
 	$iy = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
-        imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
+
+        $style = array($fg_color,$fg_color,$fg_color);
+
+        if (stristr($flags, "PRIVATE") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 255, 0, 0); // Red
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "PUBLIC") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 0, 255, 0); // Green
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "UNDERGROUND") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 128, 128, 128); // Gray
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "UNDERWATER") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 0, 0, 255); // Blue
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "CITY") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 238, 130, 238); // Violet
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "INDOOR") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 255,192,203); // Pink
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "PATH") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 165, 42, 42); // Brown
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "ROAD") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 0, 0, 0); // Black
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+        if (stristr($flags, "GROUND") !== FALSE)
+        {
+           $col = imagecolorallocate($im, 0, 100, 0); // Dark Green
+           $style = array_merge($style,array($col,$col,$col,$col));
+        }
+
+        imagesetstyle($im,$style);
+        imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,IMG_COLOR_STYLED);
 
         $query2 = "select wp1.x,wp1.y,wp1.z,wp2.x,wp2.y,wp2.z,l.flags,wp1.id,wp2.id from sc_waypoint_links l, sc_waypoints wp1, sc_waypoints wp2 where l.wp1 = wp1.id and l.wp2 = wp2.id and wp1.id = ".$id;
         $res2=mysql_query($query2); 
@@ -252,7 +303,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
             $ix2 = $centerx+($x2*$scalefactorx);
             $iy2 = $centery-($z2*$scalefactory);
 
-            if (stristr($flags, 'NO_WANDER'))
+            if (stristr($flags, 'NO_WANDER') !== FALSE)
             {
                 $line_color = $fg_color_no_wander;
             } else
@@ -269,7 +320,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
             {
                 //imageline($im,$ix1,$iy1,$ix2,$iy2 , $line_color);
             }
-            if (stristr($flags, 'ONEWAY') != FALSE)
+            if (stristr($flags, 'ONEWAY') !== FALSE)
             {
                 $cx = ($ix1+$ix2)/2;
                 $cy = ($iy1+$iy2)/2;
@@ -302,12 +353,12 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
        
        $style = array($bg_color,$bg_color,$bg_color);
 
-       if (stristr($flags, "NO_WANDER"))
+       if (stristr($flags, "NO_WANDER") !== FALSE)
        {
           $red = imagecolorallocate($im, 255, 0, 0);
           $style = array_merge($style,array($red,$red,$red));
        }
-       if (stristr($flags, "TELEPORT"))
+       if (stristr($flags, "TELEPORT") !== FALSE)
        {
           $blue = imagecolorallocate($im, 0, 255, 0);
           $style = array_merge($style,array($blue,$blue,$blue));
