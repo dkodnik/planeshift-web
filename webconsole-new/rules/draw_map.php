@@ -129,10 +129,10 @@ function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$sc
 	$ix = $centerx+($x*$scalefactorx);
 	$iy = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
-        imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
+        imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
 
         $ivr = $vis_radius*$scalefactorx;
-        imagearc($im,$ix,$iy,$ivr,$ivr,0,360,$bg_color);
+        imagearc($im,$ix,$iy,2*$ivr,2*$ivr,0,360,$bg_color);
 
     }
 }
@@ -165,7 +165,7 @@ function draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
         $ir = $radius*$scalefactorx;
         if ($range_type == "C") // Circle
         {
-            imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
+            imagearc($im,$ix1,$iy1,2*$ir,2*$ir,0,360,$fg_color);
         } else if ($range_type == "A") // Area
         {
             imageline($im,$ix1,$iy1,$ix1,$iy2 , $fg_color);
@@ -174,9 +174,13 @@ function draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
             imageline($im,$ix2,$iy1,$ix1,$iy1 , $fg_color);
         } else if ($range_type == "L") // Line with round edges
         {
-            imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
-            imageline($im,$ix1,$iy1,$ix2,$iy2 , $fg_color);
-            imagearc($im,$ix2,$iy2,$ir,$ir,0,360,$fg_color);
+            $a = atan2($iy1-$iy2,$ix1-$ix2);
+            $dx = $ir*cos($a+M_PI_2);
+            $dy = $ir*sin($a+M_PI_2);
+            imagearc($im,$ix1,$iy1,2*$ir,2*$ir,rad2deg($a)-90,rad2deg($a)+90,$fg_color);
+            imageline($im,$ix1-$dx,$iy1-$dy,$ix2-$dx,$iy2-$dy , $fg_color);
+            imageline($im,$ix1+$dx,$iy1+$dy,$ix2+$dx,$iy2+$dy , $fg_color);
+            imagearc($im,$ix2,$iy2,2*$ir,2*$ir,rad2deg($a)+90,rad2deg($a)-90,$fg_color);
         }
     }
 
@@ -203,7 +207,7 @@ function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
 	$ix = $centerx+($x*$scalefactorx);
 	$iy = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
-        imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
+        imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
     }
 }
 
@@ -228,7 +232,7 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
 	$ix = $centerx+($x*$scalefactorx);
 	$iy = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
-        imagearc($im,$ix,$iy,$ir,$ir,0,360,$fg_color);
+        imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
 
         $query2 = "select wp1.x,wp1.y,wp1.z,wp2.x,wp2.y,wp2.z,l.flags,wp1.id,wp2.id from sc_waypoint_links l, sc_waypoints wp1, sc_waypoints wp2 where l.wp1 = wp1.id and l.wp2 = wp2.id and wp1.id = ".$id;
         $res2=mysql_query($query2); 
@@ -400,7 +404,7 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
 	$ix1 = $centerx+($x*$scalefactorx);
 	$iy1 = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
-        imagearc($im,$ix1,$iy1,$ir,$ir,0,360,$fg_color);
+        imagearc($im,$ix1,$iy1,2*$ir,2*$ir,0,360,$fg_color);
 
 	if ( $id_prev > 0 )
         {
