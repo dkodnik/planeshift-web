@@ -75,11 +75,11 @@ function editcombine()
             }
         }
         $patterns = PrepSelect('patterns');
-        $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&pattern_id='.$pattern_id.'&result_id='.$id.'">Delete Combination</a>' : "");
+        $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&amp;pattern_id='.$pattern_id.'&amp;result_id='.$id.'">Delete Combination</a>' : "");
         $row = mysql_fetch_array($result);
         echo '<p class="bold">Edit Combine</p>'."\n"; 
         echo 'If you set any item to "NONE", it will be removed from the combination.';
-        echo '<form action="./index.php?do=editcombine&id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
+        echo '<form action="./index.php?do=editcombine&amp;id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
         echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
         echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
         echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', $id, true).'</td></tr>';
@@ -145,7 +145,7 @@ function createcombine()
     {
         echo '<p class="bold">Create Combine</p>'."\n"; // new pattern
         echo 'If you set any item to "NONE", it will not be added to the combination.';
-        echo '<form action="./index.php?do=createcombine&id='.$_GET['id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
+        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
         $items_results = PrepSelect('items');
         echo '<tr><td>Pattern id</td><td><input type="hidden" name="pattern_id" value="'.$_POST['pattern_id'].'" />'.$_POST['pattern_id'].'</td></tr>';
         echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', $_POST['result_id'], false).'</</td></tr>';
@@ -175,7 +175,7 @@ function createcombine()
     {
         echo '<p class="bold">Create Combine</p>'."\n"; // new pattern
         echo 'If you set any item to "NONE", it will not be added to the combination.';
-        echo '<form action="./index.php?do=createcombine&id='.$_GET['pattern_id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
+        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['pattern_id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
         $items_results = PrepSelect('items');
         echo '<tr><td>Pattern id</td><td><input type="hidden" name="pattern_id" value="'.$_GET['pattern_id'].'" />'.$_GET['pattern_id'].'</td></tr>';
         echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', '', false).'</</td></tr>';
@@ -256,7 +256,7 @@ function deletecombine()
             echo $row['min_qty'].' to '.$row['max_qty'].' '.$items[$row['item_id']].'<br>';
         }
         echo '</td></tr></table>';
-        echo '<form action="./index.php?do=deletecombine&id='.$pattern_id.'&result_id='.$result_id.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+        echo '<form action="./index.php?do=deletecombine&amp;id='.$pattern_id.'&amp;result_id='.$result_id.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
 
     }
     else

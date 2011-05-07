@@ -96,7 +96,7 @@ function createtransform()
     {
         echo '<p class="bold">Create Transformation</p>'."\n"; // new transformation
         
-        $redir = (isset($_GET['id']) ? "&id={$_GET['id']}" : "");  // set this value if the script was called from a certain pattern, and if it was, return to there after inserting the data.
+        $redir = (isset($_GET['id']) ? "&amp;id={$_GET['id']}" : "");  // set this value if the script was called from a certain pattern, and if it was, return to there after inserting the data.
         echo '<form action="./index.php?do=createtransform'.$redir.'" method="post" /><table>';
         
         if(isset ($_GET['id']))
