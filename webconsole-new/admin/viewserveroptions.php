@@ -29,15 +29,15 @@ function viewserveroptions()
         
         $query = 'select * from server_options order by option_name';
         $result = mysql_query2($query);
-        echo '<form action="./index.php?do=viewserveroptions" method="POST">';
+        echo '<form action="./index.php?do=viewserveroptions" method="post">';
         echo '<table width="500" border="0"><tr><td>Option name</td><td>Option value</td></tr>';
         while ($row = mysql_fetch_array($result))
         {
             echo '<tr><td width="150">'.$row['option_name'].'</td>';
-            echo '<td width="350"><input type="hidden" name="option[]" value="'.$row['option_name'].'"><INPUT size=90 type=text name="data[]" value="'.$row['option_value'].'"</td></tr>';
+            echo '<td width="350"><input type="hidden" name="option[]" value="'.$row['option_name'].'"/><input size="90" type="text" name="data[]" value="'.$row['option_value'].'"/></td></tr>';
         }
         echo '</table>';
-        echo '<input type="submit" name="submit" value="Save"></form>';
+        echo '<input type="submit" name="submit" value="Save"/></form>';
     }
 }
 

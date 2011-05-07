@@ -20,7 +20,7 @@ function listprocess()
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $id = $row['process_id'];
         mysql_data_seek($result, 0);
-        echo '<table><tr><th><a href="./index.php?do=listprocess&amp;sort=name">Name</a></th><th>Sub-<br>Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
+        echo '<table><tr><th><a href="./index.php?do=listprocess&amp;sort=name">Name</a></th><th>Sub-<br/>Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Description</th>';
         if (checkaccess('crafting', 'edit')){
             echo '<th>Actions</th>';
         }

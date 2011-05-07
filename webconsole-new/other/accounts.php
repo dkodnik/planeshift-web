@@ -60,9 +60,9 @@ function listaccounts()
             echo '<td>'.$status.'</td>';
             echo '<td>'.$row['verificationid'].'</td>';
             echo '<td>';
-            echo '<a href="./index.php?do=viewaccount&id='.$row['id'].'">Details</a> ';
-            //echo (checkaccess('other', 'edit') ? '<a href="./index.php?do=editaccount&id='.$row['id'].'">Edit</a> ' : '');
-            //echo (checkaccess('other', 'delete') ? '<a href="./index.php?do=deleteaccount&id='.$row['id'].'">Delete</a> ' : '');
+            echo '<a href="./index.php?do=viewaccount&amp;id='.$row['id'].'">Details</a> ';
+            //echo (checkaccess('other', 'edit') ? '<a href="./index.php?do=editaccount&amp;id='.$row['id'].'">Edit</a> ' : '');
+            //echo (checkaccess('other', 'delete') ? '<a href="./index.php?do=deleteaccount&amp;id='.$row['id'].'">Delete</a> ' : '');
             echo '</td>';
         }
         echo '</table>';
@@ -131,7 +131,7 @@ function viewaccount()
         echo '<tr class="color_b"><td>Comments: </td><td><pre>'.htmlentities($row['comments']).'</pre></td></tr>';
         echo '</table><br/><br/>';
         
-        echo '<a href="./index.php?do=listcharacters&account_id='.$id.'">List this account\'s characters</a>';
+        echo '<a href="./index.php?do=listcharacters&amp;account_id='.$id.'">List this account\'s characters</a>';
     }
     else
     {

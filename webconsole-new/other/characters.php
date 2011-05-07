@@ -48,8 +48,8 @@ function listcharacters()
             echo '<td>'.htmlentities($row['name']).'</td>';
             echo '<td>'.htmlentities($row['lastname']).'</td>';
             echo '<td>'.($row['account_name'] == 'superclient' ? 'Yes' : 'No').'</td>';
-            echo '<td><a href="./index.php?do=listguilds&guild='.$row['guild_member_of'].'">'.htmlentities($row['guild_name']).'</a></td>';
-            echo '<td><a href="./index.php?do=listaccounts&id='.$row['account_id'].'">'.htmlentities($row['account_name']).'</a></td>';
+            echo '<td><a href="./index.php?do=listguilds&amp;guild='.$row['guild_member_of'].'">'.htmlentities($row['guild_name']).'</a></td>';
+            echo '<td><a href="./index.php?do=listaccounts&amp;id='.$row['account_id'].'">'.htmlentities($row['account_name']).'</a></td>';
             
             $t = $row['time_connected_sec'];
             $days = floor($t / (60*60*24));
@@ -63,8 +63,8 @@ function listcharacters()
             
             $secs = $t;
             echo '<td>'.$days.' days, '.$hours.' hours, '.$min.' minutes, '.$secs.' seconds</td>';
-            echo '<td>'; //<a href="./index.php?do=viewcharacter&id='.$row['id'].'">Details</a> ';
-            echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&npc_id='.$row['id'].'">Edit</a>' : '').'</td>';
+            echo '<td>'; //<a href="./index.php?do=viewcharacter&amp;id='.$row['id'].'">Details</a> ';
+            echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&amp;npc_id='.$row['id'].'">Edit</a>' : '').'</td>';
             echo '</tr>';
             
         }

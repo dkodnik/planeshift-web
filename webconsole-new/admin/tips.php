@@ -13,12 +13,12 @@ function listtips(){
             {
                 echo '<form action="./index.php?do=edittips" method="post">';
                 echo '<textarea cols="50" rows="2" name="tip">'.$row['tip'].'</textarea>';
-                echo '<input type="hidden"  name="id" value ="'.$row['id'].'">';
+                echo '<input type="hidden"  name="id" value ="'.$row['id'].'"/>';
                 echo '</td><td>';
-                echo '<input type="submit" name="action" value="Save">';
+                echo '<input type="submit" name="action" value="Save"/>';
                 if(checkaccess('admin', 'delete')) 
                 {
-                    echo '<br><input type="submit" name="action" value="Delete">';
+                    echo '<br/><input type="submit" name="action" value="Delete"/>';
                 }
                 echo '</form>';
             }
@@ -34,8 +34,8 @@ function listtips(){
             echo '<form action="./index.php?do=edittips" method="post">';
             echo '<textarea cols="50" rows="2" name="tip"></textarea>';
             echo '</td><td>';
-            echo '<input type="submit" name="action" value="Add">';
-            echo '</td></tr>';
+            echo '<input type="submit" name="action" value="Add"/>';
+//            echo '</td></tr>';
             echo '</form>';
         }
         echo '</td></tr>';
@@ -116,8 +116,8 @@ function edittips(){
         {
             echo '<p class="error">Warning, you are about to permanently delete the following Tip:</p>';
             echo '<p>'.$tip.'</p>';
-            echo '<form action="./index.php?do=edittips" method="post"><input type="hidden" name="action" value="Delete"><input type="hidden" name="id" value="'.$id.'">';
-            echo 'Enter your password to confirm deletion the Tip listed above: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+            echo '<form action="./index.php?do=edittips" method="post"><input type="hidden" name="action" value="Delete"/><input type="hidden" name="id" value="'.$id.'"/>';
+            echo 'Enter your password to confirm deletion the Tip listed above: <input type="password" name="passd"/><input type="submit" name="submit" value="Confirm Delete"/></form>';
 		}
 	}
 	else

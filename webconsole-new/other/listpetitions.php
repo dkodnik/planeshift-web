@@ -2,14 +2,14 @@
 
 function sort_link($column, $label, $sort_col, $sort_dir)
 {
-    $html = '<a href="./index.php?do=listpetitions&page='.@$_GET['page'].'&items_per_page='.@$_GET['items_per_page'].'&sort_column='.$column;
+    $html = '<a href="./index.php?do=listpetitions&amp;page='.@$_GET['page'].'&amp;items_per_page='.@$_GET['items_per_page'].'&amp;sort_column='.$column;
     if($sort_col == $column && $sort_dir == 'ASC')
     {
-        $html .= '&sort_dir=DESC';
+        $html .= '&amp;sort_dir=DESC';
     }
     else
     {
-        $html .= '&sort_dir=ASC';
+        $html .= '&amp;sort_dir=ASC';
     }
     $html .= '">'.$label;
     if($sort_col == $column)
@@ -84,7 +84,7 @@ function listpetitions() {
            echo '<td>'.htmlentities($row['assigned_gm'] == '-1' ? 'none' : $row['gm_name'] ).'</td>';
            echo '<td>'.htmlentities(msg_cut($row['resolution'], 20)).'</td>';
            echo '<td>'.$row['escalation_level'].'</td>';
-           echo '<td><a href="./index.php?do=listpetitions&petition='.$row['id'].'">Details</a></td>';
+           echo '<td><a href="./index.php?do=listpetitions&amp;petition='.$row['id'].'">Details</a></td>';
         }
         echo '</table>';
     }

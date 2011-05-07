@@ -30,7 +30,7 @@ function listguilds() {
                 echo '<td>'.$row['karma_points'].'</td>';
                 echo '<td>'.htmlentities($row['date_created']).'</td>';
                 echo '<td>'.htmlentities($row['char_name_founder']).'</td>';
-                echo '<td><a href="./index.php?do=listguilds&guild='.$row['id'].'">Details</a></td>';
+                echo '<td><a href="./index.php?do=listguilds&amp;guild='.$row['id'].'">Details</a></td>';
                 echo '</tr>';
             }
             echo '</table>';
@@ -83,7 +83,7 @@ function listguilds() {
                         echo '<td>'.$row2['karma_points'].'</td>';
                         echo '<td>'.htmlentities($row2['date_created']).'</td>';
                         echo '<td>'.htmlentities($row2['founder_name']).'</td>';
-                        echo '<td><a href="./index.php?do=listguilds&guild='.$row2['id'].'">Details</a></td>';
+                        echo '<td><a href="./index.php?do=listguilds&amp;guild='.$row2['id'].'">Details</a></td>';
                         echo '</tr>';
                     }
                     echo '</table>';
@@ -113,10 +113,10 @@ function listguilds() {
                 echo '<td>'.htmlentities($row['name']).'</td>';
                 echo '<td>'.htmlentities($row['guild_level']).'</td>';
                 echo '<td>'.htmlentities($row['guild_points']).'</td>';
-                echo '<td><a href="./index.php?do=editguildmember&id='.$row['id'].'">Edit</a>';
+                echo '<td><a href="./index.php?do=editguildmember&amp;id='.$row['id'].'">Edit</a>';
                 if(CheckAccess('other', 'delete'))
                 {
-                    echo ' - <a href="./index.php?do=deleteguildmember&id='.$row['id'].'&guild='.$guild.'">Delete</a>';
+                    echo ' - <a href="./index.php?do=deleteguildmember&amp;id='.$row['id'].'&amp;guild='.$guild.'">Delete</a>';
                 }
                 echo '</td></tr>';
             }
@@ -166,10 +166,10 @@ function editguildmember()
     $sql = 'SELECT c.*, g.name as guild FROM characters AS c, guilds AS g WHERE c.id = '.$member.' AND g.id = c.guild_member_of LIMIT 1';
     $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
     
-    echo '<a href="./index.php?do=listguilds&guild='.$row['guild_member_of'].'">Back</a><br/>';
+    echo '<a href="./index.php?do=listguilds&amp;guild='.$row['guild_member_of'].'">Back</a><br/>';
     if($edit)
     {
-        echo '<form action="./index.php?do=editguildmember&id='.$member.'" method="post">';
+        echo '<form action="./index.php?do=editguildmember&amp;id='.$member.'" method="post">';
     }
     echo '<table>';
     echo '<tr class="color_a"><td>ID</td><td>'.$member.'</td></tr>';
@@ -228,10 +228,10 @@ function deleteguildmember()
         if(!$passed)
         {
             echo '<strong>Are sure you want to remove "'.$row['name'].'" from the guild?</strong><br/>';
-            echo '<form action="./index.php?do=deleteguildmember&id='.$id.'&guild='.$guild.'" method="post">';
+            echo '<form action="./index.php?do=deleteguildmember&amp;id='.$id.'&amp;guild='.$guild.'" method="post">';
             echo 'Password: <input type="password" name="password" /><br/>';
             echo '<input type="submit" value="Yes"/>';
-            echo ' - <a href="./index.php?do=listguilds&guild='.$guild.'">No</a></form>';
+            echo ' - <a href="./index.php?do=listguilds&amp;guild='.$guild.'">No</a></form>';
         }
         else
         {
@@ -245,7 +245,7 @@ function deleteguildmember()
             {
                 echo '<p class="error">Something went wrong! '.$rows.' characters are excluded from their guild.</p>';
             }
-            echo '<a href="./index.php?do=listguilds&guild='.$guild.'">Back</a>';
+            echo '<a href="./index.php?do=listguilds&amp;guild='.$guild.'">Back</a>';
         }
     }
     else

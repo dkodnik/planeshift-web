@@ -11,10 +11,10 @@ function listevents()
         echo '<table border="1" >';
         
         echo '<tr>';
-        echo '<th><a href="./index.php?do=events&order=id">ID</a></th>';    
-        echo '<th><a href="./index.php?do=events&order=name">Name</a></th>';
-        echo '<th><a href="./index.php?do=events&order=gm">GM</a></th>';
-        echo '<th><a href="./index.php?do=events&order=avg">Average</a></th>';
+        echo '<th><a href="./index.php?do=events&amp;order=id">ID</a></th>';    
+        echo '<th><a href="./index.php?do=events&amp;order=name">Name</a></th>';
+        echo '<th><a href="./index.php?do=events&amp;order=gm">GM</a></th>';
+        echo '<th><a href="./index.php?do=events&amp;order=avg">Average</a></th>';
         echo '<th>Actions</th>';
         echo '</tr>';
         
@@ -25,7 +25,7 @@ function listevents()
             echo '<td>' . $event['name'] . '</td>';
             echo '<td>' . $event['gm_name'] . ' ' . $event['gm_lastname'] . '</td>';
             echo '<td>' . $event['avg'] . '</td>';
-            echo '<td><a href="./index.php?do=viewevent&id=' . $event['id'] . '">View</a></td>';
+            echo '<td><a href="./index.php?do=viewevent&amp;id=' . $event['id'] . '">View</a></td>';
             echo '</tr>';
         }
         
