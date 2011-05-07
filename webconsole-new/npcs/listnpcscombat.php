@@ -73,7 +73,7 @@ function listnpcscombat()
         }
 
         echo '<table border="1">';
-        echo '<tr><th><a href="./index.php?do=listnpcscombat&sort=id">ID</a></th><th><a href="./index.php?do=listnpcscombat&sort=name">Name</a></th><th><a href="./index.php?do=listnpcscombat&sort=spawn">Spawn</a>/<a href="./index.php?do=listnpcscombat&sort=loot">Loot</a></th><th>Position</th><th><a href="./index.php?do=listnpcscombat&sort=sector">Sector</a></th><th>Region</th><th>Weapon Right Hand</th><th>Weapon Left Hand</th><th>Skills</th><th>Exp</th><th> </th></tr>';
+        echo '<tr><th><a href="./index.php?do=listnpcscombat&amp;sort=id">ID</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=name">Name</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=spawn">Spawn</a>/<a href="./index.php?do=listnpcscombat&amp;sort=loot">Loot</a></th><th>Position</th><th><a href="./index.php?do=listnpcscombat&amp;sort=sector">Sector</a></th><th>Region</th><th>Weapon Right Hand</th><th>Weapon Left Hand</th><th>Skills</th><th>Exp</th><th> </th></tr>';
 
         $npcs = array();
         while ($row = mysql_fetch_array($query, MYSQL_ASSOC))
@@ -127,7 +127,7 @@ function listnpcscombat()
             $right = (isset($row['weapons'][0]) ? $row['weapons'][0] : array(-1, 'None'));
             $left = (isset($row['weapons'][1]) ? $row['weapons'][1] : array(-1, 'None'));
 
-            echo '<form action="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'" method="post"><tr style="white-space: nowrap;">';
+            echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['id'].'" method="post"><tr style="white-space: nowrap;">';
             echo '<td>'.$row['id'].'</td>';
             if (checkaccess('npcs', 'edit'))
             {
