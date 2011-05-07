@@ -125,7 +125,7 @@ function editpattern(){
         $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
         if (checkaccess('items','edit'))
         {
-            echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> </td>';
+            echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> </td>';
         }
         else
         {
@@ -136,7 +136,7 @@ function editpattern(){
         $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
         if (checkaccess('items','edit'))
         {
-            echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+            echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
         }
         else
         {
@@ -192,7 +192,7 @@ function editpattern(){
                 $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
-                    echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+                    echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
                 }
                 else
                 {
@@ -202,7 +202,7 @@ function editpattern(){
                 $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
-                    echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+                    echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
                 }
                 else
                 {
@@ -215,7 +215,7 @@ function editpattern(){
                 $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
-                    echo $row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+                    echo $row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
                 }
                 else
                 {
@@ -383,7 +383,7 @@ function deletepattern()
             echo '<p class="error">No available Combines</p>';
         }
         
-        echo '<form action="./index.php?do=deletepattern&id='.$_GET['id'].'" method="post">Enter your password to confirm deletion of *ALL* items listed above: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+        echo '<form action="./index.php?do=deletepattern&amp;id='.$_GET['id'].'" method="post">Enter your password to confirm deletion of *ALL* items listed above: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
 
     }
     else

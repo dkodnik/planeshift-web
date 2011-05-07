@@ -36,13 +36,13 @@ function listprocess()
             {
                 echo '<tr class="color_b">';
             }
-            echo '<td><a href="./index.php?do=process&id='.$row['process_id'].'">'.$row['name'].'</a></td>';
+            echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
             echo '<td>'.$row['subprocess_number'].'</td>';
             echo '<td>'.$row['animation'].'</td>';
-            echo '<td><a href="./index.php?do=listitems&override1&category='.$row['work_cat_id'].'&item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
-            echo '<td><a href="./index.php?do=listitems&override1&category='.$row['equipment_cat_id'].'&item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
+            echo '<td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['work_cat_id'].'&amp;item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
+            echo '<td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['equipment_cat_id'].'&amp;item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
             echo '<td>'.$row['constraints'].'</td>';
-            echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['garbage_cat_id'].'&item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
+            echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['garbage_cat_id'].'&amp;item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
             echo '<td>'.$row['primary_skill_name'].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
             echo '<td>'.$row['secondary_skill_name'].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
             echo '<td>'.$row['description'].'</td>';
@@ -99,10 +99,10 @@ function editprocess(){
       }
       echo '<td>'.$row['subprocess_number'].'</td>';
       echo '<td>'.$row['animation'].'</td>';
-      echo '<td><a href="./index.php?do=listitems&override1&category='.$row['work_cat_id'].'&item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
-      echo '<td><a href="./index.php?do=listitems&override1&category='.$row['equipment_cat_id'].'&item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
+      echo '<td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['work_cat_id'].'&amp;item='.$row['workitem_id'].'">'.$row['workitem_name'].'</a></td>';
+      echo '<td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['equipment_cat_id'].'&amp;item='.$row['equipment_id'].'">'.$row['equipment_name'].'</a></td>';
       echo '<td>'.$row['constraints'].'</td>';
-      echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['garbage_cat_id'].'&item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
+      echo '<td>'.$row['garbage_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['garbage_cat_id'].'&amp;item='.$row['garbage_id'].'">'.$row['garbage_name'].'</a></td>';
       echo '<td>'.$row['primary_skill_name'].' / '.$row['primary_min_skill'].' / '.$row['primary_max_skill'].' / '.$row['primary_practice_points'].' / '.$row['primary_quality_factor'].'</td>';
       echo '<td>'.$row['secondary_skill_name'].' / '.$row['secondary_min_skill'].' / '.$row['secondary_max_skill'].' / '.$row['secondary_practice_points'].' / '.$row['secondary_quality_factor'].'</td>';
       echo '<td>'.$row['description'].'</td>';
@@ -133,11 +133,11 @@ function editprocess(){
               echo '<tr class="color_b">';
             }
             $pattern_name = ($row['pattern_id'] != 0 ? $row['pattern_name'] : "patternless");
-            echo '<td><a href="./index.php?do=editpattern&id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
+            echo '<td><a href="./index.php?do=editpattern&amp;id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
             $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
             if (checkaccess('items','edit'))
             {
-                echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> </td>';
+                echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> </td>';
             }
             else
             {
@@ -148,7 +148,7 @@ function editprocess(){
             $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
             if (checkaccess('items','edit'))
             {
-                echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+                echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
             }
             else
             {
@@ -211,7 +211,7 @@ function editsubprocess()
     {
       $id = mysql_real_escape_string($_GET['id']);
       $sub = mysql_real_escape_string($_GET['sub']);
-      $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&id='.$id.'&sub='.$sub.'">Delete</a>' : '');
+      $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&amp;id='.$id.'&amp;sub='.$sub.'">Delete</a>' : '');
       $query = "SELECT * FROM trade_processes WHERE process_id = '$id' AND subprocess_number='$sub'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
@@ -448,13 +448,13 @@ function deleteprocess()
             else
             {
                 echo '<p>You are about to permanently delete process id '.$process_id.' ('.$process_name.') and all known subprocesses</p>';
-                echo '<form action="./index.php?do=deleteprocess&id='.$process_id.'&sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+                echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
             }
         }
         else // we have a sub-process, we can delete those without question.
         {
             echo '<p>You are about to permanently delete sub process number: '.$subprocess_number.' from process id '.$process_id.' ('.$process_name.')</p>';
-            echo '<form action="./index.php?do=deleteprocess&id='.$process_id.'&sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+            echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
         }    
     }
     else
