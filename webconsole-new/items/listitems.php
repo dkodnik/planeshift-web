@@ -72,7 +72,7 @@ function listitems(){
       echo '<table border="1" class="top">';
       if (checkaccess('items','edit')){
         echo '<tr><td>Item Actions:</td><td><a href="./index.php?do=edititem&amp;item='.$_GET['item'].'">Edit Item</a>';
-        echo ' -- <a href="./index.php?do=showitemusage&id='.$id.'">Check Usage</a>';
+        echo ' -- <a href="./index.php?do=showitemusage&amp;id='.$id.'">Check Usage</a>';
       }
       if (checkaccess('items','delete')){
         echo ' -- <a href="./index.php?do=deleteitem&amp;item='.$_GET['item'].'">Delete Item</a>';
@@ -83,7 +83,7 @@ function listitems(){
       }
       echo '</table>';
     }
-    echo '</tr>';
+    echo '</td></tr>';
     echo '</table>';
   }else{
     echo '<p class="error">You are not authorized to use these functions!</p>';
@@ -188,11 +188,11 @@ function showitemusage()
                     echo '<tr class="color_b">';
                 }
                 $pattern_name = ($row['pattern_id'] != 0 ? $row['pattern_name'] : "patternless");
-                echo '<td><a href="./index.php?do=editpattern&id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
+                echo '<td><a href="./index.php?do=editpattern&amp;id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
                 $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
-                    echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> </td>';
+                    echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> </td>';
                 }
                 else
                 {
@@ -203,7 +203,7 @@ function showitemusage()
                 $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
-                    echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+                    echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
                 }
                 else
                 {
@@ -258,10 +258,10 @@ function showitemusage()
                     $result_id = $row['result_id'];
                     $result_name = ($row['result_name'] == '' ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                     $pattern_name = ($row['pattern_id'] != 0 ? $row['pattern_name'] : "patternless");
-                    echo '<td><a href="./index.php?do=editpattern&id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
+                    echo '<td><a href="./index.php?do=editpattern&amp;id='.$row['pattern_id'].'">'.$pattern_name.'</a></td>';
                     if (checkaccess('items','edit'))
                     {
-                        echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&override1&category='.$row['result_cat_id'].'&item='.$row['result_id'].'">'.$result_name.'</a> </td>';
+                        echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
                     }
                     else
                     {
@@ -271,7 +271,7 @@ function showitemusage()
                     $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                     if (checkaccess('items','edit'))
                     {
-                        //echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+                        //echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
                     }
                     else
                     {
@@ -284,7 +284,7 @@ function showitemusage()
                     $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                     if (checkaccess('items','edit'))
                     {
-                        //echo $row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&override1&category='.$row['item_cat_id'].'&item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
+                        //echo $row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
                     }
                     else
                     {
@@ -341,7 +341,7 @@ function showitemusage()
                 {
                     echo '<tr class="color_b">';
                 }
-                echo '<td><a href="./index.php?do=process&id='.$row['process_id'].'">'.$row['name'].'</a></td>';
+                echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
                 echo '<td>'.$row['subprocess_number'].'</td>';
                 echo '<td>'.$row['animation'].'</td>';
                 $i = $row['workitem_id'];
@@ -484,7 +484,7 @@ function showitemusage()
             echo '<table border="1">';
             while($row = mysql_fetch_array($result))
             {
-                echo '<tr><td><a href="./index.php?do=listloot&id='.$row['loot_rule_id'].'">'.$row['name'].'</a></tr></td>';
+                echo '<tr><td><a href="./index.php?do=listloot&amp;id='.$row['loot_rule_id'].'">'.$row['name'].'</a></tr></td>';
             }
             echo '</table>';
         }
