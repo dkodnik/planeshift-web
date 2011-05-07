@@ -170,7 +170,7 @@ function show_races()
     
     while ($line = mysql_fetch_array($result, MYSQL_NUM))
     {
-        echo "<TR><TD>" . $line[0] . "</TD><TD><A HREF=index.php?do=showraces&function=list&race_id=" . $line[0] . ">" . $line[1] . "</A></TD><TD>" . $line[2] . "</TD></TR>";
+        echo "<TR><TD>" . $line[0] . "</TD><TD><A HREF=index.php?do=showraces&amp;function=list&amp;race_id=" . $line[0] . ">" . $line[1] . "</A></TD><TD>" . $line[2] . "</TD></TR>";
         if($line[0] == 11)
         {
             echo "</TABLE>";
@@ -208,7 +208,7 @@ function list_traits()
     
     while ($line = mysql_fetch_array($result, MYSQL_NUM)){
         echo '<TR>';
-        echo '<FORM ACTION=index.php?do=trait_actions&operation=update METHOD=POST>';
+        echo '<FORM ACTION=index.php?do=trait_actions&amp;operation=update METHOD=POST>';
         echo '<TD><INPUT TYPE="hidden" NAME="id" VALUE="'.$line[0].'" />'.$line[0].'</TD>';
         echo '<TD><INPUT SIZE="5" TYPE="text" NAME="next_trait" VALUE="'.$line[1].'"></TD>';
         echo '<TD><TABLE><TR><TD>'.DrawSelectBox('races', $races, 'race_id', $line[2], false).'</TD>';
@@ -219,13 +219,13 @@ function list_traits()
         echo '<input type="text" name="cstr_material" value="'.$line[7].'" /><BR />';
         echo '<input type="text" name="cstr_texture" value="'.$line[8].'" /></TD>';
         echo '<TD><TABLE><TR><TD><INPUT TYPE="SUBMIT" NAME="submit" VALUE="Update" /></FORM></TD>';
-        echo '<TD><FORM ACTION="index.php?do=trait_actions&operation=delete" METHOD="POST">';
+        echo '<TD><FORM ACTION="index.php?do=trait_actions&amp;operation=delete" METHOD="POST">';
         echo '<INPUT TYPE="hidden" NAME="id" VALUE="'.$line[0].'" />';
         echo '<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete" /></FORM></TD></TR></TABLE>';
         echo '</TD></TR>';
     }
     echo '<TR>';
-    echo '<FORM ACTION="index.php?do=trait_actions&operation=add" METHOD="POST">';
+    echo '<FORM ACTION="index.php?do=trait_actions&amp;operation=add" METHOD="POST">';
     echo '<TD></TD>';
     echo '<TD><INPUT SIZE="5" TYPE="text" NAME="next_trait" /></TD>';
     echo '<TD><TABLE><TR><TD>'.DrawSelectBox('races', $races, 'race_id', '', false).'</TD>';

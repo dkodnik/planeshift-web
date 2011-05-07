@@ -26,17 +26,17 @@ function listgms()
             $sec_level = (isset($row['security_title']) && !empty($row['security_title']) ? $row['security_title'] : 'Unknown');
             
             echo '<tr class="color_'.$color.'">';
-            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&id='.$row['account_id'].'">' : '');
+            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&amp;id='.$row['account_id'].'">' : '');
             echo $row['account_id'].(checkaccess('other', 'read') ? '</a>' : '').' / ';
-            echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&npc_id='.$row['character_id'].'&sub=main">' : '');
+            echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&amp;npc_id='.$row['character_id'].'&amp;sub=main">' : '');
             echo $row['character_id'].(checkaccess('npcs', 'edit') ? '</a>' : '').'</td>';
             echo '<td>'.$sec_level.'('.$row['security_level'].')</td>';
-            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&id='.$row['account_id'].'">' : '');
+            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&amp;id='.$row['account_id'].'">' : '');
             echo htmlentities($row['account_name']).(checkaccess('other', 'read') ? '</a>': '').'</td>';
-            echo '<td>'.(checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&sub=main&npc_id='.$row['character_id'].'">' : '');
+            echo '<td>'.(checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['character_id'].'">' : '');
             echo htmlentities($row['firstname']).(checkaccess('npcs', 'edit') ? '</a>' : '').'</td>';
             echo '<td>'.htmlentities($row['lastname']).'</td>';
-            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listguilds&guild='.$row['guild_id'].'">' : '');
+            echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listguilds&amp;guild='.$row['guild_id'].'">' : '');
             echo htmlentities($row['guild']).(checkaccess('other', 'read') ? '</a>' : '').'</td>';
             
             $t = $row['time_connected_sec'];
@@ -51,8 +51,8 @@ function listgms()
             
             $secs = $t;
             echo '<td>'.$days.' days, '.$hours.' hours, '.$min.' minutes, '.$secs.' seconds</td>';
-            echo '<td>'.(checkaccess('admin', 'edit') ? '<a href="./index.php?do=editgm&id='.$row['character_id'].'">Edit</a> ' : '');
-            echo '<a href="./index.php?do=viewgmlog&id='.$row['character_id'].'">View Commandlog</a></td>';
+            echo '<td>'.(checkaccess('admin', 'edit') ? '<a href="./index.php?do=editgm&amp;id='.$row['character_id'].'">Edit</a> ' : '');
+            echo '<a href="./index.php?do=viewgmlog&amp;id='.$row['character_id'].'">View Commandlog</a></td>';
             echo '</tr>';
         }
         echo '</table>';
@@ -115,7 +115,7 @@ function viewgmlog()
                 }
                 else
                 {
-                    echo '<a href="./index.php?do=viewgmlog&id='.$id.'&lines_per_page='.$lines_per_page.'&page='.$i.'">'.($i+1).'</a>';
+                    echo '<a href="./index.php?do=viewgmlog&amp;id='.$id.'&amp;lines_per_page='.$lines_per_page.'&amp;page='.$i.'">'.($i+1).'</a>';
                 }
                 echo ($i == ($page_count - 1) ? '' : ' | ');
             }
@@ -164,16 +164,16 @@ function addgm()
                 $color = ($color == 'a' ? 'b' : 'a');
                 
                 echo '<tr class="color_'.$color.'">';
-                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&id='.$row['account_id'].'">' : '');
+                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&amp;id='.$row['account_id'].'">' : '');
                 echo $row['account_id'].(checkaccess('other', 'read') ? '</a>' : '').' / ';
-                echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&npc_id='.$row['character_id'].'&sub=main">' : '');
+                echo (checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&amp;npc_id='.$row['character_id'].'&amp;sub=main">' : '');
                 echo $row['character_id'].(checkaccess('npcs', 'edit') ? '</a>' : '').'</td>';
-                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&id='.$row['account_id'].'">' : '');
+                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listaccounts&amp;id='.$row['account_id'].'">' : '');
                 echo htmlentities($row['account_name']).(checkaccess('other', 'read') ? '</a>': '').'</td>';
-                echo '<td>'.(checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&sub=main&npc_id='.$row['character_id'].'">' : '');
+                echo '<td>'.(checkaccess('npcs', 'edit') ? '<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['character_id'].'">' : '');
                 echo htmlentities($row['firstname']).(checkaccess('npcs', 'edit') ? '</a>' : '').'</td>';
                 echo '<td>'.htmlentities($row['lastname']).'</td>';
-                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listguilds&guild='.$row['guild_id'].'">' : '');
+                echo '<td>'.(checkaccess('other', 'read') ? '<a href="./index.php?do=listguilds&amp;guild='.$row['guild_id'].'">' : '');
                 echo htmlentities($row['guild']).(checkaccess('other', 'read') ? '</a>' : '').'</td>';
                 
                 $t = $row['time_connected_sec'];
@@ -188,7 +188,7 @@ function addgm()
                 
                 $secs = $t;
                 echo '<td>'.$days.' days, '.$hours.' hours, '.$min.' minutes, '.$secs.' seconds</td>';
-                echo '<td><a href="./index.php?do=editgm&id='.$row['character_id'].'">Make a GM</a>';
+                echo '<td><a href="./index.php?do=editgm&amp;id='.$row['character_id'].'">Make a GM</a>';
                 echo '</td>';
                 echo '</tr>';
             }
@@ -255,7 +255,7 @@ function editgm()
             unset($arr);
             
             echo '<a href="./index.php?do=listgms">Back</a>';
-            echo '<form action="./index.php?do=editgm&id='.$id.'" method="post">';
+            echo '<form action="./index.php?do=editgm&amp;id='.$id.'" method="post">';
             echo '<table>';
             echo '<tr class="color_a"><td>ID: </td><td>'.$id.'</td></tr>';
             echo '<tr class="color_b"><td>Firstname: </td><td>'.htmlentities($row['name']).'</td></tr>';

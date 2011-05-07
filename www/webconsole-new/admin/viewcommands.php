@@ -12,7 +12,7 @@ function viewcommands()
         $result = mysql_query2($query);
         echo'<table><tr><td valign="top"><table>';
         while ($row = mysql_fetch_array($result, MYSQL_NUM)){
-            echo "<tr><td><a href='index.php?do=viewcommands&group=".$row[0]."'>".$row[1]."</a></td></tr>";
+            echo "<tr><td><a href='index.php?do=viewcommands&amp;group=".$row[0]."'>".$row[1]."</a></td></tr>";
         }
         echo'</table>';
 
@@ -28,18 +28,18 @@ function viewcommands()
         echo'</td><td valign="top"><table border="1">';
 
         $found = false;
-        echo"<TR><TH ><b>Group: $groupname</b></TH><TH>Action</TH></TR>";
+        echo"<tr><th><b>Group: $groupname</b></th><th>Action</th></tr>";
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             $found = true;
-            $actions = (checkaccess('admin', 'edit') ? '<a href="./index.php?do=deletecommand&group='.$group.'&command='.$row['command_name'].'">Delete</a>' : '');
-            echo '<TR><TD>'.$row['command_name'].'</TD><TD>'.$actions.'</TD></TR>';
+            $actions = (checkaccess('admin', 'edit') ? '<a href="./index.php?do=deletecommand&amp;group='.$group.'&amp;command='.$row['command_name'].'">Delete</a>' : '');
+            echo '<tr><td>'.$row['command_name'].'</td><td>'.$actions.'</td></tr>';
         }
         if(!$found && isset($_GET['group']))
-        echo "<TR><TD><P>No commands found in this group</P></TD></TR>";
+        echo "<tr><td><P>No commands found in this group</P></td></tr>";
 
-        echo '</TABLE>';
-        echo '<form action="./index.php?do=createcommand&group='.$group.'" method="post">';
-        echo '<input type="text" name="command"><input type="submit" name="create" value="Add new Command"></form>';
+        echo '</table>';
+        echo '<form action="./index.php?do=createcommand&amp;group='.$group.'" method="post">';
+        echo '<input type="text" name="command"/><input type="submit" name="create" value="Add new Command"/></form>';
         echo '</td></tr></table>';
     }
 }
