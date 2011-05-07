@@ -49,7 +49,7 @@ function npc_search(){
       echo 'Search by Name: <input type="text" name="name" /><br/>';
       $Sectors = PrepSelect('sectorid');
       echo 'Locate By Sector:' . DrawSelectBox('sectorid', $Sectors, 'sectorid' , '', TRUE). '<br/>';
-      echo '<input type="hidden" name="char_type" value="'.(isset($_GET['char_type']) ? $_GET['char_type'] : 1).'"><input type="submit" name="commit" value="Search" />';
+      echo '<input type="hidden" name="char_type" value="'.(isset($_GET['char_type']) ? $_GET['char_type'] : 1).'" /><input type="submit" name="commit" value="Search" />';
       echo '</p></form>';
     }
   }else{
