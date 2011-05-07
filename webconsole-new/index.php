@@ -25,7 +25,7 @@
     include('./header.php');
     echo '<div class="menu">';
     echo '<p class="error">You must be logged in to access these pages!</p>'."\n";
-    echo '</div><div class="center"><p class="header">PlaneShift Administrator Console - Login</p>';
+    echo '</div><div class="center"><p class="header">PlaneShift Administrator Console - Login ('.gethostname().')</p>';
     DisplayLogin();
     echo '</div>';
     include('./footer.php');
@@ -64,7 +64,7 @@
   if (checkaccess('admin', 'read')){
     echo '<a href="./index.php?do=admin">Admin</a> -- ';
   }
-  echo '<a href="./index.php?logout">Logout</a>';
+  echo '<a href="./index.php?logout">Logout</a> ('.gethostname().')';
   echo '</div><hr/>';
   if (isset($_GET['do'])){
     switch ($_GET['do']){

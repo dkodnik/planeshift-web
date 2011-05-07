@@ -8,8 +8,10 @@
 <meta name="author" content="PlaneShift MMORPG" />
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="./global.css" />
-<title>PlaneShift - Administrator Console
-<?php
+<title>PlaneShift - Administrator Console (<?php
+  echo gethostname();
+  echo ")";
+
   if (isset($header))
     echo ": $Header";
 ?>
