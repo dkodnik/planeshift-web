@@ -52,13 +52,14 @@ function listskills(){
       if (mysql_numrows($result) == 0 ){
         echo 'No Skills Found!';
       }
-      echo '<table border="1"><tr><th>Skill</th><th>Description</th><th>Practice Factor</th><th>Mental Factor</th><th>Price</th><th>Base Rank Cost</th><th>Category</th>';
+      echo '<table border="1"><tr><th>ID</th><th>Skill</th><th>Description</th><th>Practice Factor</th><th>Mental Factor</th><th>Price</th><th>Base Rank Cost</th><th>Category</th>';
       if (checkaccess('rules', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
       while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
         echo '<tr>';
+        echo '<td>'.$row['skill_id'].'</td>';
         echo '<td>'.$row['name'].'</td>';
         echo '<td>'.$row['description'].'</td>';
         echo '<td>'.$row['practice_factor'].'</td>';
