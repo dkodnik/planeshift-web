@@ -245,6 +245,24 @@
         npcmain();
         listnpcs('false');
         break;
+      case 'listnpctypes':
+        include('./npcs/npcmain.php');
+        include('./npcs/npctypes.php');
+        npcmain();
+        listnpctypes();
+        break;
+      case 'editnpctypes':
+        include('./npcs/npcmain.php');
+        include('./npcs/npctypes.php');
+        npcmain();
+        editnpctypes();
+        break;
+      case 'createnpctypes':
+        include('./npcs/npcmain.php');
+        include('./npcs/npctypes.php');
+        npcmain();
+        createnpctypes();
+        break;
       case 'listnpcscombat':
         include('./npcs/npcmain.php');
         include('./npcs/listnpcscombat.php');
