@@ -7,8 +7,8 @@ function checkbooks()
         echo '<p class="header">Check Books</p>';
         
         $mode = (isset($_GET['mode']) && $_GET['mode'] == 'name' ? 'name' : 'category' );
-        echo ($mode == 'name' ? '' : '<a href="./index.php?do=checkbooks&mode=name">').'Search books by name / meshname (in action_locations)'.($mode == 'name' ? '' : '</a>').' | ';
-        echo ($mode == 'category' ? '' : '<a href="./index.php?do=checkbooks&mode=category">').'Search books by category'.($mode == 'category' ? '' : '</a>').'<br/><br/>';
+        echo ($mode == 'name' ? '' : '<a href="./index.php?do=checkbooks&amp;mode=name">').'Search books by name / meshname (in action_locations)'.($mode == 'name' ? '' : '</a>').' | ';
+        echo ($mode == 'category' ? '' : '<a href="./index.php?do=checkbooks&amp;mode=category">').'Search books by category'.($mode == 'category' ? '' : '</a>').'<br/><br/>';
         
         if($mode == 'name')
         {
