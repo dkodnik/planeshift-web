@@ -39,7 +39,7 @@ function listals(){
             echo '<option value="EXAMINE">EXAMINE</option><option value="SCRIPT" selected="true">SCRIPT</option>';
           }
           echo '</select><br/>';
-          echo 'Script: <textarea name="response" rows="4" cols="50">'.$row['response'].'</textarea><br/>';
+          echo 'Script: <textarea name="response" rows="4" cols="50">'.htmlspecialchars($row['response']).'</textarea><br/>';
           echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)<br/>';
           echo 'Instance: <input type="text" name="pos_instance" value="'.$row['pos_instance'] .'" /> -- (Indicates from which istance this AL will be accessible. Default: 4294967295 means "all instances".)<br/>';
           echo '<input type="submit" name="submit" value="Update" />';
