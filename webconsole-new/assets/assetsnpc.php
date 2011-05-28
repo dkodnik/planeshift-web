@@ -17,7 +17,7 @@ function assetsnpc()
 	if ($_GET['op'] == 'npc') 
     {
 		echo '<p class="header">NPCs used in game by race</p>';
-		echo '(excludes npcrooms, sect 3,68,69,70,71)<br><br>';
+		echo '(excludes npcrooms, sect 3,68,69,70,71)<br/><br/>';
 
 		$sql = "SELECT count(c.id) AS num, r.name AS name, r.sex AS sex FROM characters AS c, race_info AS r WHERE r.id=racegender_id AND c.character_type=1 AND c.loc_sector_id NOT IN (3,68,69,70,71) GROUP BY r.name, r.sex ORDER BY num DESC";
 		$query = mysql_query2($sql);
