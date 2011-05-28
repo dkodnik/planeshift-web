@@ -66,7 +66,7 @@ function assetsnpc()
 		$sql = "SELECT count(ct.trait_id) AS num,ct.trait_id, t.name, ri.sex, ri.name AS race FROM character_traits AS ct, characters AS c, traits AS t, race_info AS ri WHERE t.id=ct.trait_id AND ct.character_id=c.id AND t.race_id = ri.id AND character_type=1 AND c.loc_sector_id NOT IN (3,68,69,70,71) GROUP BY ct.trait_id ORDER BY num DESC";
 
 		echo '<p class="header">Traits available used by NPCs</p>';
-		echo '(excludes npcrooms, sect 3,68,69,70,71)<br><br>';
+		echo '(excludes npcrooms, sect 3,68,69,70,71)<br/><br/>';
     
 		$query = mysql_query2($sql);
 		echo '<table><tr><th>Count</th><th>Trait ID</th><th>Trait Name</th><th>Race</th><th>Gender</th></tr>';

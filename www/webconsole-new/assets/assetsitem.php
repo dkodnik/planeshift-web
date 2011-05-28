@@ -11,7 +11,7 @@ function assetsitem()
 	echo '<p class="header">Meshfacts available used/not used in game </p>';
 
 	$assets_dir=getAssetsDir();
-	echo "Analyzing ".$assets_dir."<br><br>";
+	echo "Analyzing ".$assets_dir."<br/><br/>";
 
 	$dir = dir($assets_dir . DIRECTORY_SEPARATOR . "things");
 
@@ -75,14 +75,14 @@ function assetsitem()
 	$first = array_values(array_diff($meshfacts, $int)); //A' = A - C
 	$second= array_values(array_diff($db_meshfacts, $int)); //B' = B - C
 
-	echo "<br><h2>Elements present in the file definitions but not in the db:</h2>";
+	echo "<br/><h2>Elements present in the file definitions but not in the db:</h2>";
 	for ($i = 0; $i < count($first); $i++) {
-		echo "$first[$i] <br>";
+		echo "$first[$i] <br/>";
 	}
 
-	echo "<br><h2>Elements present in the database but not in the files:</h2>";
+	echo "<br/><h2>Elements present in the database but not in the files:</h2>";
 	for ($i = 0; $i < count($second); $i++) {
-		echo "$second[$i] <br>";
+		echo "$second[$i] <br/>";
 	}
 
 	echo '<p class="header">Icons available used/not used in game </p>';
@@ -107,14 +107,14 @@ function assetsitem()
 	$first = array_values(array_diff($icons, $int)); //A' = A - C
 	$second= array_values(array_diff($db_icons, $int)); //B' = B - C
 
-	echo "<br><h2>Icons present in the art directory but not in the db:</h2>";
+	echo "<br/><h2>Icons present in the art directory but not in the db:</h2>";
 	for ($i = 0; $i < count($first); $i++) {
-		echo "$first[$i] <br>";
+		echo "$first[$i] <br/>";
 	}
 
-	echo "<br><h2>Icons present in the database but not in the art directory:</h2>";
+	echo "<br/><h2>Icons present in the database but not in the art directory:</h2>";
 	for ($i = 0; $i < count($second); $i++) {
-		echo "$second[$i] <br>";
+		echo "$second[$i] <br/>";
 	}
 
 }
