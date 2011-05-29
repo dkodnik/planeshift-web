@@ -48,69 +48,71 @@ function listnpctypes()
     if (mysql_numrows($result) == 0)
     {
         echo '<p class="error">No NPC Types were found.</p>';
-        return;
     }
-    if ($lim > 30)
+    else 
     {
-        echo '<a href="./index.php?do=listnpctypes';
-        if (isset($_GET['sort']))
+        if ($lim > 30)
         {
-            echo '&amp;sort='.$_GET['sort'];
+            echo '<a href="./index.php?do=listnpctypes';
+            if (isset($_GET['sort']))
+            {
+                echo '&amp;sort='.$_GET['sort'];
+            }
+            echo '&amp;limit='.$prev_lim.'">Previous Page</a> ';
         }
-        echo '&amp;limit='.$prev_lim.'">Previous Page</a> ';
-    }
-    echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
-    $where = (isset($id) ? "WHERE id = $id" : '');
-    $result2 = mysql_query2('select count(id) AS mylimit FROM sc_npctypes AS w'.$where);
-    $row2 = mysql_fetch_array($result2);
-    if ($row2['mylimit'] > $lim)
-    {
-        echo '<a href="./index.php?do=listnpctypes';
-        if (isset($_GET['sort']))
+        echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
+        $where = (isset($id) ? "WHERE id = $id" : '');
+        $result2 = mysql_query2('select count(id) AS mylimit FROM sc_npctypes AS w'.$where);
+        $row2 = mysql_fetch_array($result2);
+        if ($row2['mylimit'] > $lim)
         {
-            echo '&amp;sort='.$_GET['sort'];
+            echo '<a href="./index.php?do=listnpctypes';
+            if (isset($_GET['sort']))
+            {
+                echo '&amp;sort='.$_GET['sort'];
+            }
+            echo '&amp;limit='.($lim+30).'">Next Page</a>';
         }
-        echo '&amp;limit='.($lim+30).'">Next Page</a>';
-    }
-    echo '<table border="1">';
-    $limit = (isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '');
-    echo '<tr><th><a href="./index.php?do=listnpctypes&amp;sort=id'.$limit.'">ID</a></th>';
-    echo '<th><a href="./index.php?do=listnpctypes&amp;sort=name'.$limit.'">Name</a></th>';
-    echo '<th><a href="./index.php?do=listnpctypes&amp;sort=parents'.$limit.'">Parents</a></th>';
-    echo '<th>Ang Vel</th><th>Vel</th><th>Collision</th><th>Out Of Bounds</th><th>In Bounds</th><th>Falling</th>';
+        echo '<table border="1">';
+        $limit = (isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '');
+        echo '<tr><th><a href="./index.php?do=listnpctypes&amp;sort=id'.$limit.'">ID</a></th>';
+        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=name'.$limit.'">Name</a></th>';
+        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=parents'.$limit.'">Parents</a></th>';
+        echo '<th>Ang Vel</th><th>Vel</th><th>Collision</th><th>Out Of Bounds</th><th>In Bounds</th><th>Falling</th>';
 
-    if (checkaccess('npcs', 'edit'))
-    {
-        echo '<th>actions</th>';
-    }
-    echo '</tr>';
-    
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
-        echo '<tr>';
-        echo '<td>'.$row['id'].'</td>';
-        echo '<td>'.$row['name'].'</td>';
-        echo '<td>'.$row['parents'].'</td>';
-        echo '<td>'.$row['ang_vel'].'</td>';
-        echo '<td>'.$row['vel'].'</td>';
-        echo '<td>'.$row['collision'].'</td>';
-        echo '<td>'.$row['out_of_bounds'].'</td>';
-        echo '<td>'.$row['in_bounds'].'</td>';
-        echo '<td>'.$row['falling'].'</td>';
         if (checkaccess('npcs', 'edit'))
         {
-            echo '<td><form action="./index.php?do=editnpctypes" method="post">';
-            echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
-            echo '<input type="submit" name="action" value="Edit" />';
-            if (checkaccess('npcs', 'delete'))
-            {
-                echo '<br/><input type="submit" name="action" value="Delete" />';
-            }
-            echo '</form></td>';
+            echo '<th>actions</th>';
         }
         echo '</tr>';
+        
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        {
+            echo '<tr>';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.$row['name'].'</td>';
+            echo '<td>'.$row['parents'].'</td>';
+            echo '<td>'.$row['ang_vel'].'</td>';
+            echo '<td>'.$row['vel'].'</td>';
+            echo '<td>'.$row['collision'].'</td>';
+            echo '<td>'.$row['out_of_bounds'].'</td>';
+            echo '<td>'.$row['in_bounds'].'</td>';
+            echo '<td>'.$row['falling'].'</td>';
+            if (checkaccess('npcs', 'edit'))
+            {
+                echo '<td><form action="./index.php?do=editnpctypes" method="post">';
+                echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
+                echo '<input type="submit" name="action" value="Edit" />';
+                if (checkaccess('npcs', 'delete'))
+                {
+                    echo '<br/><input type="submit" name="action" value="Delete" />';
+                }
+                echo '</form></td>';
+            }
+            echo '</tr>';
+        }
+        echo '</table>';
     }
-    echo '</table>';
     if (checkaccess('npcs', 'create'))
     {
         echo '<hr><table border="1"><form action="./index.php?do=createnpctypes" method="post">';
