@@ -7,7 +7,7 @@ function statshardware()
 	if (true)
     {
 		?>
-		<form action="./index.php?do=statshardware" METHOD="POST"><input type=text value=10 name=filter size=4> Threshold for filtering results <INPUT TYPE="SUBMIT" NAME="Filter" VALUE="Filter"></form>
+		<form action="./index.php?do=statshardware" method="post"><input type="text" value="10" name="filter" size="4"> Threshold for filtering results <input type="submit" name="Filter" value="Filter"/></form>
         <?php
 		echo '<p class="header">Operating Systems</p>';
 
@@ -53,7 +53,7 @@ function statshardware()
         {
             echo '<th>'.htmlentities($result2['graphics_card']).'</th>';
             $line2 .= '<td valign=bottom>';
-            $line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result2['result'] / 1).'" />';
+            $line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result2['result'] / 1).'" alt="'.$result2['result'].'" />';
             $line2 .= '</td>';
             $line3 .= '<td>'.(is_numeric($result2['result']) ? $result2['result'] : '').'</td>';
         }
