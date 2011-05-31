@@ -168,7 +168,7 @@ function listresources(){
           if (checkaccess('rules', 'delete')){
             echo '<br/><input type="submit" name="action" value="Delete" />';
           }
-          echo '</form>';
+          echo '</form></td>';
         }
         echo '</tr>';
       }
