@@ -10,6 +10,7 @@
 		header("Location: index.php?origin=petitions");
 		exit;
 	}
+	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -34,7 +35,7 @@
 					echo Navigation::S_GetNavigation();
 ?>
 				</td>
-				<td style="width:800px">
+				<td>
     				<form id="petitionListForm" action="chardetails.php" method="post">
                         <table class="table">
                             <tr>
@@ -44,9 +45,17 @@
                                 <th>Petition</th>
                                 <th>Assigned to</th>
                                 <th>Escalation</th>
-                            </tr>
     <?php
-                            $petitions = PSPetition::S_GetOpenPetitions();
+							if ($_GET["type"]==2) {
+								echo "<th>Resolution</th>";
+							}
+							echo "</tr>";
+
+							if ($_GET["type"]==2) {
+								$petitions = PSPetition::S_GetPetitions(2);
+							} else 
+								$petitions = PSPetition::S_GetPetitions(1);
+
                             foreach ($petitions as $petition) {
                                 echo '<tr>';
                                 echo '<td>' . $petition->CreatedDate . '</td>';
@@ -55,6 +64,11 @@
                                 echo '<td>' . $petition->Petition . '</td>';
                                 echo '<td><a href="javascript:setCharId(\'' . $petition->CaseworkerID . '\');">' . $petition->CaseworkerFirstName . '</a></td>';
                                 echo '<td>' . $petition->EscalationLevel . '</td>';
+
+								if ($_GET["type"]==2) {
+									echo '<td>' . $petition->Resolution . '</td>';
+								}
+
                                 echo '</tr>';
                             }
     ?>

@@ -25,6 +25,9 @@ class Navigation {
                     <td><a href="petitions.php">Open petitions</a></td>
                 </tr>
                 <tr>
+                    <td><a href="petitions.php?type=2">Closed petitions</a></td>
+                </tr>
+                <tr>
                 	<td><a href="gmevents.php">Review GM Events</a></td>
                 </tr>
                 <tr>
