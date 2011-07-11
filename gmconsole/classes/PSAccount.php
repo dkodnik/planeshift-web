@@ -197,7 +197,7 @@ class PSAccount extends PSBaseClass {
 
         $sql = 'SELECT * FROM accounts';
         $where = '';
-        PSBaseClass::S_AppendWhereCondition($where, 'security_level', '>=', 1);
+        PSBaseClass::S_AppendWhereCondition($where, 'security_level', '>=', 10);
 
         $res = mysql_query($sql . $where . ' ORDER BY security_level DESC, username ASC', $conn);
         if (!$res) {
