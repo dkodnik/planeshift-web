@@ -31,6 +31,18 @@ class Navigation {
                 	<td><a href="gmevents.php">Review GM Events</a></td>
                 </tr>
                 <tr>
+                    <td><a href="advicelogs.php">Advice logs</a></td>
+                </tr>
+                <tr>
+                    <td><a href="economylogs.php">Economy logs</a></td>
+                </tr>
+                <tr>
+                    <td><a href="exchangelogs.php">Exchange logs</a></td>
+                </tr>
+                <tr>
+                    <td><a href="stucklogs.php">Stuck logs</a></td>
+                </tr>
+                <tr>
                     <td><a href="reportlogs.php">Report logs</a></td>
                 </tr>
                 <tr>
