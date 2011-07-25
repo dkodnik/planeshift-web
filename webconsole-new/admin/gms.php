@@ -8,6 +8,7 @@ function listgms()
         
         $sql = 'SELECT a.id AS account_id, a.username AS account_name, a.security_level, s.title AS security_title, c.id AS character_id, c.name AS firstname, c.lastname, c.time_connected_sec, g.id AS guild_id, g.name AS guild ';
         $sql.= 'FROM characters AS c LEFT JOIN accounts AS a ON c.account_id = a.id LEFT JOIN guilds AS g ON g.id = c.guild_member_of LEFT JOIN security_levels AS s ON a.security_level = s.level WHERE a.security_level >= 20 AND a.security_level <= 50';
+		$sql.= ' ORDER BY security_level DESC';
         $query = mysql_query2($sql);
         
         if(checkaccess('admin', 'create'))

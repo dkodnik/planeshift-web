@@ -29,7 +29,7 @@ function liststats_charstats()
 	<?php
 	if($op == 'calc')
 	{
-		if(checkaccess('statistics', 'edit'))
+		if(checkaccess('statistics', 'create'))
 		{
 			if($period == 'nan')
 			{

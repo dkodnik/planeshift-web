@@ -1,7 +1,13 @@
 <?php
 function npc_main(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
+
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
         $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
@@ -201,12 +207,21 @@ function npc_main(){
 
 function npc_skills()
 {
-    if (checkaccess('npcs', 'edit'))
+    if (checkaccess('npcs', 'read'))
     {
         if (isset($_GET['npc_id']))
         {
+            // block unauthorized access
+            if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+                echo '<p class="error">You are not authorized to edit NPCs</p>';
+                return;
+            }
             if (isset($_POST['commit']))
             {
+                if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+                    echo '<p class="error">You are not authorized to edit NPCs</p>';
+                    return;
+                }
                 $id = mysql_real_escape_string($_GET['npc_id']);
                 $skill_id = mysql_real_escape_string($_POST['skill_id']);
                 $query = '';
@@ -287,9 +302,14 @@ function npc_skills()
 }
 
 function npc_traits(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         $trait_id = mysql_real_escape_string($_POST['trait_id']);
         if ($_POST['commit'] == "Remove"){
@@ -357,9 +377,14 @@ function npc_traits(){
 }
 
 function npc_kas(){
-  if (checkaccess('npcs','edit')){
+  if (checkaccess('npcs','read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         $area = mysql_real_escape_string($_POST['area']);
         if (isset($_POST['priority'])){
@@ -461,9 +486,15 @@ function npc_kas(){
 }
 
 function npc_items(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == 'Remove'){
           $inst_id = mysql_real_escape_string($_POST['id']);
@@ -717,9 +748,14 @@ function npc_items(){
 }
 
 function npc_training(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == "Remove"){
           $skill_id = mysql_real_escape_string($_POST['skill_id']);
@@ -775,9 +811,14 @@ function npc_training(){
 }
 
 function npc_merchant(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         $category_id = mysql_real_escape_string($_POST['category_id']);
         if ($_POST['commit'] == 'Remove'){
@@ -822,9 +863,14 @@ function npc_merchant(){
 }
 
 function npc_specific(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = mysql_real_escape_string($_GET['npc_id']);
+      // block unauthorized access
+      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+          echo '<p class="error">You are not authorized to edit NPCs</p>';
+          return;
+      }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == "Update Trigger"){
           $tid = mysql_real_escape_string($_POST['trigger_id']);
@@ -967,7 +1013,7 @@ function npc_specific(){
 }
 
 function npcdetails(){
-  if (checkaccess('npcs', 'edit')){
+  if (checkaccess('npcs', 'read')){
     $uri_string = './index.php?do=npc_details';
     if (isset($_GET['npc_id'])){
       if (is_numeric($_GET['npc_id'])){
@@ -976,20 +1022,16 @@ function npcdetails(){
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
-        echo '<form action="index.php?do=deletenpc&id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
+        echo '<form action="index.php?do=deletenpc&id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
         if (checkaccess('npcs', 'delete'))
         {
             if ($row['character_type'] == 1 || $row['character_type'] == 3) 
             {
                 echo '<input type="submit" value="delete NPC">';
             }
-            else
-            {
-                echo '<br />';
-            }
         }
-        echo '</form>';
+        echo '</form><br />';
         $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
       }
     }
@@ -1048,16 +1090,20 @@ function npcdetails(){
     }
     echo '</div>';
   }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
+    echo '<p class="error">You are not authorized to view NPC details</p>';
   }
 }
 
 function npc_factions()
 {
-    if (checkaccess('npcs', 'edit'))
+    if (checkaccess('npcs', 'read'))
     {
         if (isset($_GET['npc_id']))
         {
+			if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+				echo '<p class="error">You are not authorized to use these functions</p>';
+				return;
+			}
             if (isset($_POST['commit']))
             {
                 $id = mysql_real_escape_string($_GET['npc_id']);

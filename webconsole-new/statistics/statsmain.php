@@ -23,7 +23,10 @@ function statsmain()
 		echo '<a href="./index.php?do=liststats_charstats&amp;groupid=14">Skill: Crystal Way</a> <br/>';
 		echo '<a href="./index.php?do=liststats_charstats&amp;groupid=15">Skill: Melee</a> <br/>';
 		echo '<a href="./index.php?do=liststats_charstats&amp;groupid=16">Char Money</a> <br/>';
+		echo '<a href="./index.php?do=liststats_quests&amp;groupid=17">Completed Quests (* !!)</a> <br/>';
+		echo '<a href="./index.php?do=liststats_quests&amp;groupid=18">Pending Quests(* !!)</a> <br/>';
 
+            echo '(* !!) This query is made at runtime and can take lot of server resources!'."\n";
         echo '<hr />';
         echo '<a href="./index.php">Return to main page</a>';
         echo '</div><div class="main">'."\n";
