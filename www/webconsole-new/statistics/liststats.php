@@ -2,6 +2,7 @@
 
 function liststats()
 {
+    include('./graphfunctions.php');
     if(!checkaccess('statistics', 'read'))
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
@@ -32,7 +33,7 @@ function liststats()
 
 	if($op == 'calc')
 	{
-		if(checkaccess('statistics', 'edit'))
+		if(checkaccess('statistics', 'create'))
 		{
 			if($period == 'nan')
 			{
@@ -70,21 +71,8 @@ function liststats()
 	
 	$sql = "SELECT id, periodname, result FROM wc_statistics WHERE groupid = '$groupid' ORDER BY periodname";
 	$query = mysql_query2($sql);
-	
-	echo '<table><tr>';
-	
-	$line2 = '';
-	$line3 = '';
-	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
-	{
-		echo '<th>'.htmlentities($result['periodname']).'</th>';
-		$line2 .= '<td valign=bottom>';
-		$line2 .= '<img src="img/bluebar2.gif" width="20" height="'.($result['result'] / 10).'" />';
-		$line2 .= '</td>';
-		$line3 .= '<td>'.(is_numeric($result['result']) ? $result['result'] : '').'</td>';
-	}
-	
-	echo '</tr><tr class="color_a">'.$line2.'</tr><tr class="color_b">'.$line3.'</tr></table>';
+
+  outputGraph ($query,0);
 
 	echo '<br><br><form action="./index.php?do=liststats&op=calc&groupid='.$groupid.'" METHOD=POST>(Re)Calculate for ';
 	echo '<input type=text name=period size=10> <INPUT TYPE="SUBMIT" NAME="calculate" VALUE="Do it!"></form><br/>';
@@ -106,6 +94,5 @@ function getBaseQuery($groupid, $period) {
 	else if ($groupid==18)
 		return "select count(*) as result from characters where time_connected_sec>0 and creation_time>=DATE('".$dates[1]."') and creation_time<DATE('".$dates[2]."') and account_id not in ".$to_exclude;
 }
-
 
 ?>

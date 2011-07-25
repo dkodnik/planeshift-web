@@ -36,34 +36,34 @@
   echo '<div class="menu">';
   if (checkaccess('npcs', 'read')){
     echo '<a href="./index.php?do=npcs">NPCs</a> -- ';
-  }
+  } else echo 'NPCs -- ';
   if (checkaccess('quests', 'read')){
     echo '<a href="./index.php?do=quests">Quests</a> -- ';
-  }
+  } else echo 'Quests -- ';
   if (checkaccess('items', 'read')){
     echo '<a href="./index.php?do=items">Items</a> -- ';
-  }
+  } else echo 'Items -- ';
   if (checkaccess('als', 'read')){
     echo '<a href="./index.php?do=als">Action Locations</a> -- ';
-  }
+  } else echo 'Action Locations -- ';
   if (checkaccess('rules','read')){
     echo '<a href="./index.php?do=rules">Rules</a>  -- ';
-  }
+  } else echo 'Rules -- ';
   if (checkaccess('crafting', 'read')){
     echo '<a href="./index.php?do=crafting">Crafting</a> -- ';
-  }
+  } else echo 'Crafting -- ';
   if (checkaccess('other', 'read')){
     echo '<a href="./index.php?do=other">Other</a> -- ';
-  }
+  } else echo 'Other -- ';
   if (checkaccess('statistics', 'read')){
     echo '<a href="./index.php?do=statistics">Statistics</a> -- ';
-  }
+  } else echo 'Statistics -- ';
   if (checkaccess('assets', 'read')){
     echo '<a href="./index.php?do=assets">Assets</a> -- ';
-  }
+  } else echo 'Assets -- ';
   if (checkaccess('admin', 'read')){
     echo '<a href="./index.php?do=admin">Admin</a> -- ';
-  }
+  } else echo 'Admin -- ';
   echo '<a href="./index.php?logout">Logout</a> ('.gethostname().')';
   echo '</div><hr/>';
   if (isset($_GET['do'])){

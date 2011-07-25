@@ -43,11 +43,8 @@ function listnpcs($a, $b = NULL){
         echo '<tr>';
         echo '<td>'.$row['id'].'</td>';
         $T_id = $row['id'];
-        if (checkaccess('npcs', 'edit')){
           echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['id'].'">'.$row['name'].' '.$row['lastname'].'</a></td>';
-        }else{
-          echo '<td>'.$row['name'].' '.$row['lastname'].'</td>';
-        }
+
         echo '<td>'.$row['race'].'</td>';
         echo '<td>'.$row['sex'].'</td>';
         echo '<td>'.$row['description'].'</td>';
