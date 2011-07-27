@@ -5,16 +5,29 @@ function listquests()
     {
   
         $mode = (isset($_GET['mode']) ? $_GET['mode'] : '');
+        $countstatus = (isset($_GET['countstatus']) ? $_GET['countstatus'] : '');
 
-        if ($mode=='hier') // Hierarchical quest listing mode (not default).
+        if ($mode=='hier' || $mode=='hiercount') // Hierarchical quest listing mode (not default).
         {
             echo '<a href="index.php?do=listquests">Show quest scripts as simple list</a><br />';
             echo '<p> Please notice that this view only relates those scripts that have each other listed in the "pre-requisites" field, not in the actual quest script.</p>';
-            // build an array with parentname | childname | child data
+            // build an array with parentname | childname | child data (errors/types) | count (optional)
             $query = "SELECT id, name, flags, category, prerequisite FROM quests ORDER BY name";
+            // used for statistics: slower query
+            if ($mode=='hiercount') {
+                //$query = "SELECT id, name, flags, category, prerequisite, count(IF(c.status='".$countstatus."',1,NULL)) as num FROM quests q LEFT JOIN character_quests c ";
+                //$query .= "ON q.id=c.quest_id GROUP BY q.id ORDER BY name";
+                // test
+                $query = "SELECT q.id, q.name, flags, category, prerequisite, c.status, count(IF(c.status='".$countstatus."',1,NULL)) as num FROM quests q LEFT JOIN character_quests c ";
+                $query .= "ON q.id=c.quest_id, characters ch where ch.id=c.player_id and ch.creation_time>DATE_SUB(CURDATE(),INTERVAL 90 DAY) GROUP BY q.id ORDER BY name";
+            }
             $result = mysql_query2($query);
             while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
-                $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags']); // store id, name and category in $data
+                // store id, name and category in $data
+                if ($mode=='hiercount') { // used for statistics
+                    $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags'], $line['num']);
+                } else 
+                    $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags']);
                 $prereqs = parsePrereqScript($line['prerequisite']);
                 $parent_name = $prereqs[0];
                 $errors = $prereqs[1];
@@ -32,8 +45,10 @@ function listquests()
                     $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
             
                     echo '<li>'.$data2[2].' <a href="'.$quest_url.'&amp;id='.$data[0].'" >'.$quest_name.'</a> ( '.$data[2].' )';
-            
-                    display_children($questarray,$key); // List children (if any).
+                    if ($mode=='hiercount') { // used for statistics            
+                      echo ' '.$countstatus.':'.$data[4];
+                    }
+                    display_children($questarray,$key, $mode, $countstatus); // List children (if any).
                     echo '</li>';
                 }
             }
@@ -195,7 +210,7 @@ function parsePrereqScript($prereq)
 *  This method is recursive, each iteration will add another set of <ul> tags for proper displaying. $current is the "parent" for
 *  which we want to display the childs (which are searched for in the $questarray)
 */
-function display_children($questarray, $current) 
+function display_children($questarray, $current, $mode, $countstatus) 
 {
 
     $list_started = false; // boolean used to determine if a list was started (if children were found).
@@ -216,8 +231,11 @@ function display_children($questarray, $current)
             $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
             
             echo '<li>'.$data2[2].' <a href="'.$quest_url.'&amp;id='.$data[0].'" >'.$quest_name.'</a> ( '.$data[2].' )';
-            
-            display_children($questarray,$key);
+            if ($mode=='hiercount') { // used for statistics            
+              echo ' '.$countstatus.':'.$data[4];
+            }
+
+            display_children($questarray,$key,$mode, $countstatus);
             echo '</li>';
         }
     }
