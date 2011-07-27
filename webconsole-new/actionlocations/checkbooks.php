@@ -129,7 +129,7 @@ function checkbooks()
                     }
                     echo '   Book #'.$row3['item_stats_id_standard'].' in container #'.$containerid.' is ok.<br/>';
                 }
-                echo 'Action location #'.$row['id'].' "'.htmlentities($row['name']).'" specifies a valid container #'.$containerid.' and all checks are passed.<br/>';
+                echo 'Action location #'.$row['id'].' "'.htmlentities($row['name']).'" in '.$row2['sectorname'].' specifies a valid container #'.$containerid.' and all checks are passed.<br/>';
             }
         }
     }
