@@ -5,7 +5,7 @@ function locateitem(){
         $display_item = false;
         if (isset($_POST['search']))
         {
-            $query = 'SELECT i.id, s.name, i.char_id_owner, c_owner.name AS owner_name, i.char_id_guardian, c_guardian.name AS guardian_name, i.parent_item_id, i.location_in_parent, i.stack_count, sec.name as sector, i.loc_x, i.loc_y, i.loc_z, i.loc_xrot, i.loc_zrot, i.loc_instance, i.flags FROM item_instances AS i LEFT JOIN sectors AS sec ON i.loc_sector_id=sec.id LEFT JOIN item_stats AS s ON i.item_stats_id_standard=s.id LEFT JOIN characters AS c_owner ON i.char_id_owner=c_owner.id LEFT JOIN characters AS c_guardian ON i.char_id_guardian=c_guardian.id WHERE ';
+            $query = 'SELECT i.id, s.name, i.char_id_owner, c_owner.name AS owner_name, i.char_id_guardian, c_guardian.name AS guardian_name, i.parent_item_id, i.location_in_parent, i.stack_count, sec.name as sector, i.loc_x, i.loc_y, i.loc_z, i.loc_xrot, i.loc_zrot, i.loc_instance, i.flags, lrp.name AS prefix, lrs.name AS suffix, lra.name AS adjective FROM item_instances AS i LEFT JOIN loot_modifiers AS lrp ON i.prefix=lrp.id LEFT JOIN loot_modifiers AS lrs ON i.suffix=lrs.id LEFT JOIN loot_modifiers AS lra ON i.adjective=lra.id LEFT JOIN sectors AS sec ON i.loc_sector_id=sec.id LEFT JOIN item_stats AS s ON i.item_stats_id_standard=s.id LEFT JOIN characters AS c_owner ON i.char_id_owner=c_owner.id LEFT JOIN characters AS c_guardian ON i.char_id_guardian=c_guardian.id WHERE ';
             if ($_POST['search'] == "Find Items")  // these first 3 all give the same results with another "where", so we print them all at the end in the same code.
             {
                 echo 'Finding item';
@@ -73,7 +73,7 @@ function locateitem(){
         if ($display_item)  // if there was an item search, print it here.
         {
             $result = mysql_query2($query);
-            echo '<table border="1"><tr><th>Instance ID</th><th>Name</th><th>Owner ID</th><th>Guardian ID</th><th>Parent Item</th><th>Location in Parent</th><th>Stack Count</th><th>Sector</th><th>X</th><th>Y</th><th>Z</th><th>X rot</th><th>Z rot</th<th>Instance</th><th>Flags</th></tr>'."\n";
+            echo '<table border="1"><tr><th>Instance ID</th><th>Name</th><th>Owner ID</th><th>Guardian ID</th><th>Parent Item</th><th>Location in Parent</th><th>Stack Count</th><th>Sector</th><th>X</th><th>Y</th><th>Z</th><th>X rot</th><th>Z rot</th><th>Instance</th><th>Flags</th><th>Prefix</th><th>Suffix</th><th>Adjective</th></tr>'."\n";
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
                 echo '<tr><td>'.$row['id'].'</td>';
                 echo '<td>'.$row['name'].'</td>';
@@ -100,7 +100,10 @@ function locateitem(){
                 echo '<td>'.$row['loc_x'].'</td><td>'.$row['loc_y'].'</td><td>'.$row['loc_z'].'</td>';
                 echo '<td>'.$row['loc_xrot'].'</td><td>'.$row['loc_zrot'].'</td>';
                 echo '<td>'.$row['loc_instance'].'</td>';
-                echo '<td>'.$row['flags'].'</td></tr>'."\n";
+                echo '<td>'.$row['flags'].'</td>';
+                echo '<td>'.$row['prefix'].'</td>';
+                echo '<td>'.$row['suffix'].'</td>';
+                echo '<td>'.$row['adjective'].'</td></tr>'."\n";
             }
             echo '</table>';
         }
