@@ -567,6 +567,18 @@
         rulesmain();
         raceinfo();
         break;
+      case 'listlootmodifiers':
+        include('./rules/rulesmain.php');
+        include('./rules/lootmodifiers.php');
+        rulesmain();
+        listLootModifiers();
+        break;
+      case 'editlootmodifiers':
+        include('./rules/rulesmain.php');
+        include('./rules/lootmodifiers.php');
+        rulesmain();
+        editLootModifiers();
+        break;
       case 'crafting':
         include('./crafting/craftingmain.php');
         craftingmain();
