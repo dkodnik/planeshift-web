@@ -12,7 +12,7 @@ function checkbooks()
         
         if($mode == 'name')
         {
-            $sql = "SELECT id, name, response, sectorname FROM action_locations WHERE name LIKE '%books%' OR meshname LIKE '%book%'";
+            $sql = "SELECT id, name, response, sectorname FROM action_locations WHERE name LIKE '%books%' OR name LIKE '%bookshel%' OR meshname LIKE '%book%'";
             $query = mysql_query2($sql);
             
             $result = array();
