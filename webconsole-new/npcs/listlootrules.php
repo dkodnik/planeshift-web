@@ -1,86 +1,81 @@
 <?php
 function listlootrules()
 {
-    if (checkaccess('npcs', 'read'))
-    {
-        $query = 'SELECT l.id, lr.id AS loot_rule_id, l.item_stat_id, i.name AS item_name, l.probability, l.min_money, l.max_money, l.randomize, lr.name FROM loot_rule_details AS l RIGHT JOIN loot_rules AS lr ON lr.id=l.loot_rule_id LEFT JOIN item_stats AS i ON i.id=l.item_stat_id';
-        if (isset($_GET['id'])){
-          $id = mysql_real_escape_string($_GET['id']);
-          $query .= ' WHERE lr.id='.$id;
-        }
-        $query .= ' ORDER BY lr.id';
-        $result = mysql_query2($query);
-        $rule_id = '';
-        echo '<table border="1" cellspacing="0">';
-        while ($row = mysql_fetch_array($result))
-        {
-            $delete_text = '';
-            if (checkaccess('npcs', 'delete'))
-            {
-                $delete_text = '<input type="submit" name="commit" value="Delete Rule" />';
-            }
-            if ($rule_id == '')
-            {
-                $rule_id = $row['loot_rule_id'];
-                if (checkaccess('npcs', 'edit'))
-                {
-                    echo '<tr><td colspan="6"><form action="./index.php?do=editlootrule" method="post">Rule # '.$rule_id.' named:  <input type="hidden" name="id" value="'.$row['loot_rule_id'].'"/> <input type="text" name="name" value="'.$row['name'].'" size="30"/> <input type="submit" name="commit" value="Change Name" />'.$delete_text.'</form></td></tr>';
-                    echo '<tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>actions</td></tr>';
-                }
-                else
-                {
-                    echo '<tr><td colspan="6">Rule # '.$rule_id.' named: '.$row['name'].'</td></tr>';
-                    echo '<tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>actions</td></tr>';
-                }
-            }
-            elseif ($rule_id != $row['loot_rule_id'])
-            {
-                if (checkaccess('npcs', 'edit'))
-                {
-                    echo '<tr><td colspan="6"><form action="./index.php?do=createlootruledetail&id='.$rule_id.'" method="post"><input type="submit" name="create" value="Add New Detail"></form></td></tr>';
-                }
-                echo '<tr><td colspan="6"></td></tr>';
-                $rule_id = $row['loot_rule_id'];
-                if (checkaccess('npcs', 'edit'))
-                {
-                    echo '<tr><td colspan="6"><form action="./index.php?do=editlootrule" method="post"> Rule # '.$rule_id.' named: <input type="hidden" name="id" value="'.$row['loot_rule_id'].'"/> <input type="text" name="name" value="'.$row['name'].'" size="30"/> <input type="submit" name="commit" value="Change Name" />'.$delete_text.'</form></td></tr>';
-                    echo '<tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>actions</td></tr>';
-                }
-                else
-                {
-                    echo '<tr><td colspan="6">Rule # '.$rule_id.' named: '.$row['name'].'</td></tr>';
-                    echo '<tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>actions</td></tr>';
-                }
-            }
-            if ($row['item_name'] == '' && $row['min_money'] == '' && $row['max_money'] == '') // empty item name means there are no details on this rule, so we display it's name, and bail out.
-            {
-                continue;
-            }
-            $delete_text = '';
-            if (checkaccess('npcs', 'edit'))
-            {
-                echo '<tr><td>'.$row['item_name'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td><td><form action="./index.php?do=editlootruledetail&id='.$row['id'].'" method="post"><input type="submit" name="edit" value="Edit"><input type="submit" name="delete" value="Delete"></form></td></tr>';
-            }
-            else
-            {
-                echo '<tr><td>'.$row['item_name'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td><td></td></tr>';
-            }
-        }
-        if (mysql_num_rows($result) > 0) // Check if there were results, if there were, we need to add the last "add details" function.
-        {
-            if (checkaccess('npcs', 'edit'))
-            {
-                echo '<tr><td colspan="6"><form action="./index.php?do=createlootruledetail&id='.$rule_id.'" method="post"><input type="submit" name="create" value="Add New Detail"></form></td></tr>';
-            }
-        }
-        echo '<tr><td colspan="6"><form action="./index.php?do=editlootrule" method="post"><input type="hidden" name="id" value="0" />';
-        echo '<input type="text" name="name" size="30" /><input type="submit" name="commit" value="Create New Rule"/></form></td></tr>';
-        echo '</table>';
-    }
-    else
+    if (!checkaccess('npcs', 'read'))
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
+		return;
     }
+	$query = 'SELECT l.id, lr.id AS loot_rule_id, l.item_stat_id, i.name AS item_name, l.min_item, l.max_item, l.probability, l.min_money, l.max_money, l.randomize, l.randomize_probability, lr.name FROM loot_rule_details AS l RIGHT JOIN loot_rules AS lr ON lr.id=l.loot_rule_id LEFT JOIN item_stats AS i ON i.id=l.item_stat_id';
+	if (isset($_GET['id']))
+	{
+		$id = mysql_real_escape_string($_GET['id']);
+		$query .= ' WHERE lr.id='.$id;
+	}
+	$query .= ' ORDER BY lr.id';
+	$result = mysql_query2($query);
+	$rule_id = '';
+	echo '<table border="1" cellspacing="0">';
+	while ($row = mysql_fetch_array($result))
+	{
+		$delete_text = '';
+		if (checkaccess('npcs', 'delete'))
+		{
+			$delete_text = '<input type="submit" name="commit" value="Delete Rule" />';
+		}
+		if ($rule_id == '')
+		{
+			$rule_id = $row['loot_rule_id'];
+			if (checkaccess('npcs', 'edit'))
+			{
+				echo '<tr><td colspan="9"><form action="./index.php?do=editlootrule" method="post">Rule # '.$rule_id.' named:  <input type="hidden" name="id" value="'.$row['loot_rule_id'].'"/> <input type="text" name="name" value="'.$row['name'].'" size="30"/> <input type="submit" name="commit" value="Change Name" />'.$delete_text.'</form></td></tr>';
+			}
+			else
+			{
+				echo '<tr><td colspan="9">Rule # '.$rule_id.' named: '.$row['name'].'</td></tr>';
+			}
+			echo '<tr><td>Item</td><td>Min Qty</td><td>Max Qty</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>random percentage</td><td>actions</td></tr>';
+		}
+		elseif ($rule_id != $row['loot_rule_id'])
+		{
+			if (checkaccess('npcs', 'edit'))
+			{
+				echo '<tr><td colspan="9"><form action="./index.php?do=createlootruledetail&id='.$rule_id.'" method="post"><input type="submit" name="create" value="Add New Detail"></form></td></tr>';
+			}
+			echo '<tr><td colspan="9"></td></tr>';
+			$rule_id = $row['loot_rule_id'];
+			if (checkaccess('npcs', 'edit'))
+			{
+				echo '<tr><td colspan="9"><form action="./index.php?do=editlootrule" method="post"> Rule # '.$rule_id.' named: <input type="hidden" name="id" value="'.$row['loot_rule_id'].'"/> <input type="text" name="name" value="'.$row['name'].'" size="30"/> <input type="submit" name="commit" value="Change Name" />'.$delete_text.'</form></td></tr>';
+			}
+			else
+			{
+				echo '<tr><td colspan="9">Rule # '.$rule_id.' named: '.$row['name'].'</td></tr>';
+			}
+			echo '<tr><td>Item</td><td>Min Qty</td><td>Max Qty</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td><td>random percentage</td><td>actions</td></tr>';
+		}
+		if ($row['item_name'] == '' && $row['min_money'] == '' && $row['max_money'] == '') // empty item name means there are no details on this rule, so we display it's name, and bail out.
+		{
+			continue;
+		}
+		echo '<tr><td>'.$row['item_name'].'</td><td>'.$row['min_item'].'</td><td>'.$row['max_item'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td><td>'.$row['randomize_probability'].'</td><td>';
+		if (checkaccess('npcs', 'edit'))
+		{
+			echo '<form action="./index.php?do=editlootruledetail&id='.$row['id'].'" method="post"><input type="submit" name="edit" value="Edit"><input type="submit" name="delete" value="Delete"></form>';
+		}
+		echo '</td></tr>';
+	}
+	if (mysql_num_rows($result) > 0) // Check if there were results, if there were, we need to add the last "add details" function.
+	{
+		if (checkaccess('npcs', 'edit'))
+		{
+			echo '<tr><td colspan="9"><form action="./index.php?do=createlootruledetail&id='.$rule_id.'" method="post"><input type="submit" name="create" value="Add New Detail"></form></td></tr>';
+		}
+	}
+	echo '<tr><td colspan="9"><form action="./index.php?do=editlootrule" method="post"><input type="hidden" name="id" value="0" />';
+	echo '<input type="text" name="name" size="30" /><input type="submit" name="commit" value="Create New Rule"/></form></td></tr>';
+	echo '</table>';
+
 }
 
 // This method handles the "edit and delete loot_rule_detail"
@@ -90,11 +85,14 @@ function editlootruledetail()
     {
         $id = mysql_real_escape_string($_POST['id']);
         $item_stat_id = mysql_real_escape_string($_POST['item_stat_id']);
-        $probability = mysql_real_escape_string($_POST['probability']);
+		$min_item = mysql_real_escape_string($_POST['min_item']);
+        $max_item = mysql_real_escape_string($_POST['max_item']);
+		$probability = mysql_real_escape_string($_POST['probability']);
         $min_money = mysql_real_escape_string($_POST['min_money']);
         $max_money = mysql_real_escape_string($_POST['max_money']);
         $randomize = mysql_real_escape_string($_POST['randomize']);
-        $query = "UPDATE loot_rule_details SET item_stat_id='$item_stat_id', probability='$probability', min_money='$min_money', max_money='$max_money', randomize='$randomize' WHERE id='$id'";
+		$randomize_probability = mysql_real_escape_string($_POST['randomize_probability']);
+        $query = "UPDATE loot_rule_details SET item_stat_id='$item_stat_id', min_item='$min_item', max_item='$max_item', probability='$probability', min_money='$min_money', max_money='$max_money', randomize='$randomize', randomize_probability='$randomize_probability' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -137,6 +135,8 @@ function editlootruledetail()
         echo '<table><tr><th>'; // We set the ID in the form to the rule ID instead of the detail, so we can redirect back to ListRules.
         echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th><th>Action</th></tr>';
         echo '<tr><td>'.DrawSelectBox('items', $item_result, 'item_stat_id', $row['item_stat_id'], true).'</td>';
+		echo '<td><input type="text" name="min_item" value="'.$row['min_item'].'" size="8"/></td>';
+		echo '<td><input type="text" name="max_item" value="'.$row['max_item'].'" size="8"/></td>';
         echo '<td><input type="text" name="probability" value="'.$row['probability'].'" size="8"/></td>';
         echo '<td><input type="text" name="min_money" value="'.$row['min_money'].'" size="11"/></td>';
         echo '<td><input type="text" name="max_money" value="'.$row['max_money'].'" size="11"/></td>';
@@ -150,6 +150,7 @@ function editlootruledetail()
             echo '<option value="0" selected="true">No</option><option value="1">Yes</option>';
         }
         echo '</select></td>';
+		echo '<td><input type="text" name="randomize_probability" value="'.$row['randomize_probability'].'" size="8"/></td>';
         echo '<td><input type="submit" name="commit" value="Update Rule Detail"/></form></td></tr>';
         echo '</table>';
     }
