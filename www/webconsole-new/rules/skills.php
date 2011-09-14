@@ -9,7 +9,8 @@ function listskills(){
         $mental_factor = mysql_real_escape_string($_POST['mental_factor']);
         $price = mysql_real_escape_string($_POST['price']);
         $base_rank_cost = mysql_real_escape_string($_POST['base_rank_cost']);
-        $query = "UPDATE skills SET description='$description', practice_factor='$practice_factor', mental_factor='$mental_factor', price='$price', base_rank_cost='$base_rank_cost' WHERE skill_id='$id'";
+		$cost_script = mysql_real_escape_string($_POST['cost_script']);
+        $query = "UPDATE skills SET description='$description', practice_factor='$practice_factor', mental_factor='$mental_factor', price='$price', base_rank_cost='$base_rank_cost', cost_script='$cost_script' WHERE skill_id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
         echo '<p class="error">Update Successful</p>';
@@ -36,7 +37,8 @@ function listskills(){
         echo '<tr><td>Mental Factor:</td><td><input type="text" name="mental_factor" value="'.$row['mental_factor'].'" /></td></tr>';
         echo '<tr><td>Price:</td><td><input type="text" name="price" value="'.$row['price'].'" /></td></tr>';
         echo '<tr><td>Base Rank Cost:</td><td><input type="text" name="base_rank_cost" value="'.$row['base_rank_cost'].'" /></td></tr>';
-        echo '<tr><td>Category</td><td>'.$row['category'].'</td></tr>';
+        echo '<tr><td>Category:</td><td>'.$row['category'].'</td></tr>';
+		echo '<tr><td>Cost Script:</td><td><input type="text" name="cost_script" value="'.$row['cost_script'].'" /></td></tr>';
         echo '</table>';
         echo '<input type="submit" name="commit" value="Commit Edit" />';
         echo '</form>';
