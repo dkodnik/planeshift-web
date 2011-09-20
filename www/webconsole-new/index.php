@@ -447,18 +447,6 @@
         rulesmain();
         createspell();
         break;
-      case 'resource':
-        include('./rules/rulesmain.php');
-        include('./rules/resources.php');
-        rulesmain();
-        listresources();
-        break;
-      case 'resourcemap':
-        include('./rules/rulesmain.php');
-        include('./rules/resourcemap.php');
-        rulesmain();
-        natural_resources_map();
-        break;
       case 'waypoint':
         include('./rules/rulesmain.php');
         include('./rules/waypoints.php');
@@ -672,6 +660,18 @@
         include('./crafting/process.php');
         craftingmain();
         deleteprocess();
+        break;
+      case 'resource':
+        include('./rules/craftingmain.php');
+        include('./rules/resources.php');
+        craftingmain();
+        listresources();
+        break;
+      case 'resourcemap':
+        include('./rules/craftingmain.php');
+        include('./rules/resourcemap.php');
+        craftingmain();
+        natural_resources_map();
         break;
       case 'other':
         include('./other/othermain.php');
