@@ -2,7 +2,7 @@
 function listcraftitems(){
   if(checkaccess('items', 'read')){
     $categories = "7,12,20,30,53,54,55,10,11,56,8,6,9,32,36,38,48,40,37,44,45,39,35,46,49,33,34,47";
-    $query = 'SELECT category_id, name FROM item_categories where category_id in ('.$categories.')';
+    $query = 'SELECT category_id, name FROM item_categories where category_id in ('.$categories.') order by name';
     $result = mysql_query2($query);
 
     echo '<b>NOTE</b>: Craftable items are the ones with (transform) or (combination) next to them.<br/><br/>';
@@ -13,9 +13,6 @@ function listcraftitems(){
       if (isset($_GET['category']) && ($_GET['category']==$row['category_id']))
         echo '<b>';
       echo '<a href="./index.php?do=listcraftitems&amp;category='.$row['category_id'];
-      if (isset($_GET['override2'])){
-        echo '&amp;override2';
-      }
       echo '">'.$row['name'].'</a>';
       if (isset($_GET['category']) && ($_GET['category']==$row['category_id']))
         echo '</b>';
