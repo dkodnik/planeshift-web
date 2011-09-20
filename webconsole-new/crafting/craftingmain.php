@@ -6,6 +6,7 @@ function craftingmain()
     if (checkaccess('crafting', 'read'))
     {
         echo '<div class="menu_left">';
+        echo '<a href="./index.php?do=listcraftitems">List Craftable Items</a> <br/>';
         echo '<a href="./index.php?do=listpatterns">List Patterns</a> <br/>';
         echo '<a href="./index.php?do=listprocess">List Process</a> <br/>';
         if (checkaccess('crafting', 'create'))
