@@ -571,6 +571,12 @@
         include('./crafting/craftingmain.php');
         craftingmain();
         break;
+      case 'listcraftitems':
+        include('./crafting/craftingmain.php');
+        include('./crafting/listcraftitems.php');
+        craftingmain();
+        listcraftitems();
+        break;
       case 'listpatterns':
         include('./crafting/craftingmain.php');
         include('./crafting/patterns.php');
