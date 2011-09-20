@@ -662,14 +662,14 @@
         deleteprocess();
         break;
       case 'resource':
-        include('./rules/craftingmain.php');
-        include('./rules/resources.php');
+        include('./crafting/craftingmain.php');
+        include('./crafting/resources.php');
         craftingmain();
         listresources();
         break;
       case 'resourcemap':
-        include('./rules/craftingmain.php');
-        include('./rules/resourcemap.php');
+        include('./crafting/craftingmain.php');
+        include('./crafting/resourcemap.php');
         craftingmain();
         natural_resources_map();
         break;
