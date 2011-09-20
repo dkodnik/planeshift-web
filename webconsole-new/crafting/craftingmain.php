@@ -13,6 +13,8 @@ function craftingmain()
             echo '<a href="./index.php?do=createtransform">Create Transform</a> <br/>';
             echo '<a href="./index.php?do=createpattern">Create Pattern</a> <br/>';
         }
+        echo '<hr/><a href="./index.php?do=resource">List Natural Resources</a><br/>';
+        echo '<a href="./index.php?do=resourcemap">List Resource Map</a><br/>';
         echo '<hr/><a href="./index.php">Return to main page.</a>';
         echo '</div><div class="main">';
     }
