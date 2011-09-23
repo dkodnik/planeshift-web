@@ -577,6 +577,12 @@
         craftingmain();
         listcraftitems();
         break;
+	  case 'checkminditemusage':
+        include('./crafting/craftingmain.php');
+        include('./crafting/checkminditemusage.php');
+        craftingmain();
+        checkMindItemUsage();
+        break;
       case 'listpatterns':
         include('./crafting/craftingmain.php');
         include('./crafting/patterns.php');
