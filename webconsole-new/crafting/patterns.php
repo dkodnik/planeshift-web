@@ -60,17 +60,9 @@ function editpattern(){
         editpattern();
         return;
     }
-    $query = "SELECT id, name FROM item_stats WHERE stat_type='B'";
-    $result = mysql_query2($query);
-    while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
-    {
-        $iid=$row['id'];
-        $Items["$iid"]=$row['name'];
-        $Items[0]='';
-    }
     if ($pattern_id != 0) // show pattern details only if pattern_id is not 0. (patternless/general knowledge combines/transforms.
     {
-        $query = "SELECT pattern_name, description, designitem_id, k_factor FROM trade_patterns WHERE id='$pattern_id'";
+        $query = "SELECT tp.pattern_name, tp.description, tp.designitem_id, i.name AS item_name, i.category_id, tp.k_factor FROM trade_patterns AS tp LEFT JOIN item_stats AS i ON tp.designitem_id=i.id WHERE tp.id='$pattern_id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         if (checkaccess('crafting', 'edit'))
@@ -79,8 +71,7 @@ function editpattern(){
             echo '<form action="./index.php?do=editpattern&amp;id='.$pattern_id.'" method="post">';
             echo '<table><tr><td>Pattern Name:</td><td><input type="text" name="pattern_name" value="'.$row['pattern_name'].'"/></td></tr>';
             echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.$row['description'].'</textarea></td></tr>';
-            $i = $row['designitem_id'];
-            echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
+            echo '<tr><td>Design Item:</td><td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['designitem_id'].'">'.$row['item_name'].'</a></td></tr>';
             echo '<tr><td>Difficulty Factor:</td><td><input type="text" name="k_factor" value="'.$row['k_factor'].'"/></td></tr>';
             echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>';
             echo '</table>';
