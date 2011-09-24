@@ -2,14 +2,18 @@
 
 function checkMindItemUsage()
 {
+    if (!checkaccess('crafting', 'read'))
+	{
+		echo '<p class="error">You are not authorized to use these functions</p>';
+	}
 	if (!isset($_GET['full_list'])) 
 	{
-		echo '<p class="error">This page takes a lot of server resources to load, only use it if you really need it. If you only need to edit';
+		echo '<p class="error">This page takes a lot of server resources to load, only use it if you really need it. If you only need to edit ';
 		echo '(or view) 1 item, please use the list below, or change it directly at the patterns page.<br/>';
 		echo 'click <a href="./index.php?do=checkminditemusage&amp;full_list">here</a> to load the full page. </p>';
 	}
 	
-	$query = "SELECT id, name, category_id FROM item_stats WHERE stat_type = 'B' AND valid_slots LIKE '%MIND%'";
+	$query = "SELECT id, name, category_id FROM item_stats WHERE stat_type = 'B' AND valid_slots LIKE '%MIND%' ORDER BY name";
 	$result = mysql_query2($query);
 	while($row = mysql_fetch_array($result, MYSQL_ASSOC))
 	{
