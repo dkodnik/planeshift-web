@@ -13,6 +13,10 @@ function checkMindItemUsage()
 		echo 'If you only need to edit (or view) 1 item, please use the list below, or change it directly at the patterns page.<br/>';
 		echo 'click <a href="./index.php?do=checkminditemusage&amp;full_list">here</a> to load the full page. (<span class="error">This may take in excess of 5 minutes to load.</span>) </p>';
 	}
+	else
+	{
+		echo '<p>Notice that the quests listed are determined using wildcard searches, and may match anything that includes the item name. So an item called "book", will also match a quest giving you "book of blades".</p>';
+	}
 	
 	$query = "SELECT i.id, i.name, i.category_id, p.id AS pattern_id, p.pattern_name FROM item_stats AS i LEFT JOIN trade_patterns AS p ON i.id=p.designitem_id WHERE i.stat_type = 'B' AND i.valid_slots LIKE '%MIND%' ORDER BY i.name";
 	$result = mysql_query2($query);
