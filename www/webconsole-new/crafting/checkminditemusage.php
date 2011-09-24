@@ -14,11 +14,19 @@ function checkMindItemUsage()
 		echo 'click <a href="./index.php?do=checkminditemusage&amp;full_list">here</a> to load the full page. </p>';
 	}
 	
-	$query = "SELECT id, name, category_id FROM item_stats WHERE stat_type = 'B' AND valid_slots LIKE '%MIND%' ORDER BY name";
+	$query = "SELECT i.id, i.name, i.category_id, p.id AS pattern_id, p.pattern_name FROM item_stats AS i LEFT JOIN trade_patterns AS p ON i.id=p.designitem_id WHERE i.stat_type = 'B' AND i.valid_slots LIKE '%MIND%' ORDER BY i.name";
 	$result = mysql_query2($query);
 	while($row = mysql_fetch_array($result, MYSQL_ASSOC))
 	{
-		echo '<p><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['id'].'">'.$row['name'].'</a><br/>';
+		echo '<p><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['id'].'">'.$row['name'].'</a> ';
+		if ($row['pattern_name'] == null) 
+		{
+			echo '(<span class="error">Not used in a pattern pattern</span>)<br/>';
+		}
+		else
+		{
+			echo '(pattern: <a href="./index.php?do=editpattern&amp;id='.$row['pattern_id'].'">'.$row['pattern_name'].'</a>)<br/>';
+		}
 		if(isset($_GET['full_list']))
 		{
 			$item_id = $row['id'];
