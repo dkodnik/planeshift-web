@@ -9,9 +9,9 @@ function checkMindItemUsage()
 	}
 	if (!isset($_GET['full_list'])) 
 	{
-		echo '<p class="error">This page takes a lot of server resources to load, only use it if you really need it. If you only need to edit ';
-		echo '(or view) 1 item, please use the list below, or change it directly at the patterns page.<br/>';
-		echo 'click <a href="./index.php?do=checkminditemusage&amp;full_list">here</a> to load the full page. </p>';
+		echo '<p>This page takes a lot of server resources to load, only use it if you really need it. (And use it wisely, on a test server instead of the main.) ';
+		echo 'If you only need to edit (or view) 1 item, please use the list below, or change it directly at the patterns page.<br/>';
+		echo 'click <a href="./index.php?do=checkminditemusage&amp;full_list">here</a> to load the full page. (<span class="error">This may take in excess of 5 minutes to load.</span>) </p>';
 	}
 	
 	$query = "SELECT i.id, i.name, i.category_id, p.id AS pattern_id, p.pattern_name FROM item_stats AS i LEFT JOIN trade_patterns AS p ON i.id=p.designitem_id WHERE i.stat_type = 'B' AND i.valid_slots LIKE '%MIND%' ORDER BY i.name";
