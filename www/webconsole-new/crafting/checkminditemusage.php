@@ -5,6 +5,7 @@ function checkMindItemUsage()
     if (!checkaccess('crafting', 'read'))
 	{
 		echo '<p class="error">You are not authorized to use these functions</p>';
+		return;
 	}
 	if (!isset($_GET['full_list'])) 
 	{
