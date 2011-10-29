@@ -78,6 +78,7 @@
     $newverify = mysql_real_escape_string(randString());
     // this sets the password, and commits the above generated new verification string to the DB
     $query = "Update accounts set password = md5('" . mysql_real_escape_string($_POST['password1']) . "') " .
+             ",password256 =  '". hash("sha256", $_POST['password1']). "'".
              ",status = 'A', verificationid = '$newverify' " .
              "where username = '" . mysql_real_escape_string(strtolower($_POST['email'])) . "' " .
       	     "and verificationid = '" . mysql_real_escape_string($_POST['verificationid']) . "' " .
