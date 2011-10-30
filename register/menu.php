@@ -61,8 +61,7 @@
           <ul>
             <li><a href="http://www.planeshift.it/download.html">Download the game</a></li>
             <li><a href="http://www.planeshift.it/register.html">Register New</a></li>
-            <li><a href="http://laanx.fragnetics.com/register/resendemail.php?forgot=yes">Password Recovery</a></li>
-            <li><a href="http://laanx.fragnetics.com/">Server Page</a></li>
+            <li><a href="http://www.planeshift.it/password_recovery.html">Password Recovery</a></li>
           </ul>
         </li>
         <li>
