@@ -46,7 +46,7 @@ class Navigation {
                     <td><a href="reportlogs.php">Report logs</a></td>
                 </tr>
                 <tr>
-                    <td><a href="logs.php">Other logs</a></td>
+                    <td><a href="logs.php">Online logs</a></td>
                 </tr>
             </table>
 NAV;
