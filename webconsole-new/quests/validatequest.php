@@ -343,7 +343,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
     $pos = 0;
     while (($pos = stripos($line, $trigger, $pos)) !== false) 
     {
-        if (strcasecmp($trigger, 'menu:') === 0) //if we check a menu trigger, check next ones for exact grammar.
+        if (strcasecmp($trigger, 'Menu:') === 0) //if we check a menu trigger, check next ones for exact grammar.
         {
             $trigger_without_colon = substr($trigger, 0, strlen($trigger)-1); //check if the second "menu:" has a colon following it.
             if (($temp_pos = stripos($line, $trigger_without_colon, $pos + strlen($trigger))) !== false)
