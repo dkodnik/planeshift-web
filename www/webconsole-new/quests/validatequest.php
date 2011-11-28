@@ -102,32 +102,23 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
-            if ($seen_npc_triggers && $p_count > 0) // these two "seen" variables check if we had a set before starting this new one. 
+            // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
+			if ($p_count > 0)  
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
-                $p_count = 0;
             }
-            if ($seen_menu_triggers && $m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
+            if ($m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
             {
-                append_log("parse error, there have been more Menu: than npc:/P: tags before $line_number");
+                append_log("parse error, there have been more Menu: than npc: tags before $line_number");
             }
             if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
             {
                 append_log("Warning: found a 'P: *' entry without 'Menu ?=' before $line_number");
             }
-            if ($seen_menu_triggers && $m_count < 0 && !$menuInputBox) // if there was a Menu: ?= tag, it may match larger amounts of P/NPC tags.
-            {
-                append_log("parse error, there are more $npc_name:/P: triggers than there are Menu: triggers before line $line_number");
-            }
-            if ($seen_menu_triggers || $seen_npc_triggers)
-            {
-                $pStar = false;
-                $menuInputBox = false;
-            }
-            $seen_npc_triggers = false;
-            $m_count = 0;
-            $seen_menu_triggers = false;
-            $count = 0;
+			
+			$pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            $count = $m_count = $p_count = 0;
+
             if (strpos($line, 'P: *') !== false)
             {
                 $pStar = true;
@@ -136,24 +127,37 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 append_log("parse error, P: with no text on line $line_number");
             }
-            else 
+            else // $count is filled by a side-effect of the getTriggerCount.
             {
-                $p_count += $count;
+                $p_count = $count;
             }
             // store P: for comparing with NPC: triggers
+			checkVariables($line, 'p');
         }
         elseif (strncasecmp($line, 'Menu:', 5) === 0) // Menu: trigger
         {
             $count = 0;
+			if ($seen_npc_triggers) 
+			{
+				append_log("parse error, found a Menu: trigger following an NPC: trigger on line $line_number");
+			}
+			if ($seen_menu_triggers) 
+			{
+				append_log("parse error, found two sets of Menu: triggers before line $line_number");
+			}
             if (getTriggerCount($line, 'Menu:', $count, 80) === false)
             {
                 append_log("parse error, Menu: with no text on line $line_number");
             }
+			else // $count is filled by a side-effect of the getTriggerCount.
+			{
+				$m_count = $count;
+			}
             if (strpos($line, '?=') !== false)
             {
                 $menuInputBox = true;
             }
-            $m_count+=$count;
+            
             $seen_menu_triggers = true;
             checkVariables($line, 'menu');
         }
@@ -186,38 +190,48 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 append_log("parse error, there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
             }
+			// Menu: if "officially" optional, so if there are none, it is valid too (should be old quests only). If ?= was seen in a menu, the count doesn't matter.
             if ($seen_menu_triggers && $m_count < 0 && !$menuInputBox) 
             {
-                append_log("parse error, there are more $npc_name:/P: triggers than there are Menu: triggers before line $line_number");
+                append_log("parse error, there are more $npc_name: triggers than there are Menu: triggers before line $line_number");
             }
             checkVariables($line, 'npc');
             
         }
         elseif(strncasecmp($line, 'Player ', 7) === 0) // player does something
         {
-            if ($seen_npc_triggers && $p_count > 0) 
+            // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
+			if ($p_count > 0)  
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
-                $p_count = 0;
             }
-            handle_player_action($line);
+            if ($m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
+            {
+                append_log("parse error, there have been more Menu: than npc: tags before $line_number");
+            }
+            if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
+            {
+                append_log("Warning: found a 'P: *' entry without 'Menu ?=' before $line_number");
+            }
+			
+			$pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            $count = $m_count = $p_count = 0;
+            
+			handle_player_action($line);
             $p_count++; // this is a valid trigger too for npc:
-            $seen_npc_triggers = false;
-
+			checkVariables($line, 'player');
         }
         elseif(strncasecmp($line, '...', 3) === 0) // ... command
         {
-            if ($seen_npc_triggers && $p_count > 0) 
+            if ($p_count > 0) 
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
-                $p_count = 0;
             }
-            if ($seen_menu_triggers && $m_count > 0 && !$menuInputBox) // if there was a Menu: ?= tag, it may match larger amounts of P/NPC tags.
+            if ($m_count > 0 && !$menuInputBox) // if there was a Menu: ?= tag, it may match larger amounts of P/NPC tags.
             {
                 append_log("parse error, there have been more Menu: than npc:/P: tags before $line_number");
-                $m_count = 0;
             }
-            if ($seen_menu_triggers && $pStar && !$menuInputBox)
+            if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
             {
                 append_log("Warning: found a 'P: *' entry without 'Menu ?=' before $line_number");
             }
@@ -241,10 +255,8 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             }
             $step++;
-            $seen_npc_triggers = false;
-            $seen_menu_triggers = false;
-            $pStar = false;
-            $menuInputBox = false;
+            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            $count = $m_count = $p_count = 0;
 
         }
         else // we found a command
