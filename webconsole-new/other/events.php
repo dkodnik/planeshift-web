@@ -4,8 +4,8 @@ function listevents()
 {
     if (checkaccess('events', 'read')) {
         
-
-        $complete_events = getEvents($_GET['order']);
+		
+        $complete_events = (isset($_GET['order']) ? getEvents($_GET['order']) : getEvents('id'));
         
         //List all completed events with the option to view further details.
         echo '<table border="1" >';
@@ -15,6 +15,7 @@ function listevents()
         echo '<th><a href="./index.php?do=events&amp;order=name">Name</a></th>';
         echo '<th><a href="./index.php?do=events&amp;order=gm">GM</a></th>';
         echo '<th><a href="./index.php?do=events&amp;order=avg">Average</a></th>';
+		echo '<th>Date Created</th>';
         echo '<th>Actions</th>';
         echo '</tr>';
         
@@ -25,6 +26,7 @@ function listevents()
             echo '<td>' . $event['name'] . '</td>';
             echo '<td>' . $event['gm_name'] . ' ' . $event['gm_lastname'] . '</td>';
             echo '<td>' . $event['avg'] . '</td>';
+			echo '<td>' . $event['date_created'] . '</td>';
             echo '<td><a href="./index.php?do=viewevent&amp;id=' . $event['id'] . '">View</a></td>';
             echo '</tr>';
         }
@@ -105,7 +107,7 @@ function getEvents($orderBy = null, $completed = true)
     
     $finished = ($completed) ? " WHERE gme.status = '2'" : " WHERE gme.status != '2'";
     
-    $query = 'SELECT gme.id, gme.name, c.name AS gm_name, c.lastname AS gm_lastname FROM gm_events gme ' 
+    $query = 'SELECT gme.id, gme.name, CONVERT(gme.date_created, DATE) AS date_created, c.name AS gm_name, c.lastname AS gm_lastname FROM gm_events gme ' 
             .'LEFT JOIN characters c ON c.id = gme.gm_id'; 
 
     $query .= $finished;
@@ -118,7 +120,7 @@ function getEvents($orderBy = null, $completed = true)
     {
         
         $average = getVoteAverage($row['id']);
-        $events[] = array('name'=>$row['name'], 'avg'=>$average, 
+        $events[] = array('name'=>$row['name'], 'avg'=>$average, 'date_created'=>$row['date_created'],
                           'id'=>$row['id'], 'gm_name'=>$row['gm_name'], 'gm_lastname'=>$row['gm_lastname']);
     }
     
