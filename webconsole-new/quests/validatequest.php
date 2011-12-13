@@ -82,6 +82,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
     $pStar = false;
     $menuInputBox = false;
+	$seenTripleDot = false;
     
     if($show_lines)
     {
@@ -102,6 +103,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
+			$seenTripleDot = false;
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
 			if ($p_count > 0)  
             {
@@ -136,6 +138,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strncasecmp($line, 'Menu:', 5) === 0) // Menu: trigger
         {
+			$seenTripleDot = false;
             $count = 0;
 			if ($seen_npc_triggers) 
 			{
@@ -163,6 +166,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
+			$seenTripleDot = false;
             // Every P: and NPC: combo should be unique, we don't check this atm. (This means a trigger may not already exist, requires parsing of all scripts.)
             $count = 0;
             $seen_npc_triggers = true;
@@ -200,6 +204,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif(strncasecmp($line, 'Player ', 7) === 0) // player does something
         {
+			$seenTripleDot = false;
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
 			if ($p_count > 0)  
             {
@@ -223,6 +228,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif(strncasecmp($line, '...', 3) === 0) // ... command
         {
+			$seenTripleDot = true;
             if ($p_count > 0) 
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
@@ -262,9 +268,25 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         else // we found a command
         {
             $commands = explode('.', $line);  // Notice that this also drops the trailing '.' of every command.
-            for($i = 0; $i < count($commands); $i++) 
+            for($i = 0; $i < count($commands); $i++) // the last one is after the last dot, which is to be ignored.
             {
-                if(trim($commands[$i]) != '') 
+				// the last one is after the last dot, and has no content, we can safely ignore this.
+                if ($i == count($commands) - 1 && trim($commands[$i] == ''))
+				{
+					continue;
+				}
+				if (strncasecmp($commands[$i], 'norepeat', 8) === 0)
+				{
+					if (!$seenTripleDot) 
+					{
+						append_log("parse error, NoRepeat found without \"...\" before it on line $line_number");
+					}
+					$seenTripleDot = false;
+					continue;
+				}
+				$seenTripleDot = false;
+				
+				if(trim($commands[$i]) != '') 
                 {
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
                 }
@@ -738,10 +760,6 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 parse_item($given[$i]);
             }
         }
-    }
-    elseif (strncasecmp($command, 'norepeat', 8) === 0)
-    {
-        // valid, nothing to be checked.
     }
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
