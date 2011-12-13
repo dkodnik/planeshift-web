@@ -268,6 +268,10 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 {
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
                 }
+				else 
+				{
+					append_log("Warning, empty command found at lin $line_number");
+				}
             }
         }
     }
