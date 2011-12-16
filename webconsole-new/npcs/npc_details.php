@@ -10,7 +10,7 @@ function npc_main(){
       }
       if (!isset($_POST['commit'])){
         $id = mysql_real_escape_string($_GET['npc_id']);
-        $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_agility, base_strength, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
+        $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
@@ -42,13 +42,6 @@ function npc_main(){
         echo '<td><input type="text" name="loc_instance" value="'.$row['loc_instance'].'" size="5"/></td></tr></table></td></tr>';
         $Races = PrepSelect('races');
         echo '<tr><td>Race/Gender: </td><td>'.DrawSelectBox('races', $Races, 'racegender_id', $row['racegender_id']).'</td></tr>';
-        echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-        echo '<tr><td>Stats:</td><td><table><tr><td>Agility:</td><td><input type="text" name="base_agility" value="'.$row['base_agility'].'" size="5"/></td></tr>';
-        echo '<tr><td>Strength:</td><td><input type="text" name="base_strength" value="'.$row['base_strength'].'" size="5"/></td></tr>';
-        echo '<tr><td>Endurance:</td><td><input type="text" name="base_endurance" value="'.$row['base_endurance'].'" size="5"/></td></tr>';
-        echo '<tr><td>Intelligence:</td><td><input type="text" name="base_intelligence" value="'.$row['base_intelligence'].'" size="5"/></td></tr>';
-        echo '<tr><td>Willpower:</td><td><input type="text" name="base_will" value="'.$row['base_will'].'" size="5"/></td></tr>';
-        echo '<tr><td>Charisma:</td><td><input type="text" name="base_charisma" value="'.$row['base_charisma'].'" size="5"/></td></tr></table></td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         echo '<tr><td>Base HP (0 for auto-calc)</td><td><input type="text" name="base_hitpoints_max" value="'.$row['base_hitpoints_max'].'" size="7" /></td></tr>';
         echo '<tr><td>Base Mana (0 for auto-calc)</td><td><input type="text" name="base_mana_max" value="'.$row['base_mana_max'].'" size="7" /></td></tr>';
@@ -100,7 +93,9 @@ function npc_main(){
         }
         echo '<input type="hidden" name="char_type" value="'.$row['character_type'].'">';
         echo '</table><input type="submit" name="commit" value="update" /></form>';
-      }else{
+      }
+	  else
+	  {
         $id = mysql_real_escape_string($_GET['npc_id']);
         $query = "UPDATE characters SET ";
         $description = mysql_real_escape_string($_POST['description']);
@@ -134,18 +129,6 @@ function npc_main(){
         $query .= "loc_instance = '$loc_instance', ";
         $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
         $query .= "racegender_id = '$racegender_id', ";
-        $base_agility= mysql_real_escape_string($_POST['base_agility']);
-        $query .= "base_agility = '$base_agility', ";
-        $base_strength = mysql_real_escape_string($_POST['base_strength']);
-        $query .= "base_strength = '$base_strength', ";
-        $base_endurance = mysql_real_escape_string($_POST['base_endurance']);
-        $query .= "base_endurance = '$base_endurance', ";
-        $base_intelligence = mysql_real_escape_string($_POST['base_intelligence']);
-        $query .= "base_intelligence = '$base_intelligence', ";
-        $base_will = mysql_real_escape_string($_POST['base_will']);
-        $query .= "base_will = '$base_will', ";
-        $base_charisma = mysql_real_escape_string($_POST['base_charisma']);
-        $query .= "base_charisma = '$base_charisma', ";
         $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
         $query .= "base_hitpoints_max = '$base_hitpoints_max', ";
         $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
