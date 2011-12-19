@@ -75,10 +75,13 @@ function listnpctypes()
         }
         echo '<table border="1">';
         $limit = (isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '');
-        echo '<tr><th><a href="./index.php?do=listnpctypes&amp;sort=id'.$limit.'">ID</a></th>';
-        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=name'.$limit.'">Name</a></th>';
-        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=parents'.$limit.'">Parents</a></th>';
+        $sort = (isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '');
+        $show = (isset($_GET['show']) ? '&amp;show='.$_GET['show'] : '');
+        echo '<tr><th><a href="./index.php?do=listnpctypes&amp;sort=id'.$limit.$show.'">ID</a></th>';
+        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=name'.$limit.$show.'">Name</a></th>';
+        echo '<th><a href="./index.php?do=listnpctypes&amp;sort=parents'.$limit.$show.'">Parents</a></th>';
         echo '<th>Ang Vel</th><th>Vel</th><th>Collision</th><th>Out Of Bounds</th><th>In Bounds</th><th>Falling</th>';
+        echo '<th>Script (<a href="./index.php?do=listnpctypes&amp;show=yes'.$sort.$limit.'">Show</a>/<a href="./index.php?do=listnpctypes&amp;show=no'.$sort.$limit.'">Hide</a>)</th>';
 
         if (checkaccess('npcs', 'edit'))
         {
@@ -98,6 +101,15 @@ function listnpctypes()
             echo '<td>'.$row['out_of_bounds'].'</td>';
             echo '<td>'.$row['in_bounds'].'</td>';
             echo '<td>'.$row['falling'].'</td>';
+            if (isset($_GET['show']) && $_GET['show']=='yes')
+            {
+                echo '<td><textarea  rows="15" cols="100">'.$row['script'].'</textarea></td>';
+            }
+            else
+            {
+                echo '<td>Hidden</td>';
+            }
+
             if (checkaccess('npcs', 'edit'))
             {
                 echo '<td><form action="./index.php?do=editnpctypes" method="post">';
@@ -170,17 +182,17 @@ function editnpctypes()
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<hr><table border="1"><form action="./index.php?do=editnpctypes" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'">';
-        echo '<tr><th>Field</th><th>Value</th></tr>';
-        echo '<tr><td>Name</td><td><input type="text" size="100" name="name" value="'.$row['name'].'"></td></tr>';
-        echo '<tr><td>Parents</td><td><input type="text" size="100" name="parents" value="'.$row['parents'].'"></td></tr>';
-        echo '<tr><td>Ang Vel</td><td><input type="text" name="ang_vel" value="'.$row['ang_vel'].'"></td></tr>';
-        echo '<tr><td>Vel</td><td><input type="text" name="vel" value="'.$row['vel'].'"></td></tr>';
-        echo '<tr><td>Collision</td><td><input type="text" name="collision" value="'.$row['collision'].'"></td></tr>';
-        echo '<tr><td>Out Of Bounds</td><td><input type="text" name="out_of_bounds" value="'.$row['out_of_bounds'].'"></td></tr>';
-        echo '<tr><td>In Bounds</td><td><input type="text" name="in_bounds" value="'.$row['in_bounds'].'"></td></tr>';
-        echo '<tr><td>Falling</td><td><input type="text" name="falling" value="'.$row['falling'].'"></td></tr>';
-        echo '<tr><td>Script</td><td><textarea rows="15" cols="80" name="script">'.$row['script'].'</textarea></td></tr>';
-        echo '<tr><td colspan="2"><input type="submit" name="action" value="Submit Changes"></td></tr>';
+        echo '<tr><th>Field</th><th>Value</th><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>Name</td><td><input type="text" size="50" name="name" value="'.$row['name'].'"></td>';
+        echo '<td>Parents</td><td><input type="text" size="50" name="parents" value="'.$row['parents'].'"></td></tr>';
+        echo '<tr><td>Ang Vel</td><td><input type="text" name="ang_vel" value="'.$row['ang_vel'].'"></td>';
+        echo '<td>Vel</td><td><input type="text" name="vel" value="'.$row['vel'].'"> (&lt;custom vel&gt;,$walk,$run)</td></tr>';
+        echo '<tr><td>Collision</td><td><input type="text" name="collision" value="'.$row['collision'].'"></td>';
+        echo '<td>Out Of Bounds</td><td><input type="text" name="out_of_bounds" value="'.$row['out_of_bounds'].'"></td></tr>';
+        echo '<tr><td>In Bounds</td><td><input type="text" name="in_bounds" value="'.$row['in_bounds'].'"></td>';
+        echo '<td>Falling</td><td><input type="text" name="falling" value="'.$row['falling'].'"></td></tr>';
+        echo '<tr><td>Script</td><td colspan="3"><textarea rows="25" cols="160" name="script">'.$row['script'].'</textarea></td></tr>';
+        echo '<tr><td colspan="4"><input type="submit" name="action" value="Submit Changes"></td></tr>';
         echo '</form></table>';
     }
     elseif ($action == 'Submit Changes')
@@ -231,3 +243,4 @@ function createnpctypes()
     echo '<p class="error">Creation of npctype succesful</p>';
     listnpctypes();
 }
+
