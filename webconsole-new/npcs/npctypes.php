@@ -87,7 +87,7 @@ function listnpctypes()
         {
             echo '<th>actions</th>';
         }
-        echo '</tr>';
+        echo '<th>NPCs</th></tr>';
         
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
         {
@@ -120,6 +120,17 @@ function listnpctypes()
                     echo '<br/><input type="submit" name="action" value="Delete" />';
                 }
                 echo '</form></td>';
+            }
+
+	    {
+	        echo '<td>';
+                $query2 = 'SELECT npc_def.char_id, npc_def.name FROM sc_npc_definitions npc_def, sc_npctypes type where type.name=npc_def.npctype and type.id = '.$row['id'];
+                $result2 = mysql_query2($query2);
+                while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC))
+        	{
+		   echo '<a href="./index.php?do=npc_details&npc_id='.$row2['char_id'].'&sub=main">'.$row2['name']."</a><br>";
+                }
+	        echo '</td>';
             }
             echo '</tr>';
         }
