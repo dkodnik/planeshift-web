@@ -36,6 +36,7 @@
   echo '<div class="menu">';
   if (checkaccess('npcs', 'read')){
     echo '<a href="./index.php?do=npcs">NPCs</a> -- ';
+    echo '<a href="./index.php?do=tribes">Tribes</a> -- ';
   } else echo 'NPCs -- ';
   if (checkaccess('quests', 'read')){
     echo '<a href="./index.php?do=quests">Quests</a> -- ';
@@ -406,6 +407,16 @@
         include('./npcs/viewnpcmap.php');
         npcmain();
         viewnpcmap();
+        break;
+      case 'tribes':
+        include('./tribes/tribemain.php');
+        tribemain();
+        break;
+      case 'listtribes':
+        include('./tribes/tribemain.php');
+        include('./tribes/listtribes.php');
+        tribemain();
+        listtribes();
         break;
       case 'rules':
         include('./rules/rulesmain.php');
