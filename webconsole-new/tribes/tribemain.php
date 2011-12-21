@@ -5,6 +5,7 @@ function tribemain(){
   if (checkaccess('npcs', 'read')){
     echo '<div class="menu_left">';
     echo '<a href="./index.php?do=listtribes">List Tribes</a> <br/>';
+    echo '<a href="./index.php?do=listrecipes">List Recipes</a> <br/>';
     echo '</div><div class="main">';
   }
   else{
