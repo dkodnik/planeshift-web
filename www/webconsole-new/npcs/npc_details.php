@@ -13,7 +13,7 @@ function npc_main(){
         $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
-        echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post"><table>';
+        echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post" id="npc_details_form"><table>';
         echo '<tr><td>First Name/Last Name:</td><td><input type="text" name="first_name" value="'.$row['name'].'" />/<input type="text" name="last_name" value="'.$row['lastname'].'" /></td></tr>';
         echo '<tr><td>Description:</td><td><textarea name="description" rows="4" cols="50">'.$row['description'].'</textarea></td></tr>';
         echo '<tr><td>OOC Description:</td><td><textarea name="description_ooc" rows="4" cols="50">'.$row['description_ooc'].'</textarea></td></tr>';
@@ -43,16 +43,18 @@ function npc_main(){
         $Races = PrepSelect('races');
         echo '<tr><td>Race/Gender: </td><td>'.DrawSelectBox('races', $Races, 'racegender_id', $row['racegender_id']).'</td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
-        echo '<tr><td>Base HP (0 for auto-calc)</td><td><input type="text" name="base_hitpoints_max" value="'.$row['base_hitpoints_max'].'" size="7" /></td></tr>';
-        echo '<tr><td>Base Mana (0 for auto-calc)</td><td><input type="text" name="base_mana_max" value="'.$row['base_mana_max'].'" size="7" /></td></tr>';
+        echo '<tr><td>Base HP (0 for auto-calc)</td><td><input type="text" name="base_hitpoints_max" value="'.$row['base_hitpoints_max'].'" size="18" /> ';
+        echo '<input type="checkbox" name="base_hitpoints_null" onclick="changeHitpointsText()" /> Use Master Value.</td></tr>';
+        echo '<tr><td>Base Mana (0 for auto-calc)</td><td><input type="text" name="base_mana_max" value="'.$row['base_mana_max'].'" size="18" /> ';
+        echo '<input type="checkbox" name="base_mana_null"  onclick="changeManaText()" /> Use Master Value.</td></tr>';
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         if ($row['character_type'] > 0) // don't show for players
         {
             echo '<tr><td>Invulnerable</td><td>';
             if ($row['npc_impervious_ind'] == "Y"){
-              echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="true">True</option></select>';
+              echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="selected">True</option></select>';
             }else{
-              echo '<select name="npc_impervious_ind"><option value="N" selected="true">False</option><option value="Y">True</option></select>';
+              echo '<select name="npc_impervious_ind"><option value="N" selected="selected">False</option><option value="Y">True</option></select>';
             }
             echo '</td></tr>';
         }
@@ -91,11 +93,48 @@ function npc_main(){
             $row2 = mysql_fetch_array($r2, MYSQL_ASSOC);
             echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region']).'</td></tr>';
         }
-        echo '<input type="hidden" name="char_type" value="'.$row['character_type'].'">';
-        echo '</table><input type="submit" name="commit" value="update" /></form>';
+        echo '<tr><td colspan="2"><input type="hidden" name="char_type" value="'.$row['character_type'].'" /><input type="submit" name="commit" value="update" /></td></tr>';
+        echo '</table></form>';
+        // this javascript applies to the code above. Needs to be after the form in order to reference it.
+        echo '<script type="text/javascript">//<![CDATA[
+                var old_hitpoints = 0;
+                var old_manapoints = 0;
+                function changeHitpointsText()
+                {
+                    if (document.getElementById("npc_details_form").base_hitpoints_null.checked) 
+                    {
+                        old_hitpoints = document.getElementById("npc_details_form").base_hitpoints_max.value;
+                        document.getElementById("npc_details_form").base_hitpoints_max.value = "Using Master Value";
+                    }
+                    else
+                    {
+                        document.getElementById("npc_details_form").base_hitpoints_max.value = old_hitpoints;
+                    }
+                }
+                function changeManaText()
+                {
+                    if (document.getElementById("npc_details_form").base_mana_null.checked) 
+                    {
+                        old_manapoints = document.getElementById("npc_details_form").base_mana_max.value
+                        document.getElementById("npc_details_form").base_mana_max.value = "Using Master Value";
+                    }
+                    else
+                    {
+                        document.getElementById("npc_details_form").base_mana_max.value = old_manapoints;
+                    }
+                }';
+        if ($row['base_hitpoints_max'] == null)
+        {
+            echo 'document.getElementById("npc_details_form").base_hitpoints_null.click();';
+        }
+        if ($row['base_mana_max'] == null)
+        {
+            echo 'document.getElementById("npc_details_form").base_mana_null.click();';
+        }
+        echo ' //]]></script>'."\n"; // End of java script started at previous comment.
       }
-	  else
-	  {
+      else
+      {
         $id = mysql_real_escape_string($_GET['npc_id']);
         $query = "UPDATE characters SET ";
         $description = mysql_real_escape_string($_POST['description']);
@@ -129,10 +168,25 @@ function npc_main(){
         $query .= "loc_instance = '$loc_instance', ";
         $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
         $query .= "racegender_id = '$racegender_id', ";
-        $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
-        $query .= "base_hitpoints_max = '$base_hitpoints_max', ";
-        $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
-        $query .= "base_mana_max = '$base_mana_max', ";
+        // TODO: check base_mana_null and base_hitpoints_null
+        if (isset($_POST['base_hitpoints_null'])) 
+        {
+            $query .= "base_hitpoints_max = null, ";
+        }
+        else
+        {
+            $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
+            $query .= "base_hitpoints_max = '$base_hitpoints_max', ";
+        }
+        if (isset($_POST['base_mana_null']))
+        {
+            $query .= "base_mana_max = null, ";
+        }
+        else
+        {
+            $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
+            $query .= "base_mana_max = '$base_mana_max', ";
+        }
         if ($_POST['char_type'] > 0) // Don't update for players
         {
             $npc_impervious_ind = mysql_real_escape_string($_POST['npc_impervious_ind']);
@@ -1006,15 +1060,16 @@ function npcdetails(){
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
-        echo '<form action="index.php?do=deletenpc&id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
         if (checkaccess('npcs', 'delete'))
         {
+            echo '<form action="index.php?do=deletenpc&amp;id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
             if ($row['character_type'] == 1 || $row['character_type'] == 3) 
             {
-                echo '<input type="submit" value="delete NPC">';
+                echo '<p><input type="submit" value="delete NPC" /></p>';
             }
+            echo '</form>';
         }
-        echo '</form><br />';
+        echo "\n";
         $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
       }
     }
@@ -1083,10 +1138,10 @@ function npc_factions()
     {
         if (isset($_GET['npc_id']))
         {
-			if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
-				echo '<p class="error">You are not authorized to use these functions</p>';
-				return;
-			}
+            if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+                echo '<p class="error">You are not authorized to use these functions</p>';
+                return;
+            }
             if (isset($_POST['commit']))
             {
                 $id = mysql_real_escape_string($_GET['npc_id']);
