@@ -168,7 +168,6 @@ function npc_main(){
         $query .= "loc_instance = '$loc_instance', ";
         $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
         $query .= "racegender_id = '$racegender_id', ";
-        // TODO: check base_mana_null and base_hitpoints_null
         if (isset($_POST['base_hitpoints_null'])) 
         {
             $query .= "base_hitpoints_max = null, ";
