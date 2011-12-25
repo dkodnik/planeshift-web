@@ -18,7 +18,7 @@ function listtribes(){
         echo '<tr>';
         echo '<td>'.$row['id'].'</td>';
         $T_id = $row['id'];
-          echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['id'].'">'.$row['name'].'</a></td>';
+          echo '<td><a href="./index.php?do=listtribemembers&amp;id='.$row['id'].'">'.$row['name'].'</a></td>';
 
         echo '<td>'.$row['home_x'].' / '.$row['home_y'].' / '.$row['home_z'].' / ? </td>';
         echo '<td>'.$row['home_radius'].'</td>';
