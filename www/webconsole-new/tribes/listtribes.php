@@ -3,7 +3,7 @@ function listtribes(){
   if (checkaccess('npcs', 'read')){
     echo '<table border="1">';
     echo '<tr><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=id">ID</a></th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=name">Name</a></th><th>Home Position</th><th>Home Radius</th><th><a href="./index.php?do='.$_GET['do'].'&amp;sort=sector">Home Sector</a></th><th>Max size</th><th>Wealth Resource Name</th><th>Wealth Resource Nick</th><th>Wealth Resource Area</th><th>Wealth Gather Need</th><th>Wealth Resource Growth</th><th>Wealth Resource Growth Active</th><th>Wealth Resource Growth Active Limit</th><th>Reproduction Cost</th><th>NPC idle behavior</th><th>Tribal Recipe</th></tr>';
-    $query = 'SELECT t.*, s.name AS sector FROM tribes AS t LEFT JOIN sectors AS s ON t.home_sector_id=s.id';
+    $query = 'SELECT t.*, tr.name AS recipe_name, s.name AS sector FROM tribes AS t LEFT JOIN sectors AS s ON t.home_sector_id=s.id LEFT JOIN tribe_recipes AS tr ON tr.id=t.tribal_recipe';
 
     if (isset($_GET['sort'])){
       if ($_GET['sort'] == 'id'){
@@ -33,7 +33,7 @@ function listtribes(){
         echo '<td>'.$row['wealth_resource_growth_active_limit'].'</td>';
         echo '<td>'.$row['reproduction_cost'].'</td>';
         echo '<td>'.$row['npc_idle_behavior'].'</td>';
-        echo '<td>'.$row['tribal_recipe'].'</td>';
+        echo '<td><a href="./index.php?do=listrecipes&amp;id='.$row['tribal_recipe'].'">'.$row['recipe_name'].'</a></td>';
         echo '</tr>';
       }
       echo '</table>';
