@@ -10,10 +10,11 @@ function listrecipes()
     $query = 'SELECT * FROM tribe_recipes';
 
     $id_url = '';
-    if (isset($_GET['id'])) 
+    if (isset($_GET['id']) && is_numeric($_GET['id'])) 
     {
-        $query .= " WHERE id='".mysql_real_escape_string($_GET['id'])."'";
-        $id_url = '&amp;id='.$_GET['id'];
+        $id = mysql_real_escape_string($_GET['id']);
+        $query .= " WHERE id='$id'";
+        $id_url = '&amp;id='.$id;
     }
     
     if (isset($_GET['sort']))
