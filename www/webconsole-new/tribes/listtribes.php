@@ -35,7 +35,7 @@ function listtribes()
         {
             echo '<tr>';
             echo '<td>'.$row['id'].'</td>';
-            echo '<td><a href="./index.php?do=listtribemembers&amp;id='.$row['id'].'">'.$row['name'].'</a></td>';
+            echo '<td><a href="./index.php?do=listtribemembers&amp;tribe_id='.$row['id'].'">'.$row['name'].'</a></td>';
             echo '<td>'.$row['home_x'].' / '.$row['home_y'].' / '.$row['home_z'].'</td>';
             echo '<td>'.$row['home_radius'].'</td>';
             echo '<td>'.$row['sector'].'</td>';
