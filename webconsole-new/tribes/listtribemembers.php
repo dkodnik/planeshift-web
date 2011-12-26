@@ -10,13 +10,13 @@ function listtribemembers()
     
     $query = 'SELECT tm.tribe_id, t.name AS tribe_name, tm.member_id, tm.member_type, c.name FROM tribe_members AS tm LEFT JOIN characters AS c ON c.id=tm.member_id LEFT JOIN tribes AS t ON t.id=tm.tribe_id';
 
-    if (isset($_GET['id']) && is_numeric($_GET['id'])) 
+    if (isset($_GET['tribe_id']) && is_numeric($_GET['tribe_id'])) 
     {
-        $id = mysql_real_escape_string($_GET['id']);
-        $query .= " WHERE tm.tribe_id='$id'";
+        $tribe_id = mysql_real_escape_string($_GET['tribe_id']);
+        $query .= " WHERE tm.tribe_id='$tribe_id'";
     }
     
-    $query .= ' ORDER BY c.name';
+    $query .= ' ORDER BY t.name, c.name';
     
     $result = mysql_query2($query);
     if (mysql_num_rows($result) > 0)
