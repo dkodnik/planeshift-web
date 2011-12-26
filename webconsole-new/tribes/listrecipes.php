@@ -53,15 +53,15 @@ function listrecipes()
             if (checkaccess('npcs', 'edit'))
             {
                 echo '<td><form action="./index.php?do=editrecipes" method="post">';
-                echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
-                echo '<input type="submit" name="commit" value="Edit" />';
+                echo '<div><input type="hidden" name="id" value="'.$row['id'].'" />';
+                echo '<input type="submit" name="commit" value="Edit" /></div>';
                 echo '</form>';
                 
                 if (checkaccess('npcs', 'delete'))
                 {
                     echo '<form action="./index.php?do=editrecipes" method="post">';
-                    echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
-                    echo '<input type="submit" name="commit" value="Delete" />';
+                    echo '<div><input type="hidden" name="id" value="'.$row['id'].'" />';
+                    echo '<input type="submit" name="commit" value="Delete" /></div>';
                     echo '</form>';
                 }
                 echo '</td>';
