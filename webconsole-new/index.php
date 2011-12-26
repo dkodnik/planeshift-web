@@ -418,6 +418,12 @@
         tribemain();
         listtribes();
         break;
+      case 'edittribes':
+        include('./tribes/tribemain.php');
+        include('./tribes/listtribes.php');
+        tribemain();
+        edittribes();
+        break;
       case 'listrecipes':
         include('./tribes/tribemain.php');
         include('./tribes/listrecipes.php');
