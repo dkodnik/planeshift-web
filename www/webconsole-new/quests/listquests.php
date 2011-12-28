@@ -269,7 +269,7 @@ function readquest()
             echo 'Quest Lockout Time: '.$row['quest_lockout_time']."<br/>\n";
             echo 'Prerequisites: '.htmlspecialchars($row['prerequisite'])."<br/>\n";
             $row = mysql_fetch_array($result2, MYSQL_ASSOC);
-            $script = str_replace("\n", "<br/>\n", $row['script']);
+            $script = str_replace("\n", "<br/>\n", htmlspecialchars($row['script']));
             echo '<hr/>';
             echo 'Quest Script:<br/>'.$script."<br/>\n";
         }
