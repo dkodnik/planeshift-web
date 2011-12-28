@@ -27,7 +27,7 @@ function editquest()
             echo '<tr><td>Quest Lockout Time:</td><td> <input type="text" name="quest_lockout_time" value="'.$row['quest_lockout_time'].'" />'."</td></tr>\n";
             echo '<tr><td>Prerequisites:</td><td> <textarea name="prerequisite" rows="2" cols="50">'.htmlspecialchars($row['prerequisite'])."</textarea></td></tr>\n";
             echo '</table></div><hr/>';
-            echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script."</textarea><br />\n";
+            echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.htmlspecialchars($script)."</textarea><br />\n";
             echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" />';
             echo '</p></form>';
         }
