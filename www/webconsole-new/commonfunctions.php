@@ -189,6 +189,7 @@ function PrepSelect($a){
   $typevals["waypoints"] = "SELECT w.id, CONCAT(s.name, ' -- ', w.name, ' -- ', ' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) FROM sc_waypoints AS w LEFT JOIN sectors AS s ON w.loc_sector_id=s.id ORDER BY s.name, w.name";
   $typevals["weapon"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Weapons%' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
   $typevals["armor"] = "SELECT s.id, CONCAT('[', s.armorvsweapon_type, '] ', s.name) FROM item_stats AS s, item_categories AS c WHERE c.name LIKE 'Armor%' AND c.name!= 'Armor Parts' AND s.category_id=c.category_id AND s.stat_type = 'B' ORDER BY s.armorvsweapon_type, s.name";  
+  $typevals["factionnames"] = "SELECT faction_name, faction_name FROM factions";
   $typevals["factions"] = "SELECT id, faction_name FROM factions";
   $typevals["tribe_recipe"] = "SELECT id, name FROM tribe_recipes";
   
@@ -224,6 +225,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["waypoints"] = '""';
   $typevals["weapon"] = '"0"';
   $typevals["armor"] = '"0"';
+  $typevals["factionnames"] = '""';
   $typevals["factions"] = '""';
   $typevals["location_type"] = '"0"';
   $typevals["tribe_recipe"] = '"0"';

@@ -64,28 +64,28 @@ function listquests()
             if (isset($_GET['factionLimit'])) {
                 $factionlimit = mysql_real_escape_string($_GET['factionLimit']);
             }
-            $factions = PrepSelect('factions');
+            $factions = PrepSelect('factionnames');
             echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>';
             echo '<td><form method="get" action="index.php"><div>';
             echo '<input type="hidden" name="do" value="listquests" />';
             if (isset($_GET['sort'])) {
                 echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'" />';
             }
-            echo 'limit to: '.DrawSelectBox('factions', $factions, 'factionLimit', $factionlimit, true);
+            echo 'limit to: '.DrawSelectBox('factionnames', $factions, 'factionLimit', $factionlimit, true);
             echo '<input type="submit" name="submit" value="limit results" /></div></form></td></tr></table><br/>';
             
             $query = 'SELECT q.id, q.name, q.flags, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
             
             // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
-            // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between [].
-            // so we get '[\n]Give[^\n]*faction[^\n]*$factionlimit' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
-            // In other words, we are looking for a character sequence that contains a newline, followed by "Give" (so it must be at the start of the line) any amount of characters (a number in a proper script), the word "faction" and 
+            // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between []. (Also note that a ' must be escaped in sql, or it will signify the end of the regexp.)
+            // so we get '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
+            // In other words, we are looking for a character sequence that contains a newline (so it must be at the start of the line), followed by "Run script give_quest_faction <<\'$factionlimit\',"  
             // "$factionlimit" (being one of the factions that exist in the database, if this script was properly used.
-            // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "give **** faction <name>" where *** can be anything or nothing at all (but in practive will prove to be a number).
+            // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "<<'faction name', ***>>" where *** can be anything or nothing at all (but in practive will prove to be a number).
 
             if ($factionlimit != '') 
             {
-                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
+                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>'";
             }
             
             $direction_url = '&amp;direction=asc';
