@@ -18,7 +18,12 @@ function editquest()
             $row = mysql_fetch_array($result, MYSQL_ASSOC);
             $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
             $script = $row2['script'];
-            echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit" method="post"><div><table border="0">';
+            $return_url = '';
+            if (isset($_GET['sort']) && isset($_GET['direction']))
+            {
+                $return_url = '&amp;sort='.htmlspecialchars($_GET['sort']).'&amp;direction='.htmlspecialchars($_GET['direction']);
+            }
+            echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit'.$return_url.'" method="post"><div><table border="0">';
             echo '<tr><td>Quest ID:</td><td> '.$id."</td></tr>\n";
             echo '<tr><td>Quest Name:</td><td> <input type="text" name="name" value="'.$row['name'].'" />'."</td></tr>\n";
             echo '<tr><td>Quest Category:</td><td> <input type="text" name="category" value="'.$row['category'].'" />'."</td></tr>\n";
@@ -33,6 +38,12 @@ function editquest()
         }
         else
         {
+            $return_url = '';
+            if (isset($_GET['sort']) && isset($_GET['direction']))
+            {
+                // no &amp; in javascript, it's gonna be directly into the url bar like that.
+                $return_url = '&sort='.htmlspecialchars($_GET['sort']).'&direction='.htmlspecialchars($_GET['direction']);
+            }
             $id = mysql_real_escape_string($_GET['id']);
             $name = mysql_real_escape_string($_POST['name']);
             $category = mysql_real_escape_string($_POST['category']);
@@ -47,11 +58,11 @@ function editquest()
             $result = mysql_query2($query);
             if (isset($_POST['submit2']))
             {
-                echo '<SCRIPT language="javascript"> document.location = "index.php?do=editquest&id='.$id.'"; </script>';
+                echo '<SCRIPT language="javascript"> document.location = "index.php?do=editquest&id='.$id.$return_url.'"; </script>';
             }
             else
             {
-                echo '<SCRIPT language="javascript"> document.location = "index.php?do=listquests"; </script>';
+                echo '<SCRIPT language="javascript"> document.location = "index.php?do=listquests'.$return_url.'"; </script>';
             }
         }
     }

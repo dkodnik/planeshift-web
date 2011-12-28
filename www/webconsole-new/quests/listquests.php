@@ -89,6 +89,7 @@ function listquests()
             }
             
             $direction_url = '&amp;direction=asc';
+            $current_sort_url = '';
             if(!isset($_GET['sort']))
             {
                 $query .= ' ORDER BY name ASC';
@@ -102,31 +103,39 @@ function listquests()
                     {
                         $direction = 'DESC';
                         $direction_url = '&amp;direction=asc';
+                        $current_sort_url = '&amp;direction=desc';
                     }
                     else 
                     {
                         $direction_url = '&amp;direction=desc';
+                        $current_sort_url = '&amp;direction=asc';
                     }
                 }
                 switch($_GET['sort'])
                 {
                     case 'id':
                         $query .= ' ORDER BY id '.$direction;
+                        $current_sort_url  = '&amp;sort=id'.$current_sort_url;
                         break;
                     case 'category':
-                        $query .= ' ORDER BY category '.$direction;;
+                        $query .= ' ORDER BY category '.$direction;
+                        $current_sort_url  = '&amp;sort=category'.$current_sort_url;
                         break;
                     case 'name':
-                        $query .= ' ORDER BY name '.$direction;;
+                        $query .= ' ORDER BY name '.$direction;
+                        $current_sort_url  = '&amp;sort=name'.$current_sort_url;
                         break;
                     case 'plock':
-                        $query .= ' ORDER BY player_lockout_time '.$direction;; 
+                        $query .= ' ORDER BY player_lockout_time '.$direction;
+                        $current_sort_url  = '&amp;sort=plock'.$current_sort_url;
                         break;
                     case 'qlock':
-                        $query .= ' ORDER by quest_lockout_time '.$direction;;
+                        $query .= ' ORDER by quest_lockout_time '.$direction;
+                        $current_sort_url  = '&amp;sort=qlock'.$current_sort_url;
                         break;
                     default:
-                        $query .= ' ORDER BY name '.$direction;;
+                        $query .= ' ORDER BY name '.$direction;
+                        $current_sort_url  = '&amp;sort=name'.$current_sort_url;
                 }
             }
             $result = mysql_query2($query);
@@ -154,7 +163,7 @@ function listquests()
                 echo '<br /><a href="./index.php?do=validatequest&amp;id='.$row['id'].'">Validate</a>';
                 if (checkaccess('quests', 'edit'))
                 {
-                    echo '<br/><a href="./index.php?do=editquest&amp;id='.$row['id'].'">Edit</a>';
+                    echo '<br/><a href="./index.php?do=editquest'.$current_sort_url.'&amp;id='.$row['id'].'">Edit</a>';
                 }
                 if (checkaccess('quests', 'delete'))
                 {
