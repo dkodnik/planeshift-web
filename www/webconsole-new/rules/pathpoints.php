@@ -225,7 +225,7 @@ function editpathpoint()
         echo '<p class="header">Path Points listing for waypoint link: '.$path_id.'</p>';
         echo '<p>Please note that neither insert nor delete "remember" any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
         echo '<table border="1">';
-        echo '<tr><th>X</th><th>Y</th><th>Z</th><th>Sector</th><th>Actions</th></tr>';
+        echo '<tr><th>Id</th><th>X</th><th>Y</th><th>Z</th><th>Sector</th><th>Actions</th></tr>';
         $prev = 0;
         $count_down = mysql_num_rows($result) - 1;
         $sectors = PrepSelect('sectorid');
@@ -234,7 +234,7 @@ function editpathpoint()
             if ($prev == $insert)
             {
                 echo '<tr>';
-                echo '<td><input type="hidden" name="id[]" value="-1" /><input type="text" name="x[]" value="" /></td>';
+                echo '<td><input type="hidden" name="id[]" value="-1" /></td><td><input type="text" name="x[]" value="" /></td>';
                 echo '<td><input type="text" name="y[]" value="" /></td>';
                 echo '<td><input type="text" name="z[]" value="" /></td>';
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', '', true).'</td></tr>';
@@ -243,7 +243,8 @@ function editpathpoint()
             if ($row['prev_point'] == $prev && ($prev == 0 || $count_down == 0)) // In these 2 cases we have the first and last point, they equal the position of the waypoint 1/2 in the waypoint link, and thus can not be changed.
             {
                 echo '<tr>';
-                echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" /><input type="text" name="x[]" value="'.$row['x'].'" />'.$row['x'].'</td>';
+                echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" />'.$row['id'].'</td>';
+                echo '<td><input type="text" name="x[]" value="'.$row['x'].'" />'.$row['x'].'</td>';
                 echo '<td><input type="text" name="y[]" value="'.$row['y'].'" />'.$row['y'].'</td>';
                 echo '<td><input type="text" name="z[]" value="'.$row['z'].'" />'.$row['z'].'</td>';
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
@@ -258,7 +259,8 @@ function editpathpoint()
             }
             else if ($row['prev_point'] == $prev) {
                 echo '<tr>';
-                echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" /><input type="text" name="x[]" value="'.$row['x'].'" /></td>';
+                echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" />'.$row['id'].'</td>';
+                echo '<td><input type="text" name="x[]" value="'.$row['x'].'" /></td>';
                 echo '<td><input type="text" name="y[]" value="'.$row['y'].'" /></td>';
                 echo '<td><input type="text" name="z[]" value="'.$row['z'].'" /></td>';
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
