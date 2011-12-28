@@ -85,6 +85,8 @@ function listquests()
 
             if ($factionlimit != '') 
             {
+                // Dev note: If you are using this script on a server which does not have (or uses) the standard PS faction reward script, but does use the "give 1 faction orcs" type of rewards in quest_scripts, uncomment the commented assignment below, and comment the other.
+                // $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
                 $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>'";
             }
             
