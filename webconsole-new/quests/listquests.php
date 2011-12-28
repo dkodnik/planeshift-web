@@ -83,43 +83,59 @@ function listquests()
             // "$factionlimit" (being one of the factions that exist in the database, if this script was properly used.
             // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "give **** faction <name>" where *** can be anything or nothing at all (but in practive will prove to be a number).
 
-            if ($factionlimit != '') {
+            if ($factionlimit != '') 
+            {
                 $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
             }
             
-            if(!isset($_GET['sort'])){
+            $direction_url = '&amp;direction=asc';
+            if(!isset($_GET['sort']))
+            {
                 $query .= ' ORDER BY name ASC';
             }
             else
             {
+                $direction = 'ASC';
+                if (isset($_GET['direction']))
+                {
+                    if ($_GET['direction'] == 'desc')
+                    {
+                        $direction = 'DESC';
+                        $direction_url = '&amp;direction=asc';
+                    }
+                    else 
+                    {
+                        $direction_url = '&amp;direction=desc';
+                    }
+                }
                 switch($_GET['sort'])
                 {
                     case 'id':
-                        $query .= ' ORDER BY id ASC';
+                        $query .= ' ORDER BY id '.$direction;
                         break;
                     case 'category':
-                        $query .= ' ORDER BY category ASC';
+                        $query .= ' ORDER BY category '.$direction;;
                         break;
                     case 'name':
-                        $query .= ' ORDER BY name ASC';
+                        $query .= ' ORDER BY name '.$direction;;
                         break;
                     case 'plock':
-                        $query .= ' ORDER BY player_lockout_time ASC'; 
+                        $query .= ' ORDER BY player_lockout_time '.$direction;; 
                         break;
                     case 'qlock':
-                        $query .= ' ORDER by quest_lockout_time ASC';
+                        $query .= ' ORDER by quest_lockout_time '.$direction;;
                         break;
                     default:
-                        $query .= ' ORDER BY name ASC';
+                        $query .= ' ORDER BY name '.$direction;;
                 }
             }
             $result = mysql_query2($query);
             echo '<table border="1">'."\n";
-            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">ID</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Category</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Name</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Player Lockout</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
+            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">ID</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Category</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Name</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Player Lockout</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
             {
