@@ -270,7 +270,7 @@ function editpathpoint()
                 $count_down--;
             } // No else, we want the loop to continue, so else { continue; } could be done, but just a waste of space. :)
         }
-        echo '<tr><td colspan="5"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '<tr><td colspan="6"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
         echo '</table></form>';
     }
     else
