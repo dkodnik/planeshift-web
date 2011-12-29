@@ -66,7 +66,7 @@ function draw_map($sector, $type)
 
     $red        = imagecolorallocate($im, 255,   0,   0);
     $green      = imagecolorallocate($im, 128, 255,   0);
-    $dark_green = imagecolorallocate($im,   0, 128,   0);
+    $dark_green = imagecolorallocate($im,  64, 180,   0);
     $orange     = imagecolorallocate($im, 255, 128,   0);
     $gray       = imagecolorallocate($im, 228, 228, 228);
     $blue       = imagecolorallocate($im,   0,   0, 128);
