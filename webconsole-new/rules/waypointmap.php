@@ -184,10 +184,12 @@ foreach((array) $peoples as $people) {
     $scalefactorx = $data[3];
     $scalefactory = $data[4];
 
-        $x = $centerx+($infos[4]*$scalefactorx)-5;
-        $y = $centery-($infos[6]*$scalefactory)-5;
+        $x = $centerx+($infos[4]*$scalefactorx)-4;
+        $y = $centery-($infos[6]*$scalefactory)-10;
      
-        if ($infos[7] == "ALLOW_RETURN") {
+        $pos = stripos($infos[7],"ALLOW_RETURN"); 
+        if ( $pos !== false)
+	{
           $ball = 'img/ball04m.gif';
           echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
           echo "<A HREF=index.php?do=waypoint&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
