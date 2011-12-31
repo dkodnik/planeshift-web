@@ -149,7 +149,7 @@ function editpathpoint()
             return;
         }
         $prev_id = 0;
-        for($i = 0; count($_POST['id']) > $i; $i++)
+        for ($i = 0; count($_POST['id']) > $i; $i++)
         {
             $id = mysql_real_escape_string($_POST['id'][$i]);
             $x = mysql_real_escape_string($_POST['x'][$i]);
@@ -219,15 +219,23 @@ function editpathpoint()
             mysql_query2($query); // We set the next entry to refer to the one before the deleted enty (so the chain remains unbroken).
             echo '<p class="error">Line successfully deleted.</p>';
         }
-        $query = "SELECT pp.id, s.name AS sector_name, pp.prev_point, pp.x, pp.y, pp.z, pp.loc_sector_id FROM sc_path_points AS pp LEFT JOIN sectors AS s ON s.id=pp.loc_sector_id WHERE path_id='$path_id'";
+        $query = "SELECT pp.id, pp.prev_point, pp.x, pp.y, pp.z, pp.loc_sector_id FROM sc_path_points AS pp LEFT JOIN sectors AS s ON s.id=pp.loc_sector_id WHERE path_id='$path_id'";
         $result = mysql_query2($query);
+        $query2 = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
+        $result2 = mysql_query2($query2);
+        $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
         echo '<form action="./index.php?do=editpathpoint&path_id='.$path_id.'" method="post"><input type="hidden" name="path_id" value="'.$path_id.'" />';
-        echo '<p class="header">Path Points listing for waypoint link: '.$path_id.'</p>';
-        echo '<p>Please note that neither insert nor delete "remember" any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
+        echo '<h3 class="bold">Path Points listing for waypoint link: '.$row2['name'].' ('.$path_id.') from "'.$row2['wp1_name'].'" to "'.$row2['wp2_name'].'"</h3>';
+        echo '<p>Please note that both insert and delete ignore any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
         echo '<table border="1">';
         echo '<tr><th>Id</th><th>X</th><th>Y</th><th>Z</th><th>Sector</th><th>Actions</th></tr>';
+        // list starting waypoint
+        echo '<tr><td>WP 1</td>';
+        echo '<td>'.$row2['wp1_x'].'</td>';
+        echo '<td>'.$row2['wp1_y'].'</td>';
+        echo '<td>'.$row2['wp1_z'].'</td>';
+        echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert=0">Insert</a></td></tr>';
         $prev = 0;
-        $count_down = mysql_num_rows($result) - 1;
         $sectors = PrepSelect('sectorid');
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) // This slightly more complex loop serves to get the entries in proper order.
         {
@@ -237,27 +245,10 @@ function editpathpoint()
                 echo '<td><input type="hidden" name="id[]" value="-1" /></td><td><input type="text" name="x[]" value="" /></td>';
                 echo '<td><input type="text" name="y[]" value="" /></td>';
                 echo '<td><input type="text" name="z[]" value="" /></td>';
-                echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', '', true).'</td></tr>';
+                echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', '', true).'</td><td></td></tr>';
                 $insert = -1; // set it to a value that will never be encountered.
             }
-            if ($row['prev_point'] == $prev && ($prev == 0 || $count_down == 0)) // In these 2 cases we have the first and last point, they equal the position of the waypoint 1/2 in the waypoint link, and thus can not be changed.
-            {
-                echo '<tr>';
-                echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" />'.$row['id'].'</td>';
-                echo '<td><input type="text" name="x[]" value="'.$row['x'].'" />'.$row['x'].'</td>';
-                echo '<td><input type="text" name="y[]" value="'.$row['y'].'" />'.$row['y'].'</td>';
-                echo '<td><input type="text" name="z[]" value="'.$row['z'].'" />'.$row['z'].'</td>';
-                echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
-                if ($prev == 0)
-                {
-                    echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].'">Insert</a></td>';
-                }
-                echo '</tr>';
-                $prev = $row['id'];
-                mysql_data_seek($result, 0);
-                $count_down--;
-            }
-            else if ($row['prev_point'] == $prev) {
+            if ($row['prev_point'] == $prev) {
                 echo '<tr>';
                 echo '<td><input type="hidden" name="id[]" value="'.$row['id'].'" />'.$row['id'].'</td>';
                 echo '<td><input type="text" name="x[]" value="'.$row['x'].'" /></td>';
@@ -267,9 +258,14 @@ function editpathpoint()
                 echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].'">Insert</a><br><br><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&delete='.$row['id'].'">Delete</a></td></tr>';
                 $prev = $row['id'];
                 mysql_data_seek($result, 0);
-                $count_down--;
             } // No else, we want the loop to continue, so else { continue; } could be done, but just a waste of space. :)
         }
+        // Display the info for the end waypoint.
+        echo '<tr><td>WP 2</td>';
+        echo '<td>'.$row2['wp2_x'].'</td>';
+        echo '<td>'.$row2['wp2_y'].'</td>';
+        echo '<td>'.$row2['wp2_z'].'</td>';
+        echo '<td>'.$row2['wp2_sector_name'].'</td><td></td></tr>';
         echo '<tr><td colspan="6"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
         echo '</table></form>';
     }
