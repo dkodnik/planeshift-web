@@ -36,8 +36,12 @@ function listpathpoints()
         if (isset($_GET['limit']) && is_numeric($_GET['limit']))
         {
             $start = $_GET['limit'] - 30;
+            if ($start < 0) 
+            {
+                $start = 0;
+            }
             $limit = $_GET['limit'];
-            $query = $query . " LIMIT $start, 30"; // limit 1, 10 is offset 1, 30 records.
+            $query = $query . " LIMIT $start, 30"; // limit 1, 30 is offset 1, 30 records.
         }
         else
         {
@@ -45,88 +49,88 @@ function listpathpoints()
             $limit = 30;
         }
         $result = mysql_query2($query);
-        if (mysql_numrows($result) == 0){
-            echo '<p class="error">No Paths Found</p>';
-        }
-        else
+        
+        $sid = 0;
+        if (isset($_GET['sector']))
         {
-            $sid = 0;
-            if (isset($_GET['sector']))
-            {
-                $sid = $_GET['sector'];
-            }
-            $prev_lim = $limit - 30;
-            if ($limit > 30)
-            {
-                echo '<a href="./index.php?do=listpathpoints';
-                if (isset($_GET['sort']))
-                {
-                    echo '&amp;sort='.$_GET['sort'];
-                }
-                echo '&amp;limit='.$prev_lim.'&amp;sector='.$sid.'">Previous Page</a> ';
-            }
-            echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
-            $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
-            $result2 = mysql_query2('select count(p.id) AS mylimit FROM sc_path_points AS p'.$where);
-            $row2 = mysql_fetch_array($result2);
-            if ($row2['mylimit'] > $limit)
-            {
-                echo '<a href="./index.php?do=listpathpoints';
-                if (isset($_GET['sort']))
-                {
-                    echo '&amp;sort='.$_GET['sort'];
-                }
-                $next_lim = $limit + 30;
-                echo '&amp;limit='.$next_lim.'&amp;sector='.$sid.'">Next Page</a>';
-            }
-            $sectors = PrepSelect('sectorid');
-            echo '<form action="./index.php" method="get"><input type="hidden" name="do" value="listpathpoints"/>';
-            $sid = 0;
-            if (isset($_GET['sector']))
-            {
-                $sid = $_GET['sector'];
-            }
+            $sid = $_GET['sector'];
+        }
+        $prev_lim = ($limit - 30 < 0 ? 0 : $limit - 30);
+        if ($limit > 30)
+        {
+            echo '<a href="./index.php?do=listpathpoints';
             if (isset($_GET['sort']))
             {
-                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'"/>';
+                echo '&amp;sort='.$_GET['sort'];
             }
-            if (isset($_GET['limit']))
+            echo '&amp;limit='.$prev_lim.'&amp;sector='.$sid.'">Previous Page</a> ';
+        }
+        echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
+        $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
+        $result2 = mysql_query2('SELECT COUNT(DISTINCT p.path_id) AS mylimit FROM sc_path_points AS p'.$where);
+        $row2 = mysql_fetch_array($result2);
+        if ($row2['mylimit'] > $limit)
+        {
+            echo '<a href="./index.php?do=listpathpoints';
+            if (isset($_GET['sort']))
             {
-                echo '<input type="hidden" name="limit" value="'.$_GET['limit'].'"/>';
+                echo '&amp;sort='.$_GET['sort'];
             }
-            echo DrawSelectBox('sectorid', $sectors, 'sector' ,$sid, true);
-            echo '<input type="submit" name="submit" value="Limit By Sector" /></form>';
-            
-            echo '<table border="1">';
-            echo '<tr><th><a href="./index.php?do=listpathpoints&amp;sort=path_id&limit='.$limit.'&sector='.$sid.'">Path ID</a></th>';
-            echo '<th><a href="./index.php?do=listpathpoints&amp;sort=sector&limit='.$limit.'&sector='.$sid.'">Starting Sector</a></th>';
-            echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp1&limit='.$limit.'&sector='.$sid.'">wp1</a></th>';
-            echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp2&limit='.$limit.'&sector='.$sid.'">wp2</a></th>';
-            if (checkaccess('rules','edit'))
+            $next_lim = $limit + 30;
+            echo '&amp;limit='.$next_lim.'&amp;sector='.$sid.'">Next Page</a>';
+        }
+        $sectors = PrepSelect('sectorid');
+        echo '<form action="./index.php" method="get"><input type="hidden" name="do" value="listpathpoints"/>';
+        $sid = 0;
+        if (isset($_GET['sector']))
+        {
+            $sid = $_GET['sector'];
+        }
+        if (isset($_GET['sort']))
+        {
+            echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'"/>';
+        }
+        if (isset($_GET['limit']))
+        {
+            echo '<input type="hidden" name="limit" value="'.$_GET['limit'].'"/>';
+        }
+        echo DrawSelectBox('sectorid', $sectors, 'sector' ,$sid, true);
+        echo '<input type="submit" name="submit" value="Limit By Sector" /></form>';
+        if (mysql_numrows($result) == 0){
+            echo '<p class="error">No Paths Found</p>';
+            return;
+        }
+        
+        echo '<table border="1">';
+        echo '<tr><th><a href="./index.php?do=listpathpoints&amp;sort=path_id&limit='.$limit.'&sector='.$sid.'">Path ID</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=sector&limit='.$limit.'&sector='.$sid.'">Starting Sector</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp1&limit='.$limit.'&sector='.$sid.'">wp1</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp2&limit='.$limit.'&sector='.$sid.'">wp2</a></th>';
+        if (checkaccess('rules','edit'))
+        {
+            echo '<th>Actions</th>';
+        }
+        echo '</tr>';
+        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        {
+            echo '<tr>';
+            echo '<td>'.$row['path_id'].'</td>';
+            echo '<td>'.$row['sector'].'</td>';
+            echo '<td>'.$row['wp1_name'].'<br />'.$row['wp1_coords'].'</td>';
+            echo '<td>'.$row['wp2_name'].'<br />'.$row['wp2_coords'].'</td>';
+            if (checkaccess('rules', 'edit'))
             {
-                echo '<th>Actions</th>';
+                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].'">Edit</a>';
+                if (checkaccess('rules', 'delete'))
+                {
+                    echo '<br/><a href="./index.php?do=deletepathpoint&path_id='.$row['path_id'].'">Delete</a>';
+                }
+                echo '</td>';
             }
             echo '</tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
-            {
-                echo '<tr>';
-                echo '<td>'.$row['path_id'].'</td>';
-                echo '<td>'.$row['sector'].'</td>';
-                echo '<td>'.$row['wp1_name'].'<br />'.$row['wp1_coords'].'</td>';
-                echo '<td>'.$row['wp2_name'].'<br />'.$row['wp2_coords'].'</td>';
-                if (checkaccess('rules', 'edit'))
-                {
-                    echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].'">Edit</a>';
-                    if (checkaccess('rules', 'delete'))
-                    {
-                        echo '<br/><a href="./index.php?do=deletepathpoint&path_id='.$row['path_id'].'">Delete</a>';
-                    }
-                    echo '</td>';
-                }
-                echo '</tr>';
-            }
-            echo '</table>';
         }
+        echo '</table>';
+        
         echo '<hr/>';
     }
     else
