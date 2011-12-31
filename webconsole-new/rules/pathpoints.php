@@ -328,17 +328,20 @@ function createpathpoint()
             echo '<p class="error">Invalid Path ID</p>';
             return;
         }
+        $query = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, wp1.loc_sector_id AS wp1_loc, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, wp2.loc_sector_id AS wp2_loc, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
+        $result = mysql_query2($query);
+        $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $sectors = PrepSelect('sectorid');
-        echo '<p class="bold">Create Path Point</p>'."\n"; // new path point
+        echo '<p class="bold">Create Path Points for waypoint link '.$row['name'].' ('.$path_id.') from "'.$row['wp1_name'].'" to "'.$row['wp2_name'].'"</p>'."\n"; // new path point
         echo 'If you leave any row empty, it will not be added.';
         echo '<form action="./index.php?do=createpathpoint" method="post" /><table border="1">';
         echo '<tr><th>X</th><th>Y</th><th>Z</th><th>Sector</th></tr>';
-        // This is the first line, this time we get the data from the $_POST (unlike the first time, see the next elseif).
-        echo '<td><input type="hidden" name="path_id" value="'.$path_id.'" /><input type="hidden" name="x[]" value="'.$_POST['x'][0].'" />'.$_POST['x'][0].'</td>';
-        echo '<td><input type="hidden" name="y[]" value="'.$_POST['y'][0].'" />'.$_POST['y'][0].'</td>';
-        echo '<td><input type="hidden" name="z[]" value="'.$_POST['z'][0].'" />'.$_POST['z'][0].'</td>';
-        echo '<td><input type="hidden" name="loc_sector_id[]" value="'.$_POST['loc_sector_id'][0].'" /><input type="hidden" name="wp1_name" value="'.$_POST['wp1_name'].'" />'.$_POST['wp1_name'].'</td></tr>';
-        for ($i = 1; $i < count($_POST['x'])-1; $i++) // count either of the values to see how many lines there already were. Start at 1 and go to count-1 to avoid printing the first and last point again.
+        // This is the first line, we obtain it from sql.
+        echo '<td><input type="hidden" name="path_id" value="'.$path_id.'" />'.$row['wp1_x'].'</td>';
+        echo '<td>'.$row['wp1_y'].'</td>';
+        echo '<td>'.$row['wp1_z'].'</td>';
+        echo '<td>'.$row['wp1_sector_name'].'</td></tr>';
+        for ($i = 0; $i < count($_POST['x']); $i++) // count either of the values to see how many lines there already were.
         {
             echo '<tr>';
             echo '<td><input type="text" name="x[]" value="'.$_POST['x'][$i].'" /></td>';
@@ -354,12 +357,11 @@ function createpathpoint()
             echo '<td><input type="text" name="z[]" value="" /></td>';
             echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', '', true).'</td></tr>';
         }
-        // This is the last line, this time we get the data from the $_POST (unlike the first time, see the next elseif).
-        $last = count($_POST['x'])-1; // get the last entry. 
-        echo '<tr><td><input type="hidden" name="path_id" value="'.$path_id.'" /><input type="hidden" name="x[]" value="'.$_POST['x'][$last].'" />'.$_POST['x'][$last].'</td>';
-        echo '<td><input type="hidden" name="y[]" value="'.$_POST['y'][$last].'" />'.$_POST['y'][$last].'</td>';
-        echo '<td><input type="hidden" name="z[]" value="'.$_POST['z'][$last].'" />'.$_POST['z'][$last].'</td>';
-        echo '<td><input type="hidden" name="loc_sector_id[]" value="'.$_POST['loc_sector_id'][$last].'" /><input type="hidden" name="wp2_name" value="'.$_POST['wp2_name'].'" />'.$_POST['wp2_name'].'</td></tr>';
+        // This is the last line, we obtain it from sql (waypointlink).
+        echo '<tr><td>'.$row['wp2_x'].'</td>';
+        echo '<td>'.$row['wp2_y'].'</td>';
+        echo '<td>'.$row['wp2_z'].'</td>';
+        echo '<td>'.$row['wp2_sector_name'].'</td></tr>';
         echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0"> more fields to this form <input type=submit name="add" value="add"/></td></tr>';
         echo '<tr><td></td><td><input type=submit name="commit" value="Create Path"/></td></tr>'; 
         echo '</table></form>'."\n";
@@ -384,19 +386,19 @@ function createpathpoint()
             echo '<p class="error">A path for this waypoint ('.$path_id.') already exists.</p>';
             return;
         }
+        $query = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, wp1.loc_sector_id AS wp1_loc, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, wp2.loc_sector_id AS wp2_loc, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
+        $result = mysql_query2($query);
+        $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $sectors = PrepSelect('sectorid');
-        echo '<p class="bold">Create Path Point</p>'."\n"; // new path point
+        echo '<p class="bold">Create Path Point for: '.$row['name'].' ('.$path_id.') from "'.$row['wp1_name'].'" to "'.$row['wp2_name'].'"</p>'."\n"; // new path point
         echo 'If you leave any row empty, it will not be added.';
         echo '<form action="./index.php?do=createpathpoint" method="post" /><table border="1">';
         echo '<tr><th>X</th><th>Y</th><th>Z</th><th>Sector</th></tr>';
-        $query = "SELECT wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, wp1.loc_sector_id AS wp1_loc, s1.name AS wp1_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, wp2.loc_sector_id AS wp2_loc, s2.name AS wp2_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
-        $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
         // This is the first line, get data from the waypoint link (sql), to obtain x/y/z for wp1.
-        echo '<td><input type="hidden" name="path_id" value="'.$path_id.'" /><input type="hidden" name="x[]" value="'.$row['wp1_x'].'" />'.$row['wp1_x'].'</td>';
-        echo '<td><input type="hidden" name="y[]" value="'.$row['wp1_y'].'" />'.$row['wp1_y'].'</td>';
-        echo '<td><input type="hidden" name="z[]" value="'.$row['wp1_z'].'" />'.$row['wp1_z'].'</td>';
-        echo '<td><input type="hidden" name="loc_sector_id[]" value="'.$row['wp1_loc'].'" /><input type="hidden" name="wp1_name" value="'.$row['wp1_name'].'" />'.$row['wp1_name'].'</td></tr>';
+        echo '<td><input type="hidden" name="path_id" value="'.$path_id.'" />'.$row['wp1_x'].'</td>';
+        echo '<td>'.$row['wp1_y'].'</td>';
+        echo '<td>'.$row['wp1_z'].'</td>';
+        echo '<td>'.$row['wp1_sector_name'].'</td></tr>';
         for ($i = 0; $i < 3; $i++) // form wasn't used before, show 3 rows to give the user some space.
         { 
             echo '<tr>';
@@ -406,10 +408,10 @@ function createpathpoint()
             echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', '', true).'</td></tr>';
         }
         // This is the last line, get data from the waypoint link (sql), to obtain x/y/z for wp2.
-        echo '<tr><td><input type="hidden" name="path_id" value="'.$path_id.'" /><input type="hidden" name="x[]" value="'.$row['wp2_x'].'" />'.$row['wp2_x'].'</td>';
-        echo '<td><input type="hidden" name="y[]" value="'.$row['wp2_y'].'" />'.$row['wp2_y'].'</td>';
-        echo '<td><input type="hidden" name="z[]" value="'.$row['wp2_z'].'" />'.$row['wp2_z'].'</td>';
-        echo '<td><input type="hidden" name="loc_sector_id[]" value="'.$row['wp2_loc'].'" /><input type="hidden" name="wp2_name" value="'.$row['wp2_name'].'" />'.$row['wp2_name'].'</td></tr>';
+        echo '<tr><td>'.$row['wp2_x'].'</td>';
+        echo '<td>'.$row['wp2_y'].'</td>';
+        echo '<td>'.$row['wp2_z'].'</td>';
+        echo '<td>'.$row['wp2_sector_name'].'</td></tr>';
         echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0"> more fields to this form <input type=submit name="add" value="add"/></td></tr>';
         echo '<tr><td></td><td><input type=submit name="commit" value="Create Path"/></td></tr>'; 
         echo '</table></form>'."\n";
