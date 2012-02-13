@@ -122,6 +122,10 @@ class PSItem extends PSBaseClass {
 
     function GetHumanReadableItemLocation() {
 
+	// storage slots
+        if ($this->LocationInParent=-2)
+           return "Storage";
+
 	// bulk slots
         if ($this->LocationInParent>15)
            return "Bulk ". ($this->LocationInParent - 15);
