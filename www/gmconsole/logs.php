@@ -32,7 +32,7 @@
                         <h2 class="yellowtitlebig">Log</h2>
 
 <?php
-							$file = fopen("../../psserver/planeshift/report.xml", "r");
+							$file = fopen("/home/planeshift/psserver/planeshift/report.xml", "r");
 							while(!feof($file))
 							{
 								echo htmlentities(fgets($file))."<br>";

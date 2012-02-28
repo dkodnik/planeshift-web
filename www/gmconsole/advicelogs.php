@@ -33,23 +33,26 @@
 <table>
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
-$file = fopen("../../psserver/planeshift/logs/advice.csv", "r");
-echo "<tr><th>";
-$headerLine = fgets($file);
-echo str_replace(",", "</th><th>", $headerLine);
-echo "</th></tr>";
-$fromTime = strtotime($date);
-while(!feof($file))
+if(file_exists("logs/advice.csv"))
 {
+   $file = fopen("logs/advice.csv", "r");
+   echo "<tr><th>";
+   $headerLine = fgets($file);
+   echo str_replace(",", "</th><th>", $headerLine);
+   echo "</th></tr>";
+   $fromTime = strtotime($date);
+   while(!feof($file))
+   {
 	$line = fgets($file);
-    $exploded = explode(",", $line);
-    $dateLine = strtotime($exploded[0]);
+        $exploded = explode(",", $line);
+        $dateLine = strtotime($exploded[0]);
             // This is needed in case the dateline is corrupted.
             if(!($dateLine > $fromTime))
                             continue;
 	echo "<tr><td>" . str_replace("disabledtemp", "</td><td>", $line) . "</td></tr>";
+   }
+   fclose($file);
 }
-fclose($file);
 ?>
 </table>
 	</body>

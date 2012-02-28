@@ -33,14 +33,16 @@
 <table>
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
-$file = fopen("logs/stuck.csv", "r");
-echo "<tr><th>";
-$headerLine = fgets($file);
-echo str_replace(",", "</th><th>", $headerLine);
-echo "</th></tr>";
-$fromTime = strtotime($date);
-while(!feof($file))
+if(file_exists("logs/stuck.csv"))
 {
+    $file = fopen("logs/stuck.csv", "r");
+    echo "<tr><th>";
+    $headerLine = fgets($file);
+    echo str_replace(",", "</th><th>", $headerLine);
+    echo "</th></tr>";
+    $fromTime = strtotime($date);
+    while(!feof($file))
+    {
 	$line = fgets($file);
         $exploded = explode(",", $line);
             $dateLine = strtotime($exploded[0]);
@@ -48,8 +50,9 @@ while(!feof($file))
                     if(!($dateLine > $fromTime))
                                     continue;
 	echo "<tr><td>" . str_replace(",", "</td><td>", $line) . "</td></tr>";
+   }
+   fclose($file);
 }
-fclose($file);
 ?>
 </table>
 	</body>
