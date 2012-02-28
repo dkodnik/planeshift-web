@@ -35,7 +35,7 @@
 <table class=\"sortable\">
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
-$file = fopen("../../psserver/planeshift/logs/economy.csv", "r");
+$file = fopen("logs/economy.csv", "r");
 echo "<tr><th>";
 $headerLine = fgets($file);
 echo str_replace(",", "</th><th>", $headerLine);
