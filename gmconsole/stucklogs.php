@@ -33,7 +33,7 @@
 <table>
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
-$file = fopen("../../psserver/planeshift/logs/stuck.csv", "r");
+$file = fopen("logs/stuck.csv", "r");
 echo "<tr><th>";
 $headerLine = fgets($file);
 echo str_replace(",", "</th><th>", $headerLine);
