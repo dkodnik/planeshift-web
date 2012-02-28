@@ -35,14 +35,16 @@
 <table class=\"sortable\">
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
-$file = fopen("logs/exchange.csv", "r");
-echo "<tr><th>";
-$headerLine = fgets($file);
-echo str_replace(",", "</th><th>", $headerLine);
-echo "</th></tr>";
-$fromTime = strtotime($date);
-while(!feof($file))
+if(file_exists("logs/exchange.csv"))
 {
+   $file = fopen("logs/exchange.csv", "r");
+   echo "<tr><th>";
+   $headerLine = fgets($file);
+   echo str_replace(",", "</th><th>", $headerLine);
+   echo "</th></tr>";
+   $fromTime = strtotime($date);
+   while(!feof($file))
+   {
         $line = fgetcsv($file);
         $dateLine = strtotime($line[0]);
         // This is needed in case the dateline is corrupted.
@@ -54,9 +56,9 @@ while(!feof($file))
                 echo "<td>" . $line[$c]. "</td>\n";
         }
         echo "</tr>";
+   }
+   fclose($file);
 }
-
-fclose($file);
 ?>
 </table>
 	</body>
