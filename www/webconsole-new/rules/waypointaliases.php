@@ -13,7 +13,8 @@ function listwaypointaliases()
             $id = mysql_real_escape_string($_POST['id']);
             $waypoint_id = mysql_real_escape_string($_POST['waypoint_id']);
             $alias = mysql_real_escape_string($_POST['alias']);
-            $query = "UPDATE sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias' WHERE id='$id'";
+            $rotation_angle = mysql_real_escape_string($_POST['rotation_angle']);
+            $query = "UPDATE sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias', rotation_angle='$rotation_angle' WHERE id='$id'";
             $result = mysql_query2($query);
             echo '<p class="error">Update Successful</p>';
         }
@@ -28,7 +29,8 @@ function listwaypointaliases()
         {
             $waypoint_id = mysql_real_escape_string($_POST['waypoint_id']);
             $alias = mysql_real_escape_string($_POST['alias']);
-            $query = "INSERT INTO sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias'";
+            $rotation_angle = mysql_real_escape_string($_POST['rotation_angle']);
+            $query = "INSERT INTO sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias', rotation_angle='$rotation_angle'";
             $result = mysql_query2($query);
             echo '<p class="error">Creation Successful</p>';
         }
@@ -46,13 +48,14 @@ function listwaypointaliases()
         {
             $waypoints = PrepSelect('waypoints');
             $id = mysql_real_escape_string($_POST['id']);
-            $query = "SELECT wp_id, alias FROM sc_waypoint_aliases WHERE id='$id'";
+            $query = "SELECT wp_id, alias, rotation_angle FROM sc_waypoint_aliases WHERE id='$id'";
             $result = mysql_query2($query);
             $row = mysql_fetch_array($result, MYSQL_ASSOC);
             echo '<form action="./index.php?do=waypointalias" method="post">';
             echo '<table border="1">';
             echo '<tr><td>Waypoint Name: '.DrawSelectBox('waypoints', $waypoints, 'waypoint_id' , $row['wp_id'], false).'</td>';
-            echo '<td>Alias: <input type="text" name="alias" value="'.$row['alias'].'" /></td></tr>';
+            echo '<td>Alias: <input type="text" name="alias" value="'.$row['alias'].'" /></td>';
+            echo '<td>Rotation angle: <input type="text" name="rotation_angle" value="'.$row['rotation_angle'].'" /></td></tr>';
             echo '</table>';
             echo '<input type="hidden" name="id" value="'.$id.'" />';
             echo '<input type="submit" name="commit" value="Update Waypoint Alias" />';
@@ -67,7 +70,7 @@ function listwaypointaliases()
         return;
     } // no else, else is the rest of this document, all the above return.
 
-    $query = "SELECT wa.id, wa.wp_id, wa.alias, wp.name AS waypoint_name, s.name AS sector FROM sc_waypoint_aliases AS wa LEFT JOIN sc_waypoints AS wp ON wp.id=wa.wp_id LEFT JOIN sectors AS s ON s.id=wp.loc_sector_id";
+    $query = "SELECT wa.id, wa.wp_id, wa.alias, wp.name AS waypoint_name, s.name AS sector, wa.rotation_angle FROM sc_waypoint_aliases AS wa LEFT JOIN sc_waypoints AS wp ON wp.id=wa.wp_id LEFT JOIN sectors AS s ON s.id=wp.loc_sector_id";
     if (isset($_GET['id']) && $_GET['id']!='')
     {
         $id = mysql_real_escape_string($_GET['id']);  // limit to 1 specific result if requested
@@ -187,6 +190,7 @@ function listwaypointaliases()
         echo '<tr><th><a href="./index.php?do=waypointalias&amp;sort=waypoint_name'.$urlParams.'">Waypoint Name</a></th>';
         echo '<th><a href="./index.php?do=waypointalias&amp;sort=sector'.$urlParams.'">Sector</a></th>';
         echo '<th><a href="./index.php?do=waypointalias&amp;sort=alias'.$urlParams.'">Alias</a></th>';
+        echo '<th>Rotation Angle</th>';
         if (checkaccess('rules','edit'))
         {
             echo '<th>Actions</th>';
@@ -198,6 +202,7 @@ function listwaypointaliases()
             echo '<td><a href="./index.php?do=waypoint&amp;id='.$row['wp_id'].'" >'.$row['waypoint_name'].'</a></td>';
             echo '<td>'.$row['sector'].'</td>';
             echo '<td>'.$row['alias'].'</td>';
+            echo '<td>'.$row['rotation_angle'].'</td>';
             if (checkaccess('rules', 'edit')) // offer edit buttons
             {
                 echo '<td><form action="./index.php?do=waypointalias" method="post">';
@@ -220,7 +225,8 @@ function listwaypointaliases()
             echo '<form action="./index.php?do=waypointalias" method="post">';
             echo '<table border="1">';
             echo '<tr><td>Waypoint Name: '.DrawSelectBox('waypoints', $waypoints, 'waypoint_id' , '', false).'</td>';
-            echo '<td>Alias: <input type="text" name="alias" /></td></tr>';
+            echo '<td>Alias: <input type="text" name="alias" /></td>';
+            echo '<td>Rotation Angle: <input type="text" name="rotation_angle" value="0.0" />degrees</td></tr>';
             echo '</table>';
             echo '<input type="submit" name="commit" value="Create Waypoint Alias" />';
             echo '</form>';
