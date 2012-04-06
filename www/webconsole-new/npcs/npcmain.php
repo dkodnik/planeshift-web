@@ -16,6 +16,7 @@ function npcmain(){
         echo '<a href="./index.php?do=listnpcscombat">List NPCs (combat view)</a> <br/>';
         echo '<a href="./index.php?do=listnpcsector">List Invul. NPCs by Sector</a> <br/>';
         echo '<a href="./index.php?do=viewnpcmap">View NPC Map</a><br/>';
+        echo '<a href="./index.php?do=listnpctypes&amp;template=1">List NPC Type Templates</a> <br/>';
         echo '<a href="./index.php?do=listnpctypes">List NPC Types</a> <br/>';
         echo '<hr/>';
         echo '<a href="./index.php?do=listtrainer">List Trainers</a> <br/>';
