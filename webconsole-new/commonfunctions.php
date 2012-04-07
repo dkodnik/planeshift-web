@@ -503,10 +503,10 @@ function getDataFromArea($area) {
       $data[5] = array('hydlaa_jayose', 'jayose_inside');
   } else if ($area=='hydlaa_winch') {
       $data[0] = 'loc_sector_id=72';
-      $data[1] = 200;
-      $data[2] = -430;
-      $data[3] = 2.2;
-      $data[4] = 2.2;
+      $data[1] = 250;
+      $data[2] = -550;
+      $data[3] = 2.8;
+      $data[4] = 2.8;
       $data[5] = array('hydlaa_winch');
   } else if ($area=='sewers') {
       $data[0] = '(loc_sector_id>26 and loc_sector_id<38)';
