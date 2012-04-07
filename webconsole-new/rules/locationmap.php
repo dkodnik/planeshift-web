@@ -176,7 +176,7 @@ foreach($peoples as $people) {
     $scalefactory = $data[4];
 
         $x= $centerx+($infos[4]*$scalefactorx)-4;
-        $y= $centery-($infos[6]*$scalefactory)-4;
+        $y= $centery-($infos[6]*$scalefactory)-10;
      
         if ($infos[7] == '-1' || $infos[7] == '0') {
           $ball = 'img/ball01m.gif';
