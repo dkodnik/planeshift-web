@@ -57,6 +57,7 @@ function listlocations(){
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$id.'" /><table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>ID:</td><td>'.$id.'</td></tr>';
         echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.$row['name'].'"/></td></tr>';
         $Sectors = PrepSelect('sectorid');
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td></tr>';
@@ -147,7 +148,7 @@ function listlocations(){
           echo '&amp;limit='.$lu.'">Next Page</a>';;
         }
         echo '<table border="1">';
-        echo '<tr><th><a href="./index.php?do=location&amp;sort=name';
+        echo '<tr><th>ID</th><th><a href="./index.php?do=location&amp;sort=name';
         if (isset($_GET['limit'])){
           echo '&amp;limit='.$_GET['limit'];
         }
@@ -175,6 +176,7 @@ function listlocations(){
         echo '</tr>';
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
           echo '<tr>';
+          echo '<td>'.$row['id'].'</td>';
           echo '<td>'.$row['name'].'</td>';
           echo '<td>'.$row['sector'].'</td>';
           echo '<td>'.$row['x'].'</td>';
