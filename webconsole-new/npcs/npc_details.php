@@ -449,11 +449,30 @@ function npc_kas(){
         echo '<p class="error">Update Successful</p>';
         npc_kas();
       }else{
+        echo '<table border="1">';
+        echo '<tr><th>Area</th><th>Priority</th><th>Actions</th></tr>';
+        // find npc name
+        $query = "SELECT name,lastname FROM characters WHERE id='$id'";
+        $result = mysql_query2($query);
+        if (mysql_num_rows($result) > 0){
+          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $npcname = trim($row['name']." ".$row['lastname']);
+          // find the knowledge area "scripts" for the NPC
+          $query2 = "SELECT id, script FROM quest_scripts WHERE quest_id='-1' and script like '%".$npcname.":%'";
+          //echo $query2."<br>";
+          $result2 = mysql_query2($query2);
+          if (mysql_num_rows($result2) > 0){
+            $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+            $npcscript = $row2['id'];
+            echo "<b>KA Scripts:</b></br>A KA script is present for ".$npcname.". ";
+            echo " <a href=index.php?do=ka_scripts&sub=Read&areaid=".$npcscript."> Read </a> ";
+            echo " <a href=index.php?do=ka_scripts&sub=Edit&areaid=".$npcscript."> Edit </a> <br/><br/>";
+          }
+        }
+        // find all knowledge area "triggers" for the NPC
         $query = "SELECT area, priority FROM npc_knowledge_areas WHERE player_id='$id' ORDER BY priority";
         $result = mysql_query2($query);
         if (mysql_num_rows($result) > 0){
-          echo '<table border="1">';
-          echo '<tr><th>Area</th><th>Priority</th><th>Actions</th></tr>';
           while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
             echo '<tr>';
             echo '<td><a href="./index.php?do=ka_detail&area='.rawurlencode($row['area']).'">'.$row['area'].'</a></td>';
@@ -477,6 +496,7 @@ function npc_kas(){
           }
           echo '</table>';
         }else{
+          echo '</table>';
           echo '<p class="error">NPC has no KAs Assigned</p>';
         }
         $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";
