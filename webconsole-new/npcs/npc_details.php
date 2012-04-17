@@ -459,14 +459,16 @@ function npc_kas(){
           $npcname = trim($row['name']." ".$row['lastname']);
           // find the knowledge area "scripts" for the NPC
           $query2 = "SELECT id, script FROM quest_scripts WHERE quest_id='-1' and script like '%".$npcname.":%'";
-          //echo $query2."<br>";
+          echo "<b>KA Scripts:</b></br>";
           $result2 = mysql_query2($query2);
           if (mysql_num_rows($result2) > 0){
             $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
             $npcscript = $row2['id'];
-            echo "<b>KA Scripts:</b></br>A KA script is present for ".$npcname.". ";
+            echo "A KA script is present for ".$npcname.". ";
             echo " <a href=index.php?do=ka_scripts&sub=Read&areaid=".$npcscript."> Read </a> ";
             echo " <a href=index.php?do=ka_scripts&sub=Edit&areaid=".$npcscript."> Edit </a> <br/><br/>";
+          } else {
+            echo "None<br/><br/>";
           }
         }
         // find all knowledge area "triggers" for the NPC
