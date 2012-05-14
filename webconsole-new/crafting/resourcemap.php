@@ -125,8 +125,14 @@ document.onmousemove=positiontip;
 echo "<h1>Natural Resources Map View $sector</h1>";
 
 if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
+echo '<b>Legend:</b><br/>';
+echo 'Natural Resources <img src=img/ball04m.gif><br/>';
+echo 'Natural Resources which are also hunt locations <img src=img/ball01m.gif><br/>';
+echo 'Hunt Locations <img src=img/ball02m.gif><br/>';
+echo 'Natural Resources range painted in green<br/><br/>';
 
-echo 'Natural Resources painted in green<br>';
+
+$restype = (isset($_POST['restype']) ? $_POST['restype'] : '');
 
 echo "<div id=Layer2 style=\"position:relative; \">";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:250px\">";    
@@ -134,23 +140,46 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
 
   $data = getDataFromArea($sector);
   $sectors = $data[0];
-  $query = "SELECT id, loc_x, loc_y, loc_z, radius, visible_radius, probability, reward_nickname from natural_resources where ".$sectors;
-  //echo "query is $query";
-  $res = mysql_query2($query);
-
+  $hunt_sectors = str_replace('loc_sector_id','sector',$data[0]);
   $result = '';
-  while ($line = mysql_fetch_array($res, MYSQL_NUM)){
-    $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6];
-    $result .= ($elem . "\n");
-   }
-// get each line
-$tok = strtok($result, "\n");
-$peoples = null;
-while ($tok !== false) {
-   $peoples[]=$tok;
-   $tok = strtok("\n");
-}
 
+  // natural resources
+  if ($restype=='nat' || $restype=='both') {
+    $query = "SELECT id, loc_x, loc_y, loc_z, radius, visible_radius, probability, reward_nickname, amount from natural_resources where ".$sectors;
+    //echo "query is $query";
+    $res = mysql_query2($query);
+
+    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+      if ($line[8]!=0)
+        $amount = 2; // indicates this is also an hunt location
+      else
+        $amount = 1; // indicates this is only a natural res
+      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6]."|".$amount;
+      $result .= ($elem . "\n");
+    }
+  }
+
+  // hunt locations
+  if ($restype=='hunt' || $restype=='both') {
+    $query = "SELECT h.id, h.x, h.y, h.z, h.`range`, h.`range`, 0, s.name from hunt_locations h, item_stats s where h.itemid=s.id and ".$hunt_sectors;
+    //echo "query is $query";
+    $res = mysql_query2($query);
+
+    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6]."|3|33";
+      $result .= ($elem . "\n");
+    }
+  }
+
+  // get each line
+  $tok = strtok($result, "\n");
+  $peoples = null;
+  while ($tok !== false) {
+     $peoples[]=$tok;
+     $tok = strtok("\n");
+  }
+
+  
 // get all info for each line
 foreach((array) $peoples as $people) {
 
@@ -161,7 +190,7 @@ foreach((array) $peoples as $people) {
      $tok2 = strtok($people, '|');
      $infos[] = '';
      $count = 1;
-     while ($tok2) {
+     while ($tok2!=null) {
       $tok2 = str_replace("\n", '', $tok2);
       $tok2 = str_replace("\r", '', $tok2);
       $infos[$count]=$tok2;
@@ -174,19 +203,20 @@ foreach((array) $peoples as $people) {
     $scalefactorx = $data[3];
     $scalefactory = $data[4];
 
-     $x = $centerx+($infos[4]*$scalefactorx);
-     $y = $centery-($infos[5]*$scalefactory);
-     
-     if ((isset($infos[6])? $infos[6] : '') == 'Y') {
-      $ball = 'img/ball01m.gif';
-     echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-     echo "<A HREF=index.php?do=resource&id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
+    $x = $centerx+($infos[4]*$scalefactorx);
+    $y = $centery-($infos[5]*$scalefactory);
+    
+    // determine icon
+    if ($infos[7] == 1)
+       $ball = 'img/ball04m.gif';
+    else if ($infos[7] == 2)
+       $ball = 'img/ball01m.gif';
+    else if ($infos[7] == 3)
+       $ball = 'img/ball02m.gif';
 
-      } else {
-      $ball = 'img/ball04m.gif';
-     echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-     echo "<A HREF=index.php?do=resource&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
-      }
+    echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+    echo "<A HREF=index.php?do=resource&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
+
 
   }
 }
@@ -199,6 +229,7 @@ foreach((array) $peoples as $people) {
   echo '  <b>Select one area:</b> <br><br> Area: ';
 //  echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
   SelectAreas($sector,'sector');
+  echo ' Type: <SELECT name=restype><OPTION value="nat" selected>natural resources</OPTION><OPTION value="hunt">hunt locations</OPTION><OPTION value="both">both</OPTION></SELECT>';
   echo ' <br><br><INPUT type=submit value=view><br><br>';
   echo '</FORM>';
   echo '</div>';
