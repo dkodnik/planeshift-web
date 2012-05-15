@@ -207,15 +207,19 @@ foreach((array) $peoples as $people) {
     $y = $centery-($infos[5]*$scalefactory);
     
     // determine icon
-    if ($infos[7] == 1)
+    if ($infos[7] == 1) {
        $ball = 'img/ball04m.gif';
-    else if ($infos[7] == 2)
+       $resourceurl = "resource";
+    } else if ($infos[7] == 2) {
        $ball = 'img/ball01m.gif';
-    else if ($infos[7] == 3)
+       $resourceurl = "resource";
+    } else if ($infos[7] == 3) {
        $ball = 'img/ball02m.gif';
+       $resourceurl = "resourcehunt";
+    }
 
     echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-    echo "<A HREF=index.php?do=resource&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
+    echo "<A HREF=index.php?do=$resourceurl&id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
 
 
   }
