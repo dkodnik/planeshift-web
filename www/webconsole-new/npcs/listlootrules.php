@@ -133,7 +133,7 @@ function editlootruledetail()
         $item_result = PrepSelect('items');
         $row = mysql_fetch_array($result);
         echo '<table><tr><th>'; // We set the ID in the form to the rule ID instead of the detail, so we can redirect back to ListRules.
-        echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th><th>Action</th></tr>';
+        echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/>Item</th><th>Min Quantity</th><th>Max Quantity</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th><th>Random %</th><th>Action</th></tr>';
         echo '<tr><td>'.DrawSelectBox('items', $item_result, 'item_stat_id', $row['item_stat_id'], true).'</td>';
 		echo '<td><input type="text" name="min_item" value="'.$row['min_item'].'" size="8"/></td>';
 		echo '<td><input type="text" name="max_item" value="'.$row['max_item'].'" size="8"/></td>';
