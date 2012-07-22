@@ -91,7 +91,7 @@ function npc_main(){
             $query = "SELECT npctype, region FROM sc_npc_definitions WHERE char_id='$id'";
             $r2 = mysql_query2($query);
             $row2 = mysql_fetch_array($r2, MYSQL_ASSOC);
-            echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region']).'</td></tr>';
+            echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region'], true).'</td></tr>';
         }
         echo '<tr><td colspan="2"><input type="hidden" name="char_type" value="'.$row['character_type'].'" /><input type="submit" name="commit" value="update" /></td></tr>';
         echo '</table></form>';
