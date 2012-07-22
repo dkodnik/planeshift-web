@@ -177,7 +177,7 @@ function PrepSelect($a){
   $typevals["scripts"] = "SELECT name, name from progression_events ORDER BY name";
   $typevals["races"] = "SELECT id, CONCAT_WS(' - ', sex, name) AS info FROM race_info ORDER BY name";
   $typevals["behaviour"] = "SELECT DISTINCT name, name FROM sc_npctypes ORDER BY name";
-  $typevals["b_region"] = "SELECT DISTINCT region, region FROM sc_npc_definitions ORDER BY region";
+  $typevals["b_region"] = "SELECT DISTINCT lt.name,lt.name from sc_location_type lt, sc_locations lo where lo.id_prev_loc_in_region != -1 and lt.id=lo.type_id order BY lt.name";
   $typevals["ways"] = "SELECT id, name FROM ways ORDER BY name";
   $typevals["cast_events"] = "SELECT name, name FROM progression_events WHERE name LIKE 'cast %'";
   $typevals["glyphs"] = "SELECT id, name FROM item_stats WHERE category_id='5' ORDER BY name";
