@@ -9,7 +9,11 @@ function viewnpcmap(){
     return;
   }
 
-  $sector = (isset($_GET['sector']) ? $_GET['sector'] : '');
+  // Get sector from session
+  $sector = $_SESSION['sector'];
+  // If sector changed in a post update the sector
+  $sector = (isset($_GET['sector']) ? $_GET['sector'] : $sector );
+  $_SESSION['sector'] = $sector;
 
   if ($sector != null && $sector != '') {
 

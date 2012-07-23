@@ -8,7 +8,11 @@ function location_map(){
     return;
   }
 
-  $sector = (isset($_POST['sector']) ? $_POST['sector'] : '');
+  // Get sector from session
+  $sector = $_SESSION['sector'];
+  // If sector changed in a post update the sector
+  $sector = (isset($_POST['sector']) ? $_POST['sector'] : $sector );
+  $_SESSION['sector'] = $sector;
 
   if ($sector != null && $sector != '') {
 
