@@ -6,9 +6,9 @@ function listgms()
     {
         echo '<p class="header">List Game Masters</p>';
         
-        $sql = 'SELECT a.id AS account_id, a.username AS account_name, a.security_level, s.title AS security_title, c.id AS character_id, c.name AS firstname, c.lastname, c.time_connected_sec, g.id AS guild_id, g.name AS guild ';
-        $sql.= 'FROM characters AS c LEFT JOIN accounts AS a ON c.account_id = a.id LEFT JOIN guilds AS g ON g.id = c.guild_member_of LEFT JOIN security_levels AS s ON a.security_level = s.level WHERE a.security_level >= 20 AND a.security_level <= 50';
-		$sql.= ' ORDER BY security_level DESC';
+        $sql = 'SELECT a.id AS account_id, a.username AS account_name, a.security_level, s.group_name AS security_title, c.id AS character_id, c.name AS firstname, c.lastname, c.time_connected_sec, g.id AS guild_id, g.name AS guild ';
+        $sql.= 'FROM characters AS c LEFT JOIN accounts AS a ON c.account_id = a.id LEFT JOIN guilds AS g ON g.id = c.guild_member_of LEFT JOIN command_groups AS s ON a.security_level = s.id WHERE a.security_level >= 20 AND a.security_level <= 50';
+        $sql.= ' ORDER BY security_level DESC';
         $query = mysql_query2($sql);
         
         if(checkaccess('admin', 'create'))
@@ -241,9 +241,9 @@ function editgm()
                 $row['security_level'] = $security_level;
             }
             
-            $levels = array(0, 21, 22, 23, 24);
+            $levels = array(0, 21, 22, 23, 24, 25, 30, 50);
             $arr = array();
-            $sql = 'SELECT level, title FROM security_levels';
+            $sql = 'SELECT id AS level, group_name AS title FROM command_groups';
             $query2 = mysql_query2($sql);
             while($row2 = mysql_fetch_array($query2))
             {
