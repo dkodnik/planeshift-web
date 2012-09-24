@@ -1,12 +1,12 @@
 <?php
 function listwaypointaliases()
 {
-    if (!checkaccess('rules', 'read'))
+    if (!checkaccess('other', 'read'))
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
         return;
     }
-    if (isset($_POST['commit']) && checkaccess('rules', 'edit'))
+    if (isset($_POST['commit']) && checkaccess('other', 'edit'))
     {
         if ($_POST['commit'] == 'Update Waypoint Alias' && isset($_POST['id']))
         {
@@ -18,14 +18,14 @@ function listwaypointaliases()
             $result = mysql_query2($query);
             echo '<p class="error">Update Successful</p>';
         }
-        elseif($_POST['commit'] == 'Delete' && checkaccess('rules', 'delete'))
+        elseif($_POST['commit'] == 'Delete' && checkaccess('other', 'delete'))
         {
             $id = mysql_real_escape_string($_POST['id']);
             $query = "DELETE FROM sc_waypoint_aliases WHERE id='$id' LIMIT 1";
             $result = mysql_query2($query);
             echo '<p class="error">Delete Successful</p>';
         }
-        elseif($_POST['commit'] == 'Create Waypoint Alias' && checkaccess('rules', 'create'))
+        elseif($_POST['commit'] == 'Create Waypoint Alias' && checkaccess('other', 'create'))
         {
             $waypoint_id = mysql_real_escape_string($_POST['waypoint_id']);
             $alias = mysql_real_escape_string($_POST['alias']);
@@ -42,7 +42,7 @@ function listwaypointaliases()
         listwaypointaliases();
         return;
     }
-    elseif (checkaccess('rules', 'edit') && isset($_POST['action']))
+    elseif (checkaccess('other', 'edit') && isset($_POST['action']))
     {
         if ($_POST['action'] == 'Edit')
         {
@@ -191,7 +191,7 @@ function listwaypointaliases()
         echo '<th><a href="./index.php?do=waypointalias&amp;sort=sector'.$urlParams.'">Sector</a></th>';
         echo '<th><a href="./index.php?do=waypointalias&amp;sort=alias'.$urlParams.'">Alias</a></th>';
         echo '<th>Rotation Angle</th>';
-        if (checkaccess('rules','edit'))
+        if (checkaccess('other','edit'))
         {
             echo '<th>Actions</th>';
         }
@@ -203,12 +203,12 @@ function listwaypointaliases()
             echo '<td>'.$row['sector'].'</td>';
             echo '<td>'.$row['alias'].'</td>';
             echo '<td>'.$row['rotation_angle'].'</td>';
-            if (checkaccess('rules', 'edit')) // offer edit buttons
+            if (checkaccess('other', 'edit')) // offer edit buttons
             {
                 echo '<td><form action="./index.php?do=waypointalias" method="post">';
                 echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
                 echo '<input type="submit" name="action" value="Edit" />';
-                if (checkaccess('rules', 'delete'))
+                if (checkaccess('other', 'delete'))
                 {
                     echo '<br/><input type="submit" name="commit" value="Delete" />';
                 }       
@@ -218,7 +218,7 @@ function listwaypointaliases()
         }
         echo '</table>';
     
-        if (checkaccess('rules', 'create'))  // offer the create alias box
+        if (checkaccess('other', 'create'))  // offer the create alias box
         {
             $waypoints = PrepSelect('waypoints');
             echo '<hr/><p>Create New Waypoint Alias:</p>';

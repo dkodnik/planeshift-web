@@ -1,7 +1,7 @@
 <?php
 function listlocationtypes(){
-  if (checkaccess('rules', 'read')){
-    if (isset($_POST['commit']) && checkaccess('rules', 'edit')){
+  if (checkaccess('npcs', 'read')){
+    if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Update Location Type"){
         $id = mysql_real_escape_string($_POST['id']);
         $name = mysql_real_escape_string($_POST['name']);
@@ -11,7 +11,7 @@ function listlocationtypes(){
         unset($_POST);
         listlocationtypes();
         return;
-      }else if ($_POST['commit'] == "Confirm Delete" && checkaccess('rules', 'delete')){
+      }else if ($_POST['commit'] == "Confirm Delete" && checkaccess('npcs', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "DELETE FROM sc_location_type WHERE id = '$id'";
         $result = mysql_query2($query);
@@ -19,7 +19,7 @@ function listlocationtypes(){
         unset($_POST);
         listlocationtypes();
         return;
-      }else if ($_POST['commit'] == "Create Location Type" && checkaccess('rules', 'create')){
+      }else if ($_POST['commit'] == "Create Location Type" && checkaccess('npcs', 'create')){
         $name = mysql_real_escape_string($_POST['name']);
         $query = "INSERT INTO sc_location_type SET name='$name'";
         $result = mysql_query2($query);
@@ -33,7 +33,7 @@ function listlocationtypes(){
         listlocationtypes();
         return;
       }
-    }else if (isset($_POST['action']) && checkaccess('rules', 'edit')){
+    }else if (isset($_POST['action']) && checkaccess('npcs', 'edit')){
       if ($_POST['action'] == "Edit"){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT * FROM sc_location_type WHERE id = '$id'";
@@ -44,7 +44,7 @@ function listlocationtypes(){
         echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.$row['name'].'"/></td></tr>';
         echo '</table><input type="submit" name="commit" value="Update Location Type"/>';
         echo '</form>';
-      }else if ($_POST['action'] == "Delete" && checkaccess('rules', 'delete')){
+      }else if ($_POST['action'] == "Delete" && checkaccess('npcs', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT name FROM sc_location_type WHERE id = '$id'";
         $result = mysql_query2($query);
@@ -121,7 +121,7 @@ function listlocationtypes(){
           echo '&amp;limit='.$_GET['limit'];
         }
         echo '">name</a></th>';
-        if (checkaccess('rules', 'edit')){
+        if (checkaccess('npcs', 'edit')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
@@ -129,7 +129,7 @@ function listlocationtypes(){
           echo '<tr>';
           echo '<td>'.$row['id'].'</td>';
           echo '<td>'.$row['name'].'</td>';
-          if (checkaccess('rules', 'edit')){
+          if (checkaccess('npcs', 'edit')){
             echo '<td><form action="./index.php?do=locationtype" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
             echo '<input type="submit" name="action" value="Edit"/>';
             echo '<br/><input type="submit" name="action" value="Delete"/>';
@@ -138,7 +138,7 @@ function listlocationtypes(){
           echo '</tr>';
         }
         echo '</table>';
-        if (checkaccess('rules', 'create')){
+        if (checkaccess('npcs', 'create')){
           echo '<hr/>Create New Location Type:';
           echo '<form action="./index.php?do=locationtype" method="post"><table border="1">';
           echo '<tr><th>Field</th><th>Value</th></tr>';

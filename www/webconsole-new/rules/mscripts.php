@@ -1,6 +1,6 @@
 <?php
 function rule_mscripts(){
-  if (checkaccess('rules', 'read')){
+  if (checkaccess('crafting', 'read')){
       	echo '<script>
 function fixWidth () {
 	$(".scriptBox").width(50);
@@ -15,7 +15,7 @@ jQuery(function($) {
 });
 </script>';
     if (isset($_POST['commit'])){
-      if (($_POST['commit']=='Change Name') && (checkaccess('rules', 'edit'))){
+      if (($_POST['commit']=='Change Name') && (checkaccess('crafting', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
         $orig_name = mysql_real_escape_string($_POST['orig_name']);
         $query = "UPDATE math_scripts SET name='$name' WHERE name='$orig_name'";
@@ -24,7 +24,7 @@ jQuery(function($) {
         unset($_POST);
         rule_mscripts();
         return;
-      }else if (($_POST['commit']=='Update Script') && (checkaccess('rules', 'edit'))){
+      }else if (($_POST['commit']=='Update Script') && (checkaccess('crafting', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
         $math_script = mysql_real_escape_string($_POST['math_script']);
         $query = "UPDATE math_scripts SET math_script='$math_script' WHERE name='$name'";
@@ -33,7 +33,7 @@ jQuery(function($) {
         unset($_POST);
         rule_mscripts();
         return;
-      }else if (($_POST['commit']=='Delete') && (checkaccess('rules', 'delete'))){
+      }else if (($_POST['commit']=='Delete') && (checkaccess('crafting', 'delete'))){
         $name = mysql_real_escape_string($_POST['name']);
         $query = "DELETE FROM math_scripts WHERE name='$name'";
         $result = mysql_query2($query);
@@ -41,7 +41,7 @@ jQuery(function($) {
         unset($_POST);
         rule_mscripts();
         return;
-      }else if (($_POST['commit']=='Create Script') && (checkaccess('rules', 'create'))){
+      }else if (($_POST['commit']=='Create Script') && (checkaccess('crafting', 'create'))){
         $name = mysql_real_escape_string($_POST['name']);
         $math_script = mysql_real_escape_string($_POST['math_script']);
         $query = "INSERT INTO math_scripts (name, math_script) VALUES ('$name', '$math_script')";
@@ -57,19 +57,19 @@ jQuery(function($) {
       if (mysql_num_rows($result) > 0){
         echo '<table border="1" width="100%">';
         echo '<tr><th>Name</th><th id="scriptCol">Script</th>';
-        if (checkaccess('rules', 'delete')){
+        if (checkaccess('crafting', 'delete')){
           echo '<th>Actions</th></tr>';
         }else{
           echo '</tr>';
         }
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
           echo '<tr>';
-          if (checkaccess('rules', 'edit')){
+          if (checkaccess('crafting', 'edit')){
             echo '<td><form action="index.php?do=mscripts" method="post">';
             echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
             echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
             echo '<textarea name="math_script" rows="6" cols="55" class="scriptBox">'.htmlspecialchars($row['math_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
-            if (checkaccess('rules', 'delete')){
+            if (checkaccess('crafting', 'delete')){
               echo '<td><form action="index.php?do=mscripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
               echo '<input type="submit" name="commit" value="Delete"/>';
               echo '</form></td>';
@@ -83,7 +83,7 @@ jQuery(function($) {
       }else{
         echo '<p class="error">No Scripts Found</p>';
       }
-      if (checkaccess('rules', 'create')){
+      if (checkaccess('crafting', 'create')){
         echo '<hr/><p>Create new math script</p>';
         echo '<form action="index.php?do=mscripts" method="post">Name: <input type="text" name="name" /><br/>';
         echo 'Script: <textarea name="math_script" rows="6" cols="55" class="scriptBox"></textarea><br/>';

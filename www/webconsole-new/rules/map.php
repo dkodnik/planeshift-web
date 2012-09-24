@@ -2,7 +2,7 @@
 // *almost* identical to all the other /rules/*map.php files
 // This file requires rules/ball01m.gif and rules/ball04m.gif to exist.
 function rulesmap(){
-  if (!checkAccess('rules', 'read'))
+  if (!checkAccess('natres', 'read'))
   {
     echo 'You do not have permission to use this page.';
     return;

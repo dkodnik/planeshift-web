@@ -1,7 +1,7 @@
 <?php
 function listwaypoints(){
-  if (checkaccess('rules', 'read')){
-    if (isset($_POST['commit']) && checkaccess('rules', 'edit')){
+  if (checkaccess('natres', 'read')){
+    if (isset($_POST['commit']) && checkaccess('natres', 'edit')){
       if ($_POST['commit'] == "Update Waypoint" && isset($_POST['id'])){
         $id = mysql_real_escape_string($_POST['id']);
         $name = mysql_real_escape_string($_POST['name']);
@@ -22,12 +22,12 @@ function listwaypoints(){
         $query = "UPDATE sc_waypoints SET name='$name', wp_group='$group', loc_sector_id='$sector', x='$x', y='$y', z='$z', radius='$radius', flags='$flag' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-      }else if($_POST['commit'] == "Confirm Delete" && checkaccess('rules', 'delete')){
+      }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "DELETE FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-      }else if($_POST['commit'] == "Create Waypoint" && checkaccess('rules', 'create')){
+      }else if($_POST['commit'] == "Create Waypoint" && checkaccess('natres', 'create')){
         $name = mysql_real_escape_string($_POST['name']);
         $group = mysql_real_escape_string($_POST['group']);
         $sector = mysql_real_escape_string($_POST['loc_sector_id']);
@@ -52,7 +52,7 @@ function listwaypoints(){
       unset($_POST);
       listwaypoints();
       return;
-    }else if (checkaccess('rules', 'edit') && isset($_POST['action'])){
+    }else if (checkaccess('natres', 'edit') && isset($_POST['action'])){
       $id = mysql_real_escape_string($_POST['id']);
       if ($_POST['action'] == 'Edit'){
         $query = "SELECT * FROM sc_waypoints WHERE id='$id'";
@@ -126,7 +126,7 @@ function listwaypoints(){
         echo '</table>';
         echo '<input type="submit" name="commit" value="Update Waypoint" />';
         echo '</form>';
-      }else if (($_POST['action'] == 'Delete') && checkaccess('rules', 'delete')){
+      }else if (($_POST['action'] == 'Delete') && checkaccess('natres', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT id FROM sc_waypoint_links WHERE wp1='$id' OR wp2='$id'";
         $result = mysql_query2($query);
@@ -257,7 +257,7 @@ function listwaypoints(){
           echo '&amp;sector='.$_GET['sector'];
         }
         echo '">Sector</a></th><th>X</th><th>Y</th><th>Z</th><th>Radius</th><th>flags</th>';
-        if (checkaccess('rules','edit')){
+        if (checkaccess('natres','edit')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
@@ -271,11 +271,11 @@ function listwaypoints(){
           echo '<td>'.$row['z'].'</td>';
           echo '<td>'.$row['radius'].'</td>';
           echo '<td>'.$row['flags'].'</td>';
-          if (checkaccess('rules', 'edit')){
+          if (checkaccess('natres', 'edit')){
             echo '<td><form action="./index.php?do=waypoint" method="post">';
             echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
             echo '<input type="submit" name="action" value="Edit" />';
-            if (checkaccess('rules', 'delete')){
+            if (checkaccess('natres', 'delete')){
               echo '<br/><input type="submit" name="action" value="Delete" />';
             }
             echo '</form></td>';
@@ -283,7 +283,7 @@ function listwaypoints(){
           echo '</tr>';
         }
         echo '</table>';
-        if (checkaccess('rules', 'create')){
+        if (checkaccess('natres', 'create')){
         echo '<hr/><p>Create New Waypoint:</p><form action="./index.php?do=waypoint" method="post">';
         echo '<table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';

@@ -2,7 +2,7 @@
 
 function listLootModifiers() 
 {
-    if (!checkaccess('rules', 'read'))
+    if (!checkaccess('crafting', 'read'))
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
         return;
@@ -45,10 +45,10 @@ function listLootModifiers()
         echo '<td>'.$row['icon'].'</td>';
         echo '<td>'.$row['not_usable_with'].'</td>';
         echo '<td><form action="./index.php?do=editlootmodifiers" method="post"><input type="hidden" name="id" value="'.$row['id'].'" />';
-        if (checkaccess('rules', 'edit')) 
+        if (checkaccess('crafting', 'edit')) 
         {
             echo '<input type="submit" name="action" value="Edit" />';
-            if (checkaccess('rules', 'delete')) 
+            if (checkaccess('crafting', 'delete')) 
             {
                 echo '<input type="submit" name="action" value="Delete" />';
             }
@@ -58,7 +58,7 @@ function listLootModifiers()
     }
     echo '</table>';
     echo '<hr>';
-    if (checkaccess('rules', 'create')) 
+    if (checkaccess('crafting', 'create')) 
     {
         echo '<h3> Add new loot modifier: </h3>';
         echo '<table><form action="./index.php?do=editlootmodifiers" method="post">';
@@ -80,7 +80,7 @@ function listLootModifiers()
 
 function editLootModifiers() 
 {
-    if (!checkaccess('rules', 'edit')) 
+    if (!checkaccess('crafting', 'edit')) 
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
         return;
@@ -146,7 +146,7 @@ function editLootModifiers()
         }
         elseif ($_POST['action'] == 'Create')
         {
-            if (!checkaccess('rules', 'create')) 
+            if (!checkaccess('crafting', 'create')) 
             {
                 echo '<p class="error">You are not authorized to create loot modifiers</p>';
                 return;
@@ -171,7 +171,7 @@ function editLootModifiers()
         }
         elseif ($_POST['action'] == 'Delete') 
         {
-            if (!checkaccess('rules', 'delete')) 
+            if (!checkaccess('crafting', 'delete')) 
             {
                 echo '<p class="error">You are not authorized to delete loot modifiers</p>';
                 return;

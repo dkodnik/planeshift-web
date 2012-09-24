@@ -3,7 +3,7 @@ function viewnpcmap(){
     
     $report = 'rules/report.xml';  // where this script expects the report.xml file to be.
     
-  if (!checkAccess('rules', 'read'))
+  if (!checkAccess('npcs', 'read'))
   {
     echo 'You do not have permission to use this page.';
     return;

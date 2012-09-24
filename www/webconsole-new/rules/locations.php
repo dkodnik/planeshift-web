@@ -1,7 +1,7 @@
 <?php
 function listlocations(){
-  if (checkaccess('rules', 'read')){
-    if (isset($_POST['commit']) && checkaccess('rules', 'edit')){
+  if (checkaccess('npcs', 'read')){
+    if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Update Location"){
         $id = mysql_real_escape_string($_POST['id']);
         $name = mysql_real_escape_string($_POST['name']);
@@ -19,7 +19,7 @@ function listlocations(){
         unset($_POST);
         listlocations();
         return;
-      }else if ($_POST['commit'] == "Confirm Delete" && checkaccess('rules', 'delete')){
+      }else if ($_POST['commit'] == "Confirm Delete" && checkaccess('npcs', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "DELETE FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
@@ -27,7 +27,7 @@ function listlocations(){
         unset($_POST);
         listlocations();
         return;
-      }else if ($_POST['commit'] == "Create Location" && checkaccess('rules', 'create')){
+      }else if ($_POST['commit'] == "Create Location" && checkaccess('npcs', 'create')){
         $name = mysql_real_escape_string($_POST['name']);
         $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
         $x = mysql_real_escape_string($_POST['x']);
@@ -49,7 +49,7 @@ function listlocations(){
         listlocations();
         return;
       }
-    }else if (isset($_POST['action']) && checkaccess('rules', 'edit')){
+    }else if (isset($_POST['action']) && checkaccess('npcs', 'edit')){
       if ($_POST['action'] == "Edit"){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT * FROM sc_locations WHERE id = '$id'";
@@ -74,7 +74,7 @@ function listlocations(){
 
         echo '</table><input type="submit" name="commit" value="Update Location"/>';
         echo '</form>';
-      }else if ($_POST['action'] == "Delete" && checkaccess('rules', 'delete')){
+      }else if ($_POST['action'] == "Delete" && checkaccess('npcs', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT name FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
@@ -170,7 +170,7 @@ function listlocations(){
           echo '&amp;limit='.$_GET['limit'];
         }
         echo '">Type</a></th>';
-        if (checkaccess('rules', 'edit')){
+        if (checkaccess('npcs', 'edit')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
@@ -187,7 +187,7 @@ function listlocations(){
           echo '<td>'.$row['flags'].'</td>';
           echo '<td>'.$row['id_prev_loc_in_region'].'</td>';
           echo '<td>'.$row['typename'].'</td>';
-          if (checkaccess('rules', 'edit')){
+          if (checkaccess('npcs', 'edit')){
             echo '<td><form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
             echo '<input type="submit" name="action" value="Edit"/>';
             echo '<br/><input type="submit" name="action" value="Delete"/>';
@@ -196,7 +196,7 @@ function listlocations(){
           echo '</tr>';
         }
         echo '</table>';
-        if (checkaccess('rules', 'create')){
+        if (checkaccess('npcs', 'create')){
           echo '<hr/>Create New Location:';
           echo '<form action="./index.php?do=location" method="post"><table border="1">';
           echo '<tr><th>Field</th><th>Value</th></tr>';

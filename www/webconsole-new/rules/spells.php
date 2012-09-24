@@ -1,7 +1,7 @@
 <?php
 function spells(){
-  if (checkaccess('rules', 'read')){
-    if (checkaccess('rules', 'delete') && isset($_POST['commit']) && isset($_GET['way'])){
+  if (checkaccess('spells', 'read')){
+    if (checkaccess('spells', 'delete') && isset($_POST['commit']) && isset($_GET['way'])){
       $id = mysql_real_escape_string($_POST['id']);
       if ($_POST['commit'] == 'Confirm Delete'){
         $query = "DELETE FROM spells WHERE id='$id'";
@@ -23,7 +23,7 @@ function spells(){
       $result = mysql_query2($query);
       if (mysql_num_rows($result) > 0){
         echo '<table border="1"><tr><th>Name</th><th>Realm</th><th>Description</th>';
-        if (checkaccess('rules', 'delete')){
+        if (checkaccess('spells', 'delete')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
@@ -35,7 +35,7 @@ function spells(){
           echo '</td><td>';
           echo $row['spell_description'];
           echo '</td>';
-          if (checkaccess('rules', 'delete')){
+          if (checkaccess('spells', 'delete')){
             echo '<td><form action="./index.php?do=spells&amp;way='.$way.'" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="commit" value="Delete"></form></td>';
           }
           echo '</tr>';
@@ -64,13 +64,13 @@ function spells(){
 }
 
 function spell(){
-  if (checkaccess('rules', 'read')){
+  if (checkaccess('spells', 'read')){
     if (isset($_GET['id'])){
       $id = mysql_real_escape_string($_GET['id']);
       $query = "SELECT s.name, s.way_id, s.realm, s.casting_effect, s.spell_description, s.offensive, s.outcome, s.max_power, s.npc_spell_power, s.target_type, s.cast_duration, s.range, s.aoe_radius, s.aoe_angle, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
       $result = mysql_query2($query);
       $row = mysql_fetch_array($result, MYSQL_ASSOC);
-      if (checkaccess('rules', 'edit')){
+      if (checkaccess('spells', 'edit')){
         if (isset($_POST['commit'])){
           $name = mysql_real_escape_string($_POST['name']);
           $way_id = mysql_real_escape_string($_POST['way_id']);
@@ -292,7 +292,7 @@ function spell(){
 }
 
 function createspell(){
-  if (checkaccess('rules', 'create')){
+  if (checkaccess('spells', 'create')){
     if (isset($_POST['commit'])){
       $name = mysql_real_escape_string($_POST['name']);
       $way_id = mysql_real_escape_string($_POST['way_id']);

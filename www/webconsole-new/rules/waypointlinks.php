@@ -2,7 +2,7 @@
 
 function listwaypointlinks() 
 {
-    if (checkaccess('rules', 'read'))
+    if (checkaccess('natres', 'read'))
     {
         $query = "SELECT DISTINCT wl.id, wl.name, wl.type, wl.wp1, wl.wp2, wl.flags, CONCAT(' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) AS wp1_coords, CONCAT(' X: ', ww.x, ' Y: ', ww.y, ' Z: ', ww.z) AS wp2_coords, w.name AS wp1_name, ww.name AS wp2_name, !ISNULL(pp.id) AS has_path FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id LEFT JOIN sc_waypoints AS ww ON wl.wp2=ww.id LEFT JOIN sc_path_points AS pp ON pp.path_id=wl.id";
 
@@ -101,7 +101,7 @@ function listwaypointlinks()
             echo '<th><a href="./index.php?do=listwaypointlinks&amp;sort=wp1&limit='.$limit.'&sector='.$sid.'">wp1</a></th>';
             echo '<th><a href="./index.php?do=listwaypointlinks&amp;sort=wp2&limit='.$limit.'&sector='.$sid.'">wp2</a></th>';
             echo '<th>Flags</th>';
-            if (checkaccess('rules','edit'))
+            if (checkaccess('natres','edit'))
             {
                 echo '<th>Actions</th>';
             }
@@ -115,14 +115,14 @@ function listwaypointlinks()
                 echo '<td>'.$row['wp1_name'].'<br />'.$row['wp1_coords'].'</td>';
                 echo '<td>'.$row['wp2_name'].'<br />'.$row['wp2_coords'].'</td>';
                 echo '<td>'.$row['flags'].'</td>';
-                if (checkaccess('rules', 'edit'))
+                if (checkaccess('natres', 'edit'))
                 {
                     echo '<td><a href="./index.php?do=editwaypointlink&id='.$row['id'].'">Edit</a>';
-                    if (checkaccess('rules', 'delete'))
+                    if (checkaccess('natres', 'delete'))
                     {
                         echo '<br/><a href="./index.php?do=deletewaypointlink&id='.$row['id'].'">Delete</a>';
                     }
-                    if (checkaccess('rules', 'create') && !$row['has_path'])
+                    if (checkaccess('natres', 'create') && !$row['has_path'])
                     {
                         echo '<br/><a href="./index.php?do=createpathpoint&path_id='.$row['id'].'">Create Path</a>';
                     }
@@ -163,7 +163,7 @@ function listwaypointlinks()
 
 function editwaypointlink()
 {
-    if (checkaccess('rules', 'edit') && isset($_POST['commit']))
+    if (checkaccess('natres', 'edit') && isset($_POST['commit']))
     {
         if (isset($_POST['id']) && is_numeric($_POST['id']))
         {
@@ -202,7 +202,7 @@ function editwaypointlink()
         unset($_POST);
         listwaypointlinks();
     }
-    elseif (checkaccess('rules', 'edit'))
+    elseif (checkaccess('natres', 'edit'))
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']))
         {
@@ -243,7 +243,7 @@ function editwaypointlink()
 
 function createwaypointlink()
 {
-    if (checkaccess('rules', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Waypoint Link')
+    if (checkaccess('natres', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Waypoint Link')
     {
         $name = mysql_real_escape_string($_POST['name']);
         $type = mysql_real_escape_string($_POST['type']);
@@ -280,7 +280,7 @@ function createwaypointlink()
 
 function deletewaypointlink()
 {
-    if (checkaccess('rules', 'delete') && isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    if (checkaccess('natres', 'delete') && isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
     {
         if (isset($_POST['id']) && is_numeric($_POST['id']))
         {
@@ -299,7 +299,7 @@ function deletewaypointlink()
         unset($_POST);
         listwaypointlinks();
     }
-    elseif (checkaccess('rules', 'delete'))   
+    elseif (checkaccess('natres', 'delete'))   
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']))
         {
