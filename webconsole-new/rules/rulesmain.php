@@ -1,7 +1,7 @@
 <?php
 function rulesmain()
 {
-    if (checkaccess('rules', 'read'))
+    if (checkaccess('natres', 'read'))
     {
         echo '<div class="menu_left">';
         echo '<a href="./index.php?do=rulesmap">List Map</a><br/>';
@@ -14,7 +14,7 @@ function rulesmain()
         echo '<hr/>';
         echo '<a href="./index.php?do=spells">List Spells</a><br/>';
         echo '<a href="./index.php?do=listglyph">Glyphs Used</a><br/>';
-        if (checkaccess('rules', 'create'))
+        if (checkaccess('spells', 'create'))
         {
             echo '<a href="./index.php?do=createspell">Create Spell</a><br/>';
         }

@@ -29,7 +29,7 @@ function natural_resources_draw()
 
     $sector = isset($_GET['sector']) ? $_GET['sector'] : '';
     $type = isset($_GET['type']) ? $_GET['type'] : '';
-    if (!checkAccess('rules', 'read'))  // you can't actually see these echo's if you don't type this file directly in your browser.
+    if (!checkAccess('natres', 'read'))  // you can't actually see these echo's if you don't type this file directly in your browser.
     {
         echo 'You do not have access to view this image!';
         return;

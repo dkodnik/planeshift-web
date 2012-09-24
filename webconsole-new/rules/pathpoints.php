@@ -1,7 +1,7 @@
 <?php
 function listpathpoints() 
 {
-    if (checkaccess('rules', 'read'))
+    if (checkaccess('npcs', 'read'))
     {
         $query = "SELECT DISTINCT p.path_id, s.name AS sector, wl.wp1, wl.wp2, CONCAT(' X: ', w.x, ' Y: ', w.y, ' Z: ', w.z) AS wp1_coords, CONCAT(' X: ', ww.x, ' Y: ', ww.y, ' Z: ', ww.z) AS wp2_coords, w.name AS wp1_name, ww.name AS wp2_name FROM sc_path_points AS p LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id LEFT JOIN sc_waypoints AS ww ON wl.wp2=ww.id LEFT JOIN sectors AS s ON w.loc_sector_id=s.id";
 
@@ -106,7 +106,7 @@ function listpathpoints()
         echo '<th><a href="./index.php?do=listpathpoints&amp;sort=sector&limit='.$limit.'&sector='.$sid.'">Starting Sector</a></th>';
         echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp1&limit='.$limit.'&sector='.$sid.'">wp1</a></th>';
         echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp2&limit='.$limit.'&sector='.$sid.'">wp2</a></th>';
-        if (checkaccess('rules','edit'))
+        if (checkaccess('npcs','edit'))
         {
             echo '<th>Actions</th>';
         }
@@ -118,10 +118,10 @@ function listpathpoints()
             echo '<td>'.$row['sector'].'</td>';
             echo '<td>'.$row['wp1_name'].'<br />'.$row['wp1_coords'].'</td>';
             echo '<td>'.$row['wp2_name'].'<br />'.$row['wp2_coords'].'</td>';
-            if (checkaccess('rules', 'edit'))
+            if (checkaccess('npcs', 'edit'))
             {
                 echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].'">Edit</a>';
-                if (checkaccess('rules', 'delete'))
+                if (checkaccess('npcs', 'delete'))
                 {
                     echo '<br/><a href="./index.php?do=deletepathpoint&path_id='.$row['path_id'].'">Delete</a>';
                 }
@@ -141,7 +141,7 @@ function listpathpoints()
 
 function editpathpoint() 
 {
-    if (checkaccess('rules', 'edit') && isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
+    if (checkaccess('npcs', 'edit') && isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))  // the form sends both post and get for this value, we use post because it's less likely to be user influenced. (accidentally)
         {
@@ -194,7 +194,7 @@ function editpathpoint()
         unset($_POST);
         editpathpoint();
     }
-    elseif (checkaccess('rules', 'edit'))   // This part handles insert/delete as well.
+    elseif (checkaccess('npcs', 'edit'))   // This part handles insert/delete as well.
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {
@@ -281,7 +281,7 @@ function editpathpoint()
 
 function createpathpoint()
 {
-    if (checkaccess('rules', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Path')
+    if (checkaccess('npcs', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Path')
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
@@ -317,7 +317,7 @@ function createpathpoint()
         unset($_POST);
         listpathpoints();
     }
-    elseif (checkaccess('rules','create') && isset($_POST['add'])) // The user wants more input fields.
+    elseif (checkaccess('npcs','create') && isset($_POST['add'])) // The user wants more input fields.
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
@@ -368,7 +368,7 @@ function createpathpoint()
 
 
         }
-    elseif (checkaccess('rules', 'create'))
+    elseif (checkaccess('natres', 'create'))
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {
@@ -425,7 +425,7 @@ function createpathpoint()
 
 function deletepathpoint() 
 {
-    if (checkaccess('rules', 'delete') && isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    if (checkaccess('npcs', 'delete') && isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
@@ -442,7 +442,7 @@ function deletepathpoint()
         unset($_POST);
         listpathpoints();
     }
-    elseif (checkaccess('rules', 'delete'))   
+    elseif (checkaccess('npcs', 'delete'))   
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {

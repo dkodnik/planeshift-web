@@ -381,7 +381,7 @@ function showitemusage()
     if (mysql_num_rows($result) > 0)
     {
         $item_is_used = true;
-        if (checkaccess('rules', 'read'))
+        if (checkaccess('spells', 'read'))
         {
             echo '<p class="bold">Spells using this item:</p>';
             echo '<table border="1"><tr><th>Name</th><th>Realm</th><th>Description</th>';
@@ -415,11 +415,11 @@ function showitemusage()
     if (mysql_num_rows($result) > 0)
     {
         $item_is_used = true;
-        if (checkaccess('rules', 'read'))
+        if (checkaccess('natres', 'read'))
         {
             echo '<p class="bold">Resources using this item:</p>';
             echo '<table border="1"><tr><th>Location</th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th>Skill</th><th>Skill Level</th><th>Tool Category</th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th>Item</th><th>Resource "Nickname"</th>';
-            if (checkaccess('rules', 'edit')){
+            if (checkaccess('natres', 'edit')){
                 echo '<th>Actions</th>';
             }
             echo '</tr>';
@@ -438,7 +438,7 @@ function showitemusage()
                 echo '<td>'.$row['anim_duration_seconds'].'</td>';
                 echo '<td>'.$row['item'].'</td>';
                 echo '<td>'.$row['reward_nickname'].'</td>';
-                if (checkaccess('rules', 'edit'))
+                if (checkaccess('natres', 'edit'))
                 {
                   echo '<td><form action="./index.php?do=resource" method="post">';
                   echo '<input type="hidden" name="id" value="'.$row['id'].'" />';

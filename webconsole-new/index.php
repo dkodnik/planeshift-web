@@ -47,7 +47,7 @@
   if (checkaccess('als', 'read')){
     echo '<a href="./index.php?do=als">Action Locations</a> -- ';
   } else echo 'Action Locations -- ';
-  if (checkaccess('rules','read')){
+  if (checkaccess('natres','read')){
     echo '<a href="./index.php?do=rules">Rules</a>  -- ';
   } else echo 'Rules -- ';
   if (checkaccess('crafting', 'read')){

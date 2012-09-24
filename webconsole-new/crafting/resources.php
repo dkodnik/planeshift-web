@@ -1,7 +1,7 @@
 <?php
 function listresources(){
-  if (checkaccess('rules', 'read')){
-    if (isset($_POST['commit']) && (checkaccess('rules', 'edit'))){
+  if (checkaccess('natres', 'read')){
+    if (isset($_POST['commit']) && (checkaccess('natres', 'edit'))){
       if ($_POST['commit'] == "Commit Edit"){
         $id = mysql_real_escape_string($_POST['id']);
         $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
@@ -26,7 +26,7 @@ function listresources(){
         unset($_POST);
         listresources();
         return; 
-      }else if($_POST['commit'] == "Commit New" && checkaccess('rules', 'create')){
+      }else if($_POST['commit'] == "Commit New" && checkaccess('natres', 'create')){
         $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
         $loc_x = mysql_real_escape_string($_POST['loc_x']);
         $loc_y = mysql_real_escape_string($_POST['loc_y']);
@@ -49,7 +49,7 @@ function listresources(){
         unset($_POST);
         listresources();
         return;
-      }else if($_POST['commit'] == "Confirm Delete" && checkaccess('rules', 'delete')){
+      }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "DELETE FROM natural_resources WHERE id='$id'";
         $result = mysql_query2($query);
@@ -58,7 +58,7 @@ function listresources(){
         listresources();
         return;
       }
-    }else if (isset($_POST['action']) && (checkaccess('rules', 'edit'))){
+    }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
       if ($_POST['action'] == 'Edit'){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT id, loc_sector_id, loc_x, loc_y, loc_z, radius, visible_radius, probability, skill, skill_level, item_cat_id, item_quality, animation, anim_duration_seconds, item_id_reward, reward_nickname, action FROM natural_resources WHERE id='$id'";
@@ -86,7 +86,7 @@ function listresources(){
         echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" value="'.$row['reward_nickname'].'"/></td></tr>';
         echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit Edit" />';
         echo '</form>';
-      }else if ($_POST['action'] == 'Create New' && checkaccess('rules', 'create')){
+      }else if ($_POST['action'] == 'Create New' && checkaccess('natres', 'create')){
         $Sectors = PrepSelect('sectorid');
         $Category = PrepSelect('category');
         $Items = PrepSelect('items_resource');
@@ -109,7 +109,7 @@ function listresources(){
         echo '<td>Reward Nickname:<br/>(Name used after action)</td><td><input type="text" name="reward_nickname" /></td></tr>';
         echo '</table><input type="submit" name="commit" value="Commit New" />';
         echo '</form>';
-      }else if ($_POST['action'] == 'Delete' && checkaccess('rules', 'delete')){
+      }else if ($_POST['action'] == 'Delete' && checkaccess('natres', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT r.reward_nickname, s.name FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id WHERE r.id='$id'";
         $result = mysql_query2($query);
@@ -143,7 +143,7 @@ function listresources(){
       }
       $result = mysql_query2($query);
       echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Location</a></th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th><a href="./index.php?do=resource&amp;sort=skill">Skill</a></th><th>Skill Level</th><th><a href="./index.php?do=resource&amp;sort=tool">Tool Category</a></th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th><a href="./index.php?do=resource&amp;sort=item">Item</a></th><th>Resource "Nickname"</th>';
-      if (checkaccess('rules', 'edit')){
+      if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
@@ -161,11 +161,11 @@ function listresources(){
         echo '<td>'.$row['anim_duration_seconds'].'</td>';
         echo '<td>'.$row['item'].'</td>';
         echo '<td>'.$row['reward_nickname'].'</td>';
-        if (checkaccess('rules', 'edit')){
+        if (checkaccess('natres', 'edit')){
           echo '<td><form action="./index.php?do=resource" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
           echo '<input type="submit" name="action" value="Edit" />';
-          if (checkaccess('rules', 'delete')){
+          if (checkaccess('natres', 'delete')){
             echo '<br/><input type="submit" name="action" value="Delete" />';
           }
           echo '</form></td>';
@@ -173,7 +173,7 @@ function listresources(){
         echo '</tr>';
       }
       echo '</table>';
-      if (checkaccess('rules', 'create')){
+      if (checkaccess('natres', 'create')){
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<input type="submit" name="action" value="Create New" /></form>';
       }

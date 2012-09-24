@@ -1,8 +1,8 @@
 <?php
 function rule_scripts(){
-  if (checkaccess('rules', 'read')){
+  if (checkaccess('crafting', 'read')){
     if (isset($_POST['commit'])){
-      if (($_POST['commit']=='Change Name') && (checkaccess('rules', 'edit'))){
+      if (($_POST['commit']=='Change Name') && (checkaccess('crafting', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
         $orig_name = mysql_real_escape_string($_POST['orig_name']);
         $query = "UPDATE progression_events SET name='$name' WHERE name='$orig_name'";
@@ -12,7 +12,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Update Script') && (checkaccess('rules', 'edit'))){
+      }else if (($_POST['commit']=='Update Script') && (checkaccess('crafting', 'edit'))){
         $name = mysql_real_escape_string($_POST['name']);
         $event_script = mysql_real_escape_string($_POST['event_script']);
         $query = "UPDATE progression_events SET event_script='$event_script' WHERE name='$name'";
@@ -22,7 +22,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Delete') && (checkaccess('rules', 'delete'))){
+      }else if (($_POST['commit']=='Delete') && (checkaccess('crafting', 'delete'))){
         $name = mysql_real_escape_string($_POST['name']);
         $query = "DELETE FROM progression_events WHERE name='$name'";
         $result = mysql_query2($query);
@@ -31,7 +31,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Create Script') && (checkaccess('rules', 'create'))){
+      }else if (($_POST['commit']=='Create Script') && (checkaccess('crafting', 'create'))){
         $name = mysql_real_escape_string($_POST['name']);
         $event_script = mysql_real_escape_string($_POST['event_script']);
         $query = "INSERT INTO progression_events (name, event_script) VALUES ('$name', '$event_script')";
@@ -78,7 +78,7 @@ function rule_scripts(){
       {
         echo '<table border="1">';
         echo '<tr><th>Name</th><th>Script</th>';
-        if (checkaccess('rules', 'delete'))
+        if (checkaccess('crafting', 'delete'))
         {
             echo '<th>Actions</th></tr>';
         }
@@ -89,7 +89,7 @@ function rule_scripts(){
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
         {
             echo '<tr>';
-            if (checkaccess('rules', 'edit'))
+            if (checkaccess('crafting', 'edit'))
             {
                 echo '<td><form action="index.php?do=scripts" method="post">';
                 if (isset($_GET['type']))
@@ -103,7 +103,7 @@ function rule_scripts(){
                     echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                 }
                 echo '<textarea name="event_script" rows="6" cols="55">'.htmlspecialchars($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
-                if (checkaccess('rules', 'delete'))
+                if (checkaccess('crafting', 'delete'))
                 {
                     echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
                     if (isset($_GET['type']))
@@ -126,7 +126,7 @@ function rule_scripts(){
       {
         echo '<p class="error">No Scripts Found</p>';
       }
-      if (checkaccess('rules', 'create'))
+      if (checkaccess('crafting', 'create'))
       {
         echo '<hr/><p>Create new progression script</p>';
         $prefix='Script names of this type should start with: ';

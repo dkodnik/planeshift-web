@@ -1,6 +1,6 @@
 <?php
 function glyphs_used(){
-  if (checkaccess('rules', 'read')){
+  if (checkaccess('spells', 'read')){
     $query = "SELECT i.name, g.spell_id, s.name AS spell FROM item_stats AS i LEFT JOIN spell_glyphs AS g ON i.id=g.item_id LEFT JOIN spells AS s ON s.id=g.spell_id WHERE i.category_id='5' ORDER BY name";
     $result = mysql_query2($query);
     while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){

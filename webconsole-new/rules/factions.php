@@ -1,7 +1,7 @@
 <?php
 function listfactions(){
-  if (checkaccess('rules', 'read')){
-    if (isset($_POST['commit']) && checkaccess('rules', 'edit')){
+  if (checkaccess('npcs', 'read')){
+    if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Commit Edit"){
         $id = mysql_real_escape_string($_POST['id']);
         $faction_description = mysql_real_escape_string($_POST['faction_description']);
@@ -19,7 +19,7 @@ function listfactions(){
         listfactions();
         return;
       }
-    }else if (isset($_POST['action']) && checkaccess('rules', 'edit')){
+    }else if (isset($_POST['action']) && checkaccess('npcs', 'edit')){
       if ($_POST['action'] == "Edit"){
         $id = mysql_real_escape_string($_POST['id']);
         $query = "SELECT * FROM factions WHERE id='$id'";
@@ -48,7 +48,7 @@ function listfactions(){
         echo 'No Skills Found!';
       }
       echo '<table border="1"><tr><th>Faction</th><th>Description</th><th>Character</th><th>Weight</th>';
-      if (checkaccess('rules', 'edit')){
+      if (checkaccess('npcs', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
@@ -58,7 +58,7 @@ function listfactions(){
         echo '<td>'.$row['faction_description'].'</td>';
         echo '<td>'.$row['faction_character'].'</td>';
         echo '<td>'.$row['faction_weight'].'</td>';
-        if (checkaccess('rules', 'edit')){
+        if (checkaccess('npcs', 'edit')){
           echo '<td>';
           echo '<form action="./index.php?do=factions" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['id'].'"/>';
