@@ -83,12 +83,6 @@ class PSCharacter extends PSBaseClass {
             $this->CharacterType = $row['character_type'];
             $this->StaminaPhysical = $row['stamina_physical'];
             $this->StaminaMental = $row['stamina_mental'];
-            $this->STR = $row['base_strength'];
-            $this->AGI = $row['base_agility'];
-            $this->END = $row['base_endurance'];
-            $this->INT = $row['base_intelligence'];
-            $this->WIL = $row['base_will'];
-            $this->CHA = $row['base_charisma'];
             $this->HP = $row['mod_hitpoints'];
             $this->MANA = $row['mod_mana'];
             $this->MoneyCircles = $row['money_circles'];
@@ -107,6 +101,34 @@ class PSCharacter extends PSBaseClass {
 
             // Load completed successfully
             $this->__IsLoaded = true;
+        }
+        
+        // extract stats/skills
+        $sql = 'SELECT * FROM character_skills where character_id='.$this->ID;
+
+        $res = mysql_query($sql, $conn);
+        if (!$res) {
+            die($sql . $where . mysql_error());
+        }
+        else {
+          while($data = mysql_fetch_array($res)) {
+
+            $stat = $data['skill_id'];
+            //echo '--> '.$stat;
+
+            if ($stat == 46)
+              $this->AGI = $data['skill_Rank'];
+            else if ($stat == 47)
+              $this->CHA = $data['skill_Rank'];
+            else if ($stat == 48)
+              $this->END = $data['skill_Rank'];
+            else if ($stat == 49)
+              $this->INT = $data['skill_Rank'];
+            else if ($stat == 50)
+              $this->STR = $data['skill_Rank'];
+            else if ($stat == 51)
+              $this->WIL = $data['skill_Rank'];
+          }
         }
     }
 
