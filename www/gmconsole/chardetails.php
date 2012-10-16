@@ -46,6 +46,11 @@
 				document.getElementById("questId").value = questId;
                 document.getElementById("questDetailForm").submit();
             }
+            function setAccountId(accountId)
+            {
+                document.getElementById("accountId").value = accountId;
+                document.getElementById("accountListForm").submit();
+            }
         </script>
 	</head>
     <body>
@@ -72,6 +77,10 @@
                     else
                         $altChars = array();
                     $inventoryItems = $char->GetInventory();
+                    $timeconnect = $char->TimeConnectedInSeconds;
+                    $hours = floor($char->TimeConnectedInSeconds / 3600);
+                    $minutes = floor($char->TimeConnectedInSeconds / 60) - ($hours * 60);
+                    $seconds = $char->TimeConnectedInSeconds - ($minutes * 60) - ($hours * 3600);
 
 ?>
 					<h2 class="yellowtitlebig">General character information</h2>
@@ -82,6 +91,10 @@
 									<tr>
 										<th>Attribute</th>
 										<th>Value</th>
+									</tr>
+									<tr>
+										<td>ID</td>
+										<td><?=$charId?></td>
 									</tr>
 									<tr>
 										<td>Name</td>
@@ -156,7 +169,10 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 									</tr>
 									<tr>
 										<td>Account email</td>
-										<td><?=$account->UserName?></td>
+										<td><a href="javascript:setAccountId('<?=$account->ID?>');"> <?=$account->UserName?></a></td>
+                                <form id="accountListForm" action="accountdetails.php" method="post">
+                                    <input type="hidden" id="accountId" name="accountId"/>
+                                </form>
 									</tr>
 									<tr>
 										<td>Last known IP</td>
@@ -166,6 +182,10 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 										<td>Guild</td>
 										<td><a href="javascript:setGuildId('<?=$guild->ID?>');"><?=$guild->Name?></a></td>
 									</tr>
+                  <tr>
+                    <td>Time Connected</td>
+                    <td> <?php echo $hours . 'h ' . $minutes . 'm ' . $seconds . 's'; ?>
+                  </tr>
                                 </table>
                                 <form id="guildForm" action="guilddetails.php" method="post">
                                     <input type="hidden" id="guildId" name="guildId"/>
