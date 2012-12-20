@@ -71,8 +71,11 @@ class PSCharacter extends PSBaseClass {
         $res = mysql_query($sql . $where, $conn);
         if (!$res) {
             die($sql . $where . mysql_error());
-        }
-        else {
+        } if (!mysql_num_rows($res)) {
+          // the char ID does not exist aborting
+            $this->FirstName = 'INVALID ID';
+            return;
+        } else {
             // since it's the ID, there's only one character
             $row = mysql_fetch_array($res);
 
