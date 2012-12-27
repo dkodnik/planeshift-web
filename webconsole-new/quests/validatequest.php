@@ -80,9 +80,10 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     $line_number = 0;
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
+    $quest_note_found = false; // this variable checks if there is a quest note for each step and not more than one
     $pStar = false;
     $menuInputBox = false;
-	$seenTripleDot = false;
+    $seenTripleDot = false;
     
     if($show_lines)
     {
@@ -103,9 +104,9 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
-			$seenTripleDot = false;
+            $seenTripleDot = false;
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
-			if ($p_count > 0)  
+            if ($p_count > 0)  
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
             }
@@ -117,8 +118,8 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 append_log("Warning: found a 'P: *' entry without 'Menu ?=' before $line_number");
             }
-			
-			$pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            
+            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
             $count = $m_count = $p_count = 0;
 
             if (strpos($line, 'P: *') !== false)
@@ -134,28 +135,28 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 $p_count = $count;
             }
             // store P: for comparing with NPC: triggers
-			checkVariables($line, 'p');
+            checkVariables($line, 'p');
         }
         elseif (strncasecmp($line, 'Menu:', 5) === 0) // Menu: trigger
         {
-			$seenTripleDot = false;
+            $seenTripleDot = false;
             $count = 0;
-			if ($seen_npc_triggers) 
-			{
-				append_log("parse error, found a Menu: trigger following an NPC: trigger on line $line_number");
-			}
-			if ($seen_menu_triggers) 
-			{
-				append_log("parse error, found two sets of Menu: triggers before line $line_number");
-			}
+            if ($seen_npc_triggers) 
+            {
+            	append_log("parse error, found a Menu: trigger following an NPC: trigger on line $line_number");
+            }
+            if ($seen_menu_triggers) 
+            {
+            	append_log("parse error, found two sets of Menu: triggers before line $line_number");
+            }
             if (getTriggerCount($line, 'Menu:', $count, 80) === false)
             {
                 append_log("parse error, Menu: with no text on line $line_number");
             }
-			else // $count is filled by a side-effect of the getTriggerCount.
-			{
-				$m_count = $count;
-			}
+            else // $count is filled by a side-effect of the getTriggerCount.
+            {
+            	$m_count = $count;
+            }
             if (strpos($line, '?=') !== false)
             {
                 $menuInputBox = true;
@@ -166,7 +167,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
-			$seenTripleDot = false;
+            $seenTripleDot = false;
             // Every P: and NPC: combo should be unique, we don't check this atm. (This means a trigger may not already exist, requires parsing of all scripts.)
             $count = 0;
             $seen_npc_triggers = true;
@@ -194,7 +195,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 append_log("parse error, there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
             }
-			// Menu: if "officially" optional, so if there are none, it is valid too (should be old quests only). If ?= was seen in a menu, the count doesn't matter.
+            // Menu: if "officially" optional, so if there are none, it is valid too (should be old quests only). If ?= was seen in a menu, the count doesn't matter.
             if ($seen_menu_triggers && $m_count < 0 && !$menuInputBox) 
             {
                 append_log("parse error, there are more $npc_name: triggers than there are Menu: triggers before line $line_number");
@@ -204,9 +205,9 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif(strncasecmp($line, 'Player ', 7) === 0) // player does something
         {
-			$seenTripleDot = false;
+            $seenTripleDot = false;
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
-			if ($p_count > 0)  
+            if ($p_count > 0)  
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
             }
@@ -218,17 +219,28 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 append_log("Warning: found a 'P: *' entry without 'Menu ?=' before $line_number");
             }
-			
-			$pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            
+            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
             $count = $m_count = $p_count = 0;
             
-			handle_player_action($line);
+            handle_player_action($line);
             $p_count++; // this is a valid trigger too for npc:
-			checkVariables($line, 'player');
+            checkVariables($line, 'player');
         }
-        elseif(strncasecmp($line, '...', 3) === 0) // ... command
+        elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
         {
-			$seenTripleDot = true;
+          if ($quest_note_found) {
+            append_log("parse error, there are TWO QuestNote in the same step $step");
+          }
+          
+          if (strlen(trim($line))<15) {
+            append_log("Warning: QuestNote is too short.");
+          }
+          $quest_note_found = true;
+        }
+        elseif(strncasecmp($line, '...', 3) === 0) // New Step
+        {
+            $seenTripleDot = true;
             if ($p_count > 0) 
             {
                 append_log("parse error, there have been more P: or player than npc: tags before $line_number");
@@ -260,6 +272,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                     append_log("parse error, unknown entry following ... at line $line_number");
                 }
             }
+            // check for quest notes
+            if (!$quest_note_found && $step>1) {
+              append_log("Warning: step $step has no QuestNote");
+            }
+            $quest_note_found = false;
             $step++;
             $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
             $count = $m_count = $p_count = 0;
@@ -270,30 +287,30 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             $commands = explode('.', $line);  // Notice that this also drops the trailing '.' of every command.
             for($i = 0; $i < count($commands); $i++) // the last one is after the last dot, which is to be ignored.
             {
-				// the last one is after the last dot, and has no content, we can safely ignore this.
+            	// the last one is after the last dot, and has no content, we can safely ignore this.
                 if ($i == count($commands) - 1 && trim($commands[$i] == ''))
-				{
-					continue;
-				}
-				if (strncasecmp($commands[$i], 'norepeat', 8) === 0)
-				{
-					if (!$seenTripleDot) 
-					{
-						append_log("parse error, NoRepeat found without \"...\" before it on line $line_number");
-					}
-					$seenTripleDot = false;
-					continue;
-				}
-				$seenTripleDot = false;
-				
-				if(trim($commands[$i]) != '') 
+            	{
+            		continue;
+            	}
+            	if (strncasecmp($commands[$i], 'norepeat', 8) === 0)
+            	{
+            		if (!$seenTripleDot) 
+            		{
+                        append_log("parse error, NoRepeat found without \"...\" before it on line $line_number");
+            		}
+            		$seenTripleDot = false;
+            		continue;
+            	}
+            	$seenTripleDot = false;
+            	
+            	if(trim($commands[$i]) != '') 
                 {
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
                 }
-				else 
-				{
-					append_log("Warning, empty command found at lin $line_number");
-				}
+            	else 
+            	{
+            		append_log("Warning, empty command found at lin $line_number");
+            	}
             }
         }
     }
@@ -857,13 +874,13 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 // valid, nothing to check  
             }
-            elseif (strncasecmp($require, 'possessed', 9) === 0)
+            elseif (strncasecmp($require, 'possessed item', 14) === 0)
             {
-                parse_item(substr($require, 9));
+                parse_item(substr($require, 14));
             }
-            elseif (strncasecmp($require, 'equipped', 8) === 0)
+            elseif (strncasecmp($require, 'equipped item', 13) === 0)
             {
-                parse_item(substr($require, 8));
+                parse_item(substr($require, 13));
             }
             else 
             {
@@ -917,7 +934,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         }
         // else we need to run past the rest of the checks, though the next one is guaranteed to fail with quest_id 0, the one after that may pass.
     }
-    $result = mysql_query2("SELECT name FROM quests WHERE id = '$quest_id'"); // this may bug up if more quests have the same id (which they shouldn't have(?))
+    $result = mysql_query2("SELECT name FROM quests WHERE id = '$quest_id'");
     if (mysql_num_rows($result) > 0) // First we check if it's a reference to this script (most of them are)
     {
         $row = mysql_fetch_row($result);
@@ -941,7 +958,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             }
         }
     }// if it's not, we need to check all data.
-    $name = $quest;
+    $name = trim($quest);
     $complete_step = '';
     if (($pos = stripos($quest, 'step')) !== false)
     {
