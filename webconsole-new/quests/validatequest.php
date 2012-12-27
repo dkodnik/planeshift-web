@@ -102,6 +102,17 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         {
             continue; //ignore comment lines
         }
+        elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
+        {
+          if ($quest_note_found) {
+            append_log("parse error, there are TWO QuestNote in the same step $step");
+          }
+          
+          if (strlen(trim($line))<15) {
+            append_log("Warning: QuestNote is too short.");
+          }
+          $quest_note_found = true;
+        }
         elseif (strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
             $seenTripleDot = false;
@@ -226,17 +237,6 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             handle_player_action($line);
             $p_count++; // this is a valid trigger too for npc:
             checkVariables($line, 'player');
-        }
-        elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
-        {
-          if ($quest_note_found) {
-            append_log("parse error, there are TWO QuestNote in the same step $step");
-          }
-          
-          if (strlen(trim($line))<15) {
-            append_log("Warning: QuestNote is too short.");
-          }
-          $quest_note_found = true;
         }
         elseif(strncasecmp($line, '...', 3) === 0) // New Step
         {
