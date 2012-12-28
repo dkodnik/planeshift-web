@@ -658,6 +658,18 @@ function parse_item($item)
     }
 }
 
+function parse_skill($skillname)
+{
+    global $line_number;
+    $query = sprintf("SELECT skill_id FROM skills WHERE name = '%s'", $skillname);
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) == 1)
+    {
+        // valid skill, do nothing
+    } else
+      append_log ("parse error, skill $skillname not valid at line $line_number");
+}
+
 /*
  * Quest name got added for the prospect validator, in which case the quest is not in the database. ($quest_id = 0) Then in the case of "complete quest" and
  * "require completion of quest", we should check first if id==0 and name==name, before looking on the database.
@@ -778,6 +790,19 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
         }
     }
+    elseif (strncasecmp($command, 'setvariable', 11) === 0)
+    {
+      $words = explode(' ', trim(substr($command, 11)));
+      if (count($words)<2)
+        append_log("parse error, setvariable needs 2 arguments at line $line_number");
+    }
+    elseif (strncasecmp($command, 'unsetvariable', 13) === 0)
+    {
+      $parameters = trim(substr($command, 13));
+      $words = explode(' ', $parameters);
+      if (trim($parameters)=='' || count($words)<1)
+        append_log("parse error, unsetvariable needs 1 argument at line $line_number");
+    }
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
         $script = trim(substr($command, 10));
@@ -881,6 +906,15 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             elseif (strncasecmp($require, 'equipped item', 13) === 0)
             {
                 parse_item(substr($require, 13));
+            }
+            elseif (strncasecmp($require, 'skill', 5) === 0)
+            {
+              $parameters = explode(" ", trim(substr($require, 5)));
+              if (count($parameters) != 2 || trim($parameters[0]) == "" || trim($parameters[1]) == "")
+                append_log("parse error, Require skill needs 2 arguments at line $line_number");
+              else {
+                parse_skill($parameters[0]);
+              }
             }
             else 
             {
