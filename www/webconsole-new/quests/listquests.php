@@ -245,7 +245,7 @@ function display_children($questarray, $current, $mode, $countstatus)
     // retrieve all children of $current
     foreach ($questarray as $key => $data2) 
     {
-        if ($data2[1]==$current) 
+        if (strtolower($data2[1])==strtolower($current)) 
         {
             if (!$list_started) // only start a list if an item was found, and a list was not already started.
             {
