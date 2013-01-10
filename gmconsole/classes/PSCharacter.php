@@ -41,6 +41,7 @@ class PSCharacter extends PSBaseClass {
     var $ProgressionPoints;
     var $DuelPoints;
     var $Description;
+    var $CreationTime;
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -101,6 +102,7 @@ class PSCharacter extends PSBaseClass {
             $this->ProgressionPoints = $row['progression_points'];
             $this->DuelPoints = $row['duel_points'];
             $this->Description = $row['description'];
+            $this->CreationTime = $row['creation_time'];
 
             // Load completed successfully
             $this->__IsLoaded = true;
@@ -295,6 +297,8 @@ class PSCharacter extends PSBaseClass {
                 $char->CharacterType = $row['character_type'];
                 $char->StaminaPhysical = $row['stamina_physical'];
                 $char->StaminaMental = $row['stamina_mental'];
+                $char->HP = $row['mod_hitpoints'];
+                $char->MANA = $row['mod_mana'];
                 $char->MoneyCircles = $row['money_circles'];
                 $char->MoneyOctas = $row['money_octas'];
                 $char->MoneyHexas = $row['money_hexas'];
@@ -308,6 +312,7 @@ class PSCharacter extends PSBaseClass {
                 $char->ProgressionPoints = $row['progression_points'];
                 $char->DuelPoints = $row['duel_points'];
                 $char->Description = $row['description'];
+                $char->CreationTime = $row['creation_time'];
 
                 $char->__IsLoaded = true;
                 array_push($characters, $char);
