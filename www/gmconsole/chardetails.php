@@ -68,19 +68,19 @@
 						die("Could not load character, no ID specified by parent page.");
 					}
 
-					$char = new PSCharacter($charId);
-                    $race = $char->GetRace();
-                    $account = $char->GetAccount();
-                    $guild = $char->GetGuild();
-                    if ($char->CharacterType == 0)
-                        $altChars = $account->GetCharacters();
-                    else
-                        $altChars = array();
-                    $inventoryItems = $char->GetInventory();
-                    $timeconnect = $char->TimeConnectedInSeconds;
-                    $hours = floor($char->TimeConnectedInSeconds / 3600);
-                    $minutes = floor($char->TimeConnectedInSeconds / 60) - ($hours * 60);
-                    $seconds = $char->TimeConnectedInSeconds - ($minutes * 60) - ($hours * 3600);
+          $char = new PSCharacter($charId);
+          $race = $char->GetRace();
+          $account = $char->GetAccount();
+          $guild = $char->GetGuild();
+          if ($char->CharacterType == 0)
+              $altChars = $account->GetCharacters();
+          else
+              $altChars = array();
+          $inventoryItems = $char->GetInventory();
+          $timeconnect = $char->TimeConnectedInSeconds;
+          $hours = floor($char->TimeConnectedInSeconds / 3600);
+          $minutes = floor($char->TimeConnectedInSeconds / 60) - ($hours * 60);
+          $seconds = $char->TimeConnectedInSeconds - ($minutes * 60) - ($hours * 3600);
 
 ?>
 					<h2 class="yellowtitlebig">General character information</h2>
@@ -177,6 +177,10 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 									<tr>
 										<td>Last known IP</td>
 										<td><?=$account->LastLoginIP?></td>
+									</tr>
+									<tr>
+										<td>Creation date</td>
+										<td><?=$char->CreationTime?></td>
 									</tr>
 									<tr>
 										<td>Guild</td>
