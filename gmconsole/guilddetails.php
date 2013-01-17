@@ -42,17 +42,17 @@
 				<td style="vertical-align:top; width:800px">
 					<input type="button" onclick="javascript:window.history.back();" value="Back"/><br/>
 <?php
-					if(!is_numeric($guildId)) {
-						die("Could not load guild, no ID specified by parent page.");
-					}
+          if(!is_numeric($guildId)) {
+            die("Could not load guild, no ID specified by parent page.");
+          }
 
-					$guild = new PSGuild($guildId);
-					$founder = $guild->GetFounder();
-					$guildLeader = $guild->GetLeader();
-                    $members = $guild->GetMembers();;
+          $guild = new PSGuild($guildId);
+          $founder = $guild->GetFounder();
+          $guildLeader = $guild->GetLeader();
+          $members = $guild->GetMembers();
 
 ?>
-					<h2 class="yellowtitlebig">General guild information</h2>
+          <h2 class="yellowtitlebig">General guild information</h2>
                     <form id="guildForm" action="chardetails.php" method="post">
                         <table class="table">
                             <tr>
@@ -89,6 +89,7 @@
                             <th>First name</th>
                             <th>Last name</th>
                             <th>Last login</th>
+                            <th>Last IP</th>
 <?php
                             foreach ($members as $member) {
                                 echo '<tr>';
@@ -96,6 +97,7 @@
                                 echo '<td><a href="javascript:setCharId(' . $member->ID . ');">' . $member->FirstName. '</a></td>';
                                 echo '<td>' . $member->LastName . '</td>';
                                 echo '<td>' . $member->LastLogin . '</td>';
+                                echo '<td>' . $member->LastLoginIP . '</td>';
                                 echo '</tr>';
                             }
 ?>

@@ -42,6 +42,7 @@ class PSCharacter extends PSBaseClass {
     var $DuelPoints;
     var $Description;
     var $CreationTime;
+    var $LastLoginIP; // used only for guild display
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -380,8 +381,8 @@ class PSCharacter extends PSBaseClass {
     function S_GetMembersOfGuild($guildId) {
         $conn = PSBaseClass::S_GetConnection();
 
-        $sql = 'SELECT * FROM characters';
-        $where = '';
+        $sql = 'SELECT * FROM characters c , accounts a ';
+        $where = 'where c.account_id=a.id ';
         PSBaseClass::S_AppendWhereCondition($where, 'guild_member_of', '=', $guildId);
 
         $res = mysql_query($sql . $where . ' ORDER BY guild_level DESC, name ASC', $conn);
@@ -407,6 +408,7 @@ class PSCharacter extends PSBaseClass {
                 $char->GuildLevel = $row['guild_level'];
                 $char->LastLogin = $row['last_login'];
                 $char->AccountID = $row['account_id'];
+                $char->LastLoginIP = $row['last_login_ip'];
                 $char->TimeConnectedInSeconds = $row['time_connected_sec'];
                 $char->ExperiencePoints = $row['experience_points'];
                 $char->ProgressionPoints = $row['progression_points'];
