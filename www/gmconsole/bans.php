@@ -44,6 +44,7 @@
                                 <th>Start Date</th>
                                 <th>End Date</th>
                                 <th>Reason</th>
+                                <th>Security Level</th>
                                 <th>IP Ban</th>
     <?php
 							echo "</tr>";
@@ -54,9 +55,10 @@
                                 echo '<tr>';
                                 echo '<td><a href="javascript:setAccountId(\'' . $ban->AccountID . '\');">' . $ban->AccountName . '</a></td>';
                                 echo '<td>' . $ban->IPRange . '</td>';
-                                echo '<td>' . $ban->DateStart . '</td>';
-                                echo '<td>' . $ban->DateEnd . '</td>';
+                                echo '<td>' . date('d-M-Y',$ban->DateStart) . '</td>';
+                                echo '<td>' . date('d-M-Y',$ban->DateEnd) . '</td>';
                                 echo '<td>' . $ban->Reason . '</td>';
+                                echo '<td>' . $ban->SecurityLevel . '</td>';
                                 echo '<td>' . $ban->IPBan . '</td>';
                                 echo '</tr>';
                             }

@@ -9,6 +9,7 @@ class PSBan extends PSBaseClass {
     //
     var $AccountID;
     var $AccountName;
+    var $SecurityLevel;
     var $IPRange;
     var $DateStart;
     var $DateEnd;
@@ -29,7 +30,7 @@ class PSBan extends PSBaseClass {
         $conn = PSBaseClass::S_GetConnection();
 
 		// base query
-        $sql = 'SELECT a.id, a.username, b.* FROM accounts a, bans b WHERE a.id = b.account';
+        $sql = 'SELECT a.id, a.username, a.security_level, b.* FROM accounts a, bans b WHERE a.id = b.account order by end desc';
 
         $res = mysql_query($sql, $conn);
         if (!$res) {
@@ -42,6 +43,7 @@ class PSBan extends PSBaseClass {
 
                 $ban->AccountID = $row['account'];
                 $ban->AccountName = $row['username'];
+                $ban->SecurityLevel = $row['security_level'];
                 $ban->IPRange = $row['ip_range'];
                 $ban->DateStart = $row['start'];
                 $ban->DateEnd = $row['end'];
