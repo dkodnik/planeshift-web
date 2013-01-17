@@ -94,12 +94,12 @@ class PSGuild extends PSBaseClass {
     }
 
 
-    function GetMembers() {
+    function GetMembers($order) {
         if (!$this->__IsLoaded) {
             die('Cannot load the guild members from an uninitialized guild-object');
         }
 
-        return PSCharacter::S_GetMembersOfGuild($this->ID);
+        return PSCharacter::S_GetMembersOfGuild($this->ID, $order);
 
     }
 

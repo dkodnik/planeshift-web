@@ -14,6 +14,10 @@
 
 	// get variables
 	$guildId = $_POST['guildId'];
+  if (!isset($_POST['guildId']))
+    $guildId = $_GET['guildId'];
+  $order = $_GET['order'];
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -49,7 +53,8 @@
           $guild = new PSGuild($guildId);
           $founder = $guild->GetFounder();
           $guildLeader = $guild->GetLeader();
-          $members = $guild->GetMembers();
+          $orderbyIP = $_GET['order'] ? 1 : 0;
+          $members = $guild->GetMembers($order);
 
 ?>
           <h2 class="yellowtitlebig">General guild information</h2>
@@ -83,7 +88,7 @@
                         <input type="hidden" name="charId" id="charId"/>
 
                         <hr/>
-                        <h2 class="yellowtitlebig">Current guild members</h2>
+                        <h2 class="yellowtitlebig">Current guild members (<a href="guilddetails.php?order=ip&guildId=<?=$guildId?>">Order by IP</a>)</h2>
                         <table class="table">
                             <th>Guild level</th>
                             <th>First name</th>

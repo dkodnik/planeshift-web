@@ -378,14 +378,17 @@ class PSCharacter extends PSBaseClass {
     // Returns all members of a guild as PSCharacter-objects. They are sorted by guild level (descending), then first name (ascending)
     // If the guild has no members, an empty array is returned.
     //
-    function S_GetMembersOfGuild($guildId) {
+    function S_GetMembersOfGuild($guildId,$order) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM characters c , accounts a ';
         $where = 'where c.account_id=a.id ';
         PSBaseClass::S_AppendWhereCondition($where, 'guild_member_of', '=', $guildId);
+        if ($order)
+          $res = mysql_query($sql . $where . ' ORDER BY last_login_ip ASC, name ASC', $conn);
+        else
+          $res = mysql_query($sql . $where . ' ORDER BY guild_level DESC, name ASC', $conn);
 
-        $res = mysql_query($sql . $where . ' ORDER BY guild_level DESC, name ASC', $conn);
         if (!$res) {
             die($sql . $where . "<br>" . mysql_error());
         } else {
