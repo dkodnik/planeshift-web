@@ -62,9 +62,16 @@ function editpattern(){
     }
     if ($pattern_id != 0) // show pattern details only if pattern_id is not 0. (patternless/general knowledge combines/transforms.
     {
-        $query = "SELECT tp.pattern_name, tp.description, tp.designitem_id, i.name AS item_name, i.category_id, tp.k_factor FROM trade_patterns AS tp LEFT JOIN item_stats AS i ON tp.designitem_id=i.id WHERE tp.id='$pattern_id'";
+        $query = "SELECT tp.pattern_name, tp.description, tp.designitem_id, tp.group_id, i.name AS item_name, i.category_id, tp.k_factor FROM trade_patterns AS tp LEFT JOIN item_stats AS i ON tp.designitem_id=i.id WHERE tp.id='$pattern_id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        if ($row['group_id']) {
+          $groupid = $row['group_id'];
+          $query2 = "SELECT pattern_name FROM trade_patterns WHERE id='$groupid'";
+          $result2 = mysql_query2($query2);
+          $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+          $groupname = $row2['pattern_name'];
+        }
         if (checkaccess('crafting', 'edit'))
         {
             $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletepattern&id='.$pattern_id.'">Delete Pattern</a>' : "");
@@ -73,6 +80,7 @@ function editpattern(){
             echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.$row['description'].'</textarea></td></tr>';
             echo '<tr><td>Design Item:</td><td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['designitem_id'].'">'.$row['item_name'].'</a></td></tr>';
             echo '<tr><td>Difficulty Factor:</td><td><input type="text" name="k_factor" value="'.$row['k_factor'].'"/></td></tr>';
+            echo '<tr><td>Parent Pattern:</td><td>'.$groupname.'</td></tr>';
             echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>';
             echo '</table>';
             echo '</form>';
@@ -85,6 +93,7 @@ function editpattern(){
             $i = $row['designitem_id'];
             echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
             echo '<tr><td>Difficulty Factor:</td><td>'.$row['k_factor'].'</td></tr>';
+            echo '<tr><td>Parent Pattern:</td><td>'.$groupname.'</td></tr>';
             echo '</table>';
         }
     }
