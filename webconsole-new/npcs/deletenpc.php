@@ -42,8 +42,77 @@ function deletenpc()
             {
                 if(CheckPassword($password))
                 {
-                    $sql = 'DELETE FROM characters WHERE id='.$id;
-                    mysql_query2($sql);
+                    // Remove all character related entries from the DB
+                    // Trick to find tables:
+                    // SELECT * FROM information_schema.`COLUMNS` C WHERE TABLE_SCHEMA = 'planeshift' AND COLUMN_NAME='player_id';
+                    // SELECT * FROM information_schema.`COLUMNS` C WHERE TABLE_SCHEMA = 'planeshift' AND COLUMN_NAME='character_id';
+                    // SELECT * FROM information_schema.`COLUMNS` C WHERE TABLE_SCHEMA = 'planeshift' AND COLUMN_NAME='char_id';
+
+                    // Start with the stuff that is editable from the NPC details view
+
+                    // Remove skills
+                    $sql_del_skills = 'DELETE FROM character_skills WHERE character_id='.$id;
+                    mysql_query2($sql_del_skills);
+
+                    // Remove traits
+                    $sql_del_character_traits = 'DELETE FROM character_traits WHERE character_id='.$id;
+                    mysql_query2($sql_del_character_traits);
+
+                    // Remove factions
+                    $sql_del_character_factions = 'DELETE FROM character_factions WHERE character_id='.$id;
+                    mysql_query2($sql_del_character_factions);
+
+                    // Remove knowledge areas
+                    $sql_del_knowledge_areas = 'DELETE FROM npc_knowledge_areas WHERE player_id='.$id;
+                    mysql_query2($sql_del_knowledge_areas);
+
+                    // Remove item instances
+                    $sql_del_item_instances = 'DELETE FROM item_instances WHERE char_id_owner='.$id;
+                    mysql_query2($sql_del_item_instances);
+
+                    // Remove trainer skills
+                    $sql_del_trainer_skills = 'DELETE FROM trainer_skills WHERE player_id='.$id;
+                    mysql_query2($sql_del_trainer_skills);
+
+                    // Remove merchant item categories
+                    $sql_del_merchant_item_categories = 'DELETE FROM merchant_item_categories WHERE player_id='.$id;
+                    mysql_query2($sql_del_merchant_item_categories);
+
+                    // Other stuff to delete, most will contain any data but we would not like to leave any thing
+
+                    // Remove from npc definitions
+                    $sql_del_npc_definitions = 'DELETE FROM sc_npc_definitions WHERE char_id='.$id;
+                    mysql_query2($sql_del_npc_definitions);
+
+                    // Remove from tribe members
+                    $sql_del_tribe_members = 'DELETE FROM tribe_members WHERE member_id='.$id;
+                    mysql_query2($sql_del_tribe_members);
+
+                    // Remove from character relationships
+                    $sql_del_character_relationships = 'DELETE FROM character_relationships WHERE character_id='.$id;
+                    mysql_query2($sql_del_character_relationships);
+
+                    // Remove from character variables
+                    $sql_del_character_variables = 'DELETE FROM character_variables WHERE character_id='.$id;
+                    mysql_query2($sql_del_character_variables);
+
+                    // Remove from character events
+                    $sql_del_character_events = 'DELETE FROM character_events WHERE player_id='.$id;
+                    mysql_query2($sql_del_character_events);
+
+                    // Remove from character quests
+                    $sql_del_character_quests = 'DELETE FROM character_quests WHERE player_id='.$id;
+                    mysql_query2($sql_del_character_quests);
+
+                    // Remove from player spells
+                    $sql_del_player_spells = 'DELETE FROM player_spells WHERE player_id='.$id;
+                    mysql_query2($sql_del_player_spells);
+
+                    // Final stage
+
+                    // Remove the character
+                    $sql_del_characters = 'DELETE FROM characters WHERE id='.$id;
+                    mysql_query2($sql_del_characters);
                     
                     echo 'The NPC "'.htmlentities($info['name']).'" was successfully deleted.';
                     return;
