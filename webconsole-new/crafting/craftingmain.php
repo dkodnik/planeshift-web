@@ -17,6 +17,7 @@ function craftingmain()
         }
         echo '<hr/><a href="./index.php?do=resource">List Natural Resources</a><br/>';
         echo '<a href="./index.php?do=resourcemap">List Resource Map</a><br/>';
+        echo '<a href="./index.php?do=huntlocations">List Hunt Locations</a><br/>';
         echo '<hr/><a href="./index.php">Return to main page.</a>';
         echo '</div><div class="main">';
     }
