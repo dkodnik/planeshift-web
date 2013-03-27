@@ -122,7 +122,7 @@ function listresources(){
         echo '<p class="error">Unknown Action - Returning to List</p>';
       }
     }else{
-      $query = "SELECT r.id, r.loc_sector_id, s.name AS sector, r.loc_x, r.loc_y, r.loc_z, r.radius, r.visible_radius, r.probability, r.skill, sk.name AS skill_name, r.skill_level, r.item_cat_id, c.name AS category, r.item_quality, r.animation, r.anim_duration_seconds, r.item_id_reward, i.name AS item, r.reward_nickname, r.action FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id LEFT JOIN item_stats AS i on i.id=r.item_id_reward LEFT JOIN item_categories AS c ON r.item_cat_id=c.category_id LEFT JOIN skills AS sk on sk.skill_id=r.skill";
+      $query = "SELECT r.id, r.loc_sector_id, s.name AS sector, r.loc_x, r.loc_y, r.loc_z, r.radius, r.visible_radius, r.probability, r.skill, sk.name AS skill_name, r.skill_level, r.item_cat_id, c.name AS category, r.item_quality, r.animation, r.anim_duration_seconds, r.item_id_reward, i.name AS item, r.reward_nickname, r.action, r.amount, r.interval, r.max_random FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id LEFT JOIN item_stats AS i on i.id=r.item_id_reward LEFT JOIN item_categories AS c ON r.item_cat_id=c.category_id LEFT JOIN skills AS sk on sk.skill_id=r.skill";
       if (isset($_GET['id']))
       {
         $id = mysql_real_escape_string($_GET['id']);
@@ -142,7 +142,7 @@ function listresources(){
         }
       }
       $result = mysql_query2($query);
-      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Location</a></th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th><a href="./index.php?do=resource&amp;sort=skill">Skill</a></th><th>Skill Level</th><th><a href="./index.php?do=resource&amp;sort=tool">Tool Category</a></th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th><a href="./index.php?do=resource&amp;sort=item">Item</a></th><th>Resource "Nickname"</th>';
+      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Location</a></th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th><a href="./index.php?do=resource&amp;sort=skill">Skill</a></th><th>Skill Level</th><th><a href="./index.php?do=resource&amp;sort=tool">Tool Category</a></th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th><a href="./index.php?do=resource&amp;sort=item">Item</a></th><th>Resource "Nickname"</th><th>Amount (1)</th><th>Interval (2)</th><th>Max Random (3)</th>';
       if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
@@ -161,6 +161,9 @@ function listresources(){
         echo '<td>'.$row['anim_duration_seconds'].'</td>';
         echo '<td>'.$row['item'].'</td>';
         echo '<td>'.$row['reward_nickname'].'</td>';
+        echo '<td>'.$row['amount'].'</td>';
+        echo '<td>'.$row['interval'].'</td>';
+        echo '<td>'.$row['max_random'].'</td>';
         if (checkaccess('natres', 'edit')){
           echo '<td><form action="./index.php?do=resource" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
@@ -172,7 +175,7 @@ function listresources(){
         }
         echo '</tr>';
       }
-      echo '</table>';
+      echo '</table>(1) if not null, indicates how many items will be spawned (same as hunt_location)<br/>(2) if amount not null, msec interval for spawning item when picked up<br/>(3) if amount not null, maximum random interval modifier in msecs';
       if (checkaccess('natres', 'create')){
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<input type="submit" name="action" value="Create New" /></form>';
