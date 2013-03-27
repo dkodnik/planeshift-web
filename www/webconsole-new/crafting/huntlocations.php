@@ -1,0 +1,185 @@
+<?php
+function huntlocations(){
+  if (checkaccess('natres', 'read')){
+    if (isset($_POST['commit']) && (checkaccess('natres', 'edit'))){
+      if ($_POST['commit'] == "Commit Edit"){
+        $id = mysql_real_escape_string($_POST['id']);
+        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
+        $loc_x = mysql_real_escape_string($_POST['loc_x']);
+        $loc_y = mysql_real_escape_string($_POST['loc_y']);
+        $loc_z = mysql_real_escape_string($_POST['loc_z']);
+        $radius = mysql_real_escape_string($_POST['radius']);
+        $visible_radius = mysql_real_escape_string($_POST['visible_radius']);
+        $probability = mysql_real_escape_string($_POST['probability']);
+        $skill = mysql_real_escape_string($_POST['skill']);
+        $skill_level = mysql_real_escape_string($_POST['skill_level']);
+        $item_cat_id = mysql_real_escape_string($_POST['item_cat_id']);
+        $item_quality = mysql_real_escape_string($_POST['item_quality']);
+        $item_id_reward = mysql_real_escape_string($_POST['item_id_reward']);
+        $animation = mysql_real_escape_string($_POST['animation']);
+        $anim_duration_seconds = mysql_real_escape_string($_POST['anim_duration_seconds']);
+        $action = mysql_real_escape_string($_POST['action']);
+        $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
+        $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname' WHERE id='$id'";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        unset($_POST);
+        huntlocations();
+        return; 
+      }else if($_POST['commit'] == "Commit New" && checkaccess('natres', 'create')){
+      /* to be redone 
+        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
+        $loc_x = mysql_real_escape_string($_POST['loc_x']);
+        $loc_y = mysql_real_escape_string($_POST['loc_y']);
+        $loc_z = mysql_real_escape_string($_POST['loc_z']);
+        $radius = mysql_real_escape_string($_POST['radius']);
+        $visible_radius = mysql_real_escape_string($_POST['visible_radius']);
+        $probability = mysql_real_escape_string($_POST['probability']);
+        $skill = mysql_real_escape_string($_POST['skill']);
+        $skill_level = mysql_real_escape_string($_POST['skill_level']);
+        $item_cat_id = mysql_real_escape_string($_POST['item_cat_id']);
+        $item_quality = mysql_real_escape_string($_POST['item_quality']);
+        $item_id_reward = mysql_real_escape_string($_POST['item_id_reward']);
+        $animation = mysql_real_escape_string($_POST['animation']);
+        $anim_duration_seconds = mysql_real_escape_string($_POST['anim_duration_seconds']);
+        $action = mysql_real_escape_string($_POST['action']);
+        $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
+        $query = "INSERT INTO natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname'";
+        $result = mysql_query2($query);
+        echo '<p class="error">Update Successful</p>';
+        unset($_POST);
+        huntlocations();
+        */
+        return;
+      }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
+      /* to be redone 
+        $id = mysql_real_escape_string($_POST['id']);
+        $query = "DELETE FROM natural_resources WHERE id='$id'";
+        $result = mysql_query2($query);
+        unset($_POST);
+        echo '<p class="error">Update Successful</p>';
+        listresources();
+        return;
+        */
+      }
+    }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
+        /* to be redone 
+      if ($_POST['action'] == 'Edit'){
+        $id = mysql_real_escape_string($_POST['id']);
+        $query = "SELECT id, loc_sector_id, loc_x, loc_y, loc_z, radius, visible_radius, probability, skill, skill_level, item_cat_id, item_quality, animation, anim_duration_seconds, item_id_reward, reward_nickname, action FROM natural_resources WHERE id='$id'";
+        $result = mysql_query2($query);
+        $Sectors = PrepSelect('sectorid');
+        $Category = PrepSelect('category');
+        $Items = PrepSelect('items_resource');
+        $Skills = PrepSelect('skill');
+        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        echo '<form action="./index.php?do=resource" method="post">';
+        echo '<table border="1">';
+        echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td>';
+        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" value="'.$row['loc_x'].'" size="5"/>/<input type="text" name="loc_y" value="'.$row['loc_y'].'" size="5"/>/<input type="text" name="loc_z" value="'.$row['loc_z'].'" size="5"/></td></tr>';
+        echo '<tr><td>Radius:</td><td><input type="text" name="radius" value="'.$row['radius'].'" size="10" /></td>';
+        echo '<td>Visible Radius:</td><td><input type="text" name="visible_radius" value="'.$row['visible_radius'].'" size="10" /></td></tr>';
+        echo '<tr><td>Probability:</td><td><input type="text" name="probability" value="'.$row['probability'].'" size="10"/></td>';
+        echo '<td>Tool Category</td><td>'.DrawSelectBox('category', $Category, 'item_cat_id', $row['item_cat_id']).'</td></tr>';
+        echo '<tr><td>Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'skill', $row['skill']).'</td>';
+        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" value="'.$row['skill_level'].'" size="10"/></td></tr>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'item_id_reward', $row['item_id_reward']).'</td>';
+        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" value="'.$row['item_quality'].'" size="10"/></td></tr>';
+        echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td>';
+        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" value="'.$row['anim_duration_seconds'].'" size="5"/></td></tr>';
+        echo '<tr><td>Action:</td><td><input type="text" name="action" value="'.$row['action'].'" /></td>';
+        echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" value="'.$row['reward_nickname'].'"/></td></tr>';
+        echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit Edit" />';
+        echo '</form>';
+      }else if ($_POST['action'] == 'Create New' && checkaccess('natres', 'create')){
+        $Sectors = PrepSelect('sectorid');
+        $Category = PrepSelect('category');
+        $Items = PrepSelect('items_resource');
+        $Skills = PrepSelect('skill');
+        echo '<form action="./index.php?do=resource" method="post">';
+        echo '<table border="1">';
+        echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', '').'</td>';
+        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" size="5"/>/<input type="text" name="loc_y" size="5"/>/<input type="text" name="loc_z" size="5"/></td></tr>';
+        echo '<tr><td>Radius:</td><td><input type="text" name="radius" size="10" /></td>';
+        echo '<td>Visible Radius:</td><td><input type="text" name="visible_radius" size="10" /></td></tr>';
+        echo '<tr><td>Probability:</td><td><input type="text" name="probability" size="10"/></td>';
+        echo '<td>Tool Category</td><td>'.DrawSelectBox('category', $Category, 'item_cat_id', '').'</td></tr>';
+        echo '<tr><td>Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'skill', '').'</td>';
+        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" size="10"/></td></tr>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'item_id_reward', '').'</td>';
+        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" size="10"/></td></tr>';
+        echo '<tr><td>Animation:</td><td><input type="text" name="animation"  /></td>';
+        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" size="5"/></td></tr>';
+        echo '<tr><td>Action:</td><td><input type="text" name="action" /></td>';
+        echo '<td>Reward Nickname:<br/>(Name used after action)</td><td><input type="text" name="reward_nickname" /></td></tr>';
+        echo '</table><input type="submit" name="commit" value="Commit New" />';
+        echo '</form>';
+      }else if ($_POST['action'] == 'Delete' && checkaccess('natres', 'delete')){
+        $id = mysql_real_escape_string($_POST['id']);
+        $query = "SELECT r.reward_nickname, s.name FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id WHERE r.id='$id'";
+        $result = mysql_query2($query);
+        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        echo '<form action="./index.php?do=resource" method="post">';
+        echo '<p>Please Confirm that you wish to delete the '.$row['reward_nickname'].' resource in sector '.$row['name'].'</p>';
+        echo '<input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete"/>';
+        echo '</form>';
+      }else{
+        echo '<p class="error">Unknown Action - Returning to List</p>';
+      }
+      */
+    }else{
+      $query = "SELECT r.id, r.sector, s.name AS sector, r.x, r.y, r.z, r.interval, r.max_random, r.range,r.amount, i.name AS item FROM hunt_locations AS r LEFT JOIN sectors AS s ON r.sector=s.id LEFT JOIN item_stats AS i on i.id=r.itemid";
+      if (isset($_GET['id']))
+      {
+        $id = mysql_real_escape_string($_GET['id']);
+        $query .= " WHERE r.id='$id'";
+      }
+      if (isset($_GET['sort'])){
+        if ($_GET['sort'] == 'loc'){
+          $query = $query . ' ORDER BY sector, x, y, z, item';
+        }else if($_GET['sort'] == 'item'){
+          $query = $query . ' ORDER BY item';
+        }else if($_GET['sort'] == 'tool'){
+          $query = $query . ' ORDER BY category, sector, item';
+        }else if($_GET['sort'] == 'skill'){
+          $query = $query . ' ORDER BY skill_name, sector, item';
+        }else{
+          $query = $query . ' ORDER BY sector, item';
+        }
+      }
+      $result = mysql_query2($query);
+      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Sector</a></th><th>Coordinates</th><th>Range </th><th>Interval</th><th>Max Random</th><th>Amount</th><th><a href="./index.php?do=huntlocations&amp;sort=item">Item</a></th>';
+      if (checkaccess('natres', 'edit')){
+        echo '<th>Actions</th>';
+      }
+      echo '</tr>';
+      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        echo '<tr>';
+        echo '<td>'.$row['sector'].'</td><td>'.$row['x'].'/'.$row['y'].'/'.$row['z'].'</td>';
+        echo '<td>'.$row['range'].'</td>';
+        echo '<td>'.$row['interval'].'</td>';
+        echo '<td>'.$row['max_random'].'</td>';
+        echo '<td>'.$row['amount'].'</td>';
+        echo '<td>'.$row['item'].'</td>';
+        if (checkaccess('natres', 'edit')){
+          echo '<td><form action="./index.php?do=huntlocations" method="post">';
+          echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
+          echo '<input type="submit" name="action" value="Edit" />';
+          if (checkaccess('natres', 'delete')){
+            echo '<br/><input type="submit" name="action" value="Delete" />';
+          }
+          echo '</form></td>';
+        }
+        echo '</tr>';
+      }
+      echo '</table>';
+      if (checkaccess('natres', 'create')){
+        echo '<form action="./index.php?do=huntlocations" method="post">';
+        echo '<input type="submit" name="action" value="Create New" /></form>';
+      }
+    }
+  }else{
+    echo '<p class="error">You are not authorized to use these functions</p>';
+  }
+}
+?>

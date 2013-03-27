@@ -726,6 +726,12 @@
         craftingmain();
         natural_resources_map();
         break;
+      case 'huntlocations':
+        include('./crafting/craftingmain.php');
+        include('./crafting/huntlocations.php');
+        craftingmain();
+        huntlocations();
+        break;
       case 'other':
         include('./other/othermain.php');
         othermain();
