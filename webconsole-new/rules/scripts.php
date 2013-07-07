@@ -52,7 +52,7 @@ function rule_scripts(){
             break;*/
           case 'SI':
             echo '<p class="error">Listing only SimpleItem scripts</p>';
-            $query = $query. " WHERE name LIKE 'simpleitem%'";
+            $query = $query. " WHERE name LIKE 'simpleitem%' or name LIKE 'consumeitem%' ";
             break;
           case 'CG':
             echo '<p class="error">Listing only CharGen scripts</p>';
@@ -64,7 +64,7 @@ function rule_scripts(){
             break;
           case 'O':
             echo '<p class="error">Listing only "Other" scripts</p>';
-            $query = $query. " WHERE name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%'";
+            $query = $query. " WHERE name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%' AND name NOT LIKE 'consumeitem%'";
             break;
           default:
             echo '<p class="error">Unsupported type specified, not limiting listing</p>';
