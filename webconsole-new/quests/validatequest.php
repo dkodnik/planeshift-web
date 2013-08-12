@@ -629,6 +629,7 @@ function parse_item($item)
         append_log("parse error, invalid item list on line $line_number");
         return;
     }
+    // first parameter is a number
     if(is_numeric($words[0]))
     {
         if(count($words) == 1) 
@@ -636,7 +637,22 @@ function parse_item($item)
             append_log("parse error, missing item name on line $line_number");
             return;
         }
-        $item_name = implode(' ', array_slice($words, 1));
+
+        // check quality parameter
+        if(is_numeric($words[1])) {
+          if ($words[1]>300) {
+            append_log("parse error, quality cannot be greater than 300 at: $line_number");
+            return;
+          }
+          if(count($words) == 2) {
+            append_log("parse error, you specified a quality parameter, but item name seems missing at: $line_number");
+            return;
+          }
+          // takes name from 3rd element up 
+          $item_name = implode(' ', array_slice($words, 2));
+        } else {
+          $item_name = implode(' ', array_slice($words, 1));
+        }
     }
     else 
     {
