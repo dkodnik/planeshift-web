@@ -641,11 +641,11 @@ function parse_item($item)
         // check quality parameter
         if(is_numeric($words[1])) {
           if ($words[1]>300) {
-            append_log("parse error, quality cannot be greater than 300 at: $line_number");
+            append_log("parse error, quality cannot be greater than 300 at line: $line_number");
             return;
           }
           if(count($words) == 2) {
-            append_log("parse error, you specified a quality parameter, but item name seems missing at: $line_number");
+            append_log("parse error, you specified a quality parameter, but item name seems missing at line: $line_number");
             return;
           }
           // takes name from 3rd element up 
@@ -653,6 +653,33 @@ function parse_item($item)
         } else {
           $item_name = implode(' ', array_slice($words, 1));
         }
+    }
+    // first parameter is "item", this comes from "possessed item" and "equipped item" operations.
+    else if (strncasecmp($words[0], 'item', 4) === 0) {
+        if(count($words) == 1) 
+        {
+            append_log("parse error, missing item name on line $line_number");
+            return;
+        }
+        append_log("DEBUG, item name $words[0] $words[1]");
+        $item_name = implode(' ', array_slice($words, 1));
+    }
+    // first parameter is "[minqual]-[maxqual]", this comes from "possessed item" and "equipped item" operations.
+    else if ( (strpos($words[0], '-') !== false) && is_numeric(reset(explode('-', trim($words[0])))) ) {
+        $minmax = explode('-', trim($words[0]));
+        if ($minmax[0]<0 || $minmax[0] > 300) {
+          append_log("parse error, min quality should be between 0 and 300 at line: $line_number");
+          return;
+        }
+        if ($minmax[1]<0 || $minmax[1] > 300) {
+          append_log("parse error, max quality should be between 0 and 300 at line: $line_number");
+          return;
+        }
+        if (strncasecmp($words[1], 'item', 4) <> 0 || count($words)<2) {
+          append_log("parse error, after mix-max quality you need 'item' then the item name at line: $line_number");
+          return;
+        }
+        $item_name = implode(' ', array_slice($words, 2));
     }
     else 
     {
@@ -915,13 +942,13 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 // valid, nothing to check  
             }
-            elseif (strncasecmp($require, 'possessed item', 14) === 0)
+            elseif (strncasecmp($require, 'possessed', 9) === 0)
             {
-                parse_item(substr($require, 14));
+                parse_item(substr($require, 9));
             }
-            elseif (strncasecmp($require, 'equipped item', 13) === 0)
+            elseif (strncasecmp($require, 'equipped', 8) === 0)
             {
-                parse_item(substr($require, 13));
+                parse_item(substr($require, 8));
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
             {
