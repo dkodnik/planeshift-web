@@ -914,6 +914,10 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 check_completion($quest_id, $step, substr($require, 13), $quest_name);
             }
+            elseif (strncasecmp($require, 'assignment of', 13) === 0) 
+            {
+                check_completion($quest_id, $step, substr($require, 13), $quest_name);
+            }
             elseif (strncasecmp($require, 'time of day', 11) === 0)
             {
                 validate_time_of_day(substr($require, 11));
