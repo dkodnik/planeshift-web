@@ -661,7 +661,6 @@ function parse_item($item)
             append_log("parse error, missing item name on line $line_number");
             return;
         }
-        append_log("DEBUG, item name $words[0] $words[1]");
         $item_name = implode(' ', array_slice($words, 1));
     }
     // first parameter is "[minqual]-[maxqual]", this comes from "possessed item" and "equipped item" operations.
@@ -962,6 +961,12 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
               else {
                 parse_skill($parameters[0]);
               }
+            }
+            elseif (strncasecmp($require, 'variable', 8) === 0)
+            {
+              $parameters = explode(" ", trim($require));
+              if (count($parameters) != 2 || trim($parameters[0]) == "" || trim($parameters[1]) == "")
+                append_log("parse error, Require variable needs 1 argument at line $line_number");
             }
             else 
             {
