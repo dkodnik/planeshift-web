@@ -726,8 +726,13 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     elseif (strncasecmp($command, 'fireevent', 9) === 0)
     { // can't check this yet
     }
-    elseif (strncasecmp($command, 'complete', 8) === 0)
+    elseif (strncasecmp($command, 'complete', 8) === 0 || strncasecmp($command, 'uncomplete', 10) === 0)
     {
+        // threat 'uncomplete' the same as 'complete' from this point on
+        if (strncasecmp($command, 'uncomplete', 10) === 0) {
+          $command = substr(trim($command),2); // removes 'un'
+        }
+        
         if ($quest_id == 0) 
         {
             if (strcasecmp(trim($command), "complete $quest_name") === 0)
@@ -752,7 +757,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             else
             {
-                append_log("parse error, invallid questname ($command) at line $line_number");
+                append_log("parse error, invalid questname ($command) at line $line_number");
             }
             return; // in all cases, when $quest_id is 0, do not go further than here. (the other checks are on the database, and thus will fail.
         }
