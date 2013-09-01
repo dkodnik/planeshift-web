@@ -218,6 +218,12 @@
         almain();
         checkbooks();
         break;
+      case 'gameboards':
+        include('./actionlocations/almain.php');
+        include('./actionlocations/gameboards.php');
+        almain();
+        gameboards();
+        break;
       case 'npcs':
         include('./npcs/npcmain.php');
         npcmain();
