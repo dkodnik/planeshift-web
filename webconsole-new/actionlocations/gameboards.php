@@ -32,13 +32,17 @@ function gameboards(){
           $script = $row['response'];
           $pos = strpos($script,"GameBoard ");
           $boardname= substr($script,$pos+10);
-          $pos = strpos($boardname,"Name");
-          $boardname= substr($boardname,$pos+4);
-          $pos = strpos($boardname,"'");
+          $pos = strpos($boardname,"=");
+          $boardname= trim(substr($boardname,$pos+1));
+          if ($boardname[0]=='\'')
+            $delimiter = '\'';
+          else
+            $delimiter = '\"';
+          $pos = strpos($boardname,$delimiter);
           $boardname= substr($boardname,$pos+1);
-          $pos = strpos($boardname,"'");
+          $pos = strpos($boardname,$delimiter);
           $boardname= substr($boardname,0,$pos);
-          $query2 = "SELECT * FROM gameboards WHERE name ='".$boardname."'";
+          $query2 = "SELECT * FROM gameboards WHERE name ='".mysql_real_escape_string($boardname)."'";
           $result2 = mysql_query2($query2);
           $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
           $layout = $row2['layout'];
