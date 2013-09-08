@@ -14,55 +14,83 @@ function alsector(){
 }
 
 function listals(){
+
   if (checkaccess('als', 'read')){
     if (isset($_GET['sector'])){
       $sector = mysql_real_escape_string($_GET['sector']);
       $query = "SELECT * FROM action_locations WHERE sectorname='$sector'";
       $result = mysql_query2($query);
-      echo '<table border="1">';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
-        if (checkaccess('als', 'edit')){
-          echo '<tr><td>';
-          echo 'id: '.$row['id'].'</td><td><form action="./index.php?do=edital" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="hidden" name="sector" value="'.$_GET['sector'].'" />';
-          echo 'Master Id: <input type="text" name="master_id" value="'.$row['master_id'].'" size="2"/> -- Name: <input type="text" name="name" value="'.$row['name'].'" size="40" /><br/>';
-          echo 'Mesh Name: <input type="text" name="meshname" value="'.$row['meshname'].'" size="40" /> -- Polygon: <input type="text" name="polygon" value="'.$row['polygon'].'" size="2" /> -- Radius: <input type="text" name="radius" value="'.$row['radius'].'" size="4" /><br/>';
-          echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
-          echo 'Trigger Type: <select name="triggertype">';
-          if ($row['triggertype'] == "SELECT"){
-            echo '<option value="SELECT" selected="true">SELECT</option><option value="PROXIMITY">PROXIMITY</option>';
-          }else{
-            echo '<option value="SELECT">SELECT</option><option value="PROXIMITY" selected="true">PROXIMITY</option>';}
-          echo '</select> -- Response Type: <select name="responsetype">';
-          if ($row['responsetype'] == "EXAMINE"){
-            echo '<option value="EXAMINE" selected="true">EXAMINE</option><option value="SCRIPT">SCRIPT</option>';
-          }else{
-            echo '<option value="EXAMINE">EXAMINE</option><option value="SCRIPT" selected="true">SCRIPT</option>';
-          }
-          echo '</select><br/>';
-          echo 'Script: <textarea name="response" rows="4" cols="50">'.htmlspecialchars($row['response']).'</textarea><br/>';
-          echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)<br/>';
-          echo 'Instance: <input type="text" name="pos_instance" value="'.$row['pos_instance'] .'" /> -- (Indicates from which istance this AL will be accessible. Default: 4294967295 means "all instances".)<br/>';
-          echo '<input type="submit" name="submit" value="Update" />';
-          if (checkaccess('als', 'delete')){
-            echo '</form> -- <form action="./index.php?do=deleteal" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="delete" value="Delete AL" />';
-          }
-          echo "</form></td></tr>\n";
-        }else{
-          echo '<tr><td>id: '.$row['id'].'</td><td>';
-          echo 'Master Id: '.$row['master_id'].' -- Name: '.$row['name'].'<br/>';
-          echo 'Mesh Name: '.$row['meshname'].' -- Polygon: '.$row['polygon'].' -- Radius: '.$row['radius'].'<br/>';
-          echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
-          echo 'Trigger Type: '.$row['triggertype'].' -- Response Type: '.$row['responsetype'].'<br/>';
-          echo 'Script: '.htmlspecialchars($row['response']).'<br/>';
-          echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)';
-          echo "</td></tr>\n";
-        }
-      }
-      echo '</table>';
+    } else if (isset($_GET['gameboards'])) {
+      $showgameboards = true;
+      $query = "SELECT * FROM action_locations WHERE response like '%<GameBoard %' order by sectorname";
+      $result = mysql_query2($query);
     }else{
       echo '<p class="error">Error: No sector Selected</p>';
       alsector();
+      return;
     }
+
+    echo '<table border="1">';
+    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      if (checkaccess('als', 'edit')){
+        echo '<tr><td>';
+        echo 'id: '.$row['id'];
+        if ($showgameboards)
+          echo "<br/>".$row['sectorname'];
+        echo '</td><td><form action="./index.php?do=edital" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="hidden" name="sector" value="'.$_GET['sector'].'" />';
+        echo 'Master Id: <input type="text" name="master_id" value="'.$row['master_id'].'" size="2"/> -- Name: <input type="text" name="name" value="'.$row['name'].'" size="40" /><br/>';
+        echo 'Mesh Name: <input type="text" name="meshname" value="'.$row['meshname'].'" size="40" /> -- Polygon: <input type="text" name="polygon" value="'.$row['polygon'].'" size="2" /> -- Radius: <input type="text" name="radius" value="'.$row['radius'].'" size="4" /><br/>';
+        echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
+        echo 'Trigger Type: <select name="triggertype">';
+        if ($row['triggertype'] == "SELECT"){
+          echo '<option value="SELECT" selected="true">SELECT</option><option value="PROXIMITY">PROXIMITY</option>';
+        }else{
+          echo '<option value="SELECT">SELECT</option><option value="PROXIMITY" selected="true">PROXIMITY</option>';}
+        echo '</select> -- Response Type: <select name="responsetype">';
+        if ($row['responsetype'] == "EXAMINE"){
+          echo '<option value="EXAMINE" selected="true">EXAMINE</option><option value="SCRIPT">SCRIPT</option>';
+        }else{
+          echo '<option value="EXAMINE">EXAMINE</option><option value="SCRIPT" selected="true">SCRIPT</option>';
+        }
+        echo '</select><br/>';
+        echo 'Script: <textarea name="response" rows="4" cols="50">'.htmlspecialchars($row['response']).'</textarea><br/>';
+        echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)<br/>';
+        echo 'Instance: <input type="text" name="pos_instance" value="'.$row['pos_instance'] .'" /> -- (Indicates from which istance this AL will be accessible. Default: 4294967295 means "all instances".)<br/>';
+        echo '<input type="submit" name="submit" value="Update" />';
+        if (checkaccess('als', 'delete')){
+          echo '</form> -- <form action="./index.php?do=deleteal" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="delete" value="Delete AL" />';
+        }
+        echo "</form>";
+      }else{
+        echo '<tr><td>id: '.$row['id'].'</td><td>';
+        echo 'Master Id: '.$row['master_id'].' -- Name: '.$row['name'].'<br/>';
+        echo 'Mesh Name: '.$row['meshname'].' -- Polygon: '.$row['polygon'].' -- Radius: '.$row['radius'].'<br/>';
+        echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
+        echo 'Trigger Type: '.$row['triggertype'].' -- Response Type: '.$row['responsetype'].'<br/>';
+        echo 'Script: '.htmlspecialchars($row['response']).'<br/>';
+        echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)';
+      }
+      if ($showgameboards) {
+        // read gameboard name
+        $script = $row['response'];
+        $pos = strpos($script,"GameBoard ");
+        $boardname= substr($script,$pos+10);
+        $pos = strpos($boardname,"=");
+        $boardname= trim(substr($boardname,$pos+1));
+        if ($boardname[0]=='\'')
+          $delimiter = '\'';
+        else
+          $delimiter = '"';
+        $pos = strpos($boardname,$delimiter);
+        $boardname= substr($boardname,$pos+1);
+        $pos = strpos($boardname,$delimiter);
+        $boardname= substr($boardname,0,$pos);
+        echo '<br/>This AL is using gameboard: <b>'.$boardname.'</b><br/>';
+      }
+      echo "</td></tr>\n";
+    }
+    echo '</table>';
+
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
   }
