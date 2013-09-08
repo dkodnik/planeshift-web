@@ -224,6 +224,18 @@
         almain();
         gameboards();
         break;
+      case 'editgameboard':
+        include('./actionlocations/almain.php');
+        include('./actionlocations/gameboards.php');
+        almain();
+        editgameboard();
+        break;
+      case 'deletegameboard':
+        include('./actionlocations/almain.php');
+        include('./actionlocations/gameboards.php');
+        almain();
+        deletegameboard();
+        break;
       case 'npcs':
         include('./npcs/npcmain.php');
         npcmain();
