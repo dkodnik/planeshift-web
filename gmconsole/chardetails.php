@@ -232,14 +232,17 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 							<tr>
 								<th>Item</th>
                                 <th>Amount</th>
-                                <th>Location</th>
+                                <th>Location (parent ID)</th>
 							</tr>
 <?php
 						foreach ($inventoryItems as $item) {
 							echo '<tr>';
 							echo '<td><a href="javascript:setItemId(\'' . $item->ID . '\');">' . $item->Name . '</a></td>';
 							echo '<td>' . $item->StackCount . '</td>';
-							echo '<td>' . $item->GetHumanReadableItemLocation() . '</td>';
+							$location = $item->GetHumanReadableItemLocation();
+							if ($item->ParentItem)
+								$location .= '('.$item->ParentItem.')';
+							echo '<td>' . $location . '</td>';
 							echo '</tr>';
 						}
 ?>

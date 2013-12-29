@@ -194,7 +194,7 @@ class PSItem extends PSBaseClass {
 
         $conn = PSBaseClass::S_GetConnection();
 
-        $sql = 'SELECT inst.id AS inst_id, inst.char_id_owner AS inst_owner, inst.location_in_parent AS inst_location_in_parent, inst.stack_count AS inst_stack_count, inst.creator_mark_id AS inst_creator_mark_id, inst.item_quality AS inst_item_quality, inst.decay_resistance AS inst_decay_resistance, stats.name AS stats_name, stats.weight AS stats_weight, stats.valid_slots AS stats_valid_slots, stats.weapon_speed AS stats_weapon_speed, stats.dmg_slash AS stats_dmg_slash, stats.dmg_blunt AS stats_dmg_blunt, stats.dmg_pierce AS stats_dmg_pierce, cat.name AS cat_name ';
+        $sql = 'SELECT inst.id AS inst_id, inst.char_id_owner AS inst_owner, inst.parent_item_id, inst.location_in_parent AS inst_location_in_parent, inst.stack_count AS inst_stack_count, inst.creator_mark_id AS inst_creator_mark_id, inst.item_quality AS inst_item_quality, inst.decay_resistance AS inst_decay_resistance, stats.name AS stats_name, stats.weight AS stats_weight, stats.valid_slots AS stats_valid_slots, stats.weapon_speed AS stats_weapon_speed, stats.dmg_slash AS stats_dmg_slash, stats.dmg_blunt AS stats_dmg_blunt, stats.dmg_pierce AS stats_dmg_pierce, cat.name AS cat_name ';
         $sql .= 'FROM item_instances inst ';
         $sql .= 'INNER JOIN item_stats stats ON inst.item_stats_id_standard = stats.id ';
         $sql .= 'INNER JOIN item_categories cat ON stats.category_id = cat.category_id ';
@@ -214,6 +214,7 @@ class PSItem extends PSBaseClass {
 
                 $item->ID = $row['inst_id'];
                 $item->OwnerID = $row['inst_owner'];
+				$item->ParentItem = $row['parent_item_id'];
                 $item->LocationInParent = $row['inst_location_in_parent'];
                 $item->StackCount = $row['inst_stack_count'];
                 $this->CreatorID = $row['inst_creator_mark_id'];
