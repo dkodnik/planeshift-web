@@ -20,7 +20,10 @@ function listresources(){
         $anim_duration_seconds = mysql_real_escape_string($_POST['anim_duration_seconds']);
         $action = mysql_real_escape_string($_POST['action']);
         $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
-        $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname' WHERE id='$id'";
+		$amount = mysql_real_escape_string($_POST['amount']);
+		$interval = mysql_real_escape_string($_POST['interval']);
+		$max_random = mysql_real_escape_string($_POST['max_random']);
+        $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname', amount='$amount', `interval`=$interval, max_random=$max_random WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -61,7 +64,7 @@ function listresources(){
     }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
       if ($_POST['action'] == 'Edit'){
         $id = mysql_real_escape_string($_POST['id']);
-        $query = "SELECT id, loc_sector_id, loc_x, loc_y, loc_z, radius, visible_radius, probability, skill, skill_level, item_cat_id, item_quality, animation, anim_duration_seconds, item_id_reward, reward_nickname, action FROM natural_resources WHERE id='$id'";
+        $query = "SELECT id, loc_sector_id, loc_x, loc_y, loc_z, radius, visible_radius, probability, skill, skill_level, item_cat_id, item_quality, animation, anim_duration_seconds, item_id_reward, reward_nickname, action, amount, `interval`, max_random FROM natural_resources WHERE id='$id'";
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
         $Category = PrepSelect('category');
@@ -84,6 +87,9 @@ function listresources(){
         echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" value="'.$row['anim_duration_seconds'].'" size="5"/></td></tr>';
         echo '<tr><td>Action:</td><td><input type="text" name="action" value="'.$row['action'].'" /></td>';
         echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" value="'.$row['reward_nickname'].'"/></td></tr>';
+		echo '<tr><td>Amount:<br/>(if not null it spawns items)</td><td><input type="text" name="amount" value="'.$row['amount'].'"/></td></tr>';
+		echo '<tr><td>Interval:<br/>(if amount not null, <br/>msec interval for spawning item when picked up</td><td><input type="text" name="interval" value="'.$row['interval'].'"/></td></tr>';
+		echo '<tr><td>Max Random:<br/>(if amount not null, <br/>maximum random interval modifier in msecs</td><td><input type="text" name="max_random" value="'.$row['max_random'].'"/></td></tr>';
         echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit Edit" />';
         echo '</form>';
       }else if ($_POST['action'] == 'Create New' && checkaccess('natres', 'create')){
