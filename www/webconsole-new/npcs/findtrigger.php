@@ -1,7 +1,7 @@
 <?php
 function findtrigger(){
 
-    if (checkaccess('npc', 'read') && isset($_POST['commit']))
+    if (checkaccess('npcs', 'read') && isset($_POST['commit']))
     {
         $word = $_POST['word'];
 
@@ -20,7 +20,7 @@ function findtrigger(){
         }
         echo '</TABLE><br>';
     }
-    else if (checkaccess('npc', 'read'))
+    else if (checkaccess('npcs', 'read'))
     {
         echo '<FORM ACTION="./index.php?do=findtrigger" METHOD="POST" >';
         echo '<br><TABLE BORDER=0>';
