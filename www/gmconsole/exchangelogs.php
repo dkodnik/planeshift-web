@@ -32,9 +32,14 @@
 				<td style="vertical-align:top;">
                         <h2 class="yellowtitlebig">Exchange log (usage: ?date=-1 week)</h2>
                         Click columns to sort.
-<table class=\"sortable\">
+
 <?php
 $date = (isset($_GET['date']) ? $_GET['date'] : '-1 week');
+$fromTime = strtotime($date);
+echo "<br/>Searching all entries greater than ".date("d-M-Y",$fromTime)."<br/>";
+?>
+<table class=\"sortable\">
+<?php
 if(file_exists("logs/exchange.csv"))
 {
    $file = fopen("logs/exchange.csv", "r");
@@ -42,14 +47,14 @@ if(file_exists("logs/exchange.csv"))
    $headerLine = fgets($file);
    echo str_replace(",", "</th><th>", $headerLine);
    echo "</th></tr>";
-   $fromTime = strtotime($date);
    while(!feof($file))
    {
         $line = fgetcsv($file);
         $dateLine = strtotime($line[0]);
         // This is needed in case the dateline is corrupted.
-        if(!($dateLine > $fromTime))
+        if(!($dateLine > $fromTime)) {
             continue;
+		}
         echo "<tr>";
         $num = count($line);
         for ($c=0; $c < $num; $c++) {
@@ -58,6 +63,8 @@ if(file_exists("logs/exchange.csv"))
         echo "</tr>";
    }
    fclose($file);
+} else {
+	echo "<br/><br/><font color=red>Cannot find logs/exchange.csv</font>";
 }
 ?>
 </table>
