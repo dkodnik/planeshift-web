@@ -21,9 +21,11 @@ function listresources(){
         $action = mysql_real_escape_string($_POST['action']);
         $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
 		$amount = mysql_real_escape_string($_POST['amount']);
+		if (!$amount)
+			$amount = 'NULL';
 		$interval = mysql_real_escape_string($_POST['interval']);
 		$max_random = mysql_real_escape_string($_POST['max_random']);
-        $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname', amount='$amount', `interval`=$interval, max_random=$max_random WHERE id='$id'";
+        $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname', amount=$amount, `interval`=$interval, max_random=$max_random WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
