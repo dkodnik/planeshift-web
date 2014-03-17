@@ -13,7 +13,13 @@ function huntlocations(){
         $interval = mysql_real_escape_string($_POST['interval']);
         $max_random = mysql_real_escape_string($_POST['max_random']);
         $amount = mysql_real_escape_string($_POST['amount']);
-        $query = "UPDATE hunt_locations SET sector='$sector', x='$x', y='$y', z='$z', `range`='$range', itemid='$itemid', `interval`='$interval', max_random='$max_random', amount='$amount' WHERE id='$id'";
+		$lock_str = mysql_real_escape_string($_POST['lock_str']);
+		if (!$lock_str)
+			$lock_str = '0';
+		$lock_skill = mysql_real_escape_string($_POST['lock_skill']);
+		$flags = mysql_real_escape_string($_POST['flags']);
+        $query = "UPDATE hunt_locations SET sector='$sector', x='$x', y='$y', z='$z', `range`='$range', itemid='$itemid', `interval`='$interval',";
+		$query .= " max_random='$max_random', amount='$amount', lock_str=$lock_str, lock_skill='$lock_skill', flags='$flags' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -29,7 +35,13 @@ function huntlocations(){
         $interval = mysql_real_escape_string($_POST['interval']);
         $max_random = mysql_real_escape_string($_POST['max_random']);
         $amount = mysql_real_escape_string($_POST['amount']);
-        $query = "INSERT INTO hunt_locations (sector,x,y,z,`range`,itemid,`interval`,max_random,amount) VALUES ('$sector','$x','$y','$z','$range','$itemid','$interval', '$max_random','$amount')";
+		$lock_str = mysql_real_escape_string($_POST['lock_str']);
+		if (!$lock_str)
+			$lock_str = '0';
+		$lock_skill = mysql_real_escape_string($_POST['lock_skill']);
+		$flags = mysql_real_escape_string($_POST['flags']);
+        $query = "INSERT INTO hunt_locations (sector,x,y,z,`range`,itemid,`interval`,max_random,amount,lock_str,lock_skill,flags) ";
+		$query .= "VALUES ('$sector','$x','$y','$z','$range','$itemid','$interval', '$max_random','$amount',$lock_str,'$lock_skill','$flags')";
         $result = mysql_query2($query);
         echo '<p class="error">Insert Successful</p>';
         unset($_POST);
@@ -47,7 +59,7 @@ function huntlocations(){
     }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
       if ($_POST['action'] == 'Edit'){
         $id = mysql_real_escape_string($_POST['id']);
-        $query = "SELECT id, sector, x, y, z, itemid, `interval`, max_random, amount, `range` FROM hunt_locations WHERE id='$id'";
+        $query = "SELECT * FROM hunt_locations WHERE id='$id'";
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
         $Items = PrepSelect('items_resource');
@@ -61,6 +73,9 @@ function huntlocations(){
         echo '<td>Interval:</td><td><input type="text" name="interval" value="'.$row['interval'].'" size="10"/></td></tr>';
         echo '<tr><td>Max Random:</td><td><input type="text" name="max_random" value="'.$row['max_random'].'" /></td>';
         echo '<td>Amount:</td><td><input type="text" name="amount" value="'.$row['amount'].'" size="5"/></td></tr>';
+		echo '<tr><td>Lock Strength (1-200):</td><td><input type="text" name="lock_str" value="'.$row['lock_str'].'" /></td>';
+        echo '<td>Skill used to lockpick:</td><td><input type="text" name="lock_skill" value="'.$row['lock_skill'].'" size="5"/></td></tr>';
+		echo '<tr><td>Flags:</td><td><input type="text" name="flags" value="'.$row['flags'].'" /></td><td> </td></tr>';
         echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit Edit" />';
         echo '</form>';
       }
@@ -76,6 +91,9 @@ function huntlocations(){
         echo '<td>Interval:</td><td><input type="text" name="interval" size="10"/></td></tr>';
         echo '<tr><td>Max Random:</td><td><input type="text" name="max_random"  /></td>';
         echo '<td>Amount:</td><td><input type="text" name="amount" /></td></tr>';
+		echo '<tr><td>Lock Strength (1-200):</td><td><input type="text" name="lock_str" /></td>';
+        echo '<td>Skill used to lockpick:</td><td><input type="text" name="lock_skill" size="5"/></td></tr>';
+		echo '<tr><td>Flags:</td><td><input type="text" name="flags" /></td><td> </td></tr>';
         echo '</table><input type="submit" name="commit" value="Commit New" />';
         echo '</form>';
       }
@@ -92,7 +110,8 @@ function huntlocations(){
         echo '<p class="error">Unknown Action - Returning to List</p>';
       }
     }else{
-      $query = "SELECT r.id, r.sector, s.name AS sector, r.x, r.y, r.z, r.interval, r.max_random, r.range,r.amount, i.name AS item FROM hunt_locations AS r LEFT JOIN sectors AS s ON r.sector=s.id LEFT JOIN item_stats AS i on i.id=r.itemid";
+      $query = "SELECT r.id, r.sector, s.name AS sector, r.x, r.y, r.z, r.interval, r.max_random, r.range,r.amount, i.name AS item, r.lock_str, r.lock_skill, r.flags ";
+	  $query .= "FROM hunt_locations AS r LEFT JOIN sectors AS s ON r.sector=s.id LEFT JOIN item_stats AS i on i.id=r.itemid";
       if (isset($_GET['id']))
       {
         $id = mysql_real_escape_string($_GET['id']);
@@ -112,7 +131,7 @@ function huntlocations(){
         }
       }
       $result = mysql_query2($query);
-      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Sector</a></th><th>Coordinates</th><th>Range </th><th>Interval</th><th>Max Random</th><th>Amount</th><th><a href="./index.php?do=huntlocations&amp;sort=item">Item</a></th>';
+      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Sector</a></th><th>Coordinates</th><th>Range </th><th>Interval</th><th>Max Random</th><th>Amount</th><th><a href="./index.php?do=huntlocations&amp;sort=item">Item</a></th><th>Lock Str.</th><th>Lock Skill</th><th>Flags</th>';
       if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
@@ -125,6 +144,9 @@ function huntlocations(){
         echo '<td>'.$row['max_random'].'</td>';
         echo '<td>'.$row['amount'].'</td>';
         echo '<td>'.$row['item'].'</td>';
+		echo '<td>'.$row['lock_str'].'</td>';
+		echo '<td>'.$row['lock_skill'].'</td>';
+		echo '<td>'.$row['flags'].'</td>';
         if (checkaccess('natres', 'edit')){
           echo '<td><form action="./index.php?do=huntlocations" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
