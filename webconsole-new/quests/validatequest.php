@@ -104,14 +104,16 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
         {
-          if ($quest_note_found) {
-            append_log("parse error, there are TWO QuestNote in the same step $step");
-          }
+            if ($quest_note_found) 
+            {
+                append_log("parse error, there are TWO QuestNote in the same step $step before line $line_number.");
+            }
           
-          if (strlen(trim($line))<15) {
-            append_log("Warning: QuestNote is too short.");
-          }
-          $quest_note_found = true;
+            if (strlen(trim($line)) < 15) 
+            {
+                append_log("Warning: QuestNote is too short at line $line_number.");
+            }
+            $quest_note_found = true;
         }
         elseif (strncasecmp($line, 'P:', 2) === 0) // P: trigger
         {
@@ -263,7 +265,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 {
                     // valid, do nothing
                 }
-                elseif (trim(substr($line, 4, 8)) == '') 
+                elseif (trim(substr($line, 4)) == '') 
                 {
                     // valid, do nothing
                 }
@@ -273,8 +275,9 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             }
             // check for quest notes
-            if (!$quest_note_found && $step>1) {
-              append_log("Warning: step $step has no QuestNote");
+            if (!$quest_note_found && $step > 1) 
+            {
+                append_log("Warning: step $step has no QuestNote before line $line_number");
             }
             $quest_note_found = false;
             $step++;
@@ -602,10 +605,10 @@ function handle_player_action($line)
             append_log("parse error, could not find NPC name in \"player gives\" on line $line_number");
             return;
         }
-        $items = trim(implode(" ", array_slice($words, 2+$name_count)));
-        if (strlen($items) > 1 && substr($items, strlen($items) -1) == ".") // eat the trailing "."
+        $items = trim(implode(" ", array_slice($words, 2 + $name_count)));
+        if (strlen($items) > 1 && substr($items, strlen($items) - 1) == ".") // eat the trailing "."
         {
-            $items = substr($items, 0, strlen($items)-1);
+            $items = substr($items, 0, strlen($items) - 1);
         }
         $item = explode(',', $items);
         for ($i = 0; $i < count($item); $i++)
@@ -700,18 +703,6 @@ function parse_item($item)
     }
 }
 
-function parse_skill($skillname)
-{
-    global $line_number;
-    $query = sprintf("SELECT skill_id FROM skills WHERE name = '%s'", $skillname);
-    $result = mysql_query2($query);
-    if (mysql_num_rows($result) == 1)
-    {
-        // valid skill, do nothing
-    } else
-      append_log ("parse error, skill $skillname not valid at line $line_number");
-}
-
 /*
  * Quest name got added for the prospect validator, in which case the quest is not in the database. ($quest_id = 0) Then in the case of "complete quest" and
  * "require completion of quest", we should check first if id==0 and name==name, before looking on the database.
@@ -730,7 +721,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     {
         // threat 'uncomplete' the same as 'complete' from this point on
         if (strncasecmp($command, 'uncomplete', 10) === 0) {
-          $command = substr(trim($command),2); // removes 'un'
+            $command = substr(trim($command), 2); // removes 'un'
         }
         
         if ($quest_id == 0) 
@@ -813,27 +804,96 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 append_log("parse error, nothing to give on line $line_number");
                 return;
             }
-            if (($pos = stripos($given[$i], ' faction ')) !== false) // faction takes the form "1 faction guards"
-            {
-                $faction = trim(substr($given[$i], $pos+9));
-                $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", mysql_real_escape_string($faction));
-                $result = mysql_query($query);
-                if(mysql_num_rows($result) < 1)
+            // to lower case so we can handle this case insensitive.
+            $words = explode(' ', trim(strtolower($given[$i])));
+            // check all cases of "give money".
+            if (in_array('tria', $words, true) || in_array('hexa', $words, true) || in_array('octa', $words, true) || in_array('circle', $words, true))
+            { 
+                if(count($words) != 2)
                 {
-                    append_log("parse error, no faction ($faction) found in database on line $line_number");
+                    append_log("parse error, too much/few parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
                 }
-            } // takes the last 4 chars from the "give" string to see if it's " exp", so it doesn't match "expert cookbook" or something by accident.
-            elseif (strcasecmp(substr(trim($given[$i]), -4) , ' exp') === 0)
-            {
-                $words = explode(' ', trim($given[$i]));
-                if (count($words) != 2 || !is_numeric(trim($words[0])))
+                elseif (strcasecmp($words[1], 'hexa') === 0 || strcasecmp($words[1], 'tria') === 0 || strcasecmp($words[1], 'octa') === 0 || strcasecmp($words[1], 'circle') === 0)
                 {
-                    append_log("parse error, invalid experience assignment at line $line_number");
+                    if (is_numeric($words[0]) && $words[0] > 0)
+                    { // valid case
+                        continue;
+                    }
+                    else
+                    {
+                        append_log("parse error, while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
+                    }
+                }
+                else
+                {
+                    append_log("parse error, while giving money (tria/hexa/octa/circle), the currency should be the last parameter at line $line_number");
                 }
             }
-            else // everything else is some form of item, so let parse item sort out which is which.
+            elseif (in_array('faction', $words, true))
             {
-                parse_item($given[$i]);
+                if (count($words) < 3) 
+                {
+                    append_log("parse error, 'give 1 faction factionname' (example) requires at least 4 paramers at line $line_number");
+                }
+                elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'faction') !== 0)
+                {
+                    append_log("parse error, 'give 1 faction factionname' (example) requires the second parameter to be a positive number and the third to be 'faction' at line $line_number");
+                }
+                else
+                { // the remaining words should be the faction name.
+                    validate_faction(implode(' ', array_slice($words, 2)));
+                }
+            }
+            elseif (in_array('exp', $words, true))
+            {
+                if(count($words) != 2)
+                {
+                    append_log("parse error, too much/few parameters for exp command 'give 1 exp'(example) at line $line_number");
+                }
+                elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'exp') !== 0)
+                {
+                    append_log("parse error, 'give 1 exp' (example) requires the second parameter to be a positive number and the third to be 'exp' at line $line_number");
+                }
+                else
+                { // valid
+                    continue;
+                }
+            }
+            else // it's an item.
+            {
+                if(count($words) == 1)
+                {
+                    validate_item($words[0]);
+                }
+                else
+                {
+                    if (is_numeric($words[0]))
+                    {
+                        if ($words[0] < 0)
+                        {
+                            append_log("parse error, item quantity must be positive at line $line_number");
+                        }
+                        else
+                        {
+                            if  (count($words) == 2 || !is_numeric($words[1]))
+                            {
+                                validate_item(implode(' ', array_slice($words, 1)));
+                            }
+                            elseif ($words[1] < 0 || $words[1] > 300)
+                            {
+                                append_log("parse error, item quality must be positive and 300 or less at line $line_number");
+                            }
+                            else
+                            {
+                                validate_item(implode(' ', array_slice($words, 2)));
+                            }
+                        }
+                    }
+                    else // all words are part of the item name.
+                    {
+                        validate_item(implode(' ', $words));
+                    }
+                }
             }
         }
     }
@@ -950,7 +1010,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 // valid, nothing to check  
             }
-            elseif (strncasecmp($require, 'possessed', 9) === 0)
+            elseif (strncasecmp($require, 'possessed', 9) === 0) // case for possessed and equipped are identical
             {
                 parse_item(substr($require, 9));
             }
@@ -960,12 +1020,41 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
             {
-              $parameters = explode(" ", trim(substr($require, 5)));
-              if (count($parameters) != 2 || trim($parameters[0]) == "" || trim($parameters[1]) == "")
-                append_log("parse error, Require skill needs 2 arguments at line $line_number");
-              else {
-                parse_skill($parameters[0]);
-              }
+                $require = trim(substr($require, 5)); // remove "skill"
+                if (strncasecmp($require, 'buffed', 6) === 0) 
+                { // "buffed" is an optional flag to determine if we want pure skill, or buffed skill. We remove it from the string.
+                    $require = trim(substr($require, 6));
+                }
+                // find the last - sign to find the skill range. 
+                $lasthyphen = strrpos($require, '-');
+                if ($lasthyphen === false)
+                { // - sign is manditory to provide a skill range.
+                    append_log("parse error, no '-' sign follows the skill name at line $line_number");
+                    return;
+                }
+                // the last space before the last '-' sign will be what splits the skill range from the skill name.
+                $lastspace = strrpos($require, ' ', -(strlen($require)-$lasthyphen));
+                $skillname = substr($require, 0, $lastspace);
+                $skillrange = substr($require, $lastspace+1);
+                if ($lastspace === false || trim($skillname) == '')
+                {
+                    append_log("parse error, could not determine skill name at line $line_number");
+                    return;
+                }
+                $skillranges = explode('-', $skillrange);
+                if (count($skillranges) != 2 || !is_numeric(trim($skillranges[0])) || $skillranges[0] < 0 ||
+                    !is_numeric(trim($skillranges[1])) || $skillranges[1] < 0 || $skillranges[0] > $skillranges[1])
+                {
+                    append_log("parse error, invalid skill range at line $line_number");
+                    return;
+                }
+                // might be valid, but is unusual, warn to pay attention.
+                if ($skillranges[0] > 200 || $skillranges[1] > 200)
+                {
+                    append_log("Warning, skill exceeds 200 at line $line_number - be sure this is intended");
+                }
+                
+                validate_skill($skillname);
             }
             elseif (strncasecmp($require, 'variable', 8) === 0)
             {
@@ -1132,6 +1221,52 @@ function validate_time_of_day($time)
         return;
     }
     // all other cases are valid, do nothing.
+}
+
+function validate_skill($skillname)
+{
+    global $line_number;
+    $query = sprintf("SELECT skill_id FROM skills WHERE name = '%s'", $skillname);
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) == 1)
+    {
+        // valid skill, do nothing
+    } else
+        append_log ("parse error, skill $skillname not valid at line $line_number");
+}
+
+function validate_item($itemname)
+{
+    global $line_number;
+    if (trim($itemname) == '')
+    {
+        append_log("parse error, could not read item name on line $line_number");
+    }
+    $query = sprintf("SELECT id FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) == 1)
+    {
+        // valid item, do nothing
+    }
+    elseif (mysql_num_rows($result) > 1)
+    {
+        append_log("warning: multiple items with name: $itemname in database on line $line_number");
+    }
+    else
+    {
+        append_log("parse error, no item with name: $itemname in database on line $line_number");
+    } 
+}
+
+function validate_faction($factionname)
+{
+    global $line_number;
+    $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", mysql_real_escape_string($factionname));
+    $result = mysql_query2($query);
+    if(mysql_num_rows($result) < 1)
+    {
+        append_log("parse error, no faction ($faction) found in database on line $line_number");
+    }
 }
 
 function validate_magic($magic_name)
