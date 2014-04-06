@@ -540,7 +540,7 @@ function check_parenthesis($line)
 function cut_block ($line, &$inside, $leftchar, $rightchar) 
 {
     global $line_number;
-    if (strlen($leftchar) != 1 || strlen($rightchar) != 1) 
+    if (strlen($leftchar) == 0 || strlen($rightchar) == 0) 
     {
         return false;
     }
@@ -554,13 +554,13 @@ function cut_block ($line, &$inside, $leftchar, $rightchar)
             append_log("parse error, $rightchar before $leftchar at line $line_number");
             return false;
         }
-        $inside = substr($line, $pos_start+1, $pos_end-$pos_start-1);  // start+1 coz we don't want the starting { or ( or whatever
+        $inside = substr($line, $pos_start+strlen($leftchar), $pos_end - $pos_start - strlen($leftchar));  // start+strlen coz we don't want the starting { or ( or whatever
         if(trim($inside) == '')
         {
             append_log("parse error, no text between $leftchar and $rightchar on line $line_number");
         }
-        $pos_start = strpos($line, $leftchar, $pos_start+1);
-        $pos_end = strpos($line, $rightchar, $pos_end+1);
+        $pos_start = strpos($line, $leftchar, $pos_start+strlen($leftchar));
+        $pos_end = strpos($line, $rightchar, $pos_end+strlen($rightchar));
     }
     if ($pos_start !== false) 
     {
@@ -618,7 +618,7 @@ function handle_player_action($line)
     }
     else
     {
-        append_log("parse error, unknown player command: player {words[1]} at line $line_number");
+        append_log("parse error, unknown player command: player {$words[1]} at line $line_number");
     }
 }
 
@@ -913,30 +913,66 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
         $script = trim(substr($command, 10));
-        if (strpos($script, '(') === 0)
+        $paramstart = strpos($script, '<<');
+        if ($paramstart === false)
+        {   //no params, the whole thing is the scriptname.
+            validate_scriptname($script);
+        }
+        else
         {
-            $content = '';
-            cut_block($command, $content, '(', ')');
-            if (trim($content) == '')
+            $scriptname = trim(substr($script, 0, $paramstart));
+            validate_scriptname($scriptname);
+            $param = '';
+            cut_block($script, $param, '<<', '>>');
+            if (trim($param) == '')
             {
-                append_log("parse error, found no commands in () block at line $line_number");
+                append_log("parse error, could not load parameters at line $line_number");
+                return;
             }
-            $params = explode(',', $script);
-            if (count($params) > 3)
-            {
-                append_log("warning, more than 3 params found in run script, ignoring above 3 at line $line_number");
-            }
-            for($i = 0; $i < count($params) && $i < 3; $i++)
+            $params = explode(',', $param);
+            for($i = 0; $i < count($params); $i++)
             {
                 if (trim($params[$i]) == '')
                 {
                     append_log("parse error, found empty parameter in run script on line $line_number");
                 }
+                elseif (strpos($params[$i], '"') !== false)
+                {
+                    append_log("parse error, you are not allowed to use double quotes in parameters for run script on line $line_number");
+                }
+                else
+                {
+                    $quotecount = substr_count($params[$i], "'");
+                    if ($quotecount == 0)
+                    {
+                        // valid
+                    }
+                    elseif ($quotecount == 2)
+                    {
+                        $temp = trim($params[$i]);
+                        // check if the quotes are the first and last char of the param
+                        if (strpos($temp, "'") === 0 && strpos($temp, "'", 1) === strlen($temp) - 1)
+                        {
+                            if (trim(substr($temp, 1, strlen($temp)-2)) == '')
+                            {
+                                append_log("parse error, no variable inside quotes in parameter for script on line $line_number");
+                            }
+                            elseif (is_numeric(substr($temp, 1, strlen($temp)-2)))
+                            {
+                                append_log("parse error, numeric parameters should not be inside quotes for script on line $line_number");
+                            }// else valid
+                        }
+                        else
+                        {
+                            append_log("parse error, quotes should only be at the begining and the end of a parameter of a script on line $line_number");
+                        }
+                    }
+                    else
+                    {
+                        append_log("parse error, invalid amount of single quotes in parameters for run script on line $line_number");
+                    }
+                }
             }
-        }
-        elseif (strpos($script, '(') !== false || strpos($command, ')') !== false)
-        {
-            append_log("parse error, found a \"(\" or \")\" on an unexpected location in line $line_number");
         }
     }
     elseif (strncasecmp($command, 'doadmincmd', 10) === 0)
@@ -1289,7 +1325,19 @@ function validate_race($race_name)
     $result = mysql_query2($query);
     if (mysql_num_rows($result) < 1)
     {
-        append_log("parse error, could not find magic ($race) in the database at line $line_number");
+        append_log("parse error, could not find race ($race) in the database at line $line_number");
+    }
+}
+
+function validate_scriptname($scriptname)
+{
+    global $line_number;
+    $script = trim($scriptname);
+    $query = sprintf("SELECT name FROM progression_events WHERE name = '%s'", mysql_real_escape_string($script));
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) < 1)
+    {
+        append_log("parse error, could not find script name ($script) in the database at line $line_number");
     }
 }
 
