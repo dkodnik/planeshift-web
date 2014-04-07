@@ -62,14 +62,13 @@ function huntlocations(){
         $query = "SELECT * FROM hunt_locations WHERE id='$id'";
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
-        $Items = PrepSelect('items_resource');
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=huntlocations" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'sector', $row['sector']).'</td>';
         echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="x" value="'.$row['x'].'" size="5"/>/<input type="text" name="y" value="'.$row['y'].'" size="5"/>/<input type="text" name="z" value="'.$row['z'].'" size="5"/></td></tr>';
         echo '<tr><td>Range:</td><td><input type="text" name="range" value="'.$row['range'].'" size="10" /></td>';
-        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'itemid', $row['itemid']).'</td>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawItemSelectBox ('itemid', $row['itemid']).'</td>';
         echo '<td>Interval:</td><td><input type="text" name="interval" value="'.$row['interval'].'" size="10"/></td></tr>';
         echo '<tr><td>Max Random:</td><td><input type="text" name="max_random" value="'.$row['max_random'].'" /></td>';
         echo '<td>Amount:</td><td><input type="text" name="amount" value="'.$row['amount'].'" size="5"/></td></tr>';
@@ -81,13 +80,12 @@ function huntlocations(){
       }
 	  else if ($_POST['action'] == 'Create New' && checkaccess('natres', 'create')){
         $Sectors = PrepSelect('sectorid');
-        $Items = PrepSelect('items_resource');
         echo '<form action="./index.php?do=huntlocations" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'sector', '').'</td>';
         echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="x" size="5"/>/<input type="text" name="y" size="5"/>/<input type="text" name="z" size="5"/></td></tr>';
         echo '<tr><td>Range:</td><td><input type="text" name="range" size="10" /></td>';
-        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'itemid', '').'</td>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawItemSelectBox('itemid', '').'</td>';
         echo '<td>Interval:</td><td><input type="text" name="interval" size="10"/></td></tr>';
         echo '<tr><td>Max Random:</td><td><input type="text" name="max_random"  /></td>';
         echo '<td>Amount:</td><td><input type="text" name="amount" /></td></tr>';
