@@ -581,31 +581,38 @@ function handle_player_action($line)
     $words = explode(' ', $line);
     if(count($words) < 2)
     {
-        append_log("parse error, no command following \"player\" at line $line_number");
+        append_log("parse error, no command following 'player' at line $line_number");
         return;
     }
     if (strcasecmp($words[1], 'gives') === 0) // "player gives"
     {
         $name_count = 0;
-
+        if (count($words) < 3)
+        {
+            append_log("parse error, no npc name following 'player gives' at line $line_number");
+            return;
+        }
         $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", mysql_real_escape_string($words[2]));
         $result = mysql_query2($query);
         if (mysql_num_rows($result) > 0) // we found a valid npc
         {
             $name_count = 1;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
-        $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0) // we found a valid npc
+        if ($name_count == 0 && count($words) > 3)
         {
-            $name_count = 2;
-        }    
+            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
+            $result = mysql_query2($query);
+            if (mysql_num_rows($result) > 0) // we found a valid npc
+            {
+                $name_count = 2;
+            }
+        }
         if ($name_count == 0)
         {
             append_log("parse error, could not find NPC name in \"player gives\" on line $line_number");
             return;
         }
-        $items = trim(implode(" ", array_slice($words, 2 + $name_count)));
+        $items = trim(implode(' ', array_slice($words, 2 + $name_count)));
         if (strlen($items) > 1 && substr($items, strlen($items) - 1) == ".") // eat the trailing "."
         {
             $items = substr($items, 0, strlen($items) - 1);
@@ -613,93 +620,31 @@ function handle_player_action($line)
         $item = explode(',', $items);
         for ($i = 0; $i < count($item); $i++)
         {
-            parse_item($item[$i]);
+            $parts = explode(' ', trim($item[$i]), 2);
+            if (is_numeric($parts[0]))
+            {
+                if ($parts[0] < 0)
+                {
+                    append_log("parse error, cannot give a negative amount of items in 'player gives' on line $line_number");
+                }
+                elseif (count($parts) < 2)
+                {
+                    append_log("parse error, could not read item name in 'player gives' on line $line_number");
+                }
+                else
+                {
+                    validate_item(trim(implode(' ', array_slice($parts, 1))));
+                }
+            }
+            else
+            {
+                validate_item(trim($item[$i]));
+            }
         }
     }
     else
     {
         append_log("parse error, unknown player command: player {$words[1]} at line $line_number");
-    }
-}
-
-function parse_item($item)
-{
-    global $line_number;
-    $words = explode(' ', trim($item));
-    $item_name = '';
-    if(trim($item) == '') 
-    {
-        append_log("parse error, invalid item list on line $line_number");
-        return;
-    }
-    // first parameter is a number
-    if(is_numeric($words[0]))
-    {
-        if(count($words) == 1) 
-        {
-            append_log("parse error, missing item name on line $line_number");
-            return;
-        }
-
-        // check quality parameter
-        if(is_numeric($words[1])) {
-          if ($words[1]>300) {
-            append_log("parse error, quality cannot be greater than 300 at line: $line_number");
-            return;
-          }
-          if(count($words) == 2) {
-            append_log("parse error, you specified a quality parameter, but item name seems missing at line: $line_number");
-            return;
-          }
-          // takes name from 3rd element up 
-          $item_name = implode(' ', array_slice($words, 2));
-        } else {
-          $item_name = implode(' ', array_slice($words, 1));
-        }
-    }
-    // first parameter is "item", this comes from "possessed item" and "equipped item" operations.
-    else if (strncasecmp($words[0], 'item', 4) === 0) {
-        if(count($words) == 1) 
-        {
-            append_log("parse error, missing item name on line $line_number");
-            return;
-        }
-        $item_name = implode(' ', array_slice($words, 1));
-    }
-    // first parameter is "[minqual]-[maxqual]", this comes from "possessed item" and "equipped item" operations.
-    else if ( (strpos($words[0], '-') !== false) && is_numeric(reset(explode('-', trim($words[0])))) ) {
-        $minmax = explode('-', trim($words[0]));
-        if ($minmax[0]<0 || $minmax[0] > 300) {
-          append_log("parse error, min quality should be between 0 and 300 at line: $line_number");
-          return;
-        }
-        if ($minmax[1]<0 || $minmax[1] > 300) {
-          append_log("parse error, max quality should be between 0 and 300 at line: $line_number");
-          return;
-        }
-        if (strncasecmp($words[1], 'item', 4) <> 0 || count($words)<2) {
-          append_log("parse error, after mix-max quality you need 'item' then the item name at line: $line_number");
-          return;
-        }
-        $item_name = implode(' ', array_slice($words, 2));
-    }
-    else 
-    {
-        $item_name = trim($item);
-    }
-    $query = sprintf("SELECT id FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($item_name));
-    $result = mysql_query2($query);
-    if (mysql_num_rows($result) == 1)
-    {
-        // valid item, do nothing
-    }
-    elseif (mysql_num_rows($result) > 1)
-    {
-        append_log("warning: multiple items with name: $item_name in database on line $line_number");
-    }
-    else
-    {
-        append_log("parse error, no item with name: $item_name in database on line $line_number");
     }
 }
 
@@ -1046,13 +991,55 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 // valid, nothing to check  
             }
-            elseif (strncasecmp($require, 'possessed', 9) === 0) // case for possessed and equipped are identical
+            elseif (strncasecmp($require, 'possessed', 9) === 0 || strncasecmp($require, 'equipped', 8) === 0) // case for possessed and equipped are identical
             {
-                parse_item(substr($require, 9));
-            }
-            elseif (strncasecmp($require, 'equipped', 8) === 0)
-            {
-                parse_item(substr($require, 8));
+                $item = trim(substr($require, (strncasecmp($require, 'possessed', 9) === 0 ? 9 : 8)));
+                $cat_pos = strpos($item, 'category');
+                $item_pos = strpos($item, 'item');
+                if ($cat_pos === false && $item_pos === false)
+                {
+                    append_log("parse error, no 'item' or 'category' identifier in possessed/equipped command at line $line_number");
+                    return;
+                }
+                // if anything is before low_pos (that is, it is not 0), then that must be the quality .
+                $low_pos = ($cat_pos === false ? $item_pos : ($item_pos === false ? $cat_pos : min($item_pos, $cat_pos)));
+                if ($low_pos > 0)
+                {
+                    $quality = explode('-', trim(substr($item, 0, $low_pos)));
+                    $item = substr($item, $low_pos);
+                    if (count($quality) == 2 && trim($quality[0]) == '')
+                    {
+                        append_log("warning, min quality missing while quality seperator is present in possessed/equipped command at line $line_number");
+                    }
+                    if (count($quality) == 2 && trim($quality[1]) == '')
+                    {
+                        append_log("warning, max quality missing while quality seperator is present in possessed/equipped command at line $line_number");
+                    }
+                    if (count($quality) > 2)
+                    {
+                        append_log("parse error, you can only use 1 minus sign to seperate min/max quality in possessed/equipped command at line $line_number");
+                    }
+                    elseif (trim($quality[0]) != '' && (!is_numeric(trim($quality[0])) || trim($quality[0]) > 300 || trim($quality[0]) < 0))
+                    {
+                        append_log("parse error, min quality should be between 0 and 300 in possessed/equipped command at line $line_number");
+                    }
+                    elseif (count($quality) == 2 && trim($quality[1]) != '' && (!is_numeric(trim($quality[1])) || trim($quality[1]) > 300 || trim($quality[1]) < 0))
+                    {
+                        append_log("parse error, max quality should be between 0 and 300 in possessed/equipped command at line $line_number");
+                    }
+                    elseif (count($quality) == 2 && trim($quality[1]) != '' && trim($quality[0]) != '' && trim($quality[0]) > trim($quality[1]))
+                    {
+                        append_log("parse error, min quality cannot exceed max quality in possessed/equipped command at line $line_number");
+                    }                
+                }
+                if ($cat_pos !== false)
+                { // $item hold a category name.
+                    validate_category(trim(substr($item, 8)));
+                }
+                else
+                { // $item hold an item name.
+                    validate_item(trim(substr($item, 4)));
+                }
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
             {
@@ -1277,6 +1264,7 @@ function validate_item($itemname)
     if (trim($itemname) == '')
     {
         append_log("parse error, could not read item name on line $line_number");
+        return;
     }
     $query = sprintf("SELECT id FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
     $result = mysql_query2($query);
@@ -1293,6 +1281,22 @@ function validate_item($itemname)
         append_log("parse error, no item with name: $itemname in database on line $line_number");
     } 
 }
+
+function validate_category($categoryname)
+{
+    global $line_number;
+    if (trim($categoryname) == '')
+    {
+        append_log("parse error, could not read category name on line $line_number");
+    }
+    $query = sprintf("SELECT category_id FROM item_categories WHERE name = '%s'", mysql_real_escape_string($categoryname));
+    $result = mysql_query2($query);
+    if (mysql_num_rows($result) < 1)
+    {
+        append_log("parse error, no category with name: $categoryname in database on line $line_number");
+    }
+}
+    
 
 function validate_faction($factionname)
 {
