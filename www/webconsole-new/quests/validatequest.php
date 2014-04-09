@@ -167,6 +167,12 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
+            // if a line starts with questnote, the : was likely added as a mistake since no NPCs are named "questnote". Send warning.
+            if(strncasecmp($line, 'QuestNote', 9) === 0)
+            {
+                append_log("parse error, found QuestNote and a colon ':' on the same line, the QuestNote command can not contain colons at line $line_number");
+                continue;
+            }
             $seenTripleDot = false;
             // Every P: and NPC: combo should be unique, we don't check this atm. (This means a trigger may not already exist, requires parsing of all scripts.)
             $count = 0;
@@ -1040,7 +1046,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 else
                 { // $item hold an item name.
-                    validate_item(trim(substr($item, 4)));
+                    validate_item(trim(substr($item, 4)), true);
                 }
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
@@ -1260,7 +1266,7 @@ function validate_skill($skillname)
         append_log ("parse error, skill $skillname not valid at line $line_number");
 }
 
-function validate_item($itemname)
+function validate_item($itemname, $case_sensitive = false)
 {
     global $line_number;
     if (trim($itemname) == '')
@@ -1268,10 +1274,22 @@ function validate_item($itemname)
         append_log("parse error, could not read item name on line $line_number");
         return;
     }
-    $query = sprintf("SELECT id FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
+    $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
     $result = mysql_query2($query);
     if (mysql_num_rows($result) == 1)
     {
+        if (!$case_sensitive)
+        {
+            return; // valid item, do nothing.
+        }
+        $row = mysql_fetch_row($result);
+        $item_case = $row[0];
+        $query = sprintf("SELECT name FROM item_stats WHERE name = BINARY '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
+        $result = mysql_query2($query);
+        if (mysql_num_rows($result) < 1)
+        {
+            append_log("parse error, item name at this position is case sensitive, use '$item_case' instead of '$itemname' in database on line $line_number");
+        }
         // valid item, do nothing
     }
     elseif (mysql_num_rows($result) > 1)
