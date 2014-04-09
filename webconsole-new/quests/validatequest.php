@@ -683,9 +683,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 // valid, do nothing
             }
-            elseif (strncasecmp($command, "complete $quest_name step", 14+strlen($quest_name)) === 0)
+            elseif (strncasecmp($command, "complete $quest_name step ", 15 + strlen($quest_name)) === 0)
             {
-                $split_complete = explode(' ', substr(trim($command), 15+strlen($quest_name)));
+                $split_complete = explode(' ', substr(trim($command), 15 + strlen($quest_name)));
                 if (count($split_complete) > 1) 
                 {
                     append_log("parse error, illegal text following 'complete $quest_name step {$split_complete[0]}' on line $line_number");
@@ -693,6 +693,10 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
                 {
                     // valid, do nothing
+                }
+                elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
+                {
+                    append_log("parse error, you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
@@ -726,6 +730,10 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
                 {
                     // valid, do nothing
+                }
+                elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
+                {
+                    append_log("parse error, you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
@@ -852,16 +860,16 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     }
     elseif (strncasecmp($command, 'setvariable', 11) === 0)
     {
-      $words = explode(' ', trim(substr($command, 11)));
-      if (count($words)<2)
-        append_log("parse error, setvariable needs 2 arguments at line $line_number");
+        $words = explode(' ', trim(substr($command, 11)));
+        if (count($words) < 2)
+            append_log("parse error, setvariable needs 2 arguments at line $line_number");
     }
     elseif (strncasecmp($command, 'unsetvariable', 13) === 0)
     {
-      $parameters = trim(substr($command, 13));
-      $words = explode(' ', $parameters);
-      if (trim($parameters)=='' || count($words)<1)
-        append_log("parse error, unsetvariable needs 1 argument at line $line_number");
+        $parameters = trim(substr($command, 13));
+        $words = explode(' ', $parameters);
+        if (trim($parameters) == '' || count($words) < 1)
+            append_log("parse error, unsetvariable needs 1 argument at line $line_number");
     }
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
@@ -954,11 +962,11 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             $require = $requirement; // we use this one for the error message later if need be.
             // Determine if the next word is "no" or "not" and remove that too. (It's not relevant for the parser to know which is the case, as in 
             // both cases it is whatever that follows that needs to be valid.)
-            if (strncasecmp($require, 'not', 3) === 0) // notice the order of not and no (otherwise no will match the first 2 letters of not).
+            if (strncasecmp($require, 'not ', 4) === 0) 
             {
                 $require = substr($require, 4);
             }
-            elseif (strncasecmp($require, 'no', 2) === 0)
+            elseif (strncasecmp($require, 'no ', 3) === 0)
             {
                 $require = substr($require, 3);
             }
@@ -1130,11 +1138,17 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         {
             return; //valid, nothing else to do.
         }
-        else if (strncasecmp(trim($quest), "$quest_name step", 5+strlen($quest_name)) === 0)
+        else if (strncasecmp(trim($quest), "$quest_name step", 5 + strlen($quest_name)) === 0)
         {
-            if (trim(substr(trim($quest), 5+strlen($quest_name))) <= $step)
+            $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
+            if ($step_nr == '' || !is_numeric($step_nr))
             {
-                // valid too
+                append_log("parse error, you did not provide a valid step number for 'require completion' on line $line_number");
+                return;
+            }
+            elseif ($step_nr <= $step)
+            {
+                // valid
                 return;
             }
             else
@@ -1155,11 +1169,17 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             // valid, nothing else to do
             return;
         }
-        else if (strncasecmp(trim($quest), "$name step", 5+strlen($name)) === 0)
+        else if (strncasecmp(trim($quest), "$name step", 5 + strlen($name)) === 0)
         {
-            if (trim(substr(trim($quest), 5+strlen($name))) <= $step)
+            $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
+            if ($step_nr == '' || !is_numeric($step_nr))
             {
-                // valid too
+                append_log("parse error, you did not provide a valid step number for 'require completion' on line $line_number");
+                return;
+            }
+            elseif ($step_nr <= $step)
+            {
+                // valid
                 return;
             }
             else
@@ -1174,7 +1194,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
     if (($pos = stripos($quest, 'step')) !== false)
     {
         $name = trim(substr($quest, 0, $pos));
-        $complete_step = trim(substr($quest, $pos+4));
+        $complete_step = trim(substr($quest, $pos + 4));
         if ($name == '')
         {
             append_log("parse error, no quest mentioned at line $line_number");
