@@ -78,6 +78,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
+    $ready_for_complete = false; // this var is used to see if there has been an "NPC: trigger before we use the "complete quest" command. without it, the server crashes on loadquest.
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
     $quest_note_found = false; // this variable checks if there is a quest note for each step and not more than one
@@ -207,7 +208,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 append_log("parse error, there are more $npc_name: triggers than there are Menu: triggers before line $line_number");
             }
             checkVariables($line, 'npc');
-            
+            $ready_for_complete = true;
         }
         elseif(strncasecmp($line, 'Player ', 7) === 0) // player does something
         {
@@ -290,7 +291,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             }
             $quest_note_found = false;
             $step++;
-            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = false;
+            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = $ready_for_complete = false;
             $count = $m_count = $p_count = 0;
 
         }
@@ -315,6 +316,14 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             	}
             	$seenTripleDot = false;
             	
+                if(strncasecmp(trim($commands[$i]), 'complete', 8) === 0)
+                {
+                    if (!$ready_for_complete)
+                    {
+                        append_log("parse error, found a complete quest statement without any preceding P: and Menu: triggers on line $line_number");
+                        continue;
+                    }
+                }
             	if(trim($commands[$i]) != '') 
                 {
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
