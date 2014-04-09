@@ -62,12 +62,11 @@ function locateitem(){
             echo '<form action="./index.php?do=finditem" method="post"><table>';
             echo '<tr><td colspan="3"><input type="checkbox" name="private"> Exclude private zones (guild houses/NPC room) from the search?</td></tr>';
             echo '<tr><td>Find all instances of item: </td><td>';
-            $itemresult = PrepSelect('items');
-            echo DrawSelectBox('items', $itemresult, 'itemid', ''). '</td><td><input type="submit" name="search" value="Find Items"/></td></tr>';
+            echo DrawItemSelectBox('itemid', false, false). '</td><td><input type="submit" name="search" value="Find Items"/></td></tr>';
             echo '<tr><td>Locate Instance ID: </td><td><input type="text" name="iid" /></td><td><input type="submit" name="search" value="Find Instance" /></td></tr>';
             $Sectors = PrepSelect('sectorid');
             echo '<tr><td>Locate All Items on floor (Limit to Sector: </td><td>'.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') </td><td><input type="submit" name="search" value="Dropped Items" /></td></tr>';
-            echo '<tr><td>Find all vendors of item: </td><td>'.DrawSelectBox('items', $itemresult, 'vendoritemid', ''). '</td><td><input type="submit" name="search" value="Find Merchants"/></td></tr>';
+            echo '<tr><td>Find all vendors of item: </td><td>'.DrawItemSelectBox('vendoritemid', false, true). '</td><td><input type="submit" name="search" value="Find Merchants"/></td></tr>';
             echo '</table></form>';
         }
         if ($display_item)  // if there was an item search, print it here.
