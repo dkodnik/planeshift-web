@@ -981,7 +981,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'active magic', 12) === 0)
             {
-                validate_magic(substr($require, 12));
+                validate_magic(substr($require, 12), true);
             }
             elseif (strncasecmp($require, 'known spell', 11) === 0)
             {
@@ -1329,15 +1329,20 @@ function validate_faction($factionname)
     }
 }
 
-function validate_magic($magic_name)
+function validate_magic($magic_name, $otherbuffs = false)
 {
     global $line_number;
     $magic = trim($magic_name);
     $query = sprintf("SELECT id FROM spells WHERE name = '%s'", mysql_real_escape_string($magic));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) < 1)
+    if (mysql_num_rows($result) < 1 && !$otherbuffs)
     {
         append_log("parse error, could not find magic ($magic) in the database at line $line_number");
+    }
+    elseif (mysql_num_rows($result) < 1 && $otherbuffs)
+    {
+        append_log("Warning, could not find magic ($magic) in the magic database, please double check ". 
+            "the spelling against the script you want to use a buff from (this warning can show in valid cases too) at line $line_number");
     }
 }
 
