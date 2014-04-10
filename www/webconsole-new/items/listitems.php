@@ -504,41 +504,51 @@ function showitemusage()
     // so we get '[\n]text[^\n]* item' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
     // In other words, we are looking for a character sequence that contains a newline, followed by "Player Gives" (so it must be at the start of the line) and "item_name" with any amount of characters between them 
     // that are not newlines. This effectively means they have to be on the same line, in the form of "give **** <item> ****" where *** can be anything or nothing at all.
-    $escaped_item_name = mysql_real_escape_string($my_item_name);
-    $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give|Require Equipped|Require not Equipped|Require no Equipped|Require Possessed|Require not Possessed|Require no Possessed)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
-    $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if(isset($_GET['checkquests']) && $_GET['checkquests'] == 'yes')
     {
-        if (checkaccess('quests', 'read'))
+        $escaped_item_name = mysql_real_escape_string($my_item_name);
+        $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give|Require Equipped|Require not Equipped|Require no Equipped|Require Possessed|Require not Possessed|Require no Possessed)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
+        $result = mysql_query2($query);
+        if (mysql_num_rows($result) > 0)
         {
-            echo '<p class="bold">Quests using this item:</p>';
-            echo '<p>Please notice that if the item name is contained in another item name, it may report that item too. (If you search for an item named 
-                  "ring", it will also match "golden ring". Additionally, this script can match any "Give/Player Gives/Require (not) Equipped/Require (not) 
-                  Possessed Item" block anywhere in the text (like "P: Give Golden Ring". Use this quest data as a pointer, not as an absolute truth. </p>';
-            echo '<table border="1">'."\n";
-            echo '<tr><th>ID</th><th>Category</th><th>Name</th><th>Actions</th></tr>';
-            while ($row = mysql_fetch_array($result))
+            if (checkaccess('quests', 'read'))
             {
-                echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td>';
-                echo '<td><a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';
-                if (checkaccess('quests', 'edit'))
+                echo '<p class="bold">Quests using this item:</p>';
+                echo '<p>Please notice that if the item name is contained in another item name, it may report that item too. (If you search for an item named 
+                      "ring", it will also match "golden ring". Additionally, this script can match any "Give/Player Gives/Require (not) Equipped/Require (not) 
+                      Possessed Item" block anywhere in the text (like "P: Give Golden Ring". Use this quest data as a pointer, not as an absolute truth. </p>';
+                echo '<table border="1">'."\n";
+                echo '<tr><th>ID</th><th>Category</th><th>Name</th><th>Actions</th></tr>';
+                while ($row = mysql_fetch_array($result))
                 {
-                    echo ' || <a href="./index.php?do=editquest&amp;id='.$row['id'].'">Edit</a>';
+                    echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td>';
+                    echo '<td><a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';
+                    if (checkaccess('quests', 'edit'))
+                    {
+                        echo ' || <a href="./index.php?do=editquest&amp;id='.$row['id'].'">Edit</a>';
+                    }
+                    echo '</td></tr>';
                 }
-                echo '</td></tr>';
+                echo '</table>'."\n";
             }
-            echo '</table>'."\n";
+            else 
+            {
+                echo '<p class="error">You do not have permission to view Quests, but they do use this item.</p>';
+            }     
         }
         else 
         {
-            echo '<p class="error">You do not have permission to view Quests, but they do use this item.</p>';
-        }     
+            echo '<p>No Quests are using this item.</p>';
+        } 
     }
-    else 
+    else
     {
-        echo '<p>No Quests are using this item.</p>';
-    } 
-   
+        echo '<p class="error">Searching items in quests is disabled by default, if you want to search quests for the use '.
+            'of this item (as you should if you are planning to change an item name, or delete it for example), you should '.
+            'click <a href="./index.php?do=showitemusage&amp;id='.$id.'&amp;checkquests=yes">here</a>. Notice that this search '.
+            'will take more than 40 seconds to complete on a production server.</p>';
+    }
+    
     return $item_is_used;
 }
 ?>
