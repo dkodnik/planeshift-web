@@ -117,7 +117,8 @@ function listwaypointlinks()
                 echo '<td>'.$row['flags'].'</td>';
                 if (checkaccess('natres', 'edit'))
                 {
-                    echo '<td><a href="./index.php?do=editwaypointlink&id='.$row['id'].'">Edit</a>';
+                    $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+                    echo '<td><a href="./index.php?do=editwaypointlink&id='.$row['id'].$navurl.'">Edit</a>';
                     if (checkaccess('natres', 'delete'))
                     {
                         echo '<br/><a href="./index.php?do=deletewaypointlink&id='.$row['id'].'">Delete</a>';
@@ -216,7 +217,8 @@ function editwaypointlink()
         $query = "SELECT * FROM sc_waypoint_links WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
-        echo '<form action="./index.php?do=editwaypointlink" method="post"><input type="hidden" name="id" value="'.$id.'" />';
+        $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+        echo '<form action="./index.php?do=editwaypointlink'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1">';
         echo '<tr><th colspan="2">Edit waypoint link</th></tr>';
         echo '<tr><td>Name</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>';

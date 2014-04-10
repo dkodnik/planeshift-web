@@ -120,7 +120,8 @@ function listpathpoints()
             echo '<td>'.$row['wp2_name'].'<br />'.$row['wp2_coords'].'</td>';
             if (checkaccess('npcs', 'edit'))
             {
-                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].'">Edit</a>';
+                $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].$navurl.'">Edit</a>';
                 if (checkaccess('npcs', 'delete'))
                 {
                     echo '<br/><a href="./index.php?do=deletepathpoint&path_id='.$row['path_id'].'">Delete</a>';
@@ -223,12 +224,13 @@ function editpathpoint()
             mysql_query2($query); // We set the next entry to refer to the one before the deleted enty (so the chain remains unbroken).
             echo '<p class="error">Line successfully deleted.</p>';
         }
+        $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
         $query = "SELECT pp.id, pp.prev_point, pp.x, pp.y, pp.z, pp.loc_sector_id FROM sc_path_points AS pp LEFT JOIN sectors AS s ON s.id=pp.loc_sector_id WHERE path_id='$path_id'";
         $result = mysql_query2($query);
         $query2 = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
         $result2 = mysql_query2($query2);
         $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
-        echo '<form action="./index.php?do=editpathpoint&path_id='.$path_id.'" method="post"><input type="hidden" name="path_id" value="'.$path_id.'" />';
+        echo '<form action="./index.php?do=editpathpoint&path_id='.$path_id.$navurl.'" method="post"><input type="hidden" name="path_id" value="'.$path_id.'" />';
         echo '<h3 class="bold">Path Points listing for waypoint link: '.$row2['name'].' ('.$path_id.') from "'.$row2['wp1_name'].'" to "'.$row2['wp2_name'].'"</h3>';
         echo '<p>Please note that both insert and delete ignore any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
         echo '<table border="1">';
@@ -238,7 +240,7 @@ function editpathpoint()
         echo '<td>'.$row2['wp1_x'].'</td>';
         echo '<td>'.$row2['wp1_y'].'</td>';
         echo '<td>'.$row2['wp1_z'].'</td>';
-        echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert=0">Insert</a></td></tr>';
+        echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert=0'.$navurl.'">Insert</a></td></tr>';
         $prev = 0;
         $sectors = PrepSelect('sectorid');
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) // This slightly more complex loop serves to get the entries in proper order.
@@ -259,7 +261,7 @@ function editpathpoint()
                 echo '<td><input type="text" name="y[]" value="'.$row['y'].'" /></td>';
                 echo '<td><input type="text" name="z[]" value="'.$row['z'].'" /></td>';
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
-                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].'">Insert</a><br><br><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&delete='.$row['id'].'">Delete</a></td></tr>';
+                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].$navurl.'">Insert</a><br><br><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&delete='.$row['id'].$navurl.'">Delete</a></td></tr>';
                 $prev = $row['id'];
                 mysql_data_seek($result, 0);
             } // No else, we want the loop to continue, so else { continue; } could be done, but just a waste of space. :)
@@ -270,7 +272,8 @@ function editpathpoint()
         echo '<td>'.$row2['wp2_y'].'</td>';
         echo '<td>'.$row2['wp2_z'].'</td>';
         echo '<td>'.$row2['wp2_sector_name'].'</td><td></td></tr>';
-        echo '<tr><td colspan="6"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '<tr><td colspan="3"><input type="submit" name="commit" value="Save Changes" /></td>';
+        echo '<td colspan="3"><a href="./index.php?do=listpathpoints'.$navurl.'">Return to main listing</a> (does not save changes)</td></tr>';
         echo '</table></form>';
     }
     else
