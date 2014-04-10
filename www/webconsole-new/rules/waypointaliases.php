@@ -51,7 +51,8 @@ function listwaypointaliases()
             $query = "SELECT wp_id, alias, rotation_angle FROM sc_waypoint_aliases WHERE id='$id'";
             $result = mysql_query2($query);
             $row = mysql_fetch_array($result, MYSQL_ASSOC);
-            echo '<form action="./index.php?do=waypointalias" method="post">';
+            $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+            echo '<form action="./index.php?do=waypointalias'.$navurl.'" method="post">';
             echo '<table border="1">';
             echo '<tr><td>Waypoint Name: '.DrawSelectBox('waypoints', $waypoints, 'waypoint_id' , $row['wp_id'], false).'</td>';
             echo '<td>Alias: <input type="text" name="alias" value="'.$row['alias'].'" /></td>';
@@ -205,7 +206,8 @@ function listwaypointaliases()
             echo '<td>'.$row['rotation_angle'].'</td>';
             if (checkaccess('other', 'edit')) // offer edit buttons
             {
-                echo '<td><form action="./index.php?do=waypointalias" method="post">';
+                $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+                echo '<td><form action="./index.php?do=waypointalias'.$navurl.'" method="post">';
                 echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
                 echo '<input type="submit" name="action" value="Edit" />';
                 if (checkaccess('other', 'delete'))
