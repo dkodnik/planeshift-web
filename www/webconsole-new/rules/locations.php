@@ -213,7 +213,7 @@ function listlocations(){
           echo '<tr><td>Previous Location</td><td>'.DrawSelectBox('locations', $Locations, 'previous', '', true).'</td></tr>';
           $LocationTypes = PrepSelect('location_type');
 
-          echo '<tr><td>Location Type</td><td>'.DrawSelectBox('locationtypes',$LocationTypes,'type','', true).'</td></tr>';
+          echo '<tr><td>Location Type</td><td>'.DrawSelectBox('location_type',$LocationTypes,'type','', true).'</td></tr>';
           echo '</table><input type="submit" name="commit" value="Create Location"/>';
           echo '</form>';
         }

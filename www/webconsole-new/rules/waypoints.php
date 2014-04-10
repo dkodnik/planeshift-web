@@ -58,7 +58,8 @@ function listwaypoints(){
         $query = "SELECT * FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
-        echo '<form action="./index.php?do=waypoint" method="post"><input type="hidden" name="id" value="'.$row['id'].'" />';
+        $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+        echo '<form action="./index.php?do=waypoint'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$row['id'].'" />';
         echo '<table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Name</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>';
@@ -272,7 +273,8 @@ function listwaypoints(){
           echo '<td>'.$row['radius'].'</td>';
           echo '<td>'.$row['flags'].'</td>';
           if (checkaccess('natres', 'edit')){
-            echo '<td><form action="./index.php?do=waypoint" method="post">';
+            $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+            echo '<td><form action="./index.php?do=waypoint'.$navurl.'" method="post">';
             echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
             echo '<input type="submit" name="action" value="Edit" />';
             if (checkaccess('natres', 'delete')){
