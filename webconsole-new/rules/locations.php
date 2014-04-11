@@ -55,7 +55,8 @@ function listlocations(){
         $query = "SELECT * FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
-        echo '<form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$id.'" /><table border="1">';
+        $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+        echo '<form action="./index.php?do=location'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$id.'" /><table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>ID:</td><td>'.$id.'</td></tr>';
         echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.$row['name'].'"/></td></tr>';
@@ -70,7 +71,7 @@ function listlocations(){
         $Locations = PrepSelect('locations');
         echo '<tr><td>Previous Location</td><td>'.DrawSelectBox('locations', $Locations, 'previous', $row['id_prev_loc_in_region'], true).'</td></tr>';
         $LocationTypes = PrepSelect('location_type');
-        echo '<tr><td>Location Type</td><td>'.DrawSelectBox('locationtypes',$LocationTypes,'type',$row['type_id'], true).'</td></tr>';
+        echo '<tr><td>Location Type</td><td>'.DrawSelectBox('location_type',$LocationTypes,'type',$row['type_id'], true).'</td></tr>';
 
         echo '</table><input type="submit" name="commit" value="Update Location"/>';
         echo '</form>';
@@ -100,6 +101,10 @@ function listlocations(){
         $type = mysql_real_escape_string($_GET['type']);
         $query .= " WHERE l.type_id='$type'";
       }
+      elseif (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != 0){
+        $sec = mysql_real_escape_string($_GET['sector']);
+        $query .= " WHERE l.loc_sector_id='$sec'";
+      }
       if (isset($_GET['sort'])){
         switch ($_GET['sort']){
           case 'name':
@@ -128,12 +133,17 @@ function listlocations(){
       if (mysql_numrows($result) == 0){
         echo '<p class="error">No Locations in DataBase</p>';
       }else{
+        $sid = 0;
+        if (isset($_GET['sector']))
+        {
+          $sid = $_GET['sector'];
+        }
         if ($lim> 30){
           echo '<a href="./index.php?do=location';
           if (isset($_GET['sort'])){
             echo '&amp;sort='.$_GET['sort'];
           }
-          echo '&amp;limit='.$ll.'">Previous Page</a>';
+          echo '&amp;limit='.$ll.'&amp;sector='.$sid.'">Previous Page</a>';
         }
         echo ' - Displaying records '.$ll.' through '.$lim.' - ';
         $result2 = mysql_query2('select count(id) AS mylimit FROM sc_locations');
@@ -145,17 +155,38 @@ function listlocations(){
             echo '&amp;sort='.$_GET['sort'];
           }
           $lu = $lim + 30;
-          echo '&amp;limit='.$lu.'">Next Page</a>';;
+          echo '&amp;limit='.$lu.'&amp;sector='.$sid.'">Next Page</a>';;
+        }
+        $Sectors = PrepSelect('sectorid');
+        if (!isset($_GET['sector'])){
+          $_GET['sector']="NULL";
+        }
+        echo ' - <form action="./index.php" method="get"><input type="hidden" name="do" value="location"/>';
+        if (isset($_GET['sort'])){
+          echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'"/>';
+        }
+        if (isset($_GET['limit'])){
+          echo '<input type="hidden" name="limit" value="'.$_GET['limit'].'"/>';
+        }
+        echo DrawSelectBox('sectorid', $Sectors, 'sector' ,$_GET['sector'], true).'<input type="submit" name="submit" value="Limit By Sector" /></form>';
+        if ($_GET['sector'] == "NULL"){
+          unset($_GET['sector']);
         }
         echo '<table border="1">';
         echo '<tr><th>ID</th><th><a href="./index.php?do=location&amp;sort=name';
         if (isset($_GET['limit'])){
           echo '&amp;limit='.$_GET['limit'];
         }
+        if (isset($_GET['sector'])){
+          echo '&amp;sector='.$sid;
+        }
         echo '">name</a></th>';
         echo '<th><a href="./index.php?do=location&amp;sort=sector';
         if (isset($_GET['limit'])){
           echo '&amp;limit='.$_GET['limit'];
+        }
+        if (isset($_GET['sector'])){
+          echo '&amp;sector='.$sid;
         }
         echo '">Sector</a></th>';
         echo '<th>X</th>';
@@ -168,6 +199,9 @@ function listlocations(){
         echo '<th><a href="./index.php?do=location&amp;sort=type';
         if (isset($_GET['limit'])){
           echo '&amp;limit='.$_GET['limit'];
+        }
+        if (isset($_GET['sector'])){
+          echo '&amp;sector='.$sid;
         }
         echo '">Type</a></th>';
         if (checkaccess('npcs', 'edit')){
@@ -188,7 +222,8 @@ function listlocations(){
           echo '<td>'.$row['id_prev_loc_in_region'].'</td>';
           echo '<td>'.$row['typename'].'</td>';
           if (checkaccess('npcs', 'edit')){
-            echo '<td><form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
+            $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+            echo '<td><form action="./index.php?do=location'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$row['id'].'"/>';
             echo '<input type="submit" name="action" value="Edit"/>';
             echo '<br/><input type="submit" name="action" value="Delete"/>';
             echo '</form></td>';
