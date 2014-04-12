@@ -301,7 +301,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             for($i = 0; $i < count($commands); $i++) // the last one is after the last dot, which is to be ignored.
             {
             	// the last one is after the last dot, and has no content, we can safely ignore this.
-                if ($i == count($commands) - 1 && trim($commands[$i] == ''))
+                if ($i == count($commands) - 1 && trim($commands[$i]) == '')
             	{
             		continue;
             	}
@@ -330,7 +330,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             	else 
             	{
-            		append_log("Warning, empty command found at lin $line_number");
+            		append_log("Warning, empty command found at line $line_number");
             	}
             }
         }
@@ -467,6 +467,7 @@ function checkVariables($line, $type)
 
 function validate_npc($name)
 {
+    global $line_number;
     $split = explode(" ", trim($name));  // explode is faster than split if you don't use regex, returns input if pattern is not found.
     if (count($split) == 1) // single name npc
     {
@@ -476,6 +477,13 @@ function validate_npc($name)
         {
             return true;
         }
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0", mysql_real_escape_string($split[0]));
+        $result = mysql_query2($query);
+        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        {
+            append_log("parse error, NPC ({$split[0]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            return false;
+        }
     }
     elseif (count($split) == 2) // dual name npc
     {
@@ -484,7 +492,14 @@ function validate_npc($name)
         if(mysql_num_rows($result) > 0) // we found a valid npc
         {
             return true;
-        }    
+        }
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0", mysql_real_escape_string($split[0]), mysql_real_escape_string($split[1]));
+        $result = mysql_query2($query);
+        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        {
+            append_log("parse error, NPC ({$split[0]} {$split[1]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            return false;
+        }
     }
     return false; // in case there is a name with 2 spaces (george walker bush) or more. or if no results were found in either of the queries.
 }
@@ -615,6 +630,13 @@ function handle_player_action($line)
         {
             $name_count = 1;
         }
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0", mysql_real_escape_string($words[2]));
+        $result = mysql_query2($query);
+        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        {
+            append_log("parse error, NPC ({$words[2]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            return;
+        }
         if ($name_count == 0 && count($words) > 3)
         {
             $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
@@ -622,6 +644,13 @@ function handle_player_action($line)
             if (mysql_num_rows($result) > 0) // we found a valid npc
             {
                 $name_count = 2;
+            }
+            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
+            $result = mysql_query2($query);
+            if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+            {
+                append_log("parse error, NPC ({$words[2]} {$words[3]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+                return;
             }
         }
         if ($name_count == 0)
@@ -779,9 +808,13 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             // check all cases of "give money".
             if (in_array('tria', $words, true) || in_array('hexa', $words, true) || in_array('octa', $words, true) || in_array('circle', $words, true))
             { 
-                if(count($words) != 2)
+                if(count($words) > 2)
                 {
-                    append_log("parse error, too much/few parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
+                    append_log("parse error, too much parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
+                }
+                elseif (count($words) == 1)
+                {
+                    continue; // valid
                 }
                 elseif (strcasecmp($words[1], 'hexa') === 0 || strcasecmp($words[1], 'tria') === 0 || strcasecmp($words[1], 'octa') === 0 || strcasecmp($words[1], 'circle') === 0)
                 {
