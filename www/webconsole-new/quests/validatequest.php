@@ -477,7 +477,7 @@ function validate_npc($name)
         {
             return true;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0", mysql_real_escape_string($split[0]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($split[0]));
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
@@ -493,7 +493,7 @@ function validate_npc($name)
         {
             return true;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0", mysql_real_escape_string($split[0]), mysql_real_escape_string($split[1]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($split[0]), mysql_real_escape_string($split[1]));
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
@@ -630,7 +630,7 @@ function handle_player_action($line)
         {
             $name_count = 1;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0", mysql_real_escape_string($words[2]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($words[2]));
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
@@ -645,7 +645,7 @@ function handle_player_action($line)
             {
                 $name_count = 2;
             }
-            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
+            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id = 0 AND character_type != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
             $result = mysql_query2($query);
             if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
             {
