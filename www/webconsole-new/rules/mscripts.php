@@ -52,7 +52,12 @@ jQuery(function($) {
         return;
       }
     }else{
-      $query = "SELECT name, math_script FROM math_scripts ORDER BY name";
+      $query = "SELECT name, math_script FROM math_scripts";
+      if (isset($_GET['name']))
+      {
+        $query .= " WHERE name='".mysql_real_escape_string($_GET['name'])."'";
+      }
+      $query .= " ORDER BY name";
       $result = mysql_query2($query);
       if (mysql_num_rows($result) > 0){
         echo '<table border="1" width="100%">';
