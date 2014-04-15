@@ -997,20 +997,20 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     {
         // Found a "require command"
         $requirements = substr($command, 8); // remove the require part and it's trailing space.
-        $requirements = explode(' | ', $requirements); // split on all cases of the OR operator.
+        $requirements = explode('|', $requirements); // split on all cases of the OR operator.
    
         foreach($requirements AS $requirement) 
         {
-            $require = $requirement; // we use this one for the error message later if need be.
+            $require = trim($requirement); // we use $requirement for the error message later if need be.
             // Determine if the next word is "no" or "not" and remove that too. (It's not relevant for the parser to know which is the case, as in 
             // both cases it is whatever that follows that needs to be valid.)
-            if (strncasecmp($require, 'not ', 4) === 0) 
+            if (strncasecmp($require, 'not', 3) === 0) 
             {
-                $require = substr($require, 4);
+                $require = trim(substr($require, 3));
             }
-            elseif (strncasecmp($require, 'no ', 3) === 0)
+            elseif (strncasecmp($require, 'no', 2) === 0)
             {
-                $require = substr($require, 3);
+                $require = trim(substr($require, 2));
             }
             // Now find out which command was used.
             if (strncasecmp($require, 'completion of', 13) === 0) 
