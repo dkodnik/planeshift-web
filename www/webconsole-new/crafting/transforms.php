@@ -17,6 +17,7 @@ function edittransform(){
       $result_qty = mysql_real_escape_string($_POST['result_qty']);
       $result_id = mysql_real_escape_string($_POST['result_id']);
       $result_id = ($result_id == '' ? 0 : $result_id);
+      $description = mysql_real_escape_string($_POST['description']);
       $trans_points = mysql_real_escape_string($_POST['trans_points']);
       $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
       if ($item_id =='0' && $result_id=='0')
@@ -24,7 +25,7 @@ function edittransform(){
         echo '<p class="error">Source and Result item can not both be empty.</p>';
         return;
       }
-      $query = "UPDATE trade_transformations SET pattern_id='$pattern_id', item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', trans_points='$trans_points', penalty_pct='$penalty_pct' WHERE id='$id'";
+      $query = "UPDATE trade_transformations SET pattern_id='$pattern_id', item_qty='$item_qty', item_id='$item_id', process_id='$process_id', result_qty='$result_qty', result_id='$result_id', description='$description', trans_points='$trans_points', penalty_pct='$penalty_pct' WHERE id='$id'";
       $result = mysql_query2($query);
       echo '<p class="error">Update Successful</p>';
       unset($_POST);
