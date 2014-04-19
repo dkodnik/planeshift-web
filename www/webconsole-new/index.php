@@ -614,6 +614,18 @@
         rulesmain();
         raceinfo();
         break;
+      case 'liststances':
+        include('./rules/rulesmain.php');
+        include('./rules/stances.php');
+        rulesmain();
+        liststances();
+        break;
+      case 'editstances':
+        include('./rules/rulesmain.php');
+        include('./rules/stances.php');
+        rulesmain();
+        editstances();
+        break;
       case 'listlootmodifiers':
         include('./rules/rulesmain.php');
         include('./rules/lootmodifiers.php');
