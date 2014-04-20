@@ -7,7 +7,7 @@ function liststances()
         echo '<p class="error">You are not authorized to use these functions</p>';
         return;
     }
-    $query = 'SELECT * from stances';
+    $query = 'SELECT * FROM stances';
     $result = mysql_query2($query);
     $alt = false;
     echo "<table>\n";
@@ -79,7 +79,7 @@ function editstances()
     }
     else
     {
-        $query = "SELECT * from stances WHERE id='$id'";
+        $query = "SELECT * FROM stances WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<p class="header">Edit Stance</p>';

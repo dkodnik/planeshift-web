@@ -7,7 +7,7 @@ function listarmorvsweapon()
         echo '<p class="error">You are not authorized to use these functions</p>';
         return;
     }
-    $query = 'SELECT * from armor_vs_weapon';
+    $query = 'SELECT * FROM armor_vs_weapon';
     $result = mysql_query2($query);
     $alt = false;
     echo "<table>\n";
@@ -39,7 +39,6 @@ function listarmorvsweapon()
     }
     echo "</table>\n";
 }
-// 	id 	1a 	1b 	1c 	1d 	2a 	2b 	2c 	3a 	3b 	3c 	weapon_type
 
 function editarmorvsweapon()
 {
@@ -87,7 +86,7 @@ function editarmorvsweapon()
     }
     else
     {
-        $query = "SELECT * from armor_vs_weapon WHERE id='$id'";
+        $query = "SELECT * FROM armor_vs_weapon WHERE id='$id'";
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<p class="header">Edit Armor vs Weapon</p>';
