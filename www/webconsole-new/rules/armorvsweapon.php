@@ -105,7 +105,7 @@ function editarmorvsweapon()
         echo '<tr><td>3a</td><td><input type="text" name="3a" value="'.$row['3a'].'"></td></tr>'."\n";
         echo '<tr><td>3b</td><td><input type="text" name="3b" value="'.$row['3b'].'"></td></tr>'."\n";
         echo '<tr><td>3c</td><td><input type="text" name="3c" value="'.$row['3c'].'"></td></tr>'."\n";
-        echo '<tr><td></td><td><input type=submit name="commit" value="Update Armor vs Weapon"/></td></tr>'."\n";
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Update Armor vs Weapon"/></td></tr>'."\n";
         echo "</table></form>\n";
     }
 }
