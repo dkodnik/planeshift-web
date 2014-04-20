@@ -94,7 +94,7 @@ function editstances()
         echo '<tr><td>attack damage mod</td><td><input type="text" name="attack_damage_mod" value="'.$row['attack_damage_mod'].'"></td></tr>'."\n";
         echo '<tr><td>defense avoid mod</td><td><input type="text" name="defense_avoid_mod" value="'.$row['defense_avoid_mod'].'"></td></tr>'."\n";
         echo '<tr><td>defense absorb mod</td><td><input type="text" name="defense_absorb_mod" value="'.$row['defense_absorb_mod'].'"></td></tr>'."\n";
-        echo '<tr><td></td><td><input type=submit name="commit" value="Update Stance"/></td></tr>'."\n";
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Update Stance"/></td></tr>'."\n";
         echo "</table></form>\n";
     }
 }

@@ -243,7 +243,7 @@ function editsubprocess()
       echo '<tr><td>Secondary Quality Factor:</td><td><input type="text" name="secondary_quality_factor" value="'.$row['secondary_quality_factor'].'"/></td></tr>';
       $scripts = PrepSelect('math_script');
       echo '<tr><td>Script:</td><td>'.DrawSelectBox('math_script', $scripts, 'script', $row['script']).'</td></tr>';
-      echo '<tr><td>'.$delete.'</td><td><input type=submit name="commit" value="Update Process"/></td></tr>';
+      echo '<tr><td>'.$delete.'</td><td><input type="submit" name="commit" value="Update Process"/></td></tr>';
       echo '</table></form>';
     }
   }
@@ -346,7 +346,7 @@ function createprocess()
         echo '<tr><td>Secondary Quality Factor:</td><td><input type="text" name="secondary_quality_factor" value="0"/></td></tr>';
         $scripts = PrepSelect('math_script');
         echo '<tr><td>Script:</td><td>'.DrawSelectBox('math_script', $scripts, 'script', '').'</td></tr>';
-        echo '<tr><td></td><td><input type=submit name="commit" value="Create Process"/></td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Process"/></td></tr>';
         echo '</table></form>';
     }
     else
