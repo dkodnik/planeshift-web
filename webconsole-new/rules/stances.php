@@ -76,7 +76,6 @@ function editstances()
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         editstances();
-
     }
     else
     {

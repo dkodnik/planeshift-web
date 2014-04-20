@@ -32,6 +32,7 @@ function rulesmain()
         echo '<a href="./index.php?do=raceinfo">Race Info/Spawn Points</a><br/>';
         echo '<hr/>';
         echo '<a href="./index.php?do=liststances">List Stances</a><br/>';
+        echo '<a href="./index.php?do=listarmorvsweapon">Armor vs Weapon</a><br/>';
         echo '<hr/>';
         echo '<a href="./index.php?do=listlootmodifiers">List Loot Modifiers</a><br/>';
         echo '<hr/>';
