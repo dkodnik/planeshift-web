@@ -626,6 +626,18 @@
         rulesmain();
         editstances();
         break;
+      case 'listarmorvsweapon':
+        include('./rules/rulesmain.php');
+        include('./rules/armorvsweapon.php');
+        rulesmain();
+        listarmorvsweapon();
+        break;
+      case 'editarmorvsweapon':
+        include('./rules/rulesmain.php');
+        include('./rules/armorvsweapon.php');
+        rulesmain();
+        editarmorvsweapon();
+        break;
       case 'listlootmodifiers':
         include('./rules/rulesmain.php');
         include('./rules/lootmodifiers.php');
