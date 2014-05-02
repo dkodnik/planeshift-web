@@ -811,7 +811,8 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
         }
     }
     $html .= '<input type="hidden" name="page" value="'.$page.'" />';
-    $html .= 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" /></form><br/>';
+    $html .= 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" />';
+    $html .= '<input type="submit" value="Go" /></form><br/>';
     
     return compact('sql', 'html');
 }
