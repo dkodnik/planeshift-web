@@ -93,7 +93,7 @@ function editattacktypes()
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Attack Type"))
     {
         $name = mysql_real_escape_string($_POST['name']);
-        $weaponID = ($_POST['weaponID'] == null ? '0' : mysql_real_escape_string($_POST['weaponID']));
+        $weaponID = ($_POST['weaponID'] === '' ? '0' : mysql_real_escape_string($_POST['weaponID']));
         $weaponType = '';
         if (!isset($_POST['weaponType']))
         {
@@ -148,7 +148,6 @@ function editattacktypes()
         echo '<tr><td></td><td><input type="submit" name="commit" value="Update Attack Type"/></td></tr>'."\n";
         echo "</table></form>\n";
     }
-    //TODO: add normal edit stuff, get a select * from weapon types as checkboxes, use a split of that field to "in array()" check which should be checked.
 }
 
 function sort_link($column, $label, $sort_col, $sort_dir)
