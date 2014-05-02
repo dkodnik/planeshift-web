@@ -33,40 +33,40 @@
   }
   include('./header.php');
   CacheAccess();
-  echo '<div class="menu">';
+  echo '<div class="menu">'."\n";
   if (checkaccess('npcs', 'read')){
-    echo '<a href="./index.php?do=npcs">NPCs</a> -- ';
-    echo '<a href="./index.php?do=tribes">Tribes</a> -- ';
-  } else echo 'NPCs -- ';
+    echo '<a href="./index.php?do=npcs">NPCs</a> -- '."\n";
+    echo '<a href="./index.php?do=tribes">Tribes</a> -- '."\n";
+  } else echo 'NPCs -- '."\n";
   if (checkaccess('quests', 'read')){
-    echo '<a href="./index.php?do=quests">Quests</a> -- ';
-  } else echo 'Quests -- ';
+    echo '<a href="./index.php?do=quests">Quests</a> -- '."\n";
+  } else echo 'Quests -- '."\n";
   if (checkaccess('items', 'read')){
-    echo '<a href="./index.php?do=items">Items</a> -- ';
-  } else echo 'Items -- ';
+    echo '<a href="./index.php?do=items">Items</a> -- '."\n";
+  } else echo 'Items -- '."\n";
   if (checkaccess('als', 'read')){
-    echo '<a href="./index.php?do=als">Action Locations</a> -- ';
-  } else echo 'Action Locations -- ';
+    echo '<a href="./index.php?do=als">Action Locations</a> -- '."\n";
+  } else echo 'Action Locations -- '."\n";
   if (checkaccess('natres','read')){
-    echo '<a href="./index.php?do=rules">Rules</a>  -- ';
-  } else echo 'Rules -- ';
+    echo '<a href="./index.php?do=rules">Rules</a>  -- '."\n";
+  } else echo 'Rules -- '."\n";
   if (checkaccess('crafting', 'read')){
-    echo '<a href="./index.php?do=crafting">Crafting</a> -- ';
-  } else echo 'Crafting -- ';
+    echo '<a href="./index.php?do=crafting">Crafting</a> -- '."\n";
+  } else echo 'Crafting -- '."\n";
   if (checkaccess('other', 'read')){
-    echo '<a href="./index.php?do=other">Other</a> -- ';
-  } else echo 'Other -- ';
+    echo '<a href="./index.php?do=other">Other</a> -- '."\n";
+  } else echo 'Other -- '."\n";
   if (checkaccess('statistics', 'read')){
-    echo '<a href="./index.php?do=statistics">Statistics</a> -- ';
-  } else echo 'Statistics -- ';
+    echo '<a href="./index.php?do=statistics">Statistics</a> -- '."\n";
+  } else echo 'Statistics -- '."\n";
   if (checkaccess('assets', 'read')){
-    echo '<a href="./index.php?do=assets">Assets</a> -- ';
-  } else echo 'Assets -- ';
+    echo '<a href="./index.php?do=assets">Assets</a> -- '."\n";
+  } else echo 'Assets -- '."\n";
   if (checkaccess('admin', 'read')){
-    echo '<a href="./index.php?do=admin">Admin</a> -- ';
-  } else echo 'Admin -- ';
-  echo '<a href="./index.php?logout">Logout</a> ('.gethostname().')';
-  echo '</div><hr/>';
+    echo '<a href="./index.php?do=admin">Admin</a> -- '."\n";
+  } else echo 'Admin -- '."\n";
+  echo '<a href="./index.php?logout">Logout</a> ('.gethostname().')'."\n";
+  echo '</div><hr/>'."\n";
   if (isset($_GET['do'])){
     switch ($_GET['do']){
       case 'quests':
@@ -1029,14 +1029,14 @@
     echo '<div class="main">';
     echo "Server Information:<br/>\n";
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        echo "cannot display server status on Windows hosts.";
+        echo "cannot display server status on Windows hosts.\n";
     }
     else 
     {
         exec("ps -eo user,etime,%mem,comm|grep psserver", $info);
         if (count($info) == 0)
         {
-            echo '<p class="error">ERROR: psserver does not appear to be running</p>';
+            echo '<p class="error">ERROR: psserver does not appear to be running</p>'."\n";
         }
         else
         {
@@ -1050,7 +1050,7 @@
         exec("ps -eo user,etime,%mem,comm|grep psnpcclient", $info);
         if (count($info) == 0)
         {
-            echo '<p class="error">ERROR: npcclient does not appear to be running</p>';
+            echo '<p class="error">ERROR: npcclient does not appear to be running</p>'."\n";
         }
         else
         {

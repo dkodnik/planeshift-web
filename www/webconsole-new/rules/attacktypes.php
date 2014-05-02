@@ -42,19 +42,19 @@ function listattacktypes()
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
-        echo '<td>'.$row['name'].'</td>';
-        echo '<td>'.$row['weaponName'].'</td>';
+        echo '<td>'.htmlentities($row['name']).'</td>';
+        echo '<td>'.htmlentities($row['weaponName']).'</td>';
         echo '<td>';
         if ($row['weaponType'] !== null)
         {
             foreach (explode(' ', $row['weaponType']) as $weaponid)
             {
-                echo $weapontypes[$weaponid].' ';
+                echo htmlentities($weapontypes[$weaponid]).' ';
             }
         }
         echo '</td>';
         echo '<td>'.($row['onehand'] === '1' ? 'Yes' : 'No').'</td>';
-        echo '<td>'.$row['stat'].'</td>';
+        echo '<td>'.htmlentities($row['stat']).'</td>';
         if (checkaccess('natres', 'edit'))
         {
             echo '<td><a href="./index.php?do=editattacktypes&amp;id='.$row['id'].'">Edit</a></td>';
@@ -140,10 +140,10 @@ function editattacktypes()
         echo '<tr><td>WeaponType</td><td>';
         while ($wtype_row = mysql_fetch_array($wtype_result, MYSQL_ASSOC))
         {
-            echo '<input type="checkbox" name="weaponType[]" value="'.$wtype_row['id'].'"'.(in_array($wtype_row['id'], $weapontypes, true) ? 'checked="checked"' : '').' />'.$wtype_row['name'].'<br />';
+            echo '<input type="checkbox" name="weaponType[]" value="'.$wtype_row['id'].'"'.(in_array($wtype_row['id'], $weapontypes, true) ? ' checked="checked"' : '').' />'.$wtype_row['name'].'<br />'."\n";
         }
         echo '</td></tr>'."\n";
-        echo '<tr><td>Onehand</td><td><input type="checkbox" name="onehand" value="onehand"'.($row['onehand'] === '1' ? 'checked="checked"' : '').' /> Check if the attack type is one handed</td></tr>'."\n";
+        echo '<tr><td>Onehand</td><td><input type="checkbox" name="onehand" value="onehand"'.($row['onehand'] === '1' ? ' checked="checked"' : '').' /> Check if the attack type is one handed</td></tr>'."\n";
         echo '<tr><td>Stat</td><td>'.DrawSelectBox('skill', $skills, 'stat', $row['stat']).'</td></tr>'."\n";
         echo '<tr><td></td><td><input type="submit" name="commit" value="Update Attack Type"/></td></tr>'."\n";
         echo "</table></form>\n";
@@ -164,7 +164,7 @@ function sort_link($column, $label, $sort_col, $sort_dir)
     $html .= '">'.$label;
     if($sort_col == $column)
     {
-        $html .= '<img src="img/s_'.strtolower($sort_dir).'.png" border="0" />';
+        $html .= '<img src="img/s_'.strtolower($sort_dir).'.png" alt="sort direction" />';
     }
     $html .= '</a>';
     return $html;

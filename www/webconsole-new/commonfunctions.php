@@ -236,9 +236,9 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
 
 
   mysql_data_seek($result, 0);
-  $string = '<select name="'.$name.'">';
+  $string = '<select name="'.$name.'">'."\n";
   if ($includenull){
-    $string = $string.'<option value='.$nullval.'>NONE</option>';
+    $string = $string.'<option value='.$nullval.'>NONE</option>'."\n";
   }
   while ($internal_row = mysql_fetch_row($result)){
     $string = $string . '<option value="'.$internal_row[0].'"';
@@ -246,12 +246,12 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
       $string = $string . ' selected="selected" ';
     }
     if ($internal_row[1] == ""){
-      $string = $string . '>'.htmlspecialchars('NULL').'</option>';
+      $string = $string . '>'.htmlspecialchars('NULL').'</option>'."\n";
     }else{
-      $string = $string . '>'.htmlspecialchars($internal_row[1]).'</option>';
+      $string = $string . '>'.htmlspecialchars($internal_row[1]).'</option>'."\n";
     }
   }
-  $string = $string . '</select>';
+  $string = $string . '</select>'."\n";
   return $string;
 }
 
@@ -337,7 +337,7 @@ function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = tr
 	
 		$test = ('var obj = ' . arrayToJSObject($arr));
 	
-		$return .= '<script>
+		$return .= '<script type="text/javascript"> //<![CDATA[
 ' . $test;
 		foreach ($GLOBALS['DrawItemSelectBox'] as $value)
 		{
@@ -400,6 +400,8 @@ jQuery(function($) {
 	for (var box in boxes) {
 		if (boxes[box].id != undefined) {
 			currentIdAppend = boxes[box].id.substr(14);
+            // in xhtml strict a select can not be empty, so we added one empty option, here we remove it.
+            boxes[box].removeChild(boxes[box].childNodes[0]);
 			if (eval("includenull_" + currentIdAppend)) {
 				var x = document.createElement("option");
 				var y = document.createTextNode("NONE");
@@ -421,12 +423,13 @@ jQuery(function($) {
 		}
 	}
 });
+//]]>
 </script>';
 	}
 	//category_id_workitem_id = 3, item_id_workitem_id = 70;
 	//item_category_workitem_id
-	$return .= '<select id="item_category_' . $name . '" class="item_category" name="item_category_' . $name . '" onchange="fillItems(false, \'' . $name . '\')"></select>';
-	$return .= '<select id="item_item_' . $name . '" name="' . $name . '"></select>';
+	$return .= '<select id="item_category_' . $name . '" class="item_category" name="item_category_' . $name . '" onchange="fillItems(false, \'' . $name . '\')"><option /></select>';
+	$return .= '<select id="item_item_' . $name . '" name="' . $name . '"><option /></select>';
 	return $return;
 }
 
@@ -802,7 +805,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
         }
     }
 
-    $html .= '<br/><form action="./index.php" method="get">';
+    $html .= '<br/><form action="./index.php" method="get"><div>';
     foreach($page_params as $name => $value)
     {
         if($name != 'items_per_page')
@@ -812,7 +815,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
     }
     $html .= '<input type="hidden" name="page" value="'.$page.'" />';
     $html .= 'Items per Page: <input type="text" name="items_per_page" value="'.$items_per_page.'" size="5" />';
-    $html .= '<input type="submit" value="Go" /></form><br/>';
+    $html .= '<input type="submit" value="Go" /></div></form>';
     
     return compact('sql', 'html');
 }
