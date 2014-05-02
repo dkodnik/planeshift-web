@@ -31,6 +31,7 @@ function rulesmain()
         echo '<a href="./index.php?do=factions">List Factions</a><br/>'."\n";
         echo '<a href="./index.php?do=raceinfo">Race Info/Spawn Points</a><br/>'."\n";
         echo '<hr/>'."\n";
+        echo '<a href="./index.php?do=listattacks">List Attacks</a><br/>'."\n";
         echo '<a href="./index.php?do=listattacktypes">Attack Types</a><br/>'."\n";
         echo '<a href="./index.php?do=listweapontypes">Weapon Types</a><br/>'."\n";
         echo '<a href="./index.php?do=liststances">List Stances</a><br/>'."\n";
