@@ -614,6 +614,18 @@
         rulesmain();
         raceinfo();
         break;
+      case 'listattacktypes':
+        include('./rules/rulesmain.php');
+        include('./rules/attacktypes.php');
+        rulesmain();
+        listattacktypes();
+        break;
+      case 'editattacktypes':
+        include('./rules/rulesmain.php');
+        include('./rules/attacktypes.php');
+        rulesmain();
+        editattacktypes();
+        break;
       case 'listweapontypes':
         include('./rules/rulesmain.php');
         include('./rules/weapontypes.php');
