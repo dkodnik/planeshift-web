@@ -70,52 +70,50 @@ function listresources(){
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
         $Category = PrepSelect('category');
-        $Items = PrepSelect('items_resource');
         $Skills = PrepSelect('skill');
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td>';
-        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" value="'.$row['loc_x'].'" size="5"/>/<input type="text" name="loc_y" value="'.$row['loc_y'].'" size="5"/>/<input type="text" name="loc_z" value="'.$row['loc_z'].'" size="5"/></td></tr>';
+        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" value="'.$row['loc_x'].'" size="5" />/<input type="text" name="loc_y" value="'.$row['loc_y'].'" size="5" />/<input type="text" name="loc_z" value="'.$row['loc_z'].'" size="5" /></td></tr>';
         echo '<tr><td>Radius:</td><td><input type="text" name="radius" value="'.$row['radius'].'" size="10" /></td>';
         echo '<td>Visible Radius:</td><td><input type="text" name="visible_radius" value="'.$row['visible_radius'].'" size="10" /></td></tr>';
-        echo '<tr><td>Probability:</td><td><input type="text" name="probability" value="'.$row['probability'].'" size="10"/></td>';
+        echo '<tr><td>Probability:</td><td><input type="text" name="probability" value="'.$row['probability'].'" size="10" /></td>';
         echo '<td>Tool Category</td><td>'.DrawSelectBox('category', $Category, 'item_cat_id', $row['item_cat_id']).'</td></tr>';
         echo '<tr><td>Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'skill', $row['skill']).'</td>';
-        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" value="'.$row['skill_level'].'" size="10"/></td></tr>';
-        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'item_id_reward', $row['item_id_reward']).'</td>';
-        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" value="'.$row['item_quality'].'" size="10"/></td></tr>';
+        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" value="'.$row['skill_level'].'" size="10" /></td></tr>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawItemSelectBox('item_id_reward', $row['item_id_reward'], true, true).'</td>';
+        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" value="'.$row['item_quality'].'" size="10" /></td></tr>';
         echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td>';
-        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" value="'.$row['anim_duration_seconds'].'" size="5"/></td></tr>';
+        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" value="'.$row['anim_duration_seconds'].'" size="5" /></td></tr>';
         echo '<tr><td>Action:</td><td><input type="text" name="action" value="'.$row['action'].'" /></td>';
-        echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" value="'.$row['reward_nickname'].'"/></td></tr>';
-		echo '<tr><td>Amount:<br/>(if not null it spawns items)</td><td><input type="text" name="amount" value="'.$row['amount'].'"/></td></tr>';
-		echo '<tr><td>Interval:<br/>(if amount not null, <br/>msec interval for spawning item when picked up</td><td><input type="text" name="interval" value="'.$row['interval'].'"/></td></tr>';
-		echo '<tr><td>Max Random:<br/>(if amount not null, <br/>maximum random interval modifier in msecs</td><td><input type="text" name="max_random" value="'.$row['max_random'].'"/></td></tr>';
-        echo '</table><input type="hidden" name="id" value="'.$row['id'].'"><input type="submit" name="commit" value="Commit Edit" />';
+        echo '<td>Reward Nickname:<br/>(Used by players after /dig)</td><td><input type="text" name="reward_nickname" value="'.$row['reward_nickname'].'" /></td></tr>';
+		echo '<tr><td>Amount:<br/>(if not null it spawns items)</td><td><input type="text" name="amount" value="'.$row['amount'].'" /></td></tr>';
+		echo '<tr><td>Interval:<br/>(if amount not null, <br/>msec interval for spawning item when picked up</td><td><input type="text" name="interval" value="'.$row['interval'].'" /></td></tr>';
+		echo '<tr><td>Max Random:<br/>(if amount not null, <br/>maximum random interval modifier in msecs</td><td><input type="text" name="max_random" value="'.$row['max_random'].'" /></td></tr>';
+        echo '</table><div><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="commit" value="Commit Edit" /></div>';
         echo '</form>';
       }else if ($_POST['action'] == 'Create New' && checkaccess('natres', 'create')){
         $Sectors = PrepSelect('sectorid');
         $Category = PrepSelect('category');
-        $Items = PrepSelect('items_resource');
         $Skills = PrepSelect('skill');
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', '').'</td>';
-        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" size="5"/>/<input type="text" name="loc_y" size="5"/>/<input type="text" name="loc_z" size="5"/></td></tr>';
+        echo '<td>Coordinates (X/Y/Z):</td><td><input type="text" name="loc_x" size="5" />/<input type="text" name="loc_y" size="5" />/<input type="text" name="loc_z" size="5" /></td></tr>';
         echo '<tr><td>Radius:</td><td><input type="text" name="radius" size="10" /></td>';
         echo '<td>Visible Radius:</td><td><input type="text" name="visible_radius" size="10" /></td></tr>';
-        echo '<tr><td>Probability:</td><td><input type="text" name="probability" size="10"/></td>';
+        echo '<tr><td>Probability:</td><td><input type="text" name="probability" size="10" /></td>';
         echo '<td>Tool Category</td><td>'.DrawSelectBox('category', $Category, 'item_cat_id', '').'</td></tr>';
         echo '<tr><td>Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'skill', '').'</td>';
-        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" size="10"/></td></tr>';
-        echo '<tr><td>Reward Item:</td><td>'.DrawSelectBox('items', $Items, 'item_id_reward', '').'</td>';
-        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" size="10"/></td></tr>';
+        echo '<td>Skill Level:</td><td><input type="text" name="skill_level" size="10" /></td></tr>';
+        echo '<tr><td>Reward Item:</td><td>'.DrawItemSelectBox('item_id_reward', '', true, true).'</td>';
+        echo '<td>Item Quality:</td><td><input type="text" name="item_quality" size="10" /></td></tr>';
         echo '<tr><td>Animation:</td><td><input type="text" name="animation"  /></td>';
-        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" size="5"/></td></tr>';
+        echo '<td>Animation Duration:</td><td><input type="text" name="anim_duration_seconds" size="5" /></td></tr>';
         echo '<tr><td>Action:</td><td><input type="text" name="action" /></td>';
         echo '<td>Reward Nickname:<br/>(Name used after action)</td><td><input type="text" name="reward_nickname" /></td></tr>';
-        echo '</table><input type="submit" name="commit" value="Commit New" />';
+        echo '</table><div><input type="submit" name="commit" value="Commit New" /></div>';
         echo '</form>';
       }else if ($_POST['action'] == 'Delete' && checkaccess('natres', 'delete')){
         $id = mysql_real_escape_string($_POST['id']);
@@ -174,19 +172,19 @@ function listresources(){
         echo '<td>'.$row['max_random'].'</td>';
         if (checkaccess('natres', 'edit')){
           echo '<td><form action="./index.php?do=resource" method="post">';
-          echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
+          echo '<div><input type="hidden" name="id" value="'.$row['id'].'" />';
           echo '<input type="submit" name="action" value="Edit" />';
           if (checkaccess('natres', 'delete')){
             echo '<br/><input type="submit" name="action" value="Delete" />';
           }
-          echo '</form></td>';
+          echo '</div></form></td>';
         }
         echo '</tr>';
       }
       echo '</table>(1) if not null, indicates how many items will be spawned (same as hunt_location)<br/>(2) if amount not null, msec interval for spawning item when picked up<br/>(3) if amount not null, maximum random interval modifier in msecs';
       if (checkaccess('natres', 'create')){
         echo '<form action="./index.php?do=resource" method="post">';
-        echo '<input type="submit" name="action" value="Create New" /></form>';
+        echo '<div><input type="submit" name="action" value="Create New" /></div></form>';
       }
     }
   }else{
