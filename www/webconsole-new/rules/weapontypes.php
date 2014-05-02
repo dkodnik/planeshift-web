@@ -21,8 +21,8 @@ function listweapontypes()
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
-        echo '<td>'.$row['name'].'</td>';
-        echo '<td>'.$row['skill'].'</td>';
+        echo '<td>'.htmlentities($row['name']).'</td>';
+        echo '<td>'.htmlentities($row['skill']).'</td>';
         if (checkaccess('natres', 'edit'))
         {
             echo '<td><a href="./index.php?do=editweapontypes&amp;id='.$row['id'].'">Edit</a></td>';
@@ -60,8 +60,9 @@ function editweapontypes()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Weapon Type"))
     {
+        $name = mysql_real_escape_string($_POST['name']);
         $skill = mysql_real_escape_string($_POST['skill']);
-        $query = "UPDATE weapon_types SET skill='$skill' WHERE id='$id'";
+        $query = "UPDATE weapon_types SET name='$name', skill='$skill' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -78,7 +79,7 @@ function editweapontypes()
         echo "<table>\n";
         echo "<tr><th>Field</th><th>Value</th></tr>\n";
         echo '<tr><td>ID</td><td>'.$row['id']."</td></tr>\n";
-        echo '<tr><td>name</td><td>'.$row['name']."</td></tr>\n";
+        echo '<tr><td>name</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>'."\n";
         echo '<tr><td>skill</td><td>'.DrawSelectBox('skill', $skills, 'skill', $row['skill']).'</td></tr>'."\n";
         echo '<tr><td></td><td><input type="submit" name="commit" value="Update Weapon Type"/></td></tr>'."\n";
         echo "</table></form>\n";
