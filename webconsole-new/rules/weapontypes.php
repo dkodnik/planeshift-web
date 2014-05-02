@@ -73,7 +73,7 @@ function editweapontypes()
         $result = mysql_query2($query);
         $row = mysql_fetch_array($result, MYSQL_ASSOC);
         $skills = PrepSelect('skill');
-        echo '<p class="header">Edit Stance</p>';
+        echo '<p class="header">Edit Weapon Type</p>';
         echo '<form action="./index.php?do=editweapontypes&amp;id='.$id.'" method="post">';
         echo "<table>\n";
         echo "<tr><th>Field</th><th>Value</th></tr>\n";
