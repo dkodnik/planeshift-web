@@ -312,11 +312,15 @@ function npcquests()
     if (checkaccess('quests', 'read'))
     {
         //Select all NPCs
-        $query = 'SELECT c.id, c.name, c.lastname, s.name AS sector FROM characters AS c LEFT JOIN sectors AS s ON c.loc_sector_id = s.id WHERE account_id=9 AND racegender_id<22';
+        $query = 'SELECT c.id, c.name, c.lastname, s.name AS sector FROM characters AS c LEFT JOIN sectors AS s ON c.loc_sector_id = s.id WHERE account_id=9';
         if (isset($_GET['npc_id']))
         {
             $id = mysql_real_escape_string($_GET['npc_id']);
             $query .= " AND c.id='$id'";
+        }
+        else
+        { // we want to skip this check only if an ID is specified, otherwise, we check for this to avoid the script parsing 20000 clackers and the like.
+            $query .=' AND racegender_id<22';
         }
         if (isset($_GET['sort']))
         {
@@ -336,7 +340,7 @@ function npcquests()
         $result = mysql_query2($query);
         $query = 'SELECT q.name, q.id, s.script FROM quests AS q LEFT JOIN quest_scripts AS s ON q.id=s.quest_id';
         $result_script = mysql_query2($query);
-        echo '<table border="1"><tr><th><a href="./index.php?do=npcquests&amp;sort=npc">NPC Name</a></th><th><a href="./index.php?do=npcquests&amp;sort=sector">Sector</a></th><th>Quests</th><th>Starting Quests</th></tr>';
+        echo '<table border="1"><tr><th><a href="./index.php?do=npcquests&amp;sort=npc">NPC Name</a></th><th><a href="./index.php?do=npcquests&amp;sort=sector">Sector</a></th><th>Quests</th><th>Starting Quests</th></tr>'."\n";
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
         {
             $fullname = $row['name'];
