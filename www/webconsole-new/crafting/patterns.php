@@ -70,37 +70,37 @@ function editpattern(){
         if (checkaccess('crafting', 'edit'))
         {
             $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletepattern&amp;id='.$pattern_id.'">Delete Pattern</a>' : "");
-            echo '<form action="./index.php?do=editpattern&amp;id='.$pattern_id.'" method="post">';
-            echo '<table><tr><td>Pattern Name:</td><td><input type="text" name="pattern_name" value="'.$row['pattern_name'].'"/></td></tr>';
-            echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.$row['description'].'</textarea></td></tr>';
-            echo '<tr><td>Design Item:</td><td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['designitem_id'].'">'.$row['item_name'].'</a></td></tr>';
-            echo '<tr><td>Difficulty Factor:</td><td><input type="text" name="k_factor" value="'.$row['k_factor'].'"/></td></tr>';
-            echo '<tr><td>Parent Pattern:</td><td>'.$groupname.'</td></tr>';
-            echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>';
-            echo '</table>';
-            echo '</form>';
+            echo '<form action="./index.php?do=editpattern&amp;id='.$pattern_id.'" method="post">'."\n";
+            echo '<table><tr><td>Pattern Name:</td><td><input type="text" name="pattern_name" value="'.htmlentities($row['pattern_name']).'"/></td></tr>'."\n";
+            echo '<tr><td>Pattern Description:</td><td><textarea name="description" rows="5" cols="40">'.htmlentities($row['description']).'</textarea></td></tr>'."\n";
+            echo '<tr><td>Design Item:</td><td><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['designitem_id'].'">'.htmlentities($row['item_name']).'</a></td></tr>'."\n";
+            echo '<tr><td>Difficulty Factor:</td><td><input type="text" name="k_factor" value="'.htmlentities($row['k_factor']).'"/></td></tr>'."\n";
+            echo '<tr><td>Parent Pattern:</td><td>'.(isset($groupname) ? $groupname : '').'</td></tr>'."\n";
+            echo '<tr><td><input type="submit" name="commit" value="Update Pattern"/></td><td>'.$delete_text.'</td></tr>'."\n";
+            echo '</table>'."\n";
+            echo '</form>'."\n";
         }
         else
         {
             echo '<table>';
-            echo '<tr><td>Pattern Name:</td><td>'.$row['pattern_name'].'</td></tr>';
-            echo '<tr><td>Pattern Description:</td><td>'.$row['description'].'</td></tr>';
+            echo '<tr><td>Pattern Name:</td><td>'.htmlentities($row['pattern_name']).'</td></tr>'."\n";
+            echo '<tr><td>Pattern Description:</td><td>'.htmlentities($row['description']).'</td></tr>'."\n";
             $i = $row['designitem_id'];
-            echo '<tr><td>Design Item:</td><td>'.$Items["$i"].'</td></tr>';
-            echo '<tr><td>Difficulty Factor:</td><td>'.$row['k_factor'].'</td></tr>';
-            echo '<tr><td>Parent Pattern:</td><td>'.$groupname.'</td></tr>';
+            echo '<tr><td>Design Item:</td><td>'.htmlentities($Items["$i"]).'</td></tr>'."\n";
+            echo '<tr><td>Difficulty Factor:</td><td>'.htmlentities($row['k_factor']).'</td></tr>'."\n";
+            echo '<tr><td>Parent Pattern:</td><td>'.(isset($groupname) ? $groupname : '').'</td></tr>'."\n";
             echo '</table>';
         }
     }
     else
     {
-        echo '<p>Please take note that this is not technically a pattern, it is the lack of it. This collection of combines and transforms is considered "general knowledge" and because of that is not associated with any pattern. You are free to add/edit any of these as long as you keep this in mind.</p>';
+        echo '<p>Please take note that this is not technically a pattern, it is the lack of it. This collection of combines and transforms is considered "general knowledge" and because of that is not associated with any pattern. You are free to add/edit any of these as long as you keep this in mind.</p>'."\n";
     }
     if (!isset($_GET['showids']))
     {
-        echo '<p>Showing transformation and combinations without ID, to show them, click <a href="./index.php?do=editpattern&amp;id='.$pattern_id.'&amp;showids">here</a></p>';
+        echo '<p>Showing transformation and combinations without ID, to show them, click <a href="./index.php?do=editpattern&amp;id='.$pattern_id.'&amp;showids">here</a></p>'."\n";
     }
-    echo '<p class="bold">Available Transforms</p>';
+    echo '<p class="bold">Available Transforms</p>'."\n";
     $query = "SELECT t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' GROUP BY id ORDER BY p.name, ii.name, i.name";
     $result = mysql_query2($query);
     echo '<table><tr>'.(isset($_GET['showids']) ? '<th>ID</th>' : '').'<th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th>';
@@ -108,13 +108,13 @@ function editpattern(){
     {
         echo '<th>Actions</th>';
     }
-    echo '</tr>';
+    echo '</tr>'."\n";
     $alt = false;
     while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo (isset($_GET['showids']) ? '<td>'.$row['id'].'</td>' : '');
-        $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+        $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") : htmlentities($row['item_name'])); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
         if (checkaccess('items','edit'))
         {
             echo '<td>'.$row['item_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> </td>';
@@ -125,7 +125,7 @@ function editpattern(){
         }
         echo '<td>'.$row['item_cat'].'</td>';
         echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
-        $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+        $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") : htmlentities($row['result_name'])); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
         if (checkaccess('items','edit'))
         {
             echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
@@ -134,18 +134,18 @@ function editpattern(){
         {
             echo '<td>'.$row['result_qty'].' </td><td> '.$result_name.'</td>';
         }
-        echo '<td>'.$row['result_cat'].'</td>';
-        echo '<td>'.$row['trans_points'].'</td>';
-        echo '<td>'.$row['penalty_pct'].'</td>';
+        echo '<td>'.htmlentities($row['result_cat']).'</td>';
+        echo '<td>'.htmlentities($row['trans_points']).'</td>';
+        echo '<td>'.htmlentities($row['penalty_pct']).'</td>';
         if (checkaccess('crafting', 'edit')) 
         {
             echo '<td><a href="./index.php?do=transform&amp;id='.$row['id'].'">Edit</a></td>';
         }
-        echo '</tr>';
+        echo '</tr>'."\n";
     }
-    echo '</table>';
-    echo '<a href="./index.php?do=createtransform&amp;id='.$pattern_id.'">Create new transform for this pattern </a><br />';
-    echo '<p class="bold">Available Combinations</p>';
+    echo '</table>'."\n";
+    echo '<a href="./index.php?do=createtransform&amp;id='.$pattern_id.'">Create new transform for this pattern </a><br />'."\n";
+    echo '<p class="bold">Available Combinations</p>'."\n";
     $alt = false;
     $item = -1;
     $query = "SELECT t.id, t.result_id, c.name AS result_cat, c.category_id AS result_cat_id, i.name AS result_name, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.min_qty, t.max_qty, t.description FROM trade_combinations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' ORDER BY i.name";
@@ -157,7 +157,7 @@ function editpattern(){
         {
             echo '<th>Actions</th>';
         }
-        echo '</tr>';
+        echo '</tr>'."\n";
         while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
         {
             if ($item != $row['result_id'])
@@ -173,7 +173,7 @@ function editpattern(){
                 $item = $row['result_id'];
                 echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
                 $result_id = $row['result_id'];
-                $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") :$row['result_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+                $result_name = ($row['result_name'] == "NULL" ? ($row['result_id'] != 0 ? "BROKEN" : "") : htmlentities($row['result_name'])); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
                     echo '<td>'.$row['result_qty'].' </td><td> <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['result_cat_id'].'&amp;item='.$row['result_id'].'">'.$result_name.'</a> </td>';
@@ -183,7 +183,7 @@ function editpattern(){
                     echo '<td>'.$row['result_qty'].' </td><td> '.$result_name.'</td>';
                 }
                 echo '<td>'.$row['result_cat'].'</td>';
-                $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+                $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") : htmlentities($row['item_name'])); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
                     echo '<td>'.(isset($_GET['showids']) ? $row['id'].' -- ' : '').$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
@@ -196,7 +196,7 @@ function editpattern(){
             else
             {
                 echo '<br/>';
-                $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") :$row['item_name']); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
+                $item_name = ($row['item_name'] == "NULL" ? ($row['item_id'] != 0 ? "BROKEN" : "") : htmlentities($row['item_name'])); // Item name is broken if NULL was returned and ID is not 0, if ID was 0, name is "", else name the name found in the database.
                 if (checkaccess('items','edit'))
                 {
                     echo (isset($_GET['showids']) ? $row['id'].' -- ' : '').$row['min_qty'].' to '.$row['max_qty'].' <a href="./index.php?do=listitems&amp;override1&amp;category='.$row['item_cat_id'].'&amp;item='.$row['item_id'].'">'.$item_name.'</a> ('.$row['item_cat'].')';
@@ -207,13 +207,13 @@ function editpattern(){
                 }
             }
         }
-        echo '</td><td><a href="./index.php?do=editcombine&amp;id='.$item.'&amp;pattern_id='.$_GET['id'].'">Edit</a></td></tr></table>';
-        echo '<a href="./index.php?do=createcombine&amp;pattern_id='.$pattern_id.'">Create new combine for this pattern </a><br />';
+        echo '</td><td><a href="./index.php?do=editcombine&amp;id='.$item.'&amp;pattern_id='.$_GET['id'].'">Edit</a></td></tr></table>'."\n";
+        echo '<a href="./index.php?do=createcombine&amp;pattern_id='.$pattern_id.'">Create new combine for this pattern </a><br />'."\n";
     }
     else
     {
-        echo '<p class="error">No available Combines</p>';
-        echo '<a href="./index.php?do=createcombine&amp;pattern_id='.$pattern_id.'">Create new combine for this pattern </a><br />';
+        echo '<p class="error">No available Combines</p>'."\n";
+        echo '<a href="./index.php?do=createcombine&amp;pattern_id='.$pattern_id.'">Create new combine for this pattern </a><br />'."\n";
     }
 }
 
