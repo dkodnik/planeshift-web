@@ -72,12 +72,13 @@ function createtransform()
         $result_id = ($result_id == '' ? 0 : $result_id);
         $result_qty = mysql_real_escape_string($_POST['result_qty']);
         $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
+        $description = mysql_real_escape_string($_POST['description']);
         if ($item_id =='0' && $result_id=='0')
         {
             echo '<p class="error">Source and Result item can not both be empty.</p>';
             return;
         }
-        $query = "INSERT INTO trade_transformations ( pattern_id, item_id, item_qty, process_id, trans_points, result_id, result_qty, penalty_pct ) VALUES ('$pattern_id', '$item_id', '$item_qty', '$process_id', '$trans_points', '$result_id', '$result_qty', '$penalty_pct')";
+        $query = "INSERT INTO trade_transformations ( pattern_id, item_id, item_qty, process_id, trans_points, result_id, result_qty, penalty_pct, description ) VALUES ('$pattern_id', '$item_id', '$item_qty', '$process_id', '$trans_points', '$result_id', '$result_qty', '$penalty_pct', '$description')";
         mysql_query2($query);
         if(isset($_GET['id'])) // "redirect the user back to where they came from (if they came from somewhere).
         {
@@ -107,7 +108,7 @@ function createtransform()
         else
         {
             $pattern_results = PrepSelect('patterns');
-            echo '<tr><td>Pattern id</td><td>'.DrawSelectBox('patterns', $pattern_results, 'pattern_id', '', false).'</td></tr>';
+            echo '<tr><td>Pattern id</td><td>'.DrawSelectBox('patterns', $pattern_results, 'pattern_id', '', true).'</td></tr>';
         }
         echo '<tr><td>(amount) Source Item</td><td><input type="text" name="item_qty" size="4" /> ';
         $items_results = PrepSelect('items');
@@ -118,6 +119,7 @@ function createtransform()
         echo '<tr><td>(amount) Result Item</td><td><input type="text" name="result_qty" size="4"/> ';
         echo DrawSelectBox('items', $items_results, 'result_id', '', true).'</td></tr>';
         echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penalty_pct" /></td></tr>';
+        echo '<tr><td>Description</td><td><textarea name="description" rows="4" cols="40"></textarea></td></tr>';
         echo '<tr><td></td><td><input type=submit name="commit" value="Create Transformation"/></td></tr>';
         echo '</table></form>'."\n";
     }
