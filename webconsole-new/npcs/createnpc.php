@@ -100,7 +100,7 @@ function createnpc()
         echo '<tr><td>NPC Master: </td><td><input type="text" name="npc_master_id" size="5" value="'.(isset($_POST['npc_master_id']) ? htmlentities($_POST['npc_master_id']) : '0').'" /></td></tr>';
         echo '<tr><td>Name: </td><td><input type="text" name="npcname" value="'.(isset($_POST['npcname']) ? htmlentities($_POST['npcname']) : '').'" /></td></tr>';
         echo '<tr><td>Last Name: </td><td><input type="text" name="lastname" value="'.(isset($_POST['lastname']) ? htmlentities($_POST['lastname']) : '').'" /></td></tr>';
-        echo '<tr><td>Description: </td><td><textarea name="description" style="width: 400px; height: 100px;">'.(isset($_POST['description']) ? htmlentities($_POST['description']) : '').'</textarea></td></tr>';
+        echo '<tr><td>Description: </td><td><textarea name="description" cols="45" rows="6">'.(isset($_POST['description']) ? htmlentities($_POST['description']) : '').'</textarea></td></tr>';
         echo '<tr><td>Race: </td><td>'.DrawSelectBox('races', PrepSelect('races'), 'race', (isset($_POST['race']) ? $_POST['race'] : '')).'</td></tr>';
         echo '<tr><td>Stats(S,A,E,I,W,C): </td><td><input type="text" name="stats" value="'.(isset($_POST['stats']) ? htmlentities($_POST['stats']) : '0,0,0,0,0,0').'" /></td></tr>';
         echo '<tr><td>HP: </td><td><input type="text" name="hp" size="5" value="'.(isset($_POST['hp']) ? htmlentities($_POST['hp']) : '').'" /></td></tr>';
@@ -112,8 +112,8 @@ function createnpc()
         echo '<tr><td>Behavior: </td><td>'.DrawSelectBox('behaviour', PrepSelect('behaviour'), 'behavior', (isset($_POST['behavior']) ? $_POST['behavior'] : '')).'</td></tr>';
         echo '<tr><td>Region: </td><td>'.DrawSelectBox('b_region', PrepSelect('b_region'), 'region', (isset($_POST['region']) ? $_POST['region'] : '')).'</td></tr>';
         echo '<tr><td>Exp: </td><td><input type="text" name="exp" size="5" value="'.(isset($_POST['exp']) ? htmlentities($_POST['exp']) : '').'" /></td></tr>';
-        echo '</table>';
-        echo '<input type="submit" name="submit" value="Create NPC" /><input type="reset" value="Reset" /></form>';
+        echo '<tr><td><input type="submit" name="submit" value="Create NPC" /></td><td><input type="reset" value="Reset" /></td></tr>';
+        echo '</table></form>';
     }
     else
     {
