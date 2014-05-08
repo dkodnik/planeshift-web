@@ -7,11 +7,11 @@ function findtrigger(){
 
         if ($_POST['commit'] == 'Search Trigger')
         {
-            $query = "SELECT id, trigger_text, area FROM npc_triggers WHERE trigger_text='$word' OR trigger_text LIKE '% $word %' OR trigger_text LIKE '$word %' OR trigger_text LIKE '% $word'";
+            $query = "SELECT nt.id, trigger_text, area, response1, response2, response3, response4, response5 FROM npc_triggers AS nt LEFT JOIN npc_responses AS nr ON nt.id=trigger_id WHERE trigger_text='$word' OR trigger_text LIKE '% $word %' OR trigger_text LIKE '$word %' OR trigger_text LIKE '% $word'";
         }
         else if ($_POST['commit'] == 'Search Response')
         {
-            $query = "SELECT nt.id, trigger_text, area FROM npc_triggers AS nt LEFT JOIN npc_responses AS nr ON nt.id=trigger_id WHERE response1='$word' OR response1 LIKE '% $word %' OR response1 LIKE '$word %' OR response1 LIKE '% $word'";
+            $query = "SELECT nt.id, trigger_text, area , response1, response2, response3, response4, response5 FROM npc_triggers AS nt LEFT JOIN npc_responses AS nr ON nt.id=trigger_id WHERE response1='$word' OR response1 LIKE '% $word %' OR response1 LIKE '$word %' OR response1 LIKE '% $word'";
             $query .= " OR response2='$word' OR response2 LIKE '% $word %' OR response2 LIKE '$word %' OR response2 LIKE '% $word'";
             $query .= " OR response3='$word' OR response3 LIKE '% $word %' OR response3 LIKE '$word %' OR response3 LIKE '% $word'";
             $query .= " OR response4='$word' OR response4 LIKE '% $word %' OR response4 LIKE '$word %' OR response4 LIKE '% $word'";
@@ -22,6 +22,7 @@ function findtrigger(){
             echo '<p class="error">Should not reach this.</p>';
             return;
         }
+        $query .= " GROUP BY id";
         $result = mysql_query2($query);
 
         if (mysql_num_rows($result) == 0)
@@ -30,9 +31,11 @@ function findtrigger(){
             return;
         }
         echo '<b>Triggers found</b><br /><br />';
-        echo '<table border="1"><tr><th>ID</th><th>Trigger</th><th>Area</th></tr>';
-        while ($line = mysql_fetch_array($result, MYSQL_NUM)){
-            echo '<tr><td><b>'.htmlentities($line[0]).'</b></td><td>'.htmlentities($line[1]).'</td><td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($line[2]).'">'.htmlentities($line[2]).'</a></td></tr>';
+        echo '<table border="1"><tr><th>ID</th><th>Trigger</th><th>Area</th>'.(isset($_POST['show_responses']) ? '<th>response1</th><th>response2</th><th>response3</th><th>response4</th><th>response5</th>' : '').'</tr>';
+        while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
+            echo '<tr><td><b>'.htmlentities($line['id']).'</b></td><td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($line['area']).'&amp;trigger='.htmlentities($line['id']).'">'.htmlentities($line['trigger_text']).
+                '</a></td><td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($line['area']).'">'.htmlentities($line['area']).'</a></td>'.(isset($_POST['show_responses']) ? '<td>'.htmlentities($line['response1']).'</td><td>'.
+                htmlentities($line['response2']).'</td><td>'.htmlentities($line['response3']).'</td><td>'.htmlentities($line['response4']).'</td><td>'.htmlentities($line['response5']).'</td>' : '').'</tr>'."\n";
         }
         echo '</table>';
     }
@@ -41,15 +44,17 @@ function findtrigger(){
         echo '<p>Search Trigger</p>';
         echo '<form action="./index.php?do=findtrigger" method="post" >';
         echo '<table border="0">';
-        echo '<tr><td>Enter the word to search for: </td><td><input type="text" name="word" />';
-        echo '<input type="submit" name="commit" value="Search Trigger" /></td></tr>';
+        echo '<tr><td>Enter the word to search for: </td><td><input type="text" name="word" /></td></tr>';
+        echo '<tr><td></td><td><input type="checkbox" name="show_responses" /> Show responses in results </td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Search Trigger" /></td></tr>';
         echo '</table></form>';
         
         echo '<p>Search response</p>';
         echo '<form action="./index.php?do=findtrigger" method="post" >';
         echo '<table border="0">';
-        echo '<tr><td>Enter the word to search for: </td><td><input type="text" name="word" />';
-        echo '<input type="submit" name="commit" value="Search Response" /></td></tr>';
+        echo '<tr><td>Enter the word to search for: </td><td><input type="text" name="word" /></td></tr>';
+        echo '<tr><td></td><td><input type="checkbox" name="show_responses" /> Show responses in results </td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Search Response" /></td></tr>';
         echo '</table></form>';
     }
     else
