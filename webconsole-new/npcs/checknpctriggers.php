@@ -1,7 +1,7 @@
 <?PHP
 function checknpctriggers(){
 
-    if (checkaccess('npc', 'read'))
+    if (checkaccess('npcs', 'read'))
     {
         // extract all invulnerable NPC names
         $query = "select c.id, c.name, c.lastname, sec.name, c.loc_x, c.loc_y, c.loc_z, c.npc_spawn_rule from characters as c, sectors as sec ";
