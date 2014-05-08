@@ -10,7 +10,7 @@ function createnpc()
         {
             // Create the npc
             $doit = true;
-            $fields = array('NPC Master' => 'npc_master_id', 'Name' => 'npcname', 'Description' => 'description', 'Race' => 'race', 'Stats' => 'stats', 'HP' => 'hp', 'Sector' => 'sector', 'Position' => 'position', 'Spawn Rule' => 'spawn', 'Weapon' => 'weapon', 'Behavior' => 'behavior', 'Skill Rank' => 'skill_value', 'Exp' => 'exp');
+            $fields = array('NPC Master' => 'npc_master_id', 'Name' => 'npcname', 'Last Name' => 'lastname', 'Description' => 'description', 'Race' => 'race', 'Stats' => 'stats', 'HP' => 'hp', 'Sector' => 'sector', 'Position' => 'position', 'Spawn Rule' => 'spawn', 'Weapon' => 'weapon', 'Behavior' => 'behavior', 'Skill Rank' => 'skill_value', 'Exp' => 'exp');
             foreach($fields as $name => $field)
             {
                 if(!isset($_POST[$field]) || $_POST[$field] === '')
@@ -25,6 +25,12 @@ function createnpc()
             {
                 $npc_master_id = $_POST['npc_master_id'];
                 $npcname = $_POST['npcname'];
+                if (strpos($npcname, ' ') !== false)
+                {
+                    echo '<p class="error">You can not use spaces in the NPC name field, put multiple names in the Last Name field instead.</p>';
+                    $doit = false;
+                }
+                $lastname = $_POST['lastname'];
                 $description = str_replace("\r", '', $_POST['description']);
                 $race = $_POST['race'];
                 $stats = $_POST['stats'];
@@ -71,7 +77,7 @@ function createnpc()
                 
                 $newnpcid = getNextId('characters', 'id');
                 
-                $sql = "INSERT INTO characters (id, npc_master_id, name, racegender_id, character_type, base_strength, base_agility, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, mod_hitpoints, stamina_physical, stamina_mental, loc_sector_id, loc_x, loc_y, loc_z, loc_yrot, npc_spawn_rule, npc_impervious_ind, account_id, description, kill_exp) VALUES ($newnpcid, $npc_master_id, '".mysql_escape_string($npcname)."', $race, 1, $stat_str, $stat_agi, $stat_end, $stat_int, $stat_wil, $stat_cha, $hp, $hp, 100, 100, $sector, $locx, $locy, $locz, $locrot, $spawnrule, 'N', 9,'".mysql_escape_string($description)."', $exp)";
+                $sql = "INSERT INTO characters (id, npc_master_id, name, lastname, racegender_id, character_type, base_strength, base_agility, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, mod_hitpoints, stamina_physical, stamina_mental, loc_sector_id, loc_x, loc_y, loc_z, loc_yrot, npc_spawn_rule, npc_impervious_ind, account_id, description, kill_exp) VALUES ($newnpcid, $npc_master_id, '".mysql_escape_string($npcname)."', '".mysql_escape_string($lastname)."', $race, 1, $stat_str, $stat_agi, $stat_end, $stat_int, $stat_wil, $stat_cha, $hp, $hp, 100, 100, $sector, $locx, $locy, $locz, $locrot, $spawnrule, 'N', 9,'".mysql_escape_string($description)."', $exp)";
                 mysql_query2($sql);
                 
                 if ($skill != '')
@@ -90,21 +96,22 @@ function createnpc()
             }
         }
         
-        echo '<form action="index.php?do=createnpc" method="post"><table>';
-        echo '<tr class="color_b"><td>NPC Master: </td><td><input type="text" name="npc_master_id" size="5" value="'.(isset($_POST['npc_master_id']) ? htmlentities($_POST['npc_master_id']) : '0').'" /></td></tr>';
-        echo '<tr class="color_a"><td>Name: </td><td><input type="text" name="npcname" value="'.(isset($_POST['npcname']) ? htmlentities($_POST['npcname']) : '').'" /></td></tr>';
-        echo '<tr class="color_b"><td>Description: </td><td><textarea name="description" style="width: 400px; height: 100px;">'.(isset($_POST['description']) ? htmlentities($_POST['description']) : '').'</textarea></td></tr>';
-        echo '<tr class="color_a"><td>Race: </td><td>'.DrawSelectBox('races', PrepSelect('races'), 'race', (isset($_POST['race']) ? $_POST['race'] : '')).'</td></tr>';
-        echo '<tr class="color_b"><td>Stats(S,A,E,I,W,C): </td><td><input type="text" name="stats" value="'.(isset($_POST['stats']) ? htmlentities($_POST['stats']) : '0,0,0,0,0,0').'" /></td></tr>';
-        echo '<tr class="color_a"><td>HP: </td><td><input type="text" name="hp" size="5" value="'.(isset($_POST['hp']) ? htmlentities($_POST['hp']) : '').'" /></td></tr>';
-        echo '<tr class="color_b"><td>Sector: </td><td>'.DrawSelectBox('sectorid', PrepSelect('sectorid'), 'sector', (isset($_POST['sector']) ? $_POST['sector'] : '')).'</td></tr>';
-        echo '<tr class="color_a"><td>X,Y,Z,Rot: </td><td><input type="text" name="position" value="'.(isset($_POST['position']) ? htmlentities($_POST['position']) : '0,0,0,0').'" /></td></tr>';
-        echo '<tr class="color_b"><td>Spawn Rule: </td><td>'.DrawSelectBox('spawn', PrepSelect('spawn'), 'spawn', (isset($_POST['spawn']) ? $_POST['spawn'] : '')).'</td></tr>';
-        echo '<tr class="color_a"><td>Weapon: </td><td>'.DrawSelectBox('weapon', PrepSelect('weapon'), 'weapon', (isset($_POST['weapon']) ? $_POST['weapon'] : -1)).'</td></tr>';
-        echo '<tr class="color_b"><td>Weapon Skill Rank: </td><td><input type="text" name="skill_value" size="8" value="'.(isset($_POST['skill_value']) ? htmlentities($_POST['skill_value']) : '').'" /></td></tr>';
-        echo '<tr class="color_a"><td>Behavior: </td><td>'.DrawSelectBox('behaviour', PrepSelect('behaviour'), 'behavior', (isset($_POST['behavior']) ? $_POST['behavior'] : '')).'</td></tr>';
-        echo '<tr class="color_b"><td>Region: </td><td>'.DrawSelectBox('b_region', PrepSelect('b_region'), 'region', (isset($_POST['region']) ? $_POST['region'] : '')).'</td></tr>';
-        echo '<tr class="color_a"><td>Exp: </td><td><input type="text" name="exp" size="5" value="'.(isset($_POST['exp']) ? htmlentities($_POST['exp']) : '').'" /></td></tr>';
+        echo '<form action="index.php?do=createnpc" method="post"><table border="1">';
+        echo '<tr><td>NPC Master: </td><td><input type="text" name="npc_master_id" size="5" value="'.(isset($_POST['npc_master_id']) ? htmlentities($_POST['npc_master_id']) : '0').'" /></td></tr>';
+        echo '<tr><td>Name: </td><td><input type="text" name="npcname" value="'.(isset($_POST['npcname']) ? htmlentities($_POST['npcname']) : '').'" /></td></tr>';
+        echo '<tr><td>Last Name: </td><td><input type="text" name="lastname" value="'.(isset($_POST['lastname']) ? htmlentities($_POST['lastname']) : '').'" /></td></tr>';
+        echo '<tr><td>Description: </td><td><textarea name="description" style="width: 400px; height: 100px;">'.(isset($_POST['description']) ? htmlentities($_POST['description']) : '').'</textarea></td></tr>';
+        echo '<tr><td>Race: </td><td>'.DrawSelectBox('races', PrepSelect('races'), 'race', (isset($_POST['race']) ? $_POST['race'] : '')).'</td></tr>';
+        echo '<tr><td>Stats(S,A,E,I,W,C): </td><td><input type="text" name="stats" value="'.(isset($_POST['stats']) ? htmlentities($_POST['stats']) : '0,0,0,0,0,0').'" /></td></tr>';
+        echo '<tr><td>HP: </td><td><input type="text" name="hp" size="5" value="'.(isset($_POST['hp']) ? htmlentities($_POST['hp']) : '').'" /></td></tr>';
+        echo '<tr><td>Sector: </td><td>'.DrawSelectBox('sectorid', PrepSelect('sectorid'), 'sector', (isset($_POST['sector']) ? $_POST['sector'] : '')).'</td></tr>';
+        echo '<tr><td>X,Y,Z,Rot: </td><td><input type="text" name="position" value="'.(isset($_POST['position']) ? htmlentities($_POST['position']) : '0,0,0,0').'" /></td></tr>';
+        echo '<tr><td>Spawn Rule: </td><td>'.DrawSelectBox('spawn', PrepSelect('spawn'), 'spawn', (isset($_POST['spawn']) ? $_POST['spawn'] : '')).'</td></tr>';
+        echo '<tr><td>Weapon: </td><td>'.DrawSelectBox('weapon', PrepSelect('weapon'), 'weapon', (isset($_POST['weapon']) ? $_POST['weapon'] : -1)).'</td></tr>';
+        echo '<tr><td>Weapon Skill Rank: </td><td><input type="text" name="skill_value" size="8" value="'.(isset($_POST['skill_value']) ? htmlentities($_POST['skill_value']) : '').'" /></td></tr>';
+        echo '<tr><td>Behavior: </td><td>'.DrawSelectBox('behaviour', PrepSelect('behaviour'), 'behavior', (isset($_POST['behavior']) ? $_POST['behavior'] : '')).'</td></tr>';
+        echo '<tr><td>Region: </td><td>'.DrawSelectBox('b_region', PrepSelect('b_region'), 'region', (isset($_POST['region']) ? $_POST['region'] : '')).'</td></tr>';
+        echo '<tr><td>Exp: </td><td><input type="text" name="exp" size="5" value="'.(isset($_POST['exp']) ? htmlentities($_POST['exp']) : '').'" /></td></tr>';
         echo '</table>';
         echo '<input type="submit" name="submit" value="Create NPC" /><input type="reset" value="Reset" /></form>';
     }
