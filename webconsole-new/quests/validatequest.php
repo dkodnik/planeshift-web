@@ -273,7 +273,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
                 elseif (strcasecmp(substr($line, 4, 8), 'norepeat') === 0) 
                 {
-                    // valid, do nothing
+                    if (strcasecmp(trim($line), '... NoRepeat') !== 0)
+                    {
+                        append_log("parse error, illegal entry following '... NoRepeat' (no characters, not even a dot are allowed after NoRepeat) at line $line_number");
+                    }
+                    // else valid, do nothing
                 }
                 elseif (trim(substr($line, 4)) == '') 
                 {
