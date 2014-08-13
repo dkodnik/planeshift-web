@@ -62,9 +62,13 @@ function rule_scripts(){
             echo '<p class="error">Listing only Spell scripts</p>';
             $query = $query. " WHERE name LIKE 'cast%' OR name LIKE 'apply%'";
             break;
+          case 'A':
+            echo '<p class="error">Listing only Special Attacks scripts</p>';
+            $query = $query. " WHERE name LIKE 'attack%' ";
+            break;
           case 'O':
             echo '<p class="error">Listing only "Other" scripts</p>';
-            $query = $query. " WHERE name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%' AND name NOT LIKE 'consumeitem%'";
+            $query = $query. " WHERE name NOT LIKE 'simpleitem%' AND name NOT LIKE 'charcreate%' AND name NOT LIKE 'PATH%' AND name NOT LIKE 'cast%' AND name NOT LIKE 'apply%' AND name NOT LIKE 'consumeitem%' AND name NOT LIKE 'attack%'";
             break;
           default:
             echo '<p class="error">Unsupported type specified, not limiting listing</p>';
