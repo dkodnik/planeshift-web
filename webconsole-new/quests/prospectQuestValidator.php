@@ -18,6 +18,11 @@ if (!isset($_SESSION['totalq']))
 }
 $script = (isset($_POST['script']) ? $_POST['script'] : '');
 $quest_name = (isset($_POST['quest_name']) ? $_POST['quest_name'] : '');
+$warncheck = '';
+if($_POST['no_warnings'])
+{
+	$warncheck = 'checked';
+}
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
@@ -33,6 +38,7 @@ echo '          <form method="post" action="'.$_SERVER['PHP_SELF'].'"><p>
                 Quest name: <input type="text" name="quest_name" value="'.$quest_name.'" /> <br />
                 Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script.'</textarea><br />
                 <input type="checkbox" name="show_lines" />Show script lines?<br />
+				<input type="checkbox" name="no_warnings" ' . $warncheck . ' />Hide Warnings?<br />
                 <input type="submit" name="submit" value="submit" /></p></form>';
 
 if ($script != '') 

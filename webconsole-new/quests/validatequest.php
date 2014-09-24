@@ -13,7 +13,12 @@ function validatequest()
     {
         global $parse_log;
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
-        echo '
+       $warncheck = '';
+		if($_POST['no_warnings'])
+		{
+			$warncheck = 'checked';
+		}
+	    echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser).</p>
 <form method="post" action="./index.php?do=validatequest&amp;id='.$id.'">
@@ -21,6 +26,7 @@ to what line in your browser).</p>
         <table>
             <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'" /></td></tr>
             <tr><td><input type="checkbox" name="show_lines" />Show script lines?</td><td></td></tr>
+			<tr><td><input type="checkbox" name="no_warnings" ' . $warncheck . ' />Hide Warnings?</td><td></td></tr>
         </table>
         <input type="submit" name="submit" value="submit" />
     </div>
@@ -109,11 +115,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
             if ($p_count > 0)  
             {
-                append_log("parse error, there have been more P: or player than npc: tags before $line_number");
+                append_log("Parse Error: there have been more P: or player than npc: tags before $line_number");
             }
             if ($m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
             {
-                append_log("parse error, there have been more Menu: than npc: tags before $line_number");
+                append_log("Parse Error: there have been more Menu: than npc: tags before $line_number");
             }
             if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
             {
@@ -129,7 +135,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             }
             if (getTriggerCount($line, 'P:', $count) === false) //get the amount of P: tags
             {
-                append_log("parse error, P: with no text on line $line_number");
+                append_log("Parse Error: P: with no text on line $line_number");
             }
             else // $count is filled by a side-effect of the getTriggerCount.
             {
@@ -144,15 +150,15 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             $count = 0;
             if ($seen_npc_triggers) 
             {
-            	append_log("parse error, found a Menu: trigger following an NPC: trigger on line $line_number");
+            	append_log("Parse Error: found a Menu: trigger following an NPC: trigger on line $line_number");
             }
             if ($seen_menu_triggers) 
             {
-            	append_log("parse error, found two sets of Menu: triggers before line $line_number");
+            	append_log("Parse Error: found two sets of Menu: triggers before line $line_number");
             }
-            if (getTriggerCount($line, 'Menu:', $count, 80) === false)
+            if (getTriggerCount($line, 'Menu:', $count) === false)
             {
-                append_log("parse error, Menu: with no text on line $line_number");
+                append_log("Parse Error: Menu: with no text on line $line_number");
             }
             else // $count is filled by a side-effect of the getTriggerCount.
             {
@@ -171,7 +177,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             // if a line starts with questnote, the : was likely added as a mistake since no NPCs are named "questnote". Send warning.
             if(strncasecmp($line, 'QuestNote', 9) === 0)
             {
-                append_log("parse error, found QuestNote and a colon ':' on the same line, the QuestNote command can not contain colons at line $line_number");
+                append_log("Parse Error: found QuestNote and a colon ':' on the same line, the QuestNote command can not contain colons at line $line_number");
                 continue;
             }
             $seenTripleDot = false;
@@ -188,24 +194,24 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
                 elseif (validate_npc($npc_name) === false) 
                 {
-                    append_log("parse error, invalid NPC name: $npc_name at line $line_number");
+                    append_log("Parse Error: invalid NPC name: $npc_name at line $line_number");
                 }
             }
             
             if(getTriggerCount($line, $temp_name.':', $count) === false) //get the amount of NPC: tags .':' adds the ':' which is not included in the name.
             {
-                append_log("parse error, $temp_name:  with no text on line $line_number");
+                append_log("Parse Error: $temp_name:  with no text on line $line_number");
             }
             $p_count -= $count; // substract the amount of npc: tags from the P: count, they should match 1 on 1 .
             $m_count -= $count; // substract the amount of npc: tags from the P: count, they should match 1 on 1 .
             if ($p_count < 0) 
             {
-                append_log("parse error, there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
+                append_log("Parse Error: there are more $npc_name: triggers than there are P: or player triggers before line $line_number");
             }
             // Menu: if "officially" optional, so if there are none, it is valid too (should be old quests only). If ?= was seen in a menu, the count doesn't matter.
             if ($seen_menu_triggers && $m_count < 0 && !$menuInputBox) 
             {
-                append_log("parse error, there are more $npc_name: triggers than there are Menu: triggers before line $line_number");
+                append_log("Parse Error: there are more $npc_name: triggers than there are Menu: triggers before line $line_number");
             }
             checkVariables($line, 'npc');
             $ready_for_complete = true;
@@ -216,11 +222,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             // If there was a previous set, the NPC: part should have reduced p/m_count to 0.
             if ($p_count > 0)  
             {
-                append_log("parse error, there have been more P: or player than npc: tags before $line_number");
+                append_log("Parse Error: there have been more P: or player than npc: tags before $line_number");
             }
             if ($m_count > 0) // there should always be a P: tag before every new set of menu: tags, so we can check this here.
             {
-                append_log("parse error, there have been more Menu: than npc: tags before $line_number");
+                append_log("Parse Error: there have been more Menu: than npc: tags before $line_number");
             }
             if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
             {
@@ -238,11 +244,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         {
             if ($quest_note_found) 
             {
-                append_log("parse error, there already is a QuestNote defined in the same step $step before line $line_number.");
+                append_log("Parse Error: there already is a QuestNote defined in the same step $step before line $line_number.");
             }
             if (trim(substr($line, 10)) == '')
             {
-                append_log("parse error, empty Questnote at line $line_number.");
+                append_log("Parse Error: empty Questnote at line $line_number.");
             }
             elseif (strlen(trim($line)) < 15) 
             {
@@ -255,11 +261,11 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             $seenTripleDot = true;
             if ($p_count > 0) 
             {
-                append_log("parse error, there have been more P: or player than npc: tags before $line_number");
+                append_log("Parse Error: there have been more P: or player than npc: tags before $line_number");
             }
             if ($m_count > 0 && !$menuInputBox) // if there was a Menu: ?= tag, it may match larger amounts of P/NPC tags.
             {
-                append_log("parse error, there have been more Menu: than npc:/P: tags before $line_number");
+                append_log("Parse Error: there have been more Menu: than npc:/P: tags before $line_number");
             }
             if ($seen_menu_triggers && $pStar && !$menuInputBox) // if there was a P: * tag without Menu: ?= tag, it is likely a mistake.
             {
@@ -269,13 +275,13 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             {
                 if (strpos($line, ' ') != 3)
                 {
-                    append_log("parse error, no whitespace after ... at line $line_number");
+                    append_log("Parse Error: no whitespace after ... at line $line_number");
                 }
                 elseif (strcasecmp(substr($line, 4, 8), 'norepeat') === 0) 
                 {
                     if (strcasecmp(trim($line), '... NoRepeat') !== 0)
                     {
-                        append_log("parse error, illegal entry following '... NoRepeat' (no characters, not even a dot are allowed after NoRepeat) at line $line_number");
+                        append_log("Parse Error: illegal entry following '... NoRepeat' (no characters, not even a dot are allowed after NoRepeat) at line $line_number");
                     }
                     // else valid, do nothing
                 }
@@ -285,7 +291,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
                 else
                 {
-                    append_log("parse error, unknown entry following ... at line $line_number");
+                    append_log("Parse Error: unknown entry following ... at line $line_number");
                 }
             }
             // check for quest notes
@@ -313,7 +319,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             	{
             		if (!$seenTripleDot) 
             		{
-                        append_log("parse error, NoRepeat found without \"...\" before it on line $line_number");
+                        append_log("Parse Error: NoRepeat found without \"...\" before it on line $line_number");
             		}
             		$seenTripleDot = false;
             		continue;
@@ -324,7 +330,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 {
                     if (!$ready_for_complete)
                     {
-                        append_log("parse error, found a complete quest statement without any preceding P: and Menu: triggers on line $line_number");
+                        append_log("Parse Error: found a complete quest statement without any preceding P: and Menu: triggers on line $line_number");
                         continue;
                     }
                 }
@@ -334,14 +340,14 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             	else 
             	{
-            		append_log("Warning, empty command found at line $line_number");
+            		append_log("Warning: empty command found at line $line_number");
             	}
             }
         }
     }
     if(!$assigned && $quest_id > 0) //ignore KA scripts which are -1
     {
-        append_log('parse error, script never assined any quest.');
+        append_log('Parse Error: script never assigned any quest.');
     }
 }
 
@@ -397,7 +403,17 @@ function isspace($char)
 function append_log($msg) 
 {
     global $parse_log;
-    $parse_log.=$msg."<br />\n";
+	if(strtolower(substr($msg, 0, 7)) == "warning")
+	{
+		if(!$_POST['no_warnings'])
+		{
+			$parse_log.= '<font color="#FFFF00">' . $msg . "</font><br />\n";
+		}
+	}
+	else
+	{
+    	$parse_log.=$msg."<br />\n";
+	}
 }
 
 /**
@@ -418,7 +434,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
                 $temp_pos2 = stripos($line, $trigger, $pos + strlen($trigger));
                 if ($temp_pos != $temp_pos2) // it's only a mismatch if "trigger" and "trigger_without_colon" are not starting at the same place.
                 {
-                    append_log("Warning, no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
+                    append_log("Warning: no ':' after '$trigger_without_colon' found on line $line_number, please make sure this is intended.");
                 }
             }
         } 
@@ -438,7 +454,7 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
         }
         if (strlen($temp_line) > $max_chars_per_line)
         {
-            append_log("Warning, more than $max_chars_per_line char found in trigger on line $line_number");
+            append_log("Warning: more than $max_chars_per_line char found in trigger on line $line_number");
         }
         check_parenthesis($temp_line); // check for parenthesis and and if they're found, check if they're valid.
         $pos += strlen($trigger); // move the position pointer past our first find so it doesn't get seen again.
@@ -458,12 +474,12 @@ function checkVariables($line, $type)
             {
                 if ($word != '$playerrace' && $word != '$sir' && $word != '$playername' && $word != '$his' && $word != '$time' && $word != '$npc')
                 {
-                    append_log("parse error, misplaced variable ($word) on line $line_number");
+                    append_log("Parse Error: misplaced variable ($word) on line $line_number");
                 }
             }
             else 
             {
-                append_log("parse error, misplaced variable ($word) on line $line_number. Was not expecting any variable in this line.");
+                append_log("Parse Error: misplaced variable ($word) on line $line_number. Was not expecting any variable in this line.");
             }
         }
     }
@@ -485,7 +501,7 @@ function validate_npc($name)
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
-            append_log("parse error, NPC ({$split[0]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            append_log("Parse Error: NPC ({$split[0]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return false;
         }
     }
@@ -501,7 +517,7 @@ function validate_npc($name)
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
-            append_log("parse error, NPC ({$split[0]} {$split[1]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            append_log("Parse Error: NPC ({$split[0]} {$split[1]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return false;
         }
     }
@@ -525,7 +541,7 @@ function check_parenthesis($line)
         {
             if (trim($sounds[$i]) == '') 
             {
-                append_log("parse error, empty file declaration in $inside at line $line_number");
+                append_log("Parse Error: empty file declaration in $inside at line $line_number");
             }
         }
     }
@@ -562,7 +578,7 @@ function check_parenthesis($line)
             }
             else
             {
-                append_log("parse error, invalid pronoun {$pronoun[0]} on line $line_number");
+                append_log("Parse Error: invalid pronoun {$pronoun[0]} on line $line_number");
             }
         }
     }
@@ -587,25 +603,25 @@ function cut_block ($line, &$inside, $leftchar, $rightchar)
     {
         if ($pos_start > $pos_end) 
         {
-            append_log("parse error, $rightchar before $leftchar at line $line_number");
+            append_log("Parse Error: $rightchar before $leftchar at line $line_number");
             return false;
         }
         $inside = substr($line, $pos_start+strlen($leftchar), $pos_end - $pos_start - strlen($leftchar));  // start+strlen coz we don't want the starting { or ( or whatever
         if(trim($inside) == '')
         {
-            append_log("parse error, no text between $leftchar and $rightchar on line $line_number");
+            append_log("Parse Error: no text between $leftchar and $rightchar on line $line_number");
         }
         $pos_start = strpos($line, $leftchar, $pos_start+strlen($leftchar));
         $pos_end = strpos($line, $rightchar, $pos_end+strlen($rightchar));
     }
     if ($pos_start !== false) 
     {
-        append_log("parse error, $leftchar without $rightchar at line $line_number");
+        append_log("Parse Error: $leftchar without $rightchar at line $line_number");
         return false;
     }
     elseif ($pos_end !== false) 
     {
-        append_log("parse error, $rightchar without $leftchar at line $line_number");
+        append_log("Parse Error: $rightchar without $leftchar at line $line_number");
         return false;
     }
     return true;
@@ -617,7 +633,7 @@ function handle_player_action($line)
     $words = explode(' ', $line);
     if(count($words) < 2)
     {
-        append_log("parse error, no command following 'player' at line $line_number");
+        append_log("Parse Error: no command following 'player' at line $line_number");
         return;
     }
     if (strcasecmp($words[1], 'gives') === 0) // "player gives"
@@ -625,7 +641,7 @@ function handle_player_action($line)
         $name_count = 0;
         if (count($words) < 3)
         {
-            append_log("parse error, no npc name following 'player gives' at line $line_number");
+            append_log("Parse Error: no npc name following 'player gives' at line $line_number");
             return;
         }
         $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", mysql_real_escape_string($words[2]));
@@ -638,7 +654,7 @@ function handle_player_action($line)
         $result = mysql_query2($query);
         if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
-            append_log("parse error, NPC ({$words[2]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+            append_log("Parse Error: NPC ({$words[2]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return;
         }
         if ($name_count == 0 && count($words) > 3)
@@ -653,13 +669,13 @@ function handle_player_action($line)
             $result = mysql_query2($query);
             if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
             {
-                append_log("parse error, NPC ({$words[2]} {$words[3]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
+                append_log("Parse Error: NPC ({$words[2]} {$words[3]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
                 return;
             }
         }
         if ($name_count == 0)
         {
-            append_log("parse error, could not find NPC name in \"player gives\" on line $line_number");
+            append_log("Parse Error: could not find NPC name in \"player gives\" on line $line_number, Please check NPC Name");
             return;
         }
         $items = trim(implode(' ', array_slice($words, 2 + $name_count)));
@@ -675,11 +691,11 @@ function handle_player_action($line)
             {
                 if ($parts[0] < 0)
                 {
-                    append_log("parse error, cannot give a negative amount of items in 'player gives' on line $line_number");
+                    append_log("Parse Error: cannot give a negative amount of items in 'player gives' on line $line_number");
                 }
                 elseif (count($parts) < 2)
                 {
-                    append_log("parse error, could not read item name in 'player gives' on line $line_number");
+                    append_log("Parse Error: could not read item name in 'player gives' on line $line_number");
                 }
                 else
                 {
@@ -694,7 +710,7 @@ function handle_player_action($line)
     }
     else
     {
-        append_log("parse error, unknown player command: player {$words[1]} at line $line_number");
+        append_log("Parse Error: unknown player command: player {$words[1]} at line $line_number");
     }
 }
 
@@ -730,7 +746,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $split_complete = explode(' ', substr(trim($command), 15 + strlen($quest_name)));
                 if (count($split_complete) > 1) 
                 {
-                    append_log("parse error, illegal text following 'complete $quest_name step {$split_complete[0]}' on line $line_number");
+                    append_log("Parse Error: illegal text following 'complete $quest_name step {$split_complete[0]}' on line $line_number");
                 }
                 elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
                 {
@@ -738,16 +754,16 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
                 {
-                    append_log("parse error, you did not provide a valid step number for 'complete quest' on line $line_number");
+                    append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
-                    append_log("parse error, completing a step that is higher than the total number of steps in this quest on line $line_number");
+                    append_log("Parse Error: completing a step that is higher than the total number of steps in this quest on line $line_number");
                 }
             }
             else
             {
-                append_log("parse error, invalid questname ($command) at line $line_number");
+                append_log("Parse Error: invalid questname ($command) at line $line_number");
             }
             return; // in all cases, when $quest_id is 0, do not go further than here. (the other checks are on the database, and thus will fail.
         }
@@ -767,7 +783,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $split_complete = explode(' ', substr(trim($command), 15+strlen($name)));
                 if (count($split_complete) > 1) 
                 {
-                    append_log("parse error, illegal text following 'complete $name step {$split_complete[0]}' on line $line_number");
+                    append_log("Parse Error: illegal text following 'complete $name step {$split_complete[0]}' on line $line_number");
                 }
                 elseif ($split_complete[0] != '' && is_numeric($split_complete[0]) && $split_complete[0] <= $step && $split_complete[0] > 0) 
                 {
@@ -775,21 +791,21 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
                 {
-                    append_log("parse error, you did not provide a valid step number for 'complete quest' on line $line_number");
+                    append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
-                    append_log("parse error, completing a step that is higher than the total number of steps in this quest on line $line_number");
+                    append_log("Parse Error: completing a step that is higher than the total number of steps in this quest on line $line_number");
                 }
             }
             else
             {
-                append_log("parse error, invallid questname ($command) at line $line_number");
+                append_log("Parse Error: invallid questname ($command) at line $line_number");
             }
         }
         else 
         {
-            append_log("parse error, could not determine questname for this script at line $line_number");
+            append_log("Parse Error: could not determine questname for this script at line $line_number");
         }
     }
     elseif (strncasecmp($command, 'give', 4) === 0)
@@ -797,14 +813,14 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
         $given = explode(' or ', substr($command, 5));
         if (count(explode(' or ', strtolower($command))) > count($given))
         {
-            append_log("parse error, encountered uppercase \"or\" in give command on line $line_number");
+            append_log("Parse Error: encountered uppercase \"or\" in give command on line $line_number");
             return;
         }
         for ($i = 0; $i < count($given); $i++)  // a choice may be presented seperated by "or", so we need to validate them all.
         {
             if (trim($given[$i] == ''))
             {
-                append_log("parse error, nothing to give on line $line_number");
+                append_log("Parse Error: nothing to give on line $line_number");
                 return;
             }
             // to lower case so we can handle this case insensitive.
@@ -814,7 +830,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             { 
                 if(count($words) > 2)
                 {
-                    append_log("parse error, too much parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
+                    append_log("Parse Error: too much parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
                 }
                 elseif (count($words) == 1)
                 {
@@ -828,23 +844,23 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     }
                     else
                     {
-                        append_log("parse error, while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
+                        append_log("Parse Error: while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
                     }
                 }
                 else
                 {
-                    append_log("parse error, while giving money (tria/hexa/octa/circle), the currency should be the last parameter at line $line_number");
+                    append_log("Parse Error: while giving money (tria/hexa/octa/circle), the currency should be the last parameter at line $line_number");
                 }
             }
             elseif (in_array('faction', $words, true))
             {
                 if (count($words) < 3) 
                 {
-                    append_log("parse error, 'give 1 faction factionname' (example) requires at least 4 paramers at line $line_number");
+                    append_log("Parse Error: 'give 1 faction factionname' (example) requires at least 4 paramers at line $line_number");
                 }
                 elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'faction') !== 0)
                 {
-                    append_log("parse error, 'give 1 faction factionname' (example) requires the second parameter to be a positive number and the third to be 'faction' at line $line_number");
+                    append_log("Parse Error: 'give 1 faction factionname' (example) requires the second parameter to be a positive number and the third to be 'faction' at line $line_number");
                 }
                 else
                 { // the remaining words should be the faction name.
@@ -855,11 +871,11 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 if(count($words) != 2)
                 {
-                    append_log("parse error, too much/few parameters for exp command 'give 1 exp'(example) at line $line_number");
+                    append_log("Parse Error: too much/few parameters for exp command 'give 1 exp'(example) at line $line_number");
                 }
                 elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'exp') !== 0)
                 {
-                    append_log("parse error, 'give 1 exp' (example) requires the second parameter to be a positive number and the third to be 'exp' at line $line_number");
+                    append_log("Parse Error: 'give 1 exp' (example) requires the second parameter to be a positive number and the third to be 'exp' at line $line_number");
                 }
                 else
                 { // valid
@@ -878,7 +894,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     {
                         if ($words[0] < 0)
                         {
-                            append_log("parse error, item quantity must be positive at line $line_number");
+                            append_log("Parse Error: item quantity must be positive at line $line_number");
                         }
                         else
                         {
@@ -888,7 +904,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                             }
                             elseif ($words[1] < 0 || $words[1] > 300)
                             {
-                                append_log("parse error, item quality must be positive and 300 or less at line $line_number");
+                                append_log("Parse Error: item quality must be positive and 300 or less at line $line_number");
                             }
                             else
                             {
@@ -908,14 +924,14 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     {
         $words = explode(' ', trim(substr($command, 11)));
         if (count($words) < 2)
-            append_log("parse error, setvariable needs 2 arguments at line $line_number");
+            append_log("Parse Error: setvariable needs 2 arguments at line $line_number");
     }
     elseif (strncasecmp($command, 'unsetvariable', 13) === 0)
     {
         $parameters = trim(substr($command, 13));
         $words = explode(' ', $parameters);
         if (trim($parameters) == '' || count($words) < 1)
-            append_log("parse error, unsetvariable needs 1 argument at line $line_number");
+            append_log("Parse Error: unsetvariable needs 1 argument at line $line_number");
     }
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
@@ -933,7 +949,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             cut_block($script, $param, '<<', '>>');
             if (trim($param) == '')
             {
-                append_log("parse error, could not load parameters at line $line_number");
+                append_log("Parse Error: could not load parameters at line $line_number");
                 return;
             }
             $params = explode(',', $param);
@@ -941,11 +957,11 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
                 if (trim($params[$i]) == '')
                 {
-                    append_log("parse error, found empty parameter in run script on line $line_number");
+                    append_log("Parse Error: found empty parameter in run script on line $line_number");
                 }
                 elseif (strpos($params[$i], '"') !== false)
                 {
-                    append_log("parse error, you are not allowed to use double quotes in parameters for run script on line $line_number");
+                    append_log("Parse Error: you are not allowed to use double quotes in parameters for run script on line $line_number");
                 }
                 else
                 {
@@ -962,21 +978,21 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                         {
                             if (trim(substr($temp, 1, strlen($temp)-2)) == '')
                             {
-                                append_log("parse error, no variable inside quotes in parameter for script on line $line_number");
+                                append_log("Parse Error: no variable inside quotes in parameter for script on line $line_number");
                             }
                             elseif (is_numeric(substr($temp, 1, strlen($temp)-2)))
                             {
-                                append_log("parse error, numeric parameters should not be inside quotes for script on line $line_number");
+                                append_log("Parse Error: numeric parameters should not be inside quotes for script on line $line_number");
                             }// else valid
                         }
                         else
                         {
-                            append_log("parse error, quotes should only be at the begining and the end of a parameter of a script on line $line_number");
+                            append_log("Parse Error: quotes should only be at the begining and the end of a parameter of a script on line $line_number");
                         }
                     }
                     else
                     {
-                        append_log("parse error, invalid amount of single quotes in parameters for run script on line $line_number");
+                        append_log("Parse Error: invalid amount of single quotes in parameters for run script on line $line_number");
                     }
                 }
             }
@@ -987,14 +1003,14 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
         $cmd = substr($command, 10);
         if (trim($cmd) == '') 
         {
-            append_log("parse error, no admin command found on line $line_number");
+            append_log("Parse Error: no admin command found on line $line_number");
             return;
         }
         $query = sprintf("SELECT group_member FROM command_group_assignment WHERE command_name = '%s'", mysql_real_escape_string($cmd));
         $result = mysql_query2($query);
         if (mysql_num_rows($result) < 1)
         {
-            append_log("parse error, could not find admin command ($cmd) in the database");
+            append_log("Parse Error: could not find admin command ($cmd) in the database");
         } // else it's found, do nothing.
     }
     elseif (strncasecmp($command, 'require', 7) === 0) 
@@ -1060,9 +1076,112 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $item_pos = strpos($item, 'item');
                 if ($cat_pos === false && $item_pos === false)
                 {
-                    append_log("parse error, no 'item' or 'category' identifier in possessed/equipped command at line $line_number");
+                    append_log("Parse Error: no 'item' or 'category' identifier in possessed/equipped command at line $line_number");
                     return;
                 }
+				// if anything is before low_pos (that is, it is not 0), then may be ammount .
+                $low_pos = ($cat_pos === false ? $item_pos : ($item_pos === false ? $cat_pos : min($item_pos, $cat_pos)));
+                if ($low_pos > 0 && (substr($item,0,6) == 'amount'))
+                {
+					$item = substr($item, 7);
+					//set dash_pos too high initially;
+					$dash_pos = 6;
+					if(strpos($item, '-'))
+					{
+						$dash_pos = strpos($item, '-');
+					}
+                    $amountchar = 0;
+					$amounttxt = explode('-', trim(substr($item, 0, $low_pos)));
+					//echo('Line ' . $line_number . ': 0=' . $amounttxt[0]. ' 1=' . $amounttxt[1]. ' 2=' . $amounttxt[2]. ' dp=' . $dash_pos. '<br />');
+					if($dash_pos < 5)
+					{
+						$tmp  = explode(' ', trim(substr($amounttxt[1], 0, 4)));
+						$amounttxt[1] = $tmp[0];
+						//echo('1=' . $amounttxt[1] . '<br />');
+						//case 1 amount - Max
+						if (trim($amounttxt[0]) == '')
+						{
+							append_log("Warning: min amount missing while amount seperator is present in possessed/equipped command at line $line_number");
+							if (is_numeric(trim($amounttxt[1])))
+							{
+								if($amounttxt[1] < 0)
+								{
+									append_log("Parse Error: max amount can't be less than 0 in possessed/equipped command at line $line_number");	
+								}
+								// Max Limit
+								elseif($amounttxt[1] > 65)
+								{
+									append_log("Parse Error: max amount can't be more than 65 in possessed/equipped command at line $line_number");	
+								}															
+							}
+							else
+							{
+								append_log("Parse Error: max amount missing while quality seperator is present in possessed/equipped command at line $line_number");
+							}
+						}
+						//case 2 amount Min (- Max)
+						elseif (is_numeric(trim($amounttxt[0])))
+						{
+							if($amounttxt[0] < 0)
+							{
+								append_log("Parse Error: Min amount can't be less than 0 in possessed/equipped command at line $line_number");	
+							}
+							// Max Limit
+							elseif($amounttxt[0] > 65)
+							{
+								append_log("Parse Error: Min amount can't be more than 65 in possessed/equipped command at line $line_number");	
+							}
+							
+							if (is_numeric(trim($amounttxt[1])))
+							{							
+								if($amounttxt[1] < 0)
+								{
+									append_log("Parse Error: Max amount can't be less than 0 in possessed/equipped command at line $line_number");	
+								}
+								// Max Limit
+								elseif($amounttxt[1] > 65)
+								{
+									append_log("Parse Error: Max amount can't be more than 65 in possessed/equipped command at line $line_number");	
+								}
+							}
+							else
+							{
+								append_log("Warning: max amount missing while quality seperator is present in possessed/equipped command at line $line_number");
+							}
+							$amountopt = 3;
+						}
+						$amountchar = $dash_pos + 1 + count(trim($amounttxt[1]));	
+					}
+					//case 3 amount Min
+                    else
+                    {
+                       $tmp  = explode(' ', trim(substr($amounttxt[0], 0, 4)));
+						$amounttxt[0] = $tmp[0];
+						//echo('0=' . $amounttxt[0] . '<br />');
+						if (is_numeric(trim($amounttxt[0])))
+						{
+							if($amounttxt[0] < 0)
+							{
+								append_log("Parse Error: Min amount can't be less than 0 in possessed/equipped command at line $line_number");	
+							}
+							// Max Limit
+							elseif($amounttxt[0] > 65)
+							{
+								append_log("Parse Error: Min amount can't be more than 65 in possessed/equipped command at line $line_number");	
+							}
+						}
+						else
+						{
+							append_log("Parse Error: amount statement invalid missing min-max in possessed/equipped command at line $line_number");
+						}
+					}
+					
+										     
+					$item = trim(substr($item, $amountchar));
+                	$cat_pos = strpos($item, 'category');
+                	$item_pos = strpos($item, 'item');      
+                }	
+				
                 // if anything is before low_pos (that is, it is not 0), then that must be the quality .
                 $low_pos = ($cat_pos === false ? $item_pos : ($item_pos === false ? $cat_pos : min($item_pos, $cat_pos)));
                 if ($low_pos > 0)
@@ -1071,27 +1190,27 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     $item = substr($item, $low_pos);
                     if (count($quality) == 2 && trim($quality[0]) == '')
                     {
-                        append_log("warning, min quality missing while quality seperator is present in possessed/equipped command at line $line_number");
+                        append_log("Warning: min quality missing while quality seperator is present in possessed/equipped command at line $line_number");
                     }
                     if (count($quality) == 2 && trim($quality[1]) == '')
                     {
-                        append_log("warning, max quality missing while quality seperator is present in possessed/equipped command at line $line_number");
+                        append_log("Warning: max quality missing while quality seperator is present in possessed/equipped command at line $line_number");
                     }
                     if (count($quality) > 2)
                     {
-                        append_log("parse error, you can only use 1 minus sign to seperate min/max quality in possessed/equipped command at line $line_number");
+                        append_log("Parse Error: you can only use 1 minus sign to seperate min/max quality in possessed/equipped command at line $line_number");
                     }
                     elseif (trim($quality[0]) != '' && (!is_numeric(trim($quality[0])) || trim($quality[0]) > 300 || trim($quality[0]) < 0))
                     {
-                        append_log("parse error, min quality should be between 0 and 300 in possessed/equipped command at line $line_number");
+                        append_log("Parse Error: min quality should be between 0 and 300 in possessed/equipped command at line $line_number");
                     }
                     elseif (count($quality) == 2 && trim($quality[1]) != '' && (!is_numeric(trim($quality[1])) || trim($quality[1]) > 300 || trim($quality[1]) < 0))
                     {
-                        append_log("parse error, max quality should be between 0 and 300 in possessed/equipped command at line $line_number");
+                        append_log("Parse Error: max quality should be between 0 and 300 in possessed/equipped command at line $line_number");
                     }
                     elseif (count($quality) == 2 && trim($quality[1]) != '' && trim($quality[0]) != '' && trim($quality[0]) > trim($quality[1]))
                     {
-                        append_log("parse error, min quality cannot exceed max quality in possessed/equipped command at line $line_number");
+                        append_log("Parse Error: min quality cannot exceed max quality in possessed/equipped command at line $line_number");
                     }                
                 }
                 if ($cat_pos !== false)
@@ -1114,7 +1233,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $lasthyphen = strrpos($require, '-');
                 if ($lasthyphen === false)
                 { // - sign is manditory to provide a skill range.
-                    append_log("parse error, no '-' sign follows the skill name at line $line_number");
+                    append_log("Parse Error: no '-' sign follows the skill name at line $line_number");
                     return;
                 }
                 // the last space before the last '-' sign will be what splits the skill range from the skill name.
@@ -1123,20 +1242,20 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $skillrange = substr($require, $lastspace+1);
                 if ($lastspace === false || trim($skillname) == '')
                 {
-                    append_log("parse error, could not determine skill name at line $line_number");
+                    append_log("Parse Error: could not determine skill name at line $line_number");
                     return;
                 }
                 $skillranges = explode('-', $skillrange);
                 if (count($skillranges) != 2 || !is_numeric(trim($skillranges[0])) || $skillranges[0] < 0 ||
                     !is_numeric(trim($skillranges[1])) || $skillranges[1] < 0 || $skillranges[0] > $skillranges[1])
                 {
-                    append_log("parse error, invalid skill range at line $line_number");
+                    append_log("Parse Error: invalid skill range at line $line_number");
                     return;
                 }
                 // might be valid, but is unusual, warn to pay attention.
                 if ($skillranges[0] > 200 || $skillranges[1] > 200)
                 {
-                    append_log("Warning, skill exceeds 200 at line $line_number - be sure this is intended");
+                    append_log("Warning: skill exceeds 200 at line $line_number - be sure this is intended");
                 }
                 
                 validate_skill($skillname);
@@ -1145,11 +1264,11 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             {
               $parameters = explode(" ", trim($require));
               if (count($parameters) != 2 || trim($parameters[0]) == "" || trim($parameters[1]) == "")
-                append_log("parse error, Require variable needs 1 argument at line $line_number");
+                append_log("Parse Error: Require variable needs 1 argument at line $line_number");
             }
             else 
             {
-                append_log("parse error, unknown requirement (require $requirement) at line $line_number");
+                append_log("Parse Error: unknown requirement (require $requirement) at line $line_number");
             }
         }
     }
@@ -1158,15 +1277,15 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     }
     elseif (strncasecmp($command, 'Menu', 4) === 0) // This is basically an error catcher, it should be below all other cases.
     {
-        append_log("parse error, no ':' following 'Menu' at line $line_number");
+        append_log("Parse Error: no ':' following 'Menu' at line $line_number");
     }
     elseif (strncasecmp($command, "P", 1) === 0) // This is basically an error catcher, it should be below all other cases.
     {
-        append_log("parse error, no ':' following 'P' at line $line_number");
+        append_log("Parse Error: no ':' following 'P' at line $line_number");
     }
     else 
     {
-        append_log("parse error, unknown command ($command) at line $line_number");
+        append_log("Parse Error: unknown command ($command) at line $line_number");
     }
 }
 
@@ -1175,7 +1294,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
     global $line_number;
     if (trim($quest) == '')
     {
-        append_log("parse error, no quest mentioned at line $line_number");
+        append_log("Parse Error: no quest mentioned at line $line_number");
         return;
     }
     if ($quest_id == 0) // special number used for prospect console. Means the quest itself is not in the database, so lets check if it is valid with the name that was given.
@@ -1189,7 +1308,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
             if ($step_nr == '' || !is_numeric($step_nr))
             {
-                append_log("parse error, you did not provide a valid step number for 'require completion' on line $line_number");
+                append_log("Parse Error: you did not provide a valid step number for 'require completion' on line $line_number");
                 return;
             }
             elseif ($step_nr <= $step)
@@ -1199,7 +1318,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             }
             else
             {
-                append_log("parse error, you can't refer to quest steps that exceed the total number of steps at line $line_number");
+                append_log("Parse Error: you can't refer to quest steps that exceed the total number of steps at line $line_number");
                 return;
             }
         }
@@ -1220,7 +1339,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
             if ($step_nr == '' || !is_numeric($step_nr))
             {
-                append_log("parse error, you did not provide a valid step number for 'require completion' on line $line_number");
+                append_log("Parse Error: you did not provide a valid step number for 'require completion' on line $line_number");
                 return;
             }
             elseif ($step_nr <= $step)
@@ -1230,7 +1349,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             }
             else
             {
-                append_log("parse error, you can't refer to quest steps that exceed the total number of steps at line $line_number");
+                append_log("Parse Error: you can't refer to quest steps that exceed the total number of steps at line $line_number");
                 return;
             }
         }
@@ -1243,12 +1362,12 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         $complete_step = trim(substr($quest, $pos + 4));
         if ($name == '')
         {
-            append_log("parse error, no quest mentioned at line $line_number");
+            append_log("Parse Error: no quest mentioned at line $line_number");
             return;
         }
         elseif ($complete_step == '' || $complete_step < 1)
         {
-            append_log("parse error, invalid quest step at line $line_number");
+            append_log("Parse Error: invalid quest step at line $line_number");
             return;
         }
     }
@@ -1256,7 +1375,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
     $result = mysql_query2($query); 
     if (mysql_num_rows($result) > 0)  // found a quest with that name
     {
-        append_log("Warning, references to another quest are not recommended, only use if you really must: line $line_number");
+        append_log("Warning: references to another quest are not recommended, only use if you really must: line $line_number");
         $row = mysql_fetch_row($result);
         $id = $row[0];
         if($complete_step == '')
@@ -1273,18 +1392,18 @@ function check_completion($quest_id, $step, $quest, $quest_name)
                 $target_steps = explode('...', $row[0]);
                 if ($complete_step > count($target_steps)) // target quest does not have this many steps
                 {
-                    append_log("parse error, target quest does not have $complete_step steps at line $line_number");
+                    append_log("Parse Error: target quest does not have $complete_step steps at line $line_number");
                 }
             }
             else
             {
-                append_log("parse error, there is no script for id $id (which belongs to $quest) in the database at line $line_number");
+                append_log("Parse Error: there is no script for id $id (which belongs to $quest) in the database at line $line_number");
             }
         }
     }
     else
     {
-        append_log("parse error, could not find any quest named $name in the database at line $line_number");
+        append_log("Parse Error: could not find any quest named $name in the database at line $line_number");
     }
 }
 
@@ -1293,28 +1412,28 @@ function validate_time_of_day($time)
     global $line_number;
     if (trim($time) == "")
     {
-        append_log("parse error, could not determine time on line $line_number");
+        append_log("Parse Error: could not determine time on line $line_number");
         return;
     }
     $minmax = explode("-", $time);
     if (count($minmax) != 2 || trim($minmax[0]) == "" || trim($minmax[1]) == "")
     {
-        append_log("parse error, invalid time format ($time) on line $line_number");
+        append_log("Parse Error: invalid time format ($time) on line $line_number");
         return;
     }
     if (trim($minmax[0]) > trim($minmax[1]))
     {
-        append_log("warning, time min: {$minmax[0]} is before max: {$minmax[1]} at line $line_number");
+        append_log("Warning: time min: {$minmax[0]} is before max: {$minmax[1]} at line $line_number");
         return;
     }
     if (trim($minmax[0]) < 0 || trim($minmax[0]) > 24)
     {
-        append_log("warning, time min: {$minmax[0]} is not between 0 and 24 at line $line_number");
+        append_log("Warning: time min: {$minmax[0]} is not between 0 and 24 at line $line_number");
         return;
     }
     if (trim($minmax[1]) < 0 || trim($minmax[1]) > 24)
     {
-        append_log("warning, time max: {$minmax[1]} is not between 0 and 24 at line $line_number");
+        append_log("Warning: time max: {$minmax[1]} is not between 0 and 24 at line $line_number");
         return;
     }
     // all other cases are valid, do nothing.
@@ -1329,7 +1448,7 @@ function validate_skill($skillname)
     {
         // valid skill, do nothing
     } else
-        append_log ("parse error, skill $skillname not valid at line $line_number");
+        append_log ("Parse Error: skill $skillname not valid at line $line_number");
 }
 
 function validate_item($itemname, $case_sensitive = false)
@@ -1337,7 +1456,7 @@ function validate_item($itemname, $case_sensitive = false)
     global $line_number;
     if (trim($itemname) == '')
     {
-        append_log("parse error, could not read item name on line $line_number");
+        append_log("Parse Error: could not read item name on line $line_number");
         return;
     }
     $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
@@ -1354,7 +1473,7 @@ function validate_item($itemname, $case_sensitive = false)
         $result = mysql_query2($query);
         if (mysql_num_rows($result) < 1)
         {
-            append_log("parse error, item name at this position is case sensitive, use '$item_case' instead of '$itemname' in database on line $line_number");
+            append_log("Parse Error: item name at this position is case sensitive, use '$item_case' instead of '$itemname' in database on line $line_number");
         }
         // valid item, do nothing
     }
@@ -1364,7 +1483,7 @@ function validate_item($itemname, $case_sensitive = false)
     }
     else
     {
-        append_log("parse error, no item with name: $itemname in database on line $line_number");
+        append_log("Parse Error: no item with name: $itemname in database on line $line_number");
     } 
 }
 
@@ -1373,13 +1492,13 @@ function validate_category($categoryname)
     global $line_number;
     if (trim($categoryname) == '')
     {
-        append_log("parse error, could not read category name on line $line_number");
+        append_log("Parse Error: could not read category name on line $line_number");
     }
     $query = sprintf("SELECT category_id FROM item_categories WHERE name = '%s'", mysql_real_escape_string($categoryname));
     $result = mysql_query2($query);
     if (mysql_num_rows($result) < 1)
     {
-        append_log("parse error, no category with name: $categoryname in database on line $line_number");
+        append_log("Parse Error: no category with name: $categoryname in database on line $line_number");
     }
 }
     
@@ -1391,7 +1510,7 @@ function validate_faction($factionname)
     $result = mysql_query2($query);
     if(mysql_num_rows($result) < 1)
     {
-        append_log("parse error, no faction ($faction) found in database on line $line_number");
+        append_log("Parse Error: no faction ($faction) found in database on line $line_number");
     }
 }
 
@@ -1403,11 +1522,11 @@ function validate_magic($magic_name, $otherbuffs = false)
     $result = mysql_query2($query);
     if (mysql_num_rows($result) < 1 && !$otherbuffs)
     {
-        append_log("parse error, could not find magic ($magic) in the database at line $line_number");
+        append_log("Parse Error: could not find magic ($magic) in the database at line $line_number");
     }
     elseif (mysql_num_rows($result) < 1 && $otherbuffs)
     {
-        append_log("Warning, could not find magic ($magic) in the magic database, please double check ". 
+        append_log("Warning: could not find magic ($magic) in the magic database, please double check ". 
             "the spelling against the script you want to use a buff from (this warning can show in valid cases too) at line $line_number");
     }
 }
@@ -1420,7 +1539,7 @@ function validate_race($race_name)
     $result = mysql_query2($query);
     if (mysql_num_rows($result) < 1)
     {
-        append_log("parse error, could not find race ($race) in the database at line $line_number");
+        append_log("Parse Error: could not find race ($race) in the database at line $line_number");
     }
 }
 
@@ -1432,7 +1551,7 @@ function validate_scriptname($scriptname)
     $result = mysql_query2($query);
     if (mysql_num_rows($result) < 1)
     {
-        append_log("parse error, could not find script name ($script) in the database at line $line_number");
+        append_log("Parse Error: could not find script name ($script) in the database at line $line_number");
     }
 }
 
@@ -1454,10 +1573,10 @@ function validate_gender($gen)
     }
     elseif (strcasecmp($gender, "male") === 0 || strcasecmp($gender, "female") === 0 || strcasecmp($gender, "neutral") === 0)
     {
-        append_log("parse error, encountered gender with uppercase char ($gender) use lower case only at line $line_number");
+        append_log("Parse Error: encountered gender with uppercase char ($gender) use lower case only at line $line_number");
     }
     else
     {
-        append_log("parse error, encountered unknown gender ($gender) at line $line_number");
+        append_log("Parse Error: encountered unknown gender ($gender) at line $line_number");
     }
 }
