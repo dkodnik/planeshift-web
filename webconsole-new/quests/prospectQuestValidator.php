@@ -23,7 +23,16 @@ if($_POST['no_warnings'])
 {
 	$warncheck = 'checked';
 }
-
+$warnQNcheck = '';
+if($_POST['no_QN_warnings'])
+{
+	$warnQNcheck = 'checked';
+}
+$showLines = '';
+if($_POST['show_lines'])
+{
+	$showLines = 'checked';
+}
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
     <head>
@@ -37,8 +46,9 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.or
 echo '          <form method="post" action="'.$_SERVER['PHP_SELF'].'"><p>
                 Quest name: <input type="text" name="quest_name" value="'.$quest_name.'" /> <br />
                 Quest Script:<br/><textarea name="script" rows="25" cols="80">'.$script.'</textarea><br />
-                <input type="checkbox" name="show_lines" />Show script lines?<br />
+                <input type="checkbox" name="show_lines" ' . $showLines . ' />Show script lines?<br />
 				<input type="checkbox" name="no_warnings" ' . $warncheck . ' />Hide Warnings?<br />
+				<tr><td><input type="checkbox" name="no_QN_warnings" ' . $warnQNcheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
                 <input type="submit" name="submit" value="submit" /></p></form>';
 
 if ($script != '') 

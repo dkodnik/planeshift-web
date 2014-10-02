@@ -18,6 +18,15 @@ function validatequest()
 		{
 			$warncheck = 'checked';
 		}
+		$warnQNcheck = '';
+		if($_POST['no_QN_warnings'])
+		{
+			$warnQNcheck = 'checked';
+		}
+		if($_POST['show_lines'])
+		{
+			$showLines = 'checked';
+		}
 	    echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser).</p>
@@ -25,8 +34,9 @@ to what line in your browser).</p>
     <div>
         <table>
             <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'" /></td></tr>
-            <tr><td><input type="checkbox" name="show_lines" />Show script lines?</td><td></td></tr>
+            <tr><td><input type="checkbox" name="show_lines" ' . $showLines . ' />Show script lines?</td><td></td></tr>
 			<tr><td><input type="checkbox" name="no_warnings" ' . $warncheck . ' />Hide Warnings?</td><td></td></tr>
+			<tr><td><input type="checkbox" name="no_QN_warnings" ' . $warnQNcheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
         </table>
         <input type="submit" name="submit" value="submit" />
     </div>
@@ -240,13 +250,17 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             $p_count++; // this is a valid trigger too for npc:
             checkVariables($line, 'player');
         }
-        elseif(strncasecmp($line, 'QuestNote ', 10) === 0) // Quest Note
+        elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
         {
             if ($quest_note_found) 
             {
                 append_log("Parse Error: there already is a QuestNote defined in the same step $step before line $line_number.");
             }
-            if (trim(substr($line, 10)) == '')
+            if(trim(substr($line,9,1)) == ':')
+			{
+				append_log("Parse Error: Questnote contains ':' at line $line_number.");
+			}
+			elseif (trim(substr($line, 10)) == '')
             {
                 append_log("Parse Error: empty Questnote at line $line_number.");
             }
@@ -295,7 +309,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             }
             // check for quest notes
-            if (!$quest_note_found && $step > 1) 
+            if (!$quest_note_found && $step > 1 && !$_POST['no_QN_warnings']) 
             {
                 append_log("Warning: step $step has no QuestNote before line $line_number");
             }
@@ -754,7 +768,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
                 {
-                    append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
+				    append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
@@ -791,7 +805,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 elseif ($split_complete[0] == '' || !is_numeric($split_complete[0]))
                 {
-                    append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
+					append_log("Parse Error: you did not provide a valid step number for 'complete quest' on line $line_number");
                 }
                 else
                 {
@@ -1305,7 +1319,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         }
         else if (strncasecmp(trim($quest), "$quest_name step", 5 + strlen($quest_name)) === 0)
         {
-            $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
+            $step_nr = trim(substr(trim($quest), 5 + strlen($quest_name)));
             if ($step_nr == '' || !is_numeric($step_nr))
             {
                 append_log("Parse Error: you did not provide a valid step number for 'require completion' on line $line_number");
@@ -1339,7 +1353,7 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             $step_nr = trim(substr(trim($quest), 5 + strlen($name)));
             if ($step_nr == '' || !is_numeric($step_nr))
             {
-                append_log("Parse Error: you did not provide a valid step number for 'require completion' on line $line_number");
+				append_log("Parse Error: you did not provide a valid step number for 'require completion' on line $line_number");
                 return;
             }
             elseif ($step_nr <= $step)
