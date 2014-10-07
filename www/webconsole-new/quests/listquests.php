@@ -61,20 +61,75 @@ function listquests()
         else  // normal quest listing mode. (chosen by default)
         {
             $factionlimit = '';
-            if (isset($_GET['factionLimit'])) {
+            /* Factions not used at moment so will hide
+			if (isset($_GET['factionLimit'])) {
                 $factionlimit = mysql_real_escape_string($_GET['factionLimit']);
             }
-            $factions = PrepSelect('factionnames');
+            $factions = PrepSelect('factionnames');*/
             echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>';
             echo '<td><form method="get" action="index.php"><div>';
+			/* Factions not used at moment so will hide
             echo '<input type="hidden" name="do" value="listquests" />';
             if (isset($_GET['sort'])) {
                 echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'" />';
             }
             echo 'limit to: '.DrawSelectBox('factionnames', $factions, 'factionLimit', $factionlimit, true);
-            echo '<input type="submit" name="submit" value="limit results" /></div></form></td></tr></table><br/>';
+            echo '<input type="submit" name="submit" value="limit results" /></div></form></td>';*/
+			
+			
+			//Setup search for key words
+			echo '<td><form method="get" action="index.php?do=listquests';
+			if($_GET['sort'])
+			{
+				echo('&amp;sort=' . $_GET['sort'] . '&amp;direction=' . $_GET['direction']);
+			}
+			$key_match_opt = '<option value="any">Match any word</option><option value="all">Match all words</option><option value="phrase">Match whole phrase</option>';
+			if($_GET['key_match'] == 'all')
+			{
+				$key_match_opt = '<option value="all">Match all words</option><option value="any">Match any word</option><option value="phrase">Match whole phrase</option>';
+			}
+			else if($_GET['key_match'] == 'phrase')
+			{
+				$key_match_opt = '<option value="phrase">Match whole phrase</option><option value="any">Match any word</option><option value="all">Match all words</option>';
+			}
+			echo '"><input type="text" name="quest_keys" value="' . trim($_GET['quest_keys'], '"\' ') . '">
+			<select name="key_match">' . $key_match_opt . '</select>
+			<input type="hidden" name="do" value="listquests" /><input type="submit" value="Search Keys"></form></td></tr></table><br/>';
             
             $query = 'SELECT q.id, q.name, q.flags, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
+			
+			//Search based on keys to allow searches for any key, all keys or a key phrase
+			if($_GET['quest_keys'])
+			{
+				
+				$query .= ' LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE (';
+				$searchtext = '';
+				$keys = trim($_GET['quest_keys'], '"\' ');
+				if($_GET['key_match'] == 'any')
+				{
+					$keywords = explode(' ', $keys);
+					foreach($keywords as $k)
+					{
+						$searchtext .= ' or q.name like "% ' . $k . ' %" or q.task like "% ' . $k . ' %" or qs.script like "% ' . $k . ' %"';
+					}
+					$query .= substr($searchtext,4) . ')';
+				}
+				else if($_GET['key_match'] == 'all')
+				{
+					$keywords = explode(' ', $keys);
+					foreach($keywords as $k)
+					{
+						$searchtext .= ' and (q.name like "% ' . $k . ' %" or q.task like "% ' . $k . ' %" or qs.script like "% ' . $k . ' %")';
+					}
+					$query .= substr($searchtext,5) . ')';
+				}
+				else if($_GET['key_match'] == 'phrase')
+				{
+					$searchtext .= '(q.name like "% ' . $keys . ' %" or q.task like "% ' . $keys . ' %" or qs.script like "% ' . $keys . ' %")';
+					$query .= $searchtext . ')';
+				}
+			}
+			
             
             // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
             // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between []. (Also note that a ' must be escaped in sql, or it will signify the end of the regexp.)
@@ -83,11 +138,11 @@ function listquests()
             // "$factionlimit" (being one of the factions that exist in the database, if this script was properly used.
             // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "<<'faction name', ***>>" where *** can be anything or nothing at all (but in practive will prove to be a number).
 
-            if ($factionlimit != '') 
+            else if ($factionlimit != '') 
             {
                 // Dev note: If you are using this script on a server which does not have (or uses) the standard PS faction reward script, but does use the "give 1 faction orcs" type of rewards in quest_scripts, uncomment the commented assignment below, and comment the other.
                 // $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
-                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>'";
+                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE (CONVERT(qs.script USING latin1) REGEXP '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>')";
             }
             
             $direction_url = '&amp;direction=asc';
@@ -142,11 +197,11 @@ function listquests()
             }
             $result = mysql_query2($query);
             echo '<table border="1">'."\n";
-            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">ID</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Category</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Name</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Player Lockout</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).'">Quest Lockout</a></th>';
+            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">ID</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Category</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Name</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Player Lockout</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Quest Lockout</a></th>';
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
             {
