@@ -110,7 +110,7 @@ function listquests()
 					$keywords = explode(' ', $keys);
 					foreach($keywords as $k)
 					{
-						$searchtext .= ' or q.name like "% ' . $k . ' %" or q.task like "% ' . $k . ' %" or qs.script like "% ' . $k . ' %"';
+						$searchtext .= ' or q.name like "%' . $k . '%" or q.task like "%' . $k . '%" or qs.script like "%' . $k . '%"';
 					}
 					$query .= substr($searchtext,4) . ')';
 				}
@@ -119,13 +119,13 @@ function listquests()
 					$keywords = explode(' ', $keys);
 					foreach($keywords as $k)
 					{
-						$searchtext .= ' and (q.name like "% ' . $k . ' %" or q.task like "% ' . $k . ' %" or qs.script like "% ' . $k . ' %")';
+						$searchtext .= ' and (q.name like "%' . $k . '%" or q.task like "%' . $k . '%" or qs.script like "%' . $k . '_ %")';
 					}
 					$query .= substr($searchtext,5) . ')';
 				}
 				else if($_GET['key_match'] == 'phrase')
 				{
-					$searchtext .= '(q.name like "% ' . $keys . ' %" or q.task like "% ' . $keys . ' %" or qs.script like "% ' . $keys . ' %")';
+					$searchtext .= '(q.name like "%' . $keys . '%" or q.task like "%' . $keys . '%" or qs.script like "%' . $keys . '%")';
 					$query .= $searchtext . ')';
 				}
 			}
