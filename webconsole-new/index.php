@@ -128,6 +128,12 @@
         itemmain();
         listitems();
         break;
+	  case 'compareitems':
+        include('./items/itemmain.php');
+        include('./items/compareitems.php');
+        itemmain();
+        compareitems();
+        break;
       case 'listitemicons':
         include('./items/itemmain.php');
         include('./items/listitemicons.php');
