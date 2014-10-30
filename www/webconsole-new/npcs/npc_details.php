@@ -1099,6 +1099,7 @@ function npcdetails(){
     echo '<a href="'.$uri_string.'&amp;sub=skills">skills</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=traits">traits</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=factions">Factions</a><br/>';
+	echo '<a href="'.$uri_string.'&amp;sub=variables">Variables</a><br/>';
     if ($row['character_type'] > 0)   // don't display for players
     {
         echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
@@ -1116,6 +1117,9 @@ function npcdetails(){
       switch ($_GET['sub']){
         case 'factions':
           npc_factions();
+          break;
+		case 'variables':
+          npc_variables();
           break;
         case 'main':
           npc_main();
@@ -1228,6 +1232,85 @@ function npc_factions()
                 echo '<table border="1"><tr><th>Faction</th><th>Value</th><th>Actions</th></tr>';
                 echo '<tr><td>'.DrawSelectBox('factions', $faction_result, 'faction_id', '').'</td><td><input type="text" name="faction_value" size="7" /></td><td>';
                 echo '<input type="submit" name="commit" value="Add Faction" /></td></tr></table></form>';
+            }
+        }
+        else
+        {
+            echo '<p class="error">Error: No NPC Selected</p>';
+        }
+    }else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+    }
+}
+function npc_variables()
+{
+    if (checkaccess('npcs', 'read'))
+    {
+        if (isset($_GET['npc_id']))
+        {
+            if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+                echo '<p class="error">You are not authorized to use these functions</p>';
+                return;
+            }
+            if (isset($_POST['commit']))
+            {
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $variable_name = mysql_real_escape_string($_POST['variable_name']);
+                $query = '';
+                if ($_POST['commit'] == 'Remove')
+                {
+                    $query = "DELETE FROM character_variables WHERE character_id='$id' AND name='$variable_name'";
+                }
+                else if($_POST['commit'] == 'Add Variable')
+                {
+                    $variable_value = mysql_real_escape_string($_POST['variable_value']);
+                    $query = "INSERT INTO character_variables (character_id, name, value) VALUES ('$id', '$variable_name', '$variable_value') ON DUPLICATE KEY UPDATE value='$variable_value'";
+                }
+                else if($_POST['commit'] == 'Edit')
+                {
+                    $variable_value = mysql_real_escape_string($_POST['variable_value']);
+                    $query = "UPDATE character_variables SET value='$variable_value' WHERE character_id='$id' AND name='$variable_name'";
+                }
+                else
+                {
+                    echo '<p class="error">Invalid commit!</p>';
+                    return;
+                }
+                $result = mysql_query2($query);
+                unset($_POST);
+                echo '<p class="error">Update Successful</p>';
+                npc_variables();
+            }
+            else
+            {
+                $id = mysql_real_escape_string($_GET['npc_id']);
+                $query = 'SELECT name, value FROM character_variables WHERE character_id='.$id.' ORDER BY name';
+                $result = mysql_query2($query);
+                echo '<table border="1"><tr><th>Variable</th><th>Value</th><th>Actions</th></tr>';
+                if (mysql_num_rows($result) > 0)
+                {
+                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    {
+                        echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
+                        echo '<input type="text" name="variable_name" value="'.$row['name'].'" /></td>';
+                        echo '<td><input type="text" size="9" name="variable_value" value="'.$row['value'].'" /></td>';
+                        echo '<td><input type="submit" name="commit" value="Edit" /></form>';
+                        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
+                        echo '<input type="hidden" name="variable_name" value="'.$row['name'].'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
+                    }
+                    echo '</table>';
+                }
+                else
+                {
+                    echo '</table>';
+                    echo '<p class="error">NPC has no variables</p>';
+                }
+                echo '<p>Add a variable to this NPC</p>';
+                echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
+                echo '<table border="1"><tr><th>Variable</th><th>Value</th><th>Actions</th></tr>';
+                echo '<tr><td><input type="text" name="variable_name" size="7" /></td><td><input type="text" name="variable_value" size="7" /></td><td>';
+                echo '<input type="submit" name="commit" value="Add Variable" /></td></tr></table></form>';
             }
         }
         else
