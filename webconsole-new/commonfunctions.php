@@ -238,7 +238,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
 
 
   mysql_data_seek($result, 0);
-  $string = '<select name="'.$name.'">'."\n";
+  $string = '<select name="'.$name.'" id="'.$name.'">'."\n";
   if ($includenull){
     $string = $string.'<option value='.$nullval.'>NONE</option>'."\n";
   }
