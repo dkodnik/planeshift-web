@@ -122,7 +122,7 @@ function editattacks()
         echo '<tr><td>Attack Animation</td><td><input type="text" name="attack_anim" value="'.htmlentities($row['attack_anim']).'" /></td></tr>'."\n";
         echo '<tr><td>Attack Description</td><td><textarea name="attack_description" rows="4" cols="60">'.htmlentities($row['attack_description']).'</textarea></td></tr>'."\n";
         echo '<tr><td>Damage</td><td>'.DrawSelectBox('math_script', $mathscripts, 'damage', $row['damage']).'</td></tr>'."\n";
-        echo '<tr><td>Attack Type</td><td>'.DrawSelectBox('attacktypes', $attacktypes, 'attackType', $row['attackType']).'</td></tr>'."\n";
+        echo '<tr><td>Attack Type</td><td>'.DrawSelectBox('attacktypes', $attacktypes, 'attackType', $row['attackType'],true).'</td></tr>'."\n";
 		echo '<tr><td>Outcome</td><td>'.DrawSelectBox('script', $outcomes, 'outcome', $row['outcome'],true).'</td></tr>'."\n";
 		//echo '<tr><td>Outcome</td><td><input type="text" name="outcome" value="'.htmlentities($row['outcome']).'" /></td></tr>'."\n";
         echo '<tr><td>Delay</td><td><textarea name="delay" rows="4" cols="60">'.htmlentities($row['delay']).'</textarea></td></tr>'."\n";

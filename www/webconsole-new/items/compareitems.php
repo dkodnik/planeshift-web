@@ -96,10 +96,24 @@ function compareitems(){
 	    while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
 		{
 			$tablerows .= '<tr>';
-			
+			$i = 0;
+			$id = 0;
 			foreach($row as $r)
-			{
-				$tablerows .= '<td>' . $r . '</td>';
+			{				
+				if($i ==0)
+				{
+					$tablerows .= '<td><a href="index.php?do=listitems&category=' . $cat . '&item=' . $r .'">' . $r . '</a>' . '</td>';
+					$id = $r;
+				}
+				else if($i == 1 && checkaccess('items', 'edit'))
+				{
+					$tablerows .= '<td>' . $r . '(<a href="index.php?do=edititem&item=' . $id .'">edit</a>)' . '</td>';
+				}
+				else
+				{
+					$tablerows .= '<td>' . $r . '</td>';
+				}
+				$i++;
 			}
 			$tablerows .= '</tr>';
 		}
