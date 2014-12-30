@@ -107,7 +107,7 @@ function compareitems(){
 				}
 				else if($i == 1 && checkaccess('items', 'edit'))
 				{
-					$tablerows .= '<td>' . $r . '(<a href="index.php?do=edititem&item=' . $id .'">edit</a>)' . '</td>';
+					$tablerows .= '<td>' . $r . ' (<a href="index.php?do=edititem&item=' . $id .'">edit</a>)' . '</td>';
 				}
 				else
 				{
