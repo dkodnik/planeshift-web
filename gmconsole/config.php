@@ -30,4 +30,6 @@
     $path_session = 'sessions';
     session_save_path($path_session);
 	
+	// set time/date
+	date_default_timezone_set('UTC');
 ?>
