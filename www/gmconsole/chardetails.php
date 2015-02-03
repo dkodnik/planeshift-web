@@ -226,6 +226,30 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 ?>
                     <hr/>
+			        <h2 class="yellowtitlebig">Variables</h2>
+					<div style="height:100px; overflow:auto;clear:both;">
+						<table class="table">
+							<tr>
+								<th>Variable</th>
+                                <th>Value</th>
+							</tr>
+<?php
+						$sel_var = 'SELECT name, value FROM character_variables WHERE character_id='.$charId.' ORDER BY name';
+						$var_sel = mysql_query($sel_var) or die ($sel_var . '<br>' . mysql_error());
+						while($var= mysql_fetch_array($var_sel))
+						{
+							echo('<tr><td>' . $var['name'] . '</td><td>' . $var['value'] . '</td></tr>');
+						}
+?>
+						</table>
+					</div>
+<?php
+}
+?>
+<?php
+if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
+?>
+                    <hr/>
 			        <h2 class="yellowtitlebig">Inventory</h2>
 					<div style="height:200px; overflow:auto;clear:both;">
 						<table class="table">
