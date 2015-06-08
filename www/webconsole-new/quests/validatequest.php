@@ -1069,7 +1069,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'known spell', 11) === 0)
             {
-                validate_magic(substr($require, 11));
+                validate_magic(substr($require, 11), false);
             }
             elseif (strncasecmp($require, 'race', 4) === 0)
             {
@@ -1086,36 +1086,37 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             elseif (strncasecmp($require, 'possessed', 9) === 0 || strncasecmp($require, 'equipped', 8) === 0) // case for possessed and equipped are identical
             {
                 $item = trim(substr($require, (strncasecmp($require, 'possessed', 9) === 0 ? 9 : 8)));
-                $cat_pos = strpos($item, 'category');
-                $item_pos = strpos($item, 'item');
+                $cat_pos = stripos($item, 'category');
+                $item_pos = stripos($item, 'item');
                 if ($cat_pos === false && $item_pos === false)
                 {
                     append_log("Parse Error: no 'item' or 'category' identifier in possessed/equipped command at line $line_number");
                     return;
                 }
-				// if anything is before low_pos (that is, it is not 0), then may be ammount .
+				// if anything is before low_pos (that is, it is not 0), then may be amount .
                 $low_pos = ($cat_pos === false ? $item_pos : ($item_pos === false ? $cat_pos : min($item_pos, $cat_pos)));
                 if ($low_pos > 0 && (substr($item,0,6) == 'amount'))
                 {
 					$item = substr($item, 7);
-					//set dash_pos too high initially;
-					$dash_pos = 6;
-					if(strpos($item, '-'))
-					{
-						$dash_pos = strpos($item, '-');
-					}
+					
+					$dashtxt = explode(' ', trim(substr($item, 0, $low_pos)));
+					
                     $amountchar = 0;
 					$amounttxt = explode('-', trim(substr($item, 0, $low_pos)));
-					//echo('Line ' . $line_number . ': 0=' . $amounttxt[0]. ' 1=' . $amounttxt[1]. ' 2=' . $amounttxt[2]. ' dp=' . $dash_pos. '<br />');
-					if($dash_pos < 5)
+					//echo('<font color="#00FF00">Line ' . $line_number . ' Amount ' . $item . '</font><br>');
+					//echo('DT 0="' . $dashtxt[0] . '" 1="' . $dashtxt[1] . '" 2="' . $dashtxt[2] . '"<br>');
+					//echo('AM 0="' . $amounttxt[0] . '" 1="' . $amounttxt[1] . '" 2="' . $amounttxt[2] . '"<br>');
+					if(strpos($dashtxt[0], '-') || strpos($dashtxt[1], '-'))
 					{
+						$amountchar = 1 + count(trim($amounttxt[0]));
 						$tmp  = explode(' ', trim(substr($amounttxt[1], 0, 4)));
 						$amounttxt[1] = $tmp[0];
-						//echo('1=' . $amounttxt[1] . '<br />');
+						
 						//case 1 amount - Max
-						if (trim($amounttxt[0]) == '')
+						if (substr(trim($dashtxt[0]),0,1) == '-' && $amounttxt[0] == '')
 						{
 							append_log("Warning: min amount missing while amount seperator is present in possessed/equipped command at line $line_number");
+							
 							if (is_numeric(trim($amounttxt[1])))
 							{
 								if($amounttxt[1] < 0)
@@ -1126,16 +1127,19 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
 								elseif($amounttxt[1] > 65)
 								{
 									append_log("Parse Error: max amount can't be more than 65 in possessed/equipped command at line $line_number");	
-								}															
+								}
+								$amountchar += count(trim($amounttxt[1]));															
 							}
 							else
 							{
 								append_log("Parse Error: max amount missing while quality seperator is present in possessed/equipped command at line $line_number");
 							}
+							
 						}
-						//case 2 amount Min (- Max)
-						elseif (is_numeric(trim($amounttxt[0])))
+						//case 2 amount Min - Max
+						elseif (((strpos(trim($dashtxt[0]), '-') >= 1) && (!strpos($amounttxt[0], ' ')))|| ((substr(trim($dashtxt[1]),0,1) == '-') && (!strpos($amounttxt[0], ' '))))
 						{
+							$amountchar = 1 + count(trim($amounttxt[0]));
 							if($amounttxt[0] < 0)
 							{
 								append_log("Parse Error: Min amount can't be less than 0 in possessed/equipped command at line $line_number");	
@@ -1146,8 +1150,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
 								append_log("Parse Error: Min amount can't be more than 65 in possessed/equipped command at line $line_number");	
 							}
 							
-							if (is_numeric(trim($amounttxt[1])))
+							if (is_numeric(trim($amounttxt[1])) && trim($amounttxt[1]) == trim(substr($dashtxt[0], strpos($dashtxt[0],$amounttxt[1]))))
 							{							
+								$amountchar += 1 + count(trim($amounttxt[1]));
 								if($amounttxt[1] < 0)
 								{
 									append_log("Parse Error: Max amount can't be less than 0 in possessed/equipped command at line $line_number");	
@@ -1163,15 +1168,14 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
 								append_log("Warning: max amount missing while quality seperator is present in possessed/equipped command at line $line_number");
 							}
 							$amountopt = 3;
-						}
-						$amountchar = $dash_pos + 1 + count(trim($amounttxt[1]));	
+						}	
 					}
 					//case 3 amount Min
                     else
                     {
                        $tmp  = explode(' ', trim(substr($amounttxt[0], 0, 4)));
 						$amounttxt[0] = $tmp[0];
-						//echo('0=' . $amounttxt[0] . '<br />');
+						$amountchar = 1 + count(trim($amounttxt[0]));
 						if (is_numeric(trim($amounttxt[0])))
 						{
 							if($amounttxt[0] < 0)
@@ -1190,8 +1194,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
 						}
 					}
 					
-										     
+					$tmpitem = $item;					     
 					$item = trim(substr($item, $amountchar));
+					//echo('<font color="#FF00FF">' . $tmpitem . '<br>' . $item . '</font><br>');
                 	$cat_pos = strpos($item, 'category');
                 	$item_pos = strpos($item, 'item');      
                 }	
@@ -1216,11 +1221,12 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     }
                     elseif (trim($quality[0]) != '' && (!is_numeric(trim($quality[0])) || trim($quality[0]) > 300 || trim($quality[0]) < 0))
                     {
+						echo('QMin ' . $quality[0] . ' $item ' . $item . '<br>');
                         append_log("Parse Error: min quality should be between 0 and 300 in possessed/equipped command at line $line_number");
                     }
                     elseif (count($quality) == 2 && trim($quality[1]) != '' && (!is_numeric(trim($quality[1])) || trim($quality[1]) > 300 || trim($quality[1]) < 0))
                     {
-                        append_log("Parse Error: max quality should be between 0 and 300 in possessed/equipped command at line $line_number");
+						append_log("Parse Error: max quality should be between 0 and 300 in possessed/equipped command at line $line_number");
                     }
                     elseif (count($quality) == 2 && trim($quality[1]) != '' && trim($quality[0]) != '' && trim($quality[0]) > trim($quality[1]))
                     {
@@ -1276,9 +1282,36 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'variable', 8) === 0)
             {
-              $parameters = explode(" ", trim($require));
-              if (count($parameters) != 2 || trim($parameters[0]) == "" || trim($parameters[1]) == "")
-                append_log("Parse Error: Require variable needs 1 argument at line $line_number");
+              echo('<font color="#00FF00">Line: ' . $line_number . ' ' . $require . '</font><br>');
+			  $parameters = explode(" ", trim(substr($require,8)));
+			  echo('<font color="#FF00FF"> "' . $parameters[0] . '" "' . $parameters[1] . '" "' . $parameters[2] . '" "' . $parameters[3] . '"</font><br>');
+              if (count($parameters) >= 4)
+			  {
+                append_log("Parse Error: Require variable too many arguments at line $line_number");
+			  }
+			  else if(trim($parameters[0]) == "")
+			  {
+                append_log("Parse Error: Require variable blank or missing variable name (check for double spaces) at line $line_number");
+			  }
+			  else
+			  {
+				if(substr($parameters[0],0,6) != 'Quest_')
+				{
+					append_log("Warning: Variables for quests should start \"Quest_\" at line $line_number");
+				}
+				for($i=1; $i < count($parameters); $i++)
+				{
+					if(trim($parameters[$i]) == "")
+				  	{
+						append_log("Parse Error: Require variable parameter " . ($i+1) . " blank or missing (check for double spaces) at line $line_number");
+				  	}
+					else if(!is_numeric($parameters[$i]) || !trim($parameters[$i]) == 'none')
+					{
+						append_log("Parse Error: Require variable parameter " . ($i+1) . " is invalid must be a number or \"none\"  at line $line_number");
+					}
+					
+				}
+			  }
             }
             else 
             {
