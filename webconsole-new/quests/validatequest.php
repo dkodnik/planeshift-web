@@ -1282,9 +1282,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'variable', 8) === 0)
             {
-              echo('<font color="#00FF00">Line: ' . $line_number . ' ' . $require . '</font><br>');
+              //echo('<font color="#00FF00">Line: ' . $line_number . ' ' . $require . '</font><br>');
 			  $parameters = explode(" ", trim(substr($require,8)));
-			  echo('<font color="#FF00FF"> "' . $parameters[0] . '" "' . $parameters[1] . '" "' . $parameters[2] . '" "' . $parameters[3] . '"</font><br>');
+			  //echo('<font color="#FF00FF"> "' . $parameters[0] . '" "' . $parameters[1] . '" "' . $parameters[2] . '" "' . $parameters[3] . '"</font><br>');
               if (count($parameters) >= 4)
 			  {
                 append_log("Parse Error: Require variable too many arguments at line $line_number");
@@ -1305,7 +1305,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
 				  	{
 						append_log("Parse Error: Require variable parameter " . ($i+1) . " blank or missing (check for double spaces) at line $line_number");
 				  	}
-					else if(!is_numeric($parameters[$i]) || !trim($parameters[$i]) == 'none')
+					else if(!is_numeric($parameters[$i]) && trim($parameters[$i]) != 'none')
 					{
 						append_log("Parse Error: Require variable parameter " . ($i+1) . " is invalid must be a number or \"none\"  at line $line_number");
 					}
