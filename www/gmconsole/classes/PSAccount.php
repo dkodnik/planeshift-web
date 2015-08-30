@@ -16,6 +16,9 @@ class PSAccount extends PSBaseClass {
     var $Country;
     var $SpamPoints;
     var $AdvisorPoints;
+	var $OperatingSystem;
+	var $GraphicsCard;
+	var $GraphicsVersion;
 
 
     //
@@ -60,6 +63,9 @@ class PSAccount extends PSBaseClass {
             $this->Country = $row['country'];
             $this->SpamPoints = $row['spam_points'];
             $this->AdvisorPoints = $row['advisor_points'];
+			$this->OperatingSystem = $row['operating_system'];
+			$this->GraphicsCard = $row['graphics_card'];
+			$this->GraphicsVersion= $row['graphics_version'];
 
             // Load completed successfully
             $this->__IsLoaded = true;
@@ -135,6 +141,9 @@ class PSAccount extends PSBaseClass {
             $account->Country = $row['country'];
             $account->SpamPoints = $row['spam_points'];
             $account->AdvisorPoints = $row['advisor_points'];
+			$account->OperatingSystem = $row['operating_system'];
+			$account->GraphicsCard = $row['graphics_card'];
+			$account->GraphicsVersion= $row['graphics_version'];
 
             $account->__IsLoaded = true;
             return $account;
@@ -178,7 +187,10 @@ class PSAccount extends PSBaseClass {
                 $account->Country = $row['country'];
                 $account->SpamPoints = $row['spam_points'];
                 $account->AdvisorPoints = $row['advisor_points'];
-
+				$account->OperatingSystem = $row['operating_system'];
+				$account->GraphicsCard = $row['graphics_card'];
+				$account->GraphicsVersion= $row['graphics_version'];
+				
                 $account->__IsLoaded = true;
                 array_push($accounts, $account);
             }
@@ -218,6 +230,9 @@ class PSAccount extends PSBaseClass {
                 $gmAccount->Country = $row['country'];
                 $gmAccount->SpamPoints = $row['spam_points'];
                 $gmAccount->AdvisorPoints = $row['advisor_points'];
+				$gmAccount->OperatingSystem = $row['operating_system'];
+				$gmAccount->GraphicsCard = $row['graphics_card'];
+				$gmAccount->GraphicsVersion= $row['graphics_version'];
 
                 $gmAccount->__IsLoaded = true;
                 array_push($gmAccounts, $gmAccount);
