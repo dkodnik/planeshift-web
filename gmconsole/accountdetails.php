@@ -94,6 +94,18 @@
 										<td>Advisor points</td>
 										<td><?=$account->AdvisorPoints?></td>
 									</tr>
+                                    <tr>
+										<td>Operating System</td>
+										<td><?=$account->OperatingSystem?></td>
+									</tr>
+                                    <tr>
+										<td>Graphics Card</td>
+										<td><?=$account->GraphicsCard?></td>
+									</tr>
+                                    <tr>
+										<td>Graphics Version</td>
+										<td><?=$account->GraphicsVersion?></td>
+									</tr>
                                 </table>
                             </td>
 							<td style="width:20px">&nbsp;</td>
