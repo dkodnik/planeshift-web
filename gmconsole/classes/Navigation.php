@@ -31,6 +31,9 @@ class Navigation {
                 	<td><a href="gmevents.php">Review GM Events</a></td>
                 </tr>
                 <tr>
+                	<td><a href="check_keys.php">Check Guildhouse keys</a></td>
+                </tr>
+                <tr>
                     <td><a href="bans.php">Bans</a></td>
                 </tr>
                 <tr>

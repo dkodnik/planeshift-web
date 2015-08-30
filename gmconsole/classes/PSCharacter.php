@@ -323,6 +323,56 @@ class PSCharacter extends PSBaseClass {
         }
     }
 
+	// Searches characters owning a specific key
+	function Key_Find($keyField) {
+        require_once('PSBaseClass.php');
+        $conn = PSBaseClass::S_GetConnection();
+
+		// select name from item_instances s, characters c where c.id=s.char_id_owner and flags like '%key%' and openable_locks=35576198;
+		$sql = 'SELECT c.* FROM item_instances s, characters c where c.id=s.char_id_owner and openable_locks='.$keyField;
+
+        $res = mysql_query($sql . ' ORDER BY name LIMIT 100', $conn);
+        if (!$res) {
+            die($sql . $where . mysql_error());
+        }
+        else {
+            $characters = array();
+
+            while (($row = mysql_fetch_array($res)) != null) {
+                $char = new PSCharacter();
+            
+                $char->ID = $row['id'];
+                $char->FirstName = $row['name'];
+                $char->LastName = $row['lastname'];
+                $char->RaceGenderID = $row['racegender_id'];
+                $char->CharacterType = $row['character_type'];
+                $char->StaminaPhysical = $row['stamina_physical'];
+                $char->StaminaMental = $row['stamina_mental'];
+                $char->HP = $row['mod_hitpoints'];
+                $char->MANA = $row['mod_mana'];
+                $char->MoneyCircles = $row['money_circles'];
+                $char->MoneyOctas = $row['money_octas'];
+                $char->MoneyHexas = $row['money_hexas'];
+                $char->MoneyTrias = $row['money_trias'];
+                $char->GuildID = $row['guild_member_of'];
+                $char->GuildLevel = $row['guild_level'];
+                $char->LastLogin = $row['last_login'];
+                $char->AccountID = $row['account_id'];
+                $char->TimeConnectedInSeconds = $row['time_connected_sec'];
+                $char->ExperiencePoints = $row['experience_points'];
+                $char->ProgressionPoints = $row['progression_points'];
+                $char->DuelPoints = $row['duel_points'];
+                $char->Description = $row['description'];
+                $char->CreationTime = $row['creation_time'];
+
+                $char->__IsLoaded = true;
+                array_push($characters, $char);
+            }
+
+            return $characters;
+        }
+    }
+
 
     //
     // Returns the leader of a guild. If there's more than one leader (database inconsistency?), the first one read from the
