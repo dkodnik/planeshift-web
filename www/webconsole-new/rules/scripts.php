@@ -3,8 +3,8 @@ function rule_scripts(){
   if (checkaccess('crafting', 'read')){
     if (isset($_POST['commit'])){
       if (($_POST['commit']=='Change Name') && (checkaccess('crafting', 'edit'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $orig_name = mysql_real_escape_string($_POST['orig_name']);
+        $name = escapeSqlString($_POST['name']);
+        $orig_name = escapeSqlString($_POST['orig_name']);
         $query = "UPDATE progression_events SET name='$name' WHERE name='$orig_name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -13,8 +13,8 @@ function rule_scripts(){
         rule_scripts();
         return;
       }else if (($_POST['commit']=='Update Script') && (checkaccess('crafting', 'edit'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $event_script = mysql_real_escape_string($_POST['event_script']);
+        $name = escapeSqlString($_POST['name']);
+        $event_script = escapeSqlString($_POST['event_script']);
         $query = "UPDATE progression_events SET event_script='$event_script' WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -23,7 +23,7 @@ function rule_scripts(){
         rule_scripts();
         return;
       }else if (($_POST['commit']=='Delete') && (checkaccess('crafting', 'delete'))){
-        $name = mysql_real_escape_string($_POST['name']);
+        $name = escapeSqlString($_POST['name']);
         $query = "DELETE FROM progression_events WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -32,8 +32,8 @@ function rule_scripts(){
         rule_scripts();
         return;
       }else if (($_POST['commit']=='Create Script') && (checkaccess('crafting', 'create'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $event_script = mysql_real_escape_string($_POST['event_script']);
+        $name = escapeSqlString($_POST['name']);
+        $event_script = escapeSqlString($_POST['event_script']);
         $query = "INSERT INTO progression_events (name, event_script) VALUES ('$name', '$event_script')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -78,7 +78,7 @@ function rule_scripts(){
       }
       $query = $query. " ORDER BY name";
       $result = mysql_query2($query);
-      if (mysql_num_rows($result) > 0)
+      if (sqlNumRows($result) > 0)
       {
         echo '<table border="1">';
         echo '<tr><th>Name</th><th>Script</th>';
@@ -90,7 +90,7 @@ function rule_scripts(){
         {
             echo '</tr>';
         }
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             if (checkaccess('crafting', 'edit'))

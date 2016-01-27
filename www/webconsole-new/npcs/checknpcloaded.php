@@ -16,7 +16,7 @@ function checknpcloaded(){
         echo "  <TH> ID </TH> <TH> NAME</TH><TH> Sector</TH><TH> Position</TH><TH> Loaded in game?</TH>";
 
         // for each NPC
-        while ($line = mysql_fetch_array($result, MYSQL_NUM)) 
+        while ($line = fetchSqlRow($result)) 
         {
 
             $loaded = "yes";
@@ -48,7 +48,7 @@ function checknpcloaded(){
         echo "  <TH> ID </TH> <TH> NAME</TH><TH> Sector</TH><TH> Position</TH><TH> Loaded in game?</TH>";
 
         // for each NPC
-        while ($line = mysql_fetch_array($result, MYSQL_NUM)) 
+        while ($line = fetchSqlRow($result)) 
         {
     
             $loaded = "yes";

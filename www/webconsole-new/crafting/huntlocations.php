@@ -3,21 +3,21 @@ function huntlocations(){
   if (checkaccess('natres', 'read')){
     if (isset($_POST['commit']) && (checkaccess('natres', 'edit'))){
       if ($_POST['commit'] == "Commit Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
-        $sector = mysql_real_escape_string($_POST['sector']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $range = mysql_real_escape_string($_POST['range']);
-        $itemid = mysql_real_escape_string($_POST['itemid']);
-        $interval = mysql_real_escape_string($_POST['interval']);
-        $max_random = mysql_real_escape_string($_POST['max_random']);
-        $amount = mysql_real_escape_string($_POST['amount']);
-		$lock_str = mysql_real_escape_string($_POST['lock_str']);
+        $id = escapeSqlString($_POST['id']);
+        $sector = escapeSqlString($_POST['sector']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $range = escapeSqlString($_POST['range']);
+        $itemid = escapeSqlString($_POST['itemid']);
+        $interval = escapeSqlString($_POST['interval']);
+        $max_random = escapeSqlString($_POST['max_random']);
+        $amount = escapeSqlString($_POST['amount']);
+		$lock_str = escapeSqlString($_POST['lock_str']);
 		if (!$lock_str)
 			$lock_str = '0';
-		$lock_skill = mysql_real_escape_string($_POST['lock_skill']);
-		$flags = mysql_real_escape_string($_POST['flags']);
+		$lock_skill = escapeSqlString($_POST['lock_skill']);
+		$flags = escapeSqlString($_POST['flags']);
         $query = "UPDATE hunt_locations SET sector='$sector', x='$x', y='$y', z='$z', `range`='$range', itemid='$itemid', `interval`='$interval',";
 		$query .= " max_random='$max_random', amount='$amount', lock_str=$lock_str, lock_skill='$lock_skill', flags='$flags' WHERE id='$id'";
         $result = mysql_query2($query);
@@ -26,20 +26,20 @@ function huntlocations(){
         huntlocations();
         return; 
       }else if($_POST['commit'] == "Commit New" && checkaccess('natres', 'create')){
-        $sector = mysql_real_escape_string($_POST['sector']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $range = mysql_real_escape_string($_POST['range']);
-        $itemid = mysql_real_escape_string($_POST['itemid']);
-        $interval = mysql_real_escape_string($_POST['interval']);
-        $max_random = mysql_real_escape_string($_POST['max_random']);
-        $amount = mysql_real_escape_string($_POST['amount']);
-		$lock_str = mysql_real_escape_string($_POST['lock_str']);
+        $sector = escapeSqlString($_POST['sector']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $range = escapeSqlString($_POST['range']);
+        $itemid = escapeSqlString($_POST['itemid']);
+        $interval = escapeSqlString($_POST['interval']);
+        $max_random = escapeSqlString($_POST['max_random']);
+        $amount = escapeSqlString($_POST['amount']);
+		$lock_str = escapeSqlString($_POST['lock_str']);
 		if (!$lock_str)
 			$lock_str = '0';
-		$lock_skill = mysql_real_escape_string($_POST['lock_skill']);
-		$flags = mysql_real_escape_string($_POST['flags']);
+		$lock_skill = escapeSqlString($_POST['lock_skill']);
+		$flags = escapeSqlString($_POST['flags']);
         $query = "INSERT INTO hunt_locations (sector,x,y,z,`range`,itemid,`interval`,max_random,amount,lock_str,lock_skill,flags) ";
 		$query .= "VALUES ('$sector','$x','$y','$z','$range','$itemid','$interval', '$max_random','$amount',$lock_str,'$lock_skill','$flags')";
         $result = mysql_query2($query);
@@ -48,7 +48,7 @@ function huntlocations(){
         huntlocations();
         return;
       }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM hunt_locations WHERE id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
@@ -58,11 +58,11 @@ function huntlocations(){
       }
     }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
       if ($_POST['action'] == 'Edit'){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM hunt_locations WHERE id='$id'";
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=huntlocations" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'sector', $row['sector']).'</td>';
@@ -96,10 +96,10 @@ function huntlocations(){
         echo '</form>';
       }
 	  else if ($_POST['action'] == 'Delete' && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT i.name as itemname, s.name FROM hunt_locations AS h, sectors AS s, item_stats AS i WHERE h.sector=s.id AND h.itemid=i.id AND h.id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=huntlocations" method="post">';
         echo '<p>Please Confirm that you wish to delete the '.$row['itemname'].' hunt location in sector '.$row['name'].'</p>';
         echo '<input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete"/>';
@@ -112,7 +112,7 @@ function huntlocations(){
 	  $query .= "FROM hunt_locations AS r LEFT JOIN sectors AS s ON r.sector=s.id LEFT JOIN item_stats AS i on i.id=r.itemid";
       if (isset($_GET['id']))
       {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " WHERE r.id='$id'";
       }
       if (isset($_GET['sort'])){
@@ -134,7 +134,7 @@ function huntlocations(){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
         echo '<td>'.$row['sector'].'</td><td>'.$row['x'].'/'.$row['y'].'/'.$row['z'].'</td>';
         echo '<td>'.$row['range'].'</td>';

@@ -14,11 +14,11 @@ function createquest(){
       echo '</form>';
     }else{
  //Here we create the quest
-      $name = mysql_real_escape_string($_POST['name']);
-      $player_lockout = mysql_real_escape_string($_POST['player_lockout']);
-      $quest_lockout = mysql_real_escape_string($_POST['quest_lockout']);
-      $category = mysql_real_escape_string($_POST['category']);
-      $description = mysql_real_escape_string($_POST['description']);
+      $name = escapeSqlString($_POST['name']);
+      $player_lockout = escapeSqlString($_POST['player_lockout']);
+      $quest_lockout = escapeSqlString($_POST['quest_lockout']);
+      $category = escapeSqlString($_POST['category']);
+      $description = escapeSqlString($_POST['description']);
       $id = GetNextId('quests');
       $query = "INSERT INTO quests (id, name, task, player_lockout_time, quest_lockout_time, category) VALUES ('$id', '$name', '$description', '$player_lockout', '$quest_lockout', '$category')";
       $result = mysql_query2($query);

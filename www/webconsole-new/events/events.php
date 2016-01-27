@@ -95,7 +95,7 @@ function getEvents($orderBy = null)
 
 	//Build list as an array
 	$events = array();
-	while ($row = mysql_fetch_assoc($result)) {
+	while ($row = fetchSqlAssoc($result)) {
 		
 		$average = getVoteAverage($row['id']);
 		$events[] = array('name'=>$row['name'], 'avg'=>$average, 
@@ -131,7 +131,7 @@ function getVoteAverage($event_id)
 	//Get vote total and number of votes from db
 	$query = "SELECT SUM(vote), COUNT(player_id) FROM character_events WHERE event_id = $event_id";
 	$result = mysql_query2($query);
-	$row = mysql_fetch_assoc($result);
+	$row = fetchSqlAssoc($result);
 	
 	//to avoid division by zero
 	if ($row['COUNT(player_id)'] < 1) {
@@ -153,7 +153,7 @@ function getEventDetails($event_id)
 			.'LEFT JOIN characters c ON c.id = gme.gm_id WHERE gme.id =' . $event_id;
 	$result = mysql_query2($query);
 	
-	return mysql_fetch_assoc($result);
+	return fetchSqlAssoc($result);
 }
 
 function getEventComments($event_id)
@@ -163,7 +163,7 @@ function getEventComments($event_id)
 	$result = mysql_query2($query);
 
 	$comments = array();
-	while ($row = mysql_fetch_assoc($result)) {
+	while ($row = fetchSqlAssoc($result)) {
 		$comments[] = array('name'=>$row['name'] . ' ' . $row['lastname'], 'vote'=>$row['vote'], 'comment'=>$row['comments']);
 	}
 	

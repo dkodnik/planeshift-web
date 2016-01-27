@@ -22,7 +22,7 @@ function listquests()
                 $query .= "ON q.id=c.quest_id, characters ch where ch.id=c.player_id and ch.creation_time>DATE_SUB(CURDATE(),INTERVAL 90 DAY) GROUP BY q.id ORDER BY name";
             }
             $result = mysql_query2($query);
-            while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
+            while ($line = fetchSqlAssoc($result)){
                 // store id, name and category in $data
                 if ($mode=='hiercount') { // used for statistics
                     $data =  array($line['id'],  $line['prerequisite'], $line['category'], $line['flags'], $line['num']);
@@ -63,7 +63,7 @@ function listquests()
             $factionlimit = '';
             /* Factions not used at moment so will hide
 			if (isset($_GET['factionLimit'])) {
-                $factionlimit = mysql_real_escape_string($_GET['factionLimit']);
+                $factionlimit = escapeSqlString($_GET['factionLimit']);
             }
             $factions = PrepSelect('factionnames');*/
             echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>';
@@ -203,7 +203,7 @@ function listquests()
             echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Player Lockout</a></th>';
             echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Quest Lockout</a></th>';
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td>';
                 if ($row['flags'] == 1) // if flag is 1, quest is disabled.
@@ -338,19 +338,19 @@ function readquest()
         }
         else
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             $query = 'SELECT name, category, player_lockout_time, quest_lockout_time, prerequisite FROM quests WHERE id='.$id;
             $result = mysql_query2($query);
             $query2 = 'SELECT script FROM quest_scripts WHERE quest_id='.$id;
             $result2 = mysql_query2($query2);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             echo 'Quest ID: '.$id."<br/>\n";
             echo 'Quest Name: '.$row['name']."<br/>\n";
             echo 'Quest Category: '.$row['category']."<br/>\n";
             echo 'Player Lockout Time: '.$row['player_lockout_time']."<br/>\n";
             echo 'Quest Lockout Time: '.$row['quest_lockout_time']."<br/>\n";
             echo 'Prerequisites: '.htmlspecialchars($row['prerequisite'])."<br/>\n";
-            $row = mysql_fetch_array($result2, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result2);
             $script = str_replace("\n", "<br/>\n", htmlspecialchars($row['script']));
             echo '<hr/>';
             echo 'Quest Script:<br/>'.$script."<br/>\n";
@@ -370,7 +370,7 @@ function npcquests()
         $query = 'SELECT c.id, c.name, c.lastname, s.name AS sector FROM characters AS c LEFT JOIN sectors AS s ON c.loc_sector_id = s.id WHERE account_id=9';
         if (isset($_GET['npc_id']))
         {
-            $id = mysql_real_escape_string($_GET['npc_id']);
+            $id = escapeSqlString($_GET['npc_id']);
             $query .= " AND c.id='$id'";
         }
         else
@@ -396,16 +396,16 @@ function npcquests()
         $query = 'SELECT q.name, q.id, s.script FROM quests AS q LEFT JOIN quest_scripts AS s ON q.id=s.quest_id';
         $result_script = mysql_query2($query);
         echo '<table border="1"><tr><th><a href="./index.php?do=npcquests&amp;sort=npc">NPC Name</a></th><th><a href="./index.php?do=npcquests&amp;sort=sector">Sector</a></th><th>Quests</th><th>Starting Quests</th></tr>'."\n";
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             $fullname = $row['name'];
             if ($row['lastname'] != "")
             {
                 $fullname = $fullname . ' ' . $row['lastname'];
             }
-            mysql_data_seek($result_script, 0);
+            sqlSeek($result_script, 0);
             $namestring = '/'.$fullname.'\:/ims';
-            while($scripts = mysql_fetch_array($result_script, MYSQL_ASSOC))
+            while($scripts = fetchSqlAssoc($result_script))
             {
                 $id = $scripts['id'];
                 if (preg_match($namestring, $scripts['script']) == 1)
@@ -480,7 +480,7 @@ function countquests()
         $query = "SELECT category, COUNT(category) AS count FROM quests GROUP BY category";
         $result = mysql_query2($query);
         echo '<hr/><p>Quest Counts:';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<br/>Category: '.$row['category'].' - '.$row['count'];
         }

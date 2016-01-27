@@ -153,7 +153,7 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
     //echo "query is $query";
     $res = mysql_query2($query);
 
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
       if ($line[8]!=0)
         $amount = 2; // indicates this is also an hunt location
       else
@@ -169,7 +169,7 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
     //echo "query is $query";
     $res = mysql_query2($query);
 
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
       $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6]."|3|33";
       $result .= ($elem . "\n");
     }

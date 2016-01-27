@@ -2,12 +2,12 @@
 function deleteitem(){
   if (checkaccess('items', 'delete')){
     if (isset($_GET['commit']) && isset($_POST['passd'])){
-      $id = mysql_real_escape_string($_GET['id']);
-      $password = mysql_real_escape_string($_POST['passd']);
-      $username = mysql_real_escape_string($_SESSION['username']);
+      $id = escapeSqlString($_GET['id']);
+      $password = escapeSqlString($_POST['passd']);
+      $username = escapeSqlString($_SESSION['username']);
       $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
       $result = mysql_query2($query);
-      $row = mysql_fetch_row($result);
+      $row = fetchSqlRow($result);
       if ($row[0] == 1){
         $query = "DELETE FROM item_stats WHERE id=$id";
         $result = mysql_query2($query);
@@ -26,7 +26,7 @@ function deleteitem(){
         return;
       }
     }else{
-      $id = mysql_real_escape_string($_GET['item']);
+      $id = escapeSqlString($_GET['item']);
       include('./items/listitems.php');
       echo 'Looking up usage for this item.';
       if (showitemusage()) 
@@ -36,7 +36,7 @@ function deleteitem(){
       }
       $query = "SELECT name FROM item_stats WHERE id=$id";
       $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
+      $row = fetchSqlAssoc($result);
       echo '<p>No usage of this item was found <br /><br />You are about to permanently delete item id '.$id.' Item Name: '.$row['name'].'</p>';
       echo '<form action="./index.php?do=deleteitem&amp;commit&amp;id='.$id.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
     }

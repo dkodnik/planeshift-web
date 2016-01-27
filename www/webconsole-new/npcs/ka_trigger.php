@@ -9,7 +9,7 @@ function ka_trigger(){
     }else{
       echo '<tr><th>KA</th></tr>';
     }
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       if ($row['area'] != ''){
         echo '<tr><td>';
         echo '<a href="./index.php?do=ka_detail&amp;area='.rawurlencode($row['area']).'">'.$row['area'].'</a>';
@@ -36,11 +36,11 @@ function ka_trigger(){
 function ka_detail(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['area'])){
-      $area = mysql_real_escape_string(urldecode($_GET['area']));
+      $area = escapeSqlString(urldecode($_GET['area']));
       if ((isset($_POST['commit']) || isset($_GET['commit'])) && (checkaccess('npcs', 'edit'))){
         if ($_POST['commit'] == "Update Trigger"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+          $tid = escapeSqlString($_POST['trigger_id']);
+          $trigger_text = escapeSqlString($_POST['trigger_text']);
           $query = "UPDATE npc_triggers SET trigger_text='$trigger_text' WHERE id='$tid'";
         }else if ($_POST['commit'] == 'add action to script')
         {
@@ -56,7 +56,7 @@ function ka_detail(){
             // get current script
             $query = "select script from npc_responses where id=$responseid";
             $result = mysql_query2($query);
-            $line = mysql_fetch_array($result, MYSQL_NUM);
+            $line = fetchSqlRow($result);
             $script = $line[0];
 
             // remove last part
@@ -124,46 +124,46 @@ function ka_detail(){
             echo '  this.location = "index.php?do=ka_detail&area='.$area.'&trigger='.$responseid.'";';
             echo "  </script>";        
         }else if ($_POST['commit'] == "Update Responses"){
-            $tid = mysql_real_escape_string($_POST['trigger_id']);
-            $response1 = mysql_real_escape_string($_POST['response1']);
-            $response2 = mysql_real_escape_string($_POST['response2']);
-            $response3 = mysql_real_escape_string($_POST['response3']);
-            $response4 = mysql_real_escape_string($_POST['response4']);
-            $response5 = mysql_real_escape_string($_POST['response5']);
-            $script = mysql_real_escape_string($_POST['script']);
-            $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
-            $audio_path1 = mysql_real_escape_string($_POST['audio_path1']);
-            $audio_path2 = mysql_real_escape_string($_POST['audio_path2']);
-            $audio_path3 = mysql_real_escape_string($_POST['audio_path3']);
-            $audio_path4 = mysql_real_escape_string($_POST['audio_path4']);
-            $audio_path5 = mysql_real_escape_string($_POST['audio_path5']);
+            $tid = escapeSqlString($_POST['trigger_id']);
+            $response1 = escapeSqlString($_POST['response1']);
+            $response2 = escapeSqlString($_POST['response2']);
+            $response3 = escapeSqlString($_POST['response3']);
+            $response4 = escapeSqlString($_POST['response4']);
+            $response5 = escapeSqlString($_POST['response5']);
+            $script = escapeSqlString($_POST['script']);
+            $prerequisite = escapeSqlString($_POST['prerequisite']);
+            $audio_path1 = escapeSqlString($_POST['audio_path1']);
+            $audio_path2 = escapeSqlString($_POST['audio_path2']);
+            $audio_path3 = escapeSqlString($_POST['audio_path3']);
+            $audio_path4 = escapeSqlString($_POST['audio_path4']);
+            $audio_path5 = escapeSqlString($_POST['audio_path5']);
             if (isset($_POST['c'])){
                 $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5'";
             }else{
                 $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite', audio_path1='$audio_path1', audio_path2='$audio_path2', audio_path3='$audio_path3', audio_path4='$audio_path4', audio_path5='$audio_path5' WHERE trigger_id='$tid'";
             }
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
-            $tid_o = mysql_real_escape_string($_POST['trigger_id']);
-            $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+            $tid_o = escapeSqlString($_POST['trigger_id']);
+            $trigger_text = escapeSqlString($_POST['trigger_text']);
           $tid = GetNextId('npc_triggers');
           $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '$tid_o', '$area')";
           $result = mysql_query2($query);
           $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
         }else if ($_POST['commit'] == "Remove"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
+          $tid = escapeSqlString($_POST['trigger_id']);
           $query = "DELETE FROM npc_triggers WHERE id='$tid'";
           $result = mysql_query2($query);
           $query = "DELETE FROM npc_responses WHERE trigger_id='$tid'";
         }else if ($_POST['commit'] == "Create New Trigger"){
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+          $trigger_text = escapeSqlString($_POST['trigger_text']);
           $tid = GetNextId('npc_triggers');
           $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '0', '$area')";
           $result = mysql_query2($query);
           $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
         }else if ($_POST['commit'] == "Create New KA Area")
         {  // This one is identical to the one above, save for the use of POST area instead of GET. (and of course the redirect)
-            $area = mysql_real_escape_string($_POST['area']);
-            $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+            $area = escapeSqlString($_POST['area']);
+            $trigger_text = escapeSqlString($_POST['trigger_text']);
             $tid = GetNextId('npc_triggers');
             $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '0', '$area')";
             $result = mysql_query2($query);
@@ -176,7 +176,7 @@ function ka_detail(){
         }else if ($_POST['commit'] == "Delete KA"){
           $query = "SELECT id FROM npc_triggers WHERE area='$area'";
           $result = mysql_query2($query);
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             $id = $row['id'];
             $q2 = 'DELETE FROM npc_responses WHERE trigger_id='.$id;
             $r2 = mysql_query2($q2);
@@ -193,30 +193,30 @@ function ka_detail(){
       }else{
         $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.id AS r_id, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, r.audio_path1, r.audio_path2, r.audio_path3, r.audio_path4, r.audio_path5, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$area'";
         if (isset($_GET['trigger'])){
-          $t = mysql_real_escape_string($_GET['trigger']);
+          $t = escapeSqlString($_GET['trigger']);
           $query = $query . " ORDER BY t.id IN ('$t') DESC";
         }else{
           $query = $query . " ORDER BY t.id";
         }
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) == 0){
+        if (sqlNumRows($result) == 0){
           echo '<p class="error">KA Has no entries</p>';
         }else{
           echo '<table border="1"><tr><th>Trigger</th><th>Response</th>';
           if (checkaccess('npcs', 'edit')){
             echo '<th>Action</th>';
           }
-          echo '<td rowspan="'.(mysql_num_rows($result)+2).'">The following NPC use this KA:<br />';
+          echo '<td rowspan="'.(sqlNumRows($result)+2).'">The following NPC use this KA:<br />';
           $query2 = "SELECT c.id, c.name FROM npc_knowledge_areas AS nka LEFT JOIN characters AS c ON c.id=nka.player_id WHERE area='$area'";
           $result2 = mysql_query2($query2);
-          while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)) 
+          while ($row2 = fetchSqlAssoc($result2)) 
           {
             echo '<a href="./index.php?do=npc_details&sub=kas&npc_id='.$row2['id'].'">'.$row2['name'].'</a><br />';
           }
           // npc list
           echo '</td>';
           echo '</tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             $t_id = $row['id'];
             echo '<tr>';
             echo '<td>';
@@ -288,7 +288,7 @@ function ka_detail(){
                 $result2 = mysql_query2($query2);
                 echo '<td><select name="skillname">';
                 echo '<option value="empty"></option>';
-                while ($line2 = mysql_fetch_array($result2, MYSQL_NUM))
+                while ($line2 = fetchSqlRow($result2))
                 {
                     echo '<option value="'.$line2[1].'">'.$line2[1].'</option>';
                 }

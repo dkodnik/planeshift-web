@@ -37,14 +37,14 @@ function listwaypoints(){
   if (checkaccess('natres', 'read')){
     if (isset($_POST['commit']) && checkaccess('natres', 'edit')){
       if ($_POST['commit'] == "Update Waypoint" && isset($_POST['id'])){
-        $id = mysql_real_escape_string($_POST['id']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $group = mysql_real_escape_string($_POST['group']);
-        $sector = mysql_real_escape_string($_POST['loc_sector_id']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
+        $id = escapeSqlString($_POST['id']);
+        $name = escapeSqlString($_POST['name']);
+        $group = escapeSqlString($_POST['group']);
+        $sector = escapeSqlString($_POST['loc_sector_id']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $radius = escapeSqlString($_POST['radius']);
         $flags = '';
         foreach ($_POST['flags'] AS $key => $value){
           $flags = $flags . $value . ', ';
@@ -52,23 +52,23 @@ function listwaypoints(){
         if (strlen($flags) > 0){
           $flags = substr($flags, 0, -2);
         }
-        $flag = mysql_real_escape_string($flags);
+        $flag = escapeSqlString($flags);
         $query = "UPDATE sc_waypoints SET name='$name', wp_group='$group', loc_sector_id='$sector', x='$x', y='$y', z='$z', radius='$radius', flags='$flag' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
       }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
       }else if($_POST['commit'] == "Create Waypoint" && checkaccess('natres', 'create')){
-        $name = mysql_real_escape_string($_POST['name']);
-        $group = mysql_real_escape_string($_POST['group']);
-        $sector = mysql_real_escape_string($_POST['loc_sector_id']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
+        $name = escapeSqlString($_POST['name']);
+        $group = escapeSqlString($_POST['group']);
+        $sector = escapeSqlString($_POST['loc_sector_id']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $radius = escapeSqlString($_POST['radius']);
         $flags = '';
         foreach ($_POST['flags'] AS $key => $value){
           $flags = $flags . $value . ', ';
@@ -76,7 +76,7 @@ function listwaypoints(){
         if (strlen($flags) > 0){
           $flags = substr($flags, 0, -2);
         }
-        $flag = mysql_real_escape_string($flags);
+        $flag = escapeSqlString($flags);
         $query = "INSERT INTO sc_waypoints SET name='$name', wp_group='$group', loc_sector_id='$sector', x='$x', y='$y', z='$z', radius='$radius', flags='$flag'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -88,11 +88,11 @@ function listwaypoints(){
       return;
     }else if (checkaccess('natres', 'edit') && isset($_POST['action'])){		
 		
-      $id = mysql_real_escape_string($_POST['id']);
+      $id = escapeSqlString($_POST['id']);
       if ($_POST['action'] == 'Edit'){
         $query = "SELECT * FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
         echo '<form action="./index.php?do=waypoint'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$row['id'].'" />';
         echo '<table border="1">';
@@ -163,14 +163,14 @@ function listwaypoints(){
         echo '<input type="submit" name="commit" value="Update Waypoint" />';
         echo '</form>';
       }else if (($_POST['action'] == 'Delete') && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT id FROM sc_waypoint_links WHERE wp1='$id' OR wp2='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0)
+        if (sqlNumRows($result) > 0)
         {
             echo '<p class="error">There are waypoint links still using this waypoint, it may not be deleted.</p>';
             echo '<p>Below are links to all such waypoints.<br /><br />';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+            while ($row = fetchSqlAssoc($result)) 
             {
                 echo '<a href="./index.php?do=editwaypointlink&id='.$row['id'].'">'.$row['id'].'</a><br />';
             }
@@ -179,7 +179,7 @@ function listwaypoints(){
         }
         $query = "SELECT name FROM sc_waypoints WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo 'You are about to delete waypoint '.$row['name'].' - Please confirm you wish to do this<br/>';
         echo '<form action="./index.php?do=waypoint" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete" /></form>';
@@ -238,18 +238,18 @@ function listwaypoints(){
 					$tmp_flag .= 'GROUND, ';
 				}
 				$upd_flag = 'update sc_waypoints set flags="' . substr($tmp_flag, 0, -2) . '" where id=' . $_POST[$tmp.'_id'];
-				mysql_query($upd_flag) or die(mysql_error() . '<br>' . $upd_flag);
+				mysql_query2($upd_flag);
 			}
 		}
 	}
 		
       $query = "SELECT w.id, w.name, w.wp_group, w.x, w.y, w.z, w.radius, w.flags, w.loc_sector_id, s.name AS sector FROM sc_waypoints AS w LEFT JOIN sectors AS s on s.id=w.loc_sector_id";
       if (isset($_GET['id']) && $_GET['id']!=''){
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " WHERE w.id='$id'";
       }
       elseif (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != 0){
-        $sec = mysql_real_escape_string($_GET['sector']);
+        $sec = escapeSqlString($_GET['sector']);
         $query .= " WHERE w.loc_sector_id='$sec'";
       }
       if (isset($_GET['sort'])){
@@ -278,8 +278,8 @@ function listwaypoints(){
         $lim = 30;
         $prev_lim = 0;
       }
-      $result = mysql_query2($query) or die(mysql_error() . '<br>' . $query);
-      if (mysql_numrows($result) == 0){
+      $result = mysql_query2($query);
+      if (sqlNumRows($result) == 0){
         echo '<p class="error">No Waypoints</p>';
       }//else{
         $sid = 0;
@@ -297,7 +297,7 @@ function listwaypoints(){
         echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
         $where = ($sid == 0 ? '' : " WHERE w.loc_sector_id=$sid");
         $result2 = mysql_query2('select count(w.id) AS mylimit FROM sc_waypoints AS w'.$where);
-        $row2 = mysql_fetch_array($result2);
+        $row2 = fetchSqlAssoc($result2);
         if ($row2['mylimit'] > $lim)
         {
           echo '<a href="./index.php?do=waypoint';
@@ -372,7 +372,7 @@ function listwaypoints(){
         echo '</tr>';
 		$r = 0;
 		
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
 		{
 		
           echo '<tr>';

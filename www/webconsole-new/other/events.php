@@ -116,7 +116,7 @@ function getEvents($orderBy = null, $completed = true)
 
     //Build list as an array
     $events = array();
-    while ($row = mysql_fetch_assoc($result)) 
+    while ($row = fetchSqlAssoc($result)) 
     {
         
         $average = getVoteAverage($row['id']);
@@ -154,9 +154,9 @@ function getEvents($orderBy = null, $completed = true)
 function getVoteAverage($event_id)
 {
     //Get vote total and number of votes from db
-    $query = sprintf("SELECT SUM(vote), COUNT(player_id) FROM character_events WHERE vote IS NOT NULL AND event_id = '%s'", mysql_real_escape_string($event_id));
+    $query = sprintf("SELECT SUM(vote), COUNT(player_id) FROM character_events WHERE vote IS NOT NULL AND event_id = '%s'", escapeSqlString($event_id));
     $result = mysql_query2($query);
-    $row = mysql_fetch_assoc($result);
+    $row = fetchSqlAssoc($result);
     
     //to avoid division by zero
     if ($row['COUNT(player_id)'] < 1)
@@ -175,11 +175,11 @@ function getVoteAverage($event_id)
 
 function getNonVoters($event_id)
 {
-    $query = sprintf("SELECT c.name, c.lastname FROM characters c JOIN character_events ce ON ce.player_id = c.id WHERE ce.vote IS NULL AND ce.event_id = '%s'", mysql_real_escape_string($event_id));
+    $query = sprintf("SELECT c.name, c.lastname FROM characters c JOIN character_events ce ON ce.player_id = c.id WHERE ce.vote IS NULL AND ce.event_id = '%s'", escapeSqlString($event_id));
     $result = mysql_query2($query);
     
     $non_voters = array();
-    while($row = mysql_fetch_assoc($result)) 
+    while($row = fetchSqlAssoc($result)) 
     {
         $non_voters[] = $row;
     }
@@ -190,20 +190,20 @@ function getNonVoters($event_id)
 function getEventDetails($event_id)
 {
     $query = sprintf("SELECT gme.name, gme.description, c.name AS gm_name, c.lastname AS gm_lastname, gme.id AS id FROM gm_events gme 
-                        LEFT JOIN characters c ON c.id = gme.gm_id WHERE gme.id = '%s'", mysql_real_escape_string($event_id));
+                        LEFT JOIN characters c ON c.id = gme.gm_id WHERE gme.id = '%s'", escapeSqlString($event_id));
     $result = mysql_query2($query);
     
-    return mysql_fetch_assoc($result);
+    return fetchSqlAssoc($result);
 }
 
 function getEventComments($event_id)
 {
     $query = sprintf("SELECT ce.comments, ce.vote, c.name, c.lastname FROM character_events ce 
-            LEFT JOIN characters c ON ce.player_id = c.id WHERE ce.comments IS NOT NULL AND ce.event_id='%s'", mysql_real_escape_string($event_id));
+            LEFT JOIN characters c ON ce.player_id = c.id WHERE ce.comments IS NOT NULL AND ce.event_id='%s'", escapeSqlString($event_id));
     $result = mysql_query2($query);
 
     $comments = array();
-    while ($row = mysql_fetch_assoc($result)) 
+    while ($row = fetchSqlAssoc($result)) 
     {
         $comments[] = array('name'=>$row['name'] . ' ' . $row['lastname'], 'vote'=>$row['vote'], 'comment'=>$row['comments']);
     }

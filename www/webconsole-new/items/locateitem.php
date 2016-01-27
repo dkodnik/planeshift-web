@@ -9,7 +9,7 @@ function locateitem(){
             if ($_POST['search'] == "Find Items")  // these first 3 all give the same results with another "where", so we print them all at the end in the same code.
             {
                 echo 'Finding item';
-                $itemstat = mysql_real_escape_string($_POST['itemid']);
+                $itemstat = escapeSqlString($_POST['itemid']);
                 $query .= "item_stats_id_standard = $itemstat";
                 if (isset($_POST['private'])) // The brackets in the SQL are intentional, and required for it's proper working.  The sector names for guild houses are static/fixed for now (juli, 2009), but this may change in the future.
                 {
@@ -23,7 +23,7 @@ function locateitem(){
                 $query .= "i.char_id_owner = 0";
                 if ($_POST['sectorid'] != '')
                 {
-                  $sectorid = mysql_real_escape_string($_POST['sectorid']);
+                  $sectorid = escapeSqlString($_POST['sectorid']);
                   $query = $query . " AND i.loc_sector_id='$sectorid'";
                 }
                 if (isset($_POST['private']))
@@ -34,26 +34,26 @@ function locateitem(){
             }
             else if ($_POST['search'] == "Find Instance")
             {
-                $iid = mysql_real_escape_string($_POST['iid']);
+                $iid = escapeSqlString($_POST['iid']);
                 $query .= "i.id='$iid'"; // "private" is not relevant when finding a specific instance.
                 $display_item = true;
             }
             else if ($_POST['search'] == "Find Merchants") // This one is different, so it gets it's own print.
             {
-                $itemid = mysql_real_escape_string($_POST['vendoritemid']); // Don't make "iss" "is" (like it should logically be) since "is" is a reserved keyword in mysql.
+                $itemid = escapeSqlString($_POST['vendoritemid']); // Don't make "iss" "is" (like it should logically be) since "is" is a reserved keyword in mysql.
                 $query = "SELECT DISTINCT c.id, c.name, c.lastname, iss.name AS item_name FROM merchant_item_categories AS m LEFT JOIN characters AS c ON c.id=m.player_id LEFT JOIN item_instances AS i ON i.char_id_owner=m.player_id LEFT JOIN item_stats AS iss ON iss.id=i.item_stats_id_standard WHERE i.location_in_parent > '15' AND i.item_stats_id_standard='$itemid' AND iss.category_id=m.category_id ORDER BY iss.name";
                 $result = mysql_query2($query);
-                if (mysql_num_rows($result) == 0)
+                if (sqlNumRows($result) == 0)
                 {
                     echo '<p class="error">No vendors found for this item.</p>';
                     return;
                 }
-                $row = mysql_fetch_array($result, MYSQL_ASSOC);
+                $row = fetchSqlAssoc($result);
                 echo '<p class="bold">Displaying vendors for '.$row['item_name'].'  </p>';
                 echo '<table>';
                 do {
                     echo '<tr><td><a href="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'">'.$row['name'].' '.$row['lastname'].'</a></td></tr>';
-                } while ($row = mysql_fetch_array($result, MYSQL_ASSOC));
+                } while ($row = fetchSqlAssoc($result));
                 echo '</table>';
             }
         }
@@ -73,7 +73,7 @@ function locateitem(){
         {
             $result = mysql_query2($query);
             echo '<table border="1"><tr><th>Instance ID</th><th>Name</th><th>Owner ID</th><th>Guardian ID</th><th>Parent Item</th><th>Location in Parent</th><th>Stack Count</th><th>Sector</th><th>X</th><th>Y</th><th>Z</th><th>X rot</th><th>Z rot</th><th>Instance</th><th>Flags</th><th>Prefix</th><th>Suffix</th><th>Adjective</th></tr>'."\n";
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+            while ($row = fetchSqlAssoc($result)){
                 echo '<tr><td>'.$row['id'].'</td>';
                 echo '<td>'.$row['name'].'</td>';
                 if ($row['char_id_owner'] == 0) 

@@ -41,11 +41,11 @@ function show_traits($race_id)
         echo '<p class="error">You are not authorised to use these functions.</p>';
         return;
     }
-    $race_id = mysql_real_escape_string($race_id);
+    $race_id = escapeSqlString($race_id);
     $query = "SELECT  name FROM  race_info WHERE id = '$race_id'";
     $result = mysql_query2($query);
 
-    $line = mysql_fetch_array($result, MYSQL_NUM);
+    $line = fetchSqlRow($result);
 
     echo '<h1>' . $line[0] . '</h1>';
 
@@ -73,7 +73,7 @@ function show_traits($race_id)
     {
         printf('<a name="%s"></a>', strtolower($name));
         printf('<h2>%s</h2>', $properties[0]); // display name
-        $location = mysql_real_escape_string($name); // NAME
+        $location = escapeSqlString($name); // NAME
         // we already escaped $race_id
         $query = "SELECT id, next_trait, only_npc, name, cstr_mesh as Mesh, cstr_material as Material, cstr_texture as Texture, shader as Shader FROM traits WHERE location = '$location' AND race_id = '$race_id'";
         $result = mysql_query2($query);
@@ -87,26 +87,26 @@ function show_traits($race_id)
             }
         }
         echo '<th>Delete</th><th>Update</th></tr>' . "\n";
-        while($row = mysql_fetch_object($result))
+        while($row = fetchSqlAssoc($result))
         {
             echo '<form action="index.php?do=handletrait" method="post">' . "\n";
             printf('<input type="hidden" name="race_id" value="%s" />', $race_id);
             printf('<input type="hidden" name="location" value="%s" />', $location);
-            printf('<input type="hidden" name="trait_id" value="%s" />', $row->id);
-            printf('<tr><td>%s</td>', $row->id);
-            printf('<td><input name="name" type="text" value="%s" /></td>', $row->name);
-            printf('<td><input name="next_trait" type="text" size="4" value="%s" /></td>', $row->next_trait);
-            echo '<td>' . SelectOnlyNPC($row->only_npc) . '</td>';
+            printf('<input type="hidden" name="trait_id" value="%s" />', $row['id']);
+            printf('<tr><td>%s</td>', $row['id']);
+            printf('<td><input name="name" type="text" value="%s" /></td>', $row['name']);
+            printf('<td><input name="next_trait" type="text" size="4" value="%s" /></td>', $row['next_trait']);
+            echo '<td>' . SelectOnlyNPC($row['only_npc']) . '</td>';
             foreach($columns as $id => $name) // loop through different columns,
             // check if we need to display input fields for those (see $traits above)
             {
                 if($properties[$id] === true)
                 {
-                    printf('<td><input name="%s" type="text" value="%s" /></td>', $name, $row->$name);
+                    printf('<td><input name="%s" type="text" value="%s" /></td>', $name, $row[$name]);
                 }
                 elseif($properties[$id] !== false)
                 {
-                    printf('<input name="%s" type="hidden" value="%s" />', $name, $row->$name);
+                    printf('<input name="%s" type="hidden" value="%s" />', $name, $row[$name]);
                 }
             }
             echo '<td><input type="checkbox" name="delete" /></td>';
@@ -168,7 +168,7 @@ function show_races()
     echo "<TABLE BORDER=1 CELLPADDING=5 CELLSPACING=0>";
     echo "<TH>ID</TH><TH>Race</TH><TH>Gender</TH>";
     
-    while ($line = mysql_fetch_array($result, MYSQL_NUM))
+    while ($line = fetchSqlRow($result))
     {
         echo "<TR><TD>" . $line[0] . "</TD><TD><A HREF=index.php?do=showraces&amp;function=list&amp;race_id=" . $line[0] . ">" . $line[1] . "</A></TD><TD>" . $line[2] . "</TD></TR>";
         if($line[0] == 11)
@@ -206,7 +206,7 @@ function list_traits()
     echo '  <TH> Functions </TH> ';
     $races = PrepSelect('races');
     
-    while ($line = mysql_fetch_array($result, MYSQL_NUM)){
+    while ($line = fetchSqlRow($result)){
         echo '<TR>';
         echo '<FORM ACTION=index.php?do=trait_actions&amp;operation=update METHOD=POST>';
         echo '<TD><INPUT TYPE="hidden" NAME="id" VALUE="'.$line[0].'" />'.$line[0].'</TD>';
@@ -280,16 +280,16 @@ function handle_trait() {
     $shader     = (isset($_POST['Shader'])) ? $_POST['Shader'] : '';
     
     /* Escape everything */
-    $race_id    = mysql_real_escape_string($race_id);
-    $trait_id   = mysql_real_escape_string($trait_id);
-    $name       = mysql_real_escape_string($name);
-    $next_trait = mysql_real_escape_string($next_trait);
-    $location   = mysql_real_escape_string($location);
-    $only_npc   = mysql_real_escape_string($only_npc);
-    $mesh       = mysql_real_escape_string($mesh);
-    $material   = mysql_real_escape_string($material);
-    $texture    = mysql_real_escape_string($texture);
-    $shader     = mysql_real_escape_string($shader);
+    $race_id    = escapeSqlString($race_id);
+    $trait_id   = escapeSqlString($trait_id);
+    $name       = escapeSqlString($name);
+    $next_trait = escapeSqlString($next_trait);
+    $location   = escapeSqlString($location);
+    $only_npc   = escapeSqlString($only_npc);
+    $mesh       = escapeSqlString($mesh);
+    $material   = escapeSqlString($material);
+    $texture    = escapeSqlString($texture);
+    $shader     = escapeSqlString($shader);
 
     switch($operation)
     {
@@ -386,7 +386,7 @@ function trait_actions()
     }
     else if ($operation == 'delete')
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "delete from traits where id='$id'";
         $result = mysql_query2($query);
     }

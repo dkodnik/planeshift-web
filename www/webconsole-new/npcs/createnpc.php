@@ -72,8 +72,8 @@ function createnpc()
             {
                 $sql = 'SELECT item_skill_id_1 FROM item_stats WHERE id='.$weapon;
                 $query = mysql_query2($sql);
-                $line = mysql_fetch_array($query, MYSQL_NUM);
-                $skill = $line[0];
+                $line = fetchSqlAssoc($query);
+                $skill = $line['item_skill_id_1'];
                 
                 $newnpcid = getNextId('characters', 'id');
                 

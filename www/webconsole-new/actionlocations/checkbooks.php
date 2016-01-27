@@ -16,11 +16,11 @@ function checkbooks()
             $query = mysql_query2($sql);
             
             $result = array();
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 $result[] = $row;
             }
-            mysql_free_result($query);
+            $query->free();
         }
         else
         {
@@ -35,14 +35,14 @@ function checkbooks()
             $query2 = mysql_query2($sql);
             
             $items = array();
-            while($row = mysql_fetch_array($query2, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query2))
             {
                 $items[] = $row;
             }
-            mysql_free_result($query2);
+            $query2->free();
             
             $result = array();
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 $id = $row['parent_item_id'];
                 foreach($items as $i => $fields)
@@ -54,7 +54,7 @@ function checkbooks()
                     }
                 }
             }
-            mysql_free_result($query);
+            $query->free();
         }
         
         // Start "streaming". From this point on every output will be transferred to the browser without buffering.
@@ -76,12 +76,12 @@ function checkbooks()
                 $sql = "SELECT s.name AS sectorname, i.char_id_owner, i.parent_item_id, i.flags, c.name AS char_firstname, c.lastname AS char_lastname FROM item_instances AS i LEFT JOIN sectors AS s ON i.loc_sector_id = s.id LEFT JOIN characters AS c ON i.char_id_owner = c.id WHERE i.id = '$containerid' LIMIT 1";
                 $query2 = mysql_query2($sql);
                 
-                if(mysql_num_rows($query2) == 0)
+                if(sqlNumRows($query2) == 0)
                 {
                     echo '<p class="error">Action location #'.$row['id'].' "'.htmlentities($row['name']).'" specifies an invalid container #'.$containerid.'.</p>';
                     continue;
                 }
-                $row2 = mysql_fetch_array($query2, MYSQL_ASSOC);
+                $row2 = fetchSqlAssoc($query2);
                 
                 if($row2['char_id_owner'] != null && $row2['char_id_owner'] != 0)
                 {
@@ -114,13 +114,13 @@ function checkbooks()
                 
                 $sql = "SELECT flags, item_stats_id_standard FROM item_instances WHERE parent_item_id = '$containerid' ORDER BY item_stats_id_standard";
                 $query3 = mysql_query2($sql);
-                if(mysql_num_rows($query3) == 0)
+                if(sqlNumRows($query3) == 0)
                 {
                     echo '<p class="error">Action location #'.$row['id'].' "'.htmlentities($row['name']).'" specifies a valid container #'.$containerid.' but the container seems empty.</p>';
                     continue;
                 }
                 
-                while($row3 = mysql_fetch_array($query3, MYSQL_ASSOC))
+                while($row3 = fetchSqlAssoc($query3))
                 {
                     if(strpos($row3['flags'], 'NOPICKUP') === false)
                     {

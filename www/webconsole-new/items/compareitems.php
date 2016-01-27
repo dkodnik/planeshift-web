@@ -93,7 +93,7 @@ function compareitems(){
 	{
 		$query = 'SELECT ' . $selvals . ' FROM item_stats i LEFT JOIN skills AS s1 ON i.item_skill_id_1=s1.skill_id LEFT JOIN skills AS s2 ON i.item_skill_id_2=s2.skill_id LEFT JOIN skills AS s3 ON i.item_skill_id_3=s3.skill_id LEFT JOIN item_stats AS i2 ON i.item_type_id_ammo=i2.id WHERE i.category_id="'.$cat.'" ORDER by ' . $comsort . ', name';
 		$result = mysql_query2($query);
-	    while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
+	    while ($row=fetchSqlAssoc($result))
 		{
 			$tablerows .= '<tr>';
 			$i = 0;

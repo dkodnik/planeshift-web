@@ -9,7 +9,7 @@ function listnpctypes()
     $query = 'SELECT id, name, parents, ang_vel, vel, collision, out_of_bounds, in_bounds, falling, template, script FROM sc_npctypes';
     if (isset($_GET['template']) && $_GET['template']=='1')
     {
-        $template = mysql_real_escape_string($_GET['template']);
+        $template = escapeSqlString($_GET['template']);
         $query .= " WHERE template=1";
     }
     else
@@ -18,7 +18,7 @@ function listnpctypes()
     }
     if (isset($_GET['id']) && $_GET['id']!='')
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " AND id='$id'";
     }
     if (isset($_GET['sort']))
@@ -54,7 +54,7 @@ function listnpctypes()
         $prev_lim = 0;
     }
     $result = mysql_query2($query);
-    if (mysql_numrows($result) == 0)
+    if (sqlNumRows($result) == 0)
     {
         echo '<p class="error">No NPC Types were found.</p>';
     }
@@ -76,7 +76,7 @@ function listnpctypes()
         echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
         $where = (isset($id) ? "WHERE id = $id" : '');
         $result2 = mysql_query2('select count(id) AS mylimit FROM sc_npctypes AS w'.$where);
-        $row2 = mysql_fetch_array($result2);
+        $row2 = fetchSqlAssoc($result2);
         if ($row2['mylimit'] > $lim)
         {
             echo '<a href="./index.php?do=listnpctypes';
@@ -109,7 +109,7 @@ function listnpctypes()
         }
         echo '<th>NPCs</th></tr>';
         
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['id'].'</td>';
@@ -147,7 +147,7 @@ function listnpctypes()
 	        echo '<td>';
                 $query2 = 'SELECT npc_def.char_id, npc_def.name FROM sc_npc_definitions npc_def, sc_npctypes type where type.name=npc_def.npctype and type.id = '.$row['id'];
                 $result2 = mysql_query2($query2);
-                while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC))
+                while ($row2 = fetchSqlAssoc($result2))
         	{
 		   echo '<a href="./index.php?do=npc_details&npc_id='.$row2['char_id'].'&sub=main">'.$row2['name']."</a><br>";
                 }
@@ -205,7 +205,7 @@ function editnpctypes()
     $template = (isset($_GET['template']) ? '&amp;template='.$_GET['template'] : '');
     $options = $template.$limit.$show.$sort;
 
-    $id = mysql_real_escape_string($_POST['id']);
+    $id = escapeSqlString($_POST['id']);
     $action = $_POST['action'];
     if ($action == 'Delete')
     {
@@ -215,7 +215,7 @@ function editnpctypes()
             return;
         }
         $query = "DELETE FROM sc_npctypes WHERE id='$id' LIMIT 1";
-        mysql_query($query);
+        mysql_query2($query);
         echo '<p class="error">Delete of entry with id "'.$id.'" succesful</p>';
         listnpctypes();
         return;
@@ -229,7 +229,7 @@ function editnpctypes()
         }
         $query = "SELECT id, name, parents, ang_vel, vel, collision, out_of_bounds, in_bounds, falling, script, template FROM sc_npctypes WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<hr><table border="1"><form action="./index.php?do=editnpctypes'.$options.'" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'">';
         echo '<tr><th>Field</th><th>Value</th><th>Field</th><th>Value</th></tr>';
@@ -260,15 +260,15 @@ function editnpctypes()
             echo '<p class="error">You are not authorized to use these functions!</p>';
             return;
         }
-        $name = mysql_real_escape_string($_POST['name']);
-        $parents = mysql_real_escape_string($_POST['parents']);
-        $ang_vel = mysql_real_escape_string($_POST['ang_vel']);
-        $vel = mysql_real_escape_string($_POST['vel']);
-        $collision = mysql_real_escape_string($_POST['collision']);
-        $out_of_bounds = mysql_real_escape_string($_POST['out_of_bounds']);
-        $in_bounds = mysql_real_escape_string($_POST['in_bounds']);
-        $falling = mysql_real_escape_string($_POST['falling']);
-        $db_template = mysql_real_escape_string($_POST['db_template']);
+        $name = escapeSqlString($_POST['name']);
+        $parents = escapeSqlString($_POST['parents']);
+        $ang_vel = escapeSqlString($_POST['ang_vel']);
+        $vel = escapeSqlString($_POST['vel']);
+        $collision = escapeSqlString($_POST['collision']);
+        $out_of_bounds = escapeSqlString($_POST['out_of_bounds']);
+        $in_bounds = escapeSqlString($_POST['in_bounds']);
+        $falling = escapeSqlString($_POST['falling']);
+        $db_template = escapeSqlString($_POST['db_template']);
         if ($db_template == "on")
         {
            $db_template = "1";
@@ -277,7 +277,7 @@ function editnpctypes()
         {
            $db_template = "0";
         }
-        $script = mysql_real_escape_string($_POST['script']);
+        $script = escapeSqlString($_POST['script']);
         $query = "UPDATE sc_npctypes SET name='$name', parents='$parents', ang_vel='$ang_vel', vel='$vel', collision='$collision', out_of_bounds='$out_of_bounds', in_bounds='$in_bounds', falling='$falling', script='$script', template='$db_template' WHERE id='$id'";
         mysql_query2($query);
         echo '<p class="error">Update of npctype with id '.$id.' succesful</p>';
@@ -301,15 +301,15 @@ function createnpctypes()
         echo '<p class="error">You are not authorized to use these functions!</p>';
         return;
     }
-    $name = mysql_real_escape_string($_POST['name']);
-    $parents = mysql_real_escape_string($_POST['parents']);
-    $ang_vel = mysql_real_escape_string($_POST['ang_vel']);
-    $vel = mysql_real_escape_string($_POST['vel']);
-    $collision = mysql_real_escape_string($_POST['collision']);
-    $out_of_bounds = mysql_real_escape_string($_POST['out_of_bounds']);
-    $in_bounds = mysql_real_escape_string($_POST['in_bounds']);
-    $falling = mysql_real_escape_string($_POST['falling']);
-    $db_template = mysql_real_escape_string($_POST['db_template']);
+    $name = escapeSqlString($_POST['name']);
+    $parents = escapeSqlString($_POST['parents']);
+    $ang_vel = escapeSqlString($_POST['ang_vel']);
+    $vel = escapeSqlString($_POST['vel']);
+    $collision = escapeSqlString($_POST['collision']);
+    $out_of_bounds = escapeSqlString($_POST['out_of_bounds']);
+    $in_bounds = escapeSqlString($_POST['in_bounds']);
+    $falling = escapeSqlString($_POST['falling']);
+    $db_template = escapeSqlString($_POST['db_template']);
     if ($db_template == "on")
     {
         $db_template = "1";
@@ -318,7 +318,7 @@ function createnpctypes()
     {
         $db_template = "0";
     }
-    $script = mysql_real_escape_string($_POST['script']);
+    $script = escapeSqlString($_POST['script']);
     $query = "INSERT INTO sc_npctypes SET name='$name', parents='$parents', ang_vel='$ang_vel', vel='$vel', collision='$collision', out_of_bounds='$out_of_bounds', in_bounds='$in_bounds', falling='$falling', template='$db_template', script='$script'";
     mysql_query2($query);
     echo '<p class="error">Creation of npctype succesful</p>';

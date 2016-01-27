@@ -20,7 +20,7 @@ function checkMindItemUsage()
 	
 	$query = "SELECT i.id, i.name, i.category_id, p.id AS pattern_id, p.pattern_name FROM item_stats AS i LEFT JOIN trade_patterns AS p ON i.id=p.designitem_id WHERE i.stat_type = 'B' AND i.valid_slots LIKE '%MIND%' ORDER BY i.name";
 	$result = mysql_query2($query);
-	while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+	while($row = fetchSqlAssoc($result))
 	{
 		echo '<p><a href="./index.php?do=listitems&amp;override1&amp;category='.$row['category_id'].'&amp;item='.$row['id'].'">'.$row['name'].'</a> ';
 		if ($row['pattern_name'] == null) 
@@ -43,19 +43,19 @@ function checkMindItemUsage()
 			$query_quest = "SELECT q.id, q.name FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Give)[^\\n]*$item_name' ORDER BY q.name ASC";
 			$result_quest = mysql_query2($query_quest);
 			
-			if (mysql_num_rows($result_vendor) == 0 && mysql_num_rows($result_quest) == 0)
+			if (sqlNumRows($result_vendor) == 0 && sqlNumRows($result_quest) == 0)
 			{
 				echo '<span class="error">No vendors sell this item, and it is not rewarded in any quest either.</span></p>';
 				continue;
 			}
-			if (mysql_num_rows($result_vendor) == 0)
+			if (sqlNumRows($result_vendor) == 0)
 			{
 				echo 'There are no vendors selling this item.<br/>';
 			}
 			else
 			{
 				echo 'The following vendors sell this item: ';
-				while ($row_vendor = mysql_fetch_array($result_vendor, MYSQL_ASSOC))
+				while ($row_vendor = fetchSqlAssoc($result_vendor))
 				{
 					if (checkaccess('npcs', 'read'))
 					{
@@ -68,14 +68,14 @@ function checkMindItemUsage()
 				}
 				echo '<br/>';
 			}
-			if (mysql_num_rows($result_quest) == 0)
+			if (sqlNumRows($result_quest) == 0)
 			{
 				echo 'There are no quests giving this item.<br/>';
 			}
 			else
 			{
 				echo 'The following quests give this item: ';
-				while ($row_quest = mysql_fetch_array($result_quest, MYSQL_ASSOC))
+				while ($row_quest = fetchSqlAssoc($result_quest))
 				{
 					echo $row_quest['name'].' (';
 					if (checkaccess('quests', 'read'))

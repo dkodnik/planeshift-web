@@ -15,7 +15,7 @@ function checknpcchar()
 
     $result = mysql_query2($query);
 
-    $num = mysql_num_rows($result);
+    $num = sqlNumRows($result);
   
     echo "<p>Note that the NPCs without the basic triggers will not be displayed here. Use the report \"Check NPC Triggers\" first.<br /><br />";
     echo "Found $num NPCs</p>";
@@ -24,28 +24,28 @@ function checknpcchar()
     echo "  <TH> Sector </TH> <TH> ID</TH> <TH> NAME</TH><TH> Race </TH><TH> Gender </TH><TH> description </TH><TH> greetings </TH><TH> about you answers </TH><TH> how are you answers </TH>";
 
     // for each NPC
-    while ($line = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($line = fetchSqlRow($result)) 
     {
 	    $fullname = $line[2] . " " . $line[3];
 	    $fullname = trim($fullname);
 	    // search his triggers
 	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='greetings'";
 	    $result2 = mysql_query2($query2);
-	    $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+	    $line2 = fetchSqlRow($result2);
 	    $found1a = $line2[0];
 	    $found1b = $line2[1];
 	    $found1c = $line2[2];
 
 	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='about you'";
 	    $result2 = mysql_query2($query2);
-	    $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+	    $line2 = fetchSqlRow($result2);
 	    $found2a = $line2[0];
 	    $found2b = $line2[1];
 	    $found2c = $line2[2];
 
 	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='how you'";
 	    $result2 = mysql_query2($query2);
-	    $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+	    $line2 = fetchSqlRow($result2);
 	    $found3a = $line2[0];
 	    $found3b = $line2[1];
 	    $found3c = $line2[2];

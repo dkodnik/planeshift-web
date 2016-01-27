@@ -3,10 +3,10 @@ function listfactions(){
   if (checkaccess('npcs', 'read')){
     if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Commit Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
-        $faction_description = mysql_real_escape_string($_POST['faction_description']);
-        $faction_character = mysql_real_escape_string($_POST['faction_character']);
-        $faction_weight = mysql_real_escape_string($_POST['faction_weight']);
+        $id = escapeSqlString($_POST['id']);
+        $faction_description = escapeSqlString($_POST['faction_description']);
+        $faction_character = escapeSqlString($_POST['faction_character']);
+        $faction_weight = escapeSqlString($_POST['faction_weight']);
         $query = "UPDATE factions SET faction_description='$faction_description', faction_character='$faction_character', faction_weight='$faction_weight' WHERE id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
@@ -21,10 +21,10 @@ function listfactions(){
       }
     }else if (isset($_POST['action']) && checkaccess('npcs', 'edit')){
       if ($_POST['action'] == "Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM factions WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=factions" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
@@ -44,7 +44,7 @@ function listfactions(){
     }else{
       $query = "SELECT * FROM factions";
       $result = mysql_query2($query);
-      if (mysql_numrows($result) == 0 ){
+      if (sqlNumRows($result) == 0 ){
         echo 'No Skills Found!';
       }
       echo '<table border="1"><tr><th>Faction</th><th>Description</th><th>Character</th><th>Weight</th>';
@@ -52,7 +52,7 @@ function listfactions(){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
         echo '<td>'.$row['faction_name'].'</td>';
         echo '<td>'.$row['faction_description'].'</td>';

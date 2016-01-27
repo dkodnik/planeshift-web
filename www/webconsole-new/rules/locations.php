@@ -3,16 +3,16 @@ function listlocations(){
   if (checkaccess('npcs', 'read')){
     if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Update Location"){
-        $id = mysql_real_escape_string($_POST['id']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
-        $angle = mysql_real_escape_string($_POST['angle']);
-        $id_prev_loc_in_region = mysql_real_escape_string($_POST['previous']);
-        $type_id = mysql_real_escape_string($_POST['type']);
+        $id = escapeSqlString($_POST['id']);
+        $name = escapeSqlString($_POST['name']);
+        $loc_sector_id = escapeSqlString($_POST['loc_sector_id']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $radius = escapeSqlString($_POST['radius']);
+        $angle = escapeSqlString($_POST['angle']);
+        $id_prev_loc_in_region = escapeSqlString($_POST['previous']);
+        $type_id = escapeSqlString($_POST['type']);
         $query = "UPDATE sc_locations SET name='$name', loc_sector_id='$loc_sector_id', x='$x', y='$y', z='$z', radius='$radius', angle='$angle', id_prev_loc_in_region='$id_prev_loc_in_region', type_id='$type_id' WHERE id = '$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -20,7 +20,7 @@ function listlocations(){
         listlocations();
         return;
       }else if ($_POST['commit'] == "Confirm Delete" && checkaccess('npcs', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -28,15 +28,15 @@ function listlocations(){
         listlocations();
         return;
       }else if ($_POST['commit'] == "Create Location" && checkaccess('npcs', 'create')){
-        $name = mysql_real_escape_string($_POST['name']);
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
-        $angle = mysql_real_escape_string($_POST['angle']);
-        $id_prev_loc_in_region = mysql_real_escape_string($_POST['previous']);
-        $type_id = mysql_real_escape_string($_POST['type']);
+        $name = escapeSqlString($_POST['name']);
+        $loc_sector_id = escapeSqlString($_POST['loc_sector_id']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $radius = escapeSqlString($_POST['radius']);
+        $angle = escapeSqlString($_POST['angle']);
+        $id_prev_loc_in_region = escapeSqlString($_POST['previous']);
+        $type_id = escapeSqlString($_POST['type']);
         $query = "INSERT INTO sc_locations SET name='$name', loc_sector_id='$loc_sector_id', x='$x', y='$y', z='$z', radius='$radius', angle='$angle', id_prev_loc_in_region='$id_prev_loc_in_region', type_id='$type_id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -51,10 +51,10 @@ function listlocations(){
       }
     }else if (isset($_POST['action']) && checkaccess('npcs', 'edit')){
       if ($_POST['action'] == "Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
         echo '<form action="./index.php?do=location'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$id.'" /><table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
@@ -76,10 +76,10 @@ function listlocations(){
         echo '</table><input type="submit" name="commit" value="Update Location"/>';
         echo '</form>';
       }else if ($_POST['action'] == "Delete" && checkaccess('npcs', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT name FROM sc_locations WHERE id = '$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p>You are about to delete the location '.$row['name'].' id '.$id.' Please confirm:</p>';
         echo '<form action="./index.php?do=location" method="post"><input type="hidden" name="id" value="'.$id.'" />';
         echo '<input type="submit" name="commit" value="Confirm Delete" /></form>';
@@ -93,16 +93,16 @@ function listlocations(){
       $query = "SELECT l.id, l.type_id, lt.name AS typename, l.id_prev_loc_in_region, l.name, l.x, l.y, l.z, l.radius, l.angle, l.flags, l.loc_sector_id, s.name AS sector FROM sc_locations AS l LEFT JOIN sectors AS s ON l.loc_sector_id = s.id LEFT JOIN sc_location_type AS lt ON l.type_id = lt.id";
       if (isset($_GET['id']))
       {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " WHERE l.id='$id'";
       }
       elseif (isset($_GET['type']))
       {
-        $type = mysql_real_escape_string($_GET['type']);
+        $type = escapeSqlString($_GET['type']);
         $query .= " WHERE l.type_id='$type'";
       }
       elseif (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != 0){
-        $sec = mysql_real_escape_string($_GET['sector']);
+        $sec = escapeSqlString($_GET['sector']);
         $query .= " WHERE l.loc_sector_id='$sec'";
       }
       if (isset($_GET['sort'])){
@@ -121,7 +121,7 @@ function listlocations(){
         }
       }
       if (isset($_GET['limit'])){
-        $lim = mysql_real_escape_string($_GET['limit']);
+        $lim = escapeSqlString($_GET['limit']);
         $ll = $lim - 30;
         $query = $query . " LIMIT $ll, 30"; // limit 1, 10 uses offset 1, then 10 records.
       }else{
@@ -130,7 +130,7 @@ function listlocations(){
         $lim=30;
       }
       $result = mysql_query2($query);
-      if (mysql_numrows($result) == 0){
+      if (sqlNumRows($result) == 0){
         echo '<p class="error">No Locations in DataBase</p>';
       }else{
         $sid = 0;
@@ -147,7 +147,7 @@ function listlocations(){
         }
         echo ' - Displaying records '.$ll.' through '.$lim.' - ';
         $result2 = mysql_query2('select count(id) AS mylimit FROM sc_locations');
-        $row2 = mysql_fetch_array($result2);
+        $row2 = fetchSqlAssoc($result2);
         if ($row2['mylimit'] > $lim)
         {
           echo '<a href="./index.php?do=location';
@@ -208,7 +208,7 @@ function listlocations(){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<tr>';
           echo '<td>'.$row['id'].'</td>';
           echo '<td>'.$row['name'].'</td>';

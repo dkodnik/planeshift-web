@@ -1,26 +1,87 @@
 <?php
 /*mysql_query2() calls mysql_query and dies with a failure message if there
 are any mysql errors*/
-function mysql_query2($a, $log=true){
-  $t1 = microtime(true);
-  $b = mysql_query($a) or die('<p class="error">Query: '.$a.' failed with Error:'.mysql_error().'</p>');
-  $t2 = microtime(true);
-  $t_fin = $t2 - $t1;
-  $t_fin = sprintf("%01.4f", $t_fin);
-  $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($a) .' -- '.$t_fin.' Seconds.';
-  if ($log === true){
-    $foo = explode(' ', $a, 2);
-    if (strcasecmp($foo[0], 'SELECT') != 0){
-      $foo = mysql_real_escape_string($a);
-      $user = mysql_real_escape_string($_SESSION['username']);
-      date_default_timezone_set('UTC');
-      $date = date("Y-m-d H:i:s");
-      $query = "INSERT INTO wc_cmdlog (username, query, date) VALUES ('$user', '$foo', '$date')";
-      mysql_query2($query, false);
+function mysql_query2($query, $log=true)
+{
+    global $mysqli;
+    $t1 = microtime(true);
+    $result = $mysqli->query($query) or die('<p class="error">Query: '.$query.' failed with Error:'.$mysqli->error.'</p>');
+    $t2 = microtime(true);
+    $t_fin = $t2 - $t1;
+    $t_fin = sprintf("%01.4f", $t_fin);
+    $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($query) .' -- '.$t_fin.' Seconds.';
+    if ($log === true){
+        $foo = explode(' ', $query, 2);
+        if (strcasecmp($foo[0], 'SELECT') != 0) // we don't log select statements
+        {
+            $foo = escapeSqlString($query);
+            $user = escapeSqlString($_SESSION['username']);
+            date_default_timezone_set('UTC');
+            $date = date("Y-m-d H:i:s");
+            $query2 = "INSERT INTO wc_cmdlog (username, query, date) VALUES ('$user', '$foo', '$date')";
+            mysql_query2($query2, false);
+        }
     }
-  }
-  return $b;
+    return $result;
 }
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function escapeSqlString($text) 
+{
+    global $mysqli;
+    return $mysqli->real_escape_string($text);
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function fetchSqlArray($result, $mode=MYSQLI_ASSOC) 
+{
+    return $result->fetch_array($mode);
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function fetchSqlRow($result) 
+{
+    return fetchSqlArray($result, MYSQLI_NUM);
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function fetchSqlAssoc($result) 
+{
+    return fetchSqlArray($result, MYSQLI_ASSOC);
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function sqlNumRows($result) 
+{
+    return $result->num_rows;
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function sqlSeek($result, $location) 
+{
+    return $result->data_seek($location);
+}
+
+/*SetUpDB() creates the connections to the DataBase - no return value*/
+function SetUpDB($adress, $username, $password, $database)
+{
+    global $mysqli;
+    $mysqli = new mysqli($adress, $username, $password, $database);
+    
+    /* check connection */
+    if ($mysqli->connect_errno) //error code 0 means success, causing us to fail this if.
+    {
+        printf("Connect failed: %s\n", $mysqli->connect_error);
+        exit();
+    }
+}
+
 
 /*StripInput() gets rid of any artifacts of magic_slashes, and prepares
 everything for mysql_real_escape_string*/
@@ -52,23 +113,17 @@ function CheckLogin(){
   return 0;
 }
 
-/*SetUpDB() creates the connections to the DataBase - no return value*/
-function SetUpDB($a, $b, $c, $d){
-  $link = mysql_connect("$a", "$b", "$c") or die('mysql_connect failed:' . mysql_error());
-  mysql_select_db("$d", $link) or die('<p class="error">Could not select database: '. mysql_error().'</p>');
-}
-
 /*DoLogin() checks for the existance of a "login" flag to check for login 
 information, and if present processes it. On a successful login, it sets
 $_SESSION, and returns 1, otherwise, it displays a login screen, and returns 0*/
 function DoLogin(){
   if(isset($_POST['login'])){
     //They have hit the login button, now we check their login info.
-    $username = mysql_real_escape_string($_POST['username']);
-    $password = mysql_real_escape_string($_POST['password']);
+    $username = escapeSqlString($_POST['username']);
+    $password = escapeSqlString($_POST['password']);
     $query = "SELECT security_level FROM accounts WHERE username='$username' AND password=MD5('$password') AND security_level > 0;";
     $result = mysql_query2($query);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $_SESSION['username'] = $username;
       $_SESSION['security_level'] = $row['security_level'];
       $_SESSION['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
@@ -81,11 +136,11 @@ function DoLogin(){
     }
     echo '<p class="error">Incorrect Username or Password.</p>'."\n";
   }else if (isset($_COOKIE['autologin'])){
-    $username = mysql_real_escape_string($_COOKIE['autoname']);
-    $password = mysql_real_escape_string($_COOKIE['autopass']);
+    $username = escapeSqlString($_COOKIE['autoname']);
+    $password = escapeSqlString($_COOKIE['autopass']);
     $query = "SELECT security_level FROM accounts WHERE username='$username' AND password='$password' AND security_level > 0";
     $result = mysql_query2($query);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $_SESSION['username'] = $username;
       $_SESSION['security_level'] = $row['security_level'];
       $_SESSION['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
@@ -111,7 +166,7 @@ function CacheAccess(){
   if (!isset($_SESSION['access']) && ($_SESSION['security_level'] != 50)){
     $query = 'SELECT objecttype, access FROM wc_accessrules WHERE security_level='.$_SESSION['security_level'];
     $result = mysql_query2($query);
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while($row = fetchSqlAssoc($result)){
       $_SESSION['access'][$row['objecttype']]=$row['access'];
     }
   }
@@ -156,7 +211,7 @@ function CheckAccess($type, $access){
 function GetNextID($a){
   $query = 'SELECT MAX(id) FROM '.$a;
   $result = mysql_query2($query);
-  $row = mysql_fetch_row($result);
+  $row = fetchSqlRow($result);
   $id = $row[0]+1;
   return $id;
 }
@@ -237,12 +292,12 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $nullval = $typevals[$type];
 
 
-  mysql_data_seek($result, 0);
+  sqlSeek($result, 0);
   $string = '<select name="'.$name.'" id="'.$name.'">'."\n";
   if ($includenull){
     $string = $string.'<option value='.$nullval.'>NONE</option>'."\n";
   }
-  while ($internal_row = mysql_fetch_row($result)){
+  while ($internal_row = fetchSqlRow($result)){
     $string = $string . '<option value="'.$internal_row[0].'"';
     if ($value == $internal_row[0]){
       $string = $string . ' selected="selected" ';
@@ -325,8 +380,8 @@ function DrawItemSelectBox ($name, $selected_item = false, $is_last_on_page = tr
 		$result = PrepSelect('items_cat');
 		$arr = array();
 		$item_cat = array();
-		mysql_data_seek($result, 0);
-		while ($row = mysql_fetch_row($result))
+		sqlSeek($result, 0);
+		while ($row = fetchSqlRow($result))
 		{
 			$item_cat[$row[0]] = $row[2];
 			if ((!isset($lastCat)) || ($lastCat != $row[2]))
@@ -634,7 +689,7 @@ function getAccountsToExclude() {
 	//echo $sql;
 	$query = mysql_query2($sql);
 	$to_exclude = "(";
-	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+	while($result = fetchSqlAssoc($query))
 	{
 		$to_exclude .= $result['id'].",";
 	}
@@ -647,7 +702,7 @@ function getAccountsToExclude() {
 function getNextQuarterPeriod($groupid) {
     $sql = "SELECT MAX(periodname) AS max FROM wc_statistics WHERE groupid = '$groupid' ORDER BY periodname";
 
-    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+    $result = fetchSqlAssoc(mysql_query2($sql));
     $max = $result['max'];
     
     $year = substr($max, 0, 4);
@@ -655,12 +710,12 @@ function getNextQuarterPeriod($groupid) {
     
     if($quarter == 'Q4')
     {
-      $year = $year+1;
-      $quarter = 'Q1';
+        $year = $year+1;
+        $quarter = 'Q1';
     }
     else
     {
-      $quarter = 'Q'. (substr($quarter, 1, 2) + 1);
+        $quarter = 'Q'. (substr($quarter, 1, 2) + 1);
     }
 
     return $year.' '.$quarter;
@@ -848,10 +903,10 @@ function CheckPassword($password)
     {
         return;
     }
-    $username = mysql_real_escape_string($_SESSION['username']);
-    $password = mysql_real_escape_string(md5($password));
+    $username = escapeSqlString($_SESSION['username']);
+    $password = escapeSqlString(md5($password));
     $sql = "SELECT COUNT(*) FROM accounts WHERE username='$username' AND password='$password' AND security_level > 0";
-    $result = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+    $result = fetchSqlRow(mysql_query2($sql));
     return ($result[0] == 1);
 }
 

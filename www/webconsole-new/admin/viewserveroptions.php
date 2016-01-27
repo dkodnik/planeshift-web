@@ -9,8 +9,8 @@ function viewserveroptions()
             {
                 for ($i = 0; count($_POST['data']) > $i; $i++)
                 {
-                    $option = mysql_real_escape_string($_POST['option'][$i]);
-                    $data = mysql_real_escape_string($_POST['data'][$i]);
+                    $option = escapeSqlString($_POST['option'][$i]);
+                    $data = escapeSqlString($_POST['data'][$i]);
                     if ($option == '' || $data == '')
                     {
                         echo '<p class="error">I ignored 1 empty line. You cannot leave lines empty.</p>';
@@ -31,7 +31,7 @@ function viewserveroptions()
         $result = mysql_query2($query);
         echo '<form action="./index.php?do=viewserveroptions" method="post">';
         echo '<table width="500" border="0"><tr><td>Option name</td><td>Option value</td></tr>';
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr><td width="150">'.$row['option_name'].'</td>';
             echo '<td width="350"><input type="hidden" name="option[]" value="'.$row['option_name'].'"/><input size="90" type="text" name="data[]" value="'.$row['option_value'].'"/></td></tr>';

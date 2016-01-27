@@ -17,7 +17,7 @@ function listweapontypes()
         echo '<th>actions</th>';
     }
     echo "</tr>\n";
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
@@ -42,11 +42,11 @@ function editweapontypes()
     $id = -1;
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     else
     {
@@ -60,8 +60,8 @@ function editweapontypes()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Weapon Type"))
     {
-        $name = mysql_real_escape_string($_POST['name']);
-        $skill = mysql_real_escape_string($_POST['skill']);
+        $name = escapeSqlString($_POST['name']);
+        $skill = escapeSqlString($_POST['skill']);
         $query = "UPDATE weapon_types SET name='$name', skill='$skill' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -72,7 +72,7 @@ function editweapontypes()
     {
         $query = "SELECT * FROM weapon_types WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $skills = PrepSelect('skill');
         echo '<p class="header">Edit Weapon Type</p>';
         echo '<form action="./index.php?do=editweapontypes&amp;id='.$id.'" method="post">';

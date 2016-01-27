@@ -13,7 +13,7 @@ function listpatterns(){
     echo '<th>Actions</th>'."\n";
     echo '</tr>'; // next line shows all transforms/combines without pattern. (general knowledge)
     echo '<tr class="color_b"><td>0</td><td>Patternless </td><td>transforms/combinations </td><td>none</td><td><a href="./index.php?do=editpattern&amp;id=0">Details</a></td></tr>';
-    while ($row = mysql_fetch_array($r, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($r)){
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
         echo '<td>'.htmlentities($row['pattern_name']).'</td>';
@@ -34,7 +34,7 @@ function editpattern(){
     echo '<p class="header">Pattern Details</p>';
     if (isset($_GET['id']))
     {
-        $pattern_id = mysql_real_escape_string($_GET['id']);
+        $pattern_id = escapeSqlString($_GET['id']);
     }
     else
     {
@@ -44,10 +44,10 @@ function editpattern(){
     }
     if ((checkaccess('crafting', 'edit')) && isset($_POST['commit']) && ($_POST['commit']=='Update Pattern'))
     {
-        $pattern_name = mysql_real_escape_string($_POST['pattern_name']);
-        $description = mysql_real_escape_string($_POST['description']);
-        $k_factor = mysql_real_escape_string($_POST['k_factor']);
-        $id = mysql_real_escape_string($_GET['id']);
+        $pattern_name = escapeSqlString($_POST['pattern_name']);
+        $description = escapeSqlString($_POST['description']);
+        $k_factor = escapeSqlString($_POST['k_factor']);
+        $id = escapeSqlString($_GET['id']);
         $query = "UPDATE trade_patterns SET pattern_name='$pattern_name', description='$description', k_factor='$k_factor' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -59,12 +59,12 @@ function editpattern(){
     {
         $query = "SELECT tp.pattern_name, tp.description, tp.designitem_id, tp.group_id, i.name AS item_name, i.category_id, tp.k_factor FROM trade_patterns AS tp LEFT JOIN item_stats AS i ON tp.designitem_id=i.id WHERE tp.id='$pattern_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         if ($row['group_id']) {
           $groupid = $row['group_id'];
           $query2 = "SELECT pattern_name FROM trade_patterns WHERE id='$groupid'";
           $result2 = mysql_query2($query2);
-          $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+          $row2 = fetchSqlAssoc($result2);
           $groupname = $row2['pattern_name'];
         }
         if (checkaccess('crafting', 'edit'))
@@ -110,7 +110,7 @@ function editpattern(){
     }
     echo '</tr>'."\n";
     $alt = false;
-    while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
+    while ($row=fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo (isset($_GET['showids']) ? '<td>'.$row['id'].'</td>' : '');
@@ -150,7 +150,7 @@ function editpattern(){
     $item = -1;
     $query = "SELECT t.id, t.result_id, c.name AS result_cat, c.category_id AS result_cat_id, i.name AS result_name, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.min_qty, t.max_qty, t.description FROM trade_combinations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id WHERE pattern_id='$pattern_id' ORDER BY i.name";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) != 0)
+    if (sqlNumRows($result) != 0)
     {
         echo '<table><tr><th colspan="2">Result Item</th><th>Category</th><th>'.(isset($_GET['showids']) ? 'ID -- ' : '').'Source Items</th>';
         if (checkaccess('crafting', 'edit'))
@@ -158,7 +158,7 @@ function editpattern(){
             echo '<th>Actions</th>';
         }
         echo '</tr>'."\n";
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             if ($item != $row['result_id'])
             {
@@ -221,11 +221,11 @@ function createpattern()
 {
     if (checkaccess('crafting','create') && isset($_POST['commit']) && ($_POST['commit']=='Create Pattern')) // submit pattern
     {
-        $pattern_name = mysql_real_escape_string($_POST['pattern_name']);
-        $group_id = mysql_real_escape_string($_POST['group_id']);
-        $designitem_id = mysql_real_escape_string($_POST['designitem_id']);
-        $k_factor = mysql_real_escape_string($_POST['k_factor']);
-        $description = mysql_real_escape_string($_POST['description']);
+        $pattern_name = escapeSqlString($_POST['pattern_name']);
+        $group_id = escapeSqlString($_POST['group_id']);
+        $designitem_id = escapeSqlString($_POST['designitem_id']);
+        $k_factor = escapeSqlString($_POST['k_factor']);
+        $description = escapeSqlString($_POST['description']);
         $query = "INSERT INTO trade_patterns (pattern_name, group_id, designitem_id, k_factor, description) VALUES ('$pattern_name', '$group_id', '$designitem_id', '$k_factor', '$description')";
         mysql_query2($query);
         echo '<p class="error">Pattern added succesfully</p>';
@@ -255,14 +255,14 @@ function deletepattern()
 {
     if (checkaccess('crafting','delete') && isset($_POST['submit']) && isset($_GET['id']) && is_numeric($_GET['id']))
     {
-        $password = mysql_real_escape_string($_POST['passd']);
-        $username = mysql_real_escape_string($_SESSION['username']);
+        $password = escapeSqlString($_POST['passd']);
+        $username = escapeSqlString($_SESSION['username']);
         $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] == 1)
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             $query = "DELETE FROM trade_patterns WHERE id = $id LIMIT 1"; //limit is not needed, but if something unexpected does happen, it'll only affect 1 transform.
             mysql_query2($query);
             $query = "DELETE FROM trade_transformations WHERE pattern_id = $id"; // the following queries are not limited since we don't know how many they will delete.
@@ -284,14 +284,15 @@ function deletepattern()
         $pattern_id = $_GET['id'];
         echo '<p class="error">Warning, deleting this pattern will also delete *ALL* of the combinations and transformations listed below.</p>';
         $query = "SELECT id, name FROM item_stats";
-        $Temp = mysql_query2($query);
-        while ($row=mysql_fetch_array($Temp, MYSQL_ASSOC)){
-            $iid=$row['id'];
-            $items["$iid"]=$row['name'];
+        $temp = mysql_query2($query);
+        while ($row = fetchSqlAssoc($temp))
+        {
+            $iid = $row['id'];
+            $items["$iid"] = $row['name'];
         }
         $query = "SELECT pattern_name, description, designitem_id FROM trade_patterns WHERE id='$pattern_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
 
         echo '<table><tr><td>Pattern Name:</td><td>'.$row['pattern_name'].'</td></tr>';
         echo '<tr><td>Pattern Description:</td><td>'.$row['description'].'</td></tr>';
@@ -304,7 +305,7 @@ function deletepattern()
         $result = mysql_query2($query);
         echo '<table><tr><th colspan="2">Source Item</th><th>Process</th><th colspan="2">Result Item</th><th>Time</th><th>Result Q</th></tr>';
         $alt = FALSE;
-        while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             $alt = !$alt;
             if ($alt){
@@ -314,7 +315,7 @@ function deletepattern()
             {
                 echo '<tr class="color_b">';
             }
-            $item_id=$row['item_id'];
+            $item_id = $row['item_id'];
             echo '<td>'.$row['item_qty'].' </td><td> '.$items["$item_id"].'</td>';
             echo '<td><a href="./index.php?do=process&amp;id='.$row['process_id'].'">'.$row['name'].'</a></td>';
             $result_id=$row['result_id'];
@@ -329,10 +330,10 @@ function deletepattern()
         $item = -1;
         $query = "SELECT result_id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE pattern_id='$pattern_id' ORDER BY result_id";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) != 0)
+        if (sqlNumRows($result) != 0)
         {
             echo '<table><tr><th colspan="2">Result Item</th><th>Source Items</th></tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+            while ($row = fetchSqlAssoc($result)){
                 if ($item != $row['result_id'])
                 {
                     if ($item != '-1')

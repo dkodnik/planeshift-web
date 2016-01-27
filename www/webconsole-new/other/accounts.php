@@ -9,7 +9,7 @@ function listaccounts()
         if($id == 'nan')
         {
             $sql = 'SELECT COUNT(*) FROM accounts';
-            $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+            $item_count = fetchSqlRow(mysql_query2($sql));
             $item_count = $item_count[0];
         }
         else
@@ -33,7 +33,7 @@ function listaccounts()
         echo '<tr><th>ID</th><th>Accountname</th><th>Account status</th><th>Verify ID</th><th>Actions</th></tr>';
         
         $color = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
             $color = ($color == 'a' ? 'b' : 'a');
             $status = '';
@@ -90,7 +90,7 @@ function viewaccount()
         $sql = 'SELECT a.username, a.last_login, a.created_date, a.last_login_ip, a.security_level, a.verificationid, a.country, a.gender, a.birth, a.status, a.spam_points, a.advisor_points, a.advisor_ban, a.comments, b.end AS banned_until ';
         $sql.= 'FROM accounts AS a LEFT JOIN bans AS b ON a.id = b.account WHERE a.id = '.$id.' LIMIT 1';
         
-        $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+        $row = fetchSqlAssoc(mysql_query2($sql));
         $gender = 'Other';
         if($row['gender'] == 'M')
         {

@@ -17,7 +17,7 @@ function listarmorvsweapon()
         echo '<th>actions</th>';
     }
     echo "</tr>\n";
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
@@ -50,11 +50,11 @@ function editarmorvsweapon()
     $id = -1;
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     else
     {
@@ -68,15 +68,15 @@ function editarmorvsweapon()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Armor vs Weapon"))
     {  // star variables with underscores, php does not allow variables to start with numbers.
-        $_1a = mysql_real_escape_string($_POST['1a']);
-        $_1b = mysql_real_escape_string($_POST['1b']);
-        $_1c = mysql_real_escape_string($_POST['1c']);
-        $_2a = mysql_real_escape_string($_POST['2a']);
-        $_2b = mysql_real_escape_string($_POST['2b']);
-        $_2c = mysql_real_escape_string($_POST['2c']);
-        $_3a = mysql_real_escape_string($_POST['3a']);
-        $_3b = mysql_real_escape_string($_POST['3b']);
-        $_3c = mysql_real_escape_string($_POST['3c']);
+        $_1a = escapeSqlString($_POST['1a']);
+        $_1b = escapeSqlString($_POST['1b']);
+        $_1c = escapeSqlString($_POST['1c']);
+        $_2a = escapeSqlString($_POST['2a']);
+        $_2b = escapeSqlString($_POST['2b']);
+        $_2c = escapeSqlString($_POST['2c']);
+        $_3a = escapeSqlString($_POST['3a']);
+        $_3b = escapeSqlString($_POST['3b']);
+        $_3c = escapeSqlString($_POST['3c']);
         // notice that the sql fields do not have an underscore in front of them.
         $query = "UPDATE armor_vs_weapon SET 1a='$_1a', 1b='$_1b', 1c='$_1c', 2a='$_2a', 2b='$_2b', 2c='$_2c', 3a='$_3a', 3b='$_3b', 3c='$_3c' WHERE id='$id'";
         $result = mysql_query2($query);
@@ -88,7 +88,7 @@ function editarmorvsweapon()
     {
         $query = "SELECT * FROM armor_vs_weapon WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p class="header">Edit Armor vs Weapon</p>';
         echo '<form action="./index.php?do=editarmorvsweapon&amp;id='.$id.'" method="post">';
         echo "<table>\n";

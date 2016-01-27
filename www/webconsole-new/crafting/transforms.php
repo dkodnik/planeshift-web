@@ -8,18 +8,18 @@ function edittransform(){
       return;
     }
     if (isset($_POST['commit']) && $_POST['commit'] == "Update Transform"){
-      $id = mysql_real_escape_string($_GET['id']);
-      $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
-      $item_qty = mysql_real_escape_string($_POST['item_qty']);
-      $item_id = mysql_real_escape_string($_POST['item_id']);
+      $id = escapeSqlString($_GET['id']);
+      $pattern_id = escapeSqlString($_POST['pattern_id']);
+      $item_qty = escapeSqlString($_POST['item_qty']);
+      $item_id = escapeSqlString($_POST['item_id']);
       $item_id = ($item_id == '' ? 0 : $item_id); // change id to 0 if it is not provided by user ('')
-      $process_id = mysql_real_escape_string($_POST['process_id']);
-      $result_qty = mysql_real_escape_string($_POST['result_qty']);
-      $result_id = mysql_real_escape_string($_POST['result_id']);
+      $process_id = escapeSqlString($_POST['process_id']);
+      $result_qty = escapeSqlString($_POST['result_qty']);
+      $result_id = escapeSqlString($_POST['result_id']);
       $result_id = ($result_id == '' ? 0 : $result_id);
-      $description = mysql_real_escape_string($_POST['description']);
-      $trans_points = mysql_real_escape_string($_POST['trans_points']);
-      $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
+      $description = escapeSqlString($_POST['description']);
+      $trans_points = escapeSqlString($_POST['trans_points']);
+      $penalty_pct = escapeSqlString($_POST['penalty_pct']);
       if ($item_id =='0' && $result_id=='0')
       {
         echo '<p class="error">Source and Result item can not both be empty.</p>';
@@ -32,13 +32,13 @@ function edittransform(){
       edittransform();
       return;
     }else{
-      $id = mysql_real_escape_string($_GET['id']);
+      $id = escapeSqlString($_GET['id']);
       $items = PrepSelect('items');
       $process = PrepSelect('process');
       $patterns = PrepSelect('patterns');
       $query = "SELECT pattern_id, process_id, result_id, result_qty, item_id, item_qty, trans_points, penalty_pct, description FROM trade_transformations WHERE id='$id'";
       $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
+      $row = fetchSqlAssoc($result);
       $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletetransform&amp;id='.$id.'">Delete Transform</a>' : "");
       echo '<p class="header">Transformation Details</p>';
       echo '<form action="./index.php?do=transform&amp;id='.$id.'" method="post"><table>';
@@ -62,17 +62,17 @@ function createtransform()
 {
     if (checkaccess('crafting','create') && isset($_POST['commit']) && $_POST['commit'] == "Create Transformation")
     {
-        $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
-        $item_id = mysql_real_escape_string($_POST['item_id']);
+        $pattern_id = escapeSqlString($_POST['pattern_id']);
+        $item_id = escapeSqlString($_POST['item_id']);
         $item_id = ($item_id == '' ? 0 : $item_id); // change id to 0 if it is not provided by user ('')
-        $item_qty = mysql_real_escape_string($_POST['item_qty']);
-        $process_id = mysql_real_escape_string($_POST['process_id']);
-        $trans_points = mysql_real_escape_string($_POST['trans_points']);
-        $result_id = mysql_real_escape_string($_POST['result_id']);
+        $item_qty = escapeSqlString($_POST['item_qty']);
+        $process_id = escapeSqlString($_POST['process_id']);
+        $trans_points = escapeSqlString($_POST['trans_points']);
+        $result_id = escapeSqlString($_POST['result_id']);
         $result_id = ($result_id == '' ? 0 : $result_id);
-        $result_qty = mysql_real_escape_string($_POST['result_qty']);
-        $penalty_pct = mysql_real_escape_string($_POST['penalty_pct']);
-        $description = mysql_real_escape_string($_POST['description']);
+        $result_qty = escapeSqlString($_POST['result_qty']);
+        $penalty_pct = escapeSqlString($_POST['penalty_pct']);
+        $description = escapeSqlString($_POST['description']);
         if ($item_id =='0' && $result_id=='0')
         {
             echo '<p class="error">Source and Result item can not both be empty.</p>';
@@ -134,14 +134,14 @@ function deletetransform()
 {
     if (checkaccess('crafting','delete') && isset($_POST['submit']) && isset($_GET['id']) && is_numeric($_GET['id']))
     {
-        $password = mysql_real_escape_string($_POST['passd']);
-        $username = mysql_real_escape_string($_SESSION['username']);
+        $password = escapeSqlString($_POST['passd']);
+        $username = escapeSqlString($_SESSION['username']);
         $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] == 1)
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             $query = "DELETE FROM trade_transformations WHERE id = $id LIMIT 1"; //limit is not needed, but if something unexpected does happen, it'll only affect 1 transform.
             mysql_query2($query);
             echo '<p class="error">Transformation with ID '.$id.' was succesfully deleted.</p>';

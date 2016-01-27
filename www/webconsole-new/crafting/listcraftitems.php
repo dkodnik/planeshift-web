@@ -8,7 +8,7 @@ function listcraftitems(){
     echo '<table border="1" class="top">';
     echo '<tr><th>Category</th><th>Items</th><th>Details</th></tr>';
     echo '<tr class="top"><td>';
-    while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row=fetchSqlAssoc($result)){
       if (isset($_GET['category']) && ($_GET['category']==$row['category_id']))
         echo '<b>';
       echo '<a href="./index.php?do=listcraftitems&amp;category='.$row['category_id'];
@@ -19,12 +19,12 @@ function listcraftitems(){
     }
     echo '</td><td>';
     if (isset($_GET['category'])){
-        $category = mysql_real_escape_string($_GET['category']);
+        $category = escapeSqlString($_GET['category']);
         $query = 'SELECT DISTINCT (i.id), t.pattern_id as tid, c.pattern_id as cid, name FROM item_stats AS i LEFT JOIN trade_transformations AS t ON i.id=t.result_id LEFT JOIN trade_combinations as c ON i.id=c.result_id WHERE category_id ='.$category;
         $query = $query." AND stat_type = 'B'";
         $query .= ' ORDER BY name';
         $result = mysql_query2($query);
-        while ($row = mysql_fetch_array($result)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<a href="./index.php?do=listitems&amp;category='.$_GET['category'].'&amp;item='.$row['id'].'">'.$row['name'].'</a>';
           if ($row['tid'])
             echo '(<a href=index.php?do=editpattern&id='.$row['tid'].'>transform</a>)';

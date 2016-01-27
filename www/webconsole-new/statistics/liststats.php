@@ -11,7 +11,7 @@ function liststats()
 	
 	$groupid = (isset($_GET['groupid']) && is_numeric($_GET['groupid']) ? $_GET['groupid'] : 'nan');
 	$op = (isset($_GET['op']) && ($_GET['op'] == 'add' || $_GET['op'] == 'calc')  ? $_GET['op'] : 'list');
-	$period = (isset($_POST['period']) ? mysql_real_escape_string($_POST['period']) : 'nan');
+	$period = (isset($_POST['period']) ? escapeSqlString($_POST['period']) : 'nan');
 	if (validatePeriod($period)==0)
 		$period = 'nan';
 
@@ -45,14 +45,14 @@ function liststats()
 				$sql = getBaseQuery($groupid,$period);
 				//echo $sql;
 				$query = mysql_query2($sql);
-				$result = mysql_fetch_array($query, MYSQL_ASSOC);
+				$result = fetchSqlAssoc($query);
 				$counted_items = $result['result'];
 				//echo "$counted_items";
 
 				// check if period already exists, if not add it
 				$sql = "SELECT * FROM wc_statistics where groupid=".$groupid." and periodname='".$period."'";
 				$query = mysql_query2($sql);
-				if(mysql_num_rows($query) < 1)
+				if(sqlNumRows($query) < 1)
 				{
 					$sql = "INSERT INTO wc_statistics (groupid, periodname, result) VALUES ('$groupid', '".$period."', ".$counted_items.")";
 					$query = mysql_query2($sql);

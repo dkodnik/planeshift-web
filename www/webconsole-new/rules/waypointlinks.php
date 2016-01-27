@@ -8,7 +8,7 @@ function listwaypointlinks()
 
         if (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != '0')
         {
-            $sec = mysql_real_escape_string($_GET['sector']);
+            $sec = escapeSqlString($_GET['sector']);
             $query = $query . " WHERE w.loc_sector_id='$sec'";
         }
         
@@ -46,7 +46,7 @@ function listwaypointlinks()
             $limit = 30;
         }
         $result = mysql_query2($query);
-        if (mysql_numrows($result) == 0){
+        if (sqlNumRows($result) == 0){
             echo '<p class="error">No Waypoint Links</p>';
         }
         else
@@ -69,7 +69,7 @@ function listwaypointlinks()
             echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
             $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
             $result2 = mysql_query2('select count(wl.id) AS mylimit FROM sc_waypoint_links AS wl'.$where);
-            $row2 = mysql_fetch_array($result2);
+            $row2 = fetchSqlAssoc($result2);
             if ($row2['mylimit'] > $limit)
             {
                 echo '<a href="./index.php?do=listwaypointlinks';
@@ -106,7 +106,7 @@ function listwaypointlinks()
                 echo '<th>Actions</th>';
             }
             echo '</tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 echo '<tr>';
                 echo '<td>'.$row['id'].'</td>';
@@ -168,7 +168,7 @@ function editwaypointlink()
     {
         if (isset($_POST['id']) && is_numeric($_POST['id']))
         {
-            $id = mysql_real_escape_string($_POST['id']);
+            $id = escapeSqlString($_POST['id']);
         }
         else
         {
@@ -176,10 +176,10 @@ function editwaypointlink()
             return;
         }
     
-        $name = mysql_real_escape_string($_POST['name']);
-        $type = mysql_real_escape_string($_POST['type']);
-        $wp1 = mysql_real_escape_string($_POST['wp1']);
-        $wp2 = mysql_real_escape_string($_POST['wp2']);
+        $name = escapeSqlString($_POST['name']);
+        $type = escapeSqlString($_POST['type']);
+        $wp1 = escapeSqlString($_POST['wp1']);
+        $wp2 = escapeSqlString($_POST['wp2']);
         $flags = '';
         if (isset($_POST['flags']))
             {
@@ -191,7 +191,7 @@ function editwaypointlink()
                 $flags = substr($flags, 0, -2);
             }
         }
-        $flags = mysql_real_escape_string($flags);
+        $flags = escapeSqlString($flags);
         if ($wp1 == $wp2)
         {
             echo '<p class="error">Waypoint 1 may not equal waypoint 2. Update canceled.</p>';
@@ -207,7 +207,7 @@ function editwaypointlink()
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']))
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
         }
         else
         {
@@ -216,7 +216,7 @@ function editwaypointlink()
         }
         $query = "SELECT * FROM sc_waypoint_links WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
         echo '<form action="./index.php?do=editwaypointlink'.$navurl.'" method="post"><input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1">';
@@ -247,10 +247,10 @@ function createwaypointlink()
 {
     if (checkaccess('natres', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Waypoint Link')
     {
-        $name = mysql_real_escape_string($_POST['name']);
-        $type = mysql_real_escape_string($_POST['type']);
-        $wp1 = mysql_real_escape_string($_POST['wp1']);
-        $wp2 = mysql_real_escape_string($_POST['wp2']);
+        $name = escapeSqlString($_POST['name']);
+        $type = escapeSqlString($_POST['type']);
+        $wp1 = escapeSqlString($_POST['wp1']);
+        $wp2 = escapeSqlString($_POST['wp2']);
         $flags = '';
         if (isset($_POST['flags']))
             {
@@ -262,7 +262,7 @@ function createwaypointlink()
                 $flags = substr($flags, 0, -2);
             }
         }
-        $flags = mysql_real_escape_string($flags);
+        $flags = escapeSqlString($flags);
         if ($wp1 == $wp2)
         {
             echo '<p class="error">Waypoint 1 may not equal waypoint 2. Creation canceled.</p>';
@@ -286,7 +286,7 @@ function deletewaypointlink()
     {
         if (isset($_POST['id']) && is_numeric($_POST['id']))
         {
-            $id = mysql_real_escape_string($_POST['id']);
+            $id = escapeSqlString($_POST['id']);
         }
         else
         {
@@ -305,7 +305,7 @@ function deletewaypointlink()
     {
         if (isset($_GET['id']) && is_numeric($_GET['id']))
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
         }
         else
         {
@@ -315,13 +315,13 @@ function deletewaypointlink()
         $query = "SELECT id FROM sc_path_points WHERE path_id='$id'";
         $result = mysql_query2($query);
         $path_point_delete = '';
-        if (mysql_num_rows($result) > 0)
+        if (sqlNumRows($result) > 0)
         {
             $path_point_delete = ' AND the path associated with it';
         }
         $query = "SELECT w.name AS wp1, ww.name AS wp2 FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id LEFT JOIN sc_waypoints AS ww ON wl.wp2=ww.id WHERE wl.id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo 'You are about to delete the waypoint link between '.$row['wp1'].' and '.$row['wp2'].$path_point_delete.' - Please confirm you wish to do this<br/>';
         echo '<form action="./index.php?do=deletewaypointlink" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete" /></form>';

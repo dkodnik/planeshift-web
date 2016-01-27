@@ -9,7 +9,7 @@ function listcommonstrings()
         $items_per_page = (isset($_GET['items_per_page']) && is_numeric($_GET['items_per_page']) ? $_GET['items_per_page'] : 30);
         
         $sql = 'SELECT COUNT(*) FROM common_strings';
-        $page_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+        $page_count = fetchSqlRow(mysql_query2($sql));
         $page_count = ceil($page_count[0] / $items_per_page);
         
         if($page > $page_count)
@@ -51,7 +51,7 @@ function listcommonstrings()
         echo '<table>';
         echo '<tr><th>ID</th><th>String</th><th>Actions</th></tr>';
         $color = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC)) {
+        while($row = fetchSqlAssoc($query)) {
             $color = ($color == 'a' ? 'b' : 'a');
             echo '<tr class="color_'.$color.'">';
             echo '<td>'.$row['id'].'</td>';
@@ -88,10 +88,10 @@ function addcommonstrings()
         }
         else
         {
-            $_string = mysql_real_escape_string($string);
+            $_string = escapeSqlString($string);
             $sql = 'SELECT id FROM common_strings WHERE string = \''.$_string.'\' LIMIT 1';
             $query = mysql_query2($sql);
-            if(mysql_num_rows($query) > 0)
+            if(sqlNumRows($query) > 0)
             {
                 $message = '<p class="error">You have to enter an unique string!</p>';
             }
@@ -138,7 +138,7 @@ function editcommonstrings()
             }
             else
             {
-                $string = mysql_real_escape_string($string);
+                $string = escapeSqlString($string);
                 $sql = 'UPDATE common_strings SET string = \''.$string.'\' WHERE id = '.$id;
                 $query = mysql_query2($sql);
                 // FIXME: Why isn't there a "success" class?
@@ -146,7 +146,7 @@ function editcommonstrings()
             }
         }
         $sql = 'SELECT string FROM common_strings WHERE id = '.$id.' LIMIT 1';
-        $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+        $row = fetchSqlAssoc(mysql_query2($sql));
         
         echo '<a href="./index.php?do=listcommonstrings">Back</a>';
         echo $message;

@@ -10,26 +10,26 @@ function listwaypointaliases()
     {
         if ($_POST['commit'] == 'Update Waypoint Alias' && isset($_POST['id']))
         {
-            $id = mysql_real_escape_string($_POST['id']);
-            $waypoint_id = mysql_real_escape_string($_POST['waypoint_id']);
-            $alias = mysql_real_escape_string($_POST['alias']);
-            $rotation_angle = mysql_real_escape_string($_POST['rotation_angle']);
+            $id = escapeSqlString($_POST['id']);
+            $waypoint_id = escapeSqlString($_POST['waypoint_id']);
+            $alias = escapeSqlString($_POST['alias']);
+            $rotation_angle = escapeSqlString($_POST['rotation_angle']);
             $query = "UPDATE sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias', rotation_angle='$rotation_angle' WHERE id='$id'";
             $result = mysql_query2($query);
             echo '<p class="error">Update Successful</p>';
         }
         elseif($_POST['commit'] == 'Delete' && checkaccess('other', 'delete'))
         {
-            $id = mysql_real_escape_string($_POST['id']);
+            $id = escapeSqlString($_POST['id']);
             $query = "DELETE FROM sc_waypoint_aliases WHERE id='$id' LIMIT 1";
             $result = mysql_query2($query);
             echo '<p class="error">Delete Successful</p>';
         }
         elseif($_POST['commit'] == 'Create Waypoint Alias' && checkaccess('other', 'create'))
         {
-            $waypoint_id = mysql_real_escape_string($_POST['waypoint_id']);
-            $alias = mysql_real_escape_string($_POST['alias']);
-            $rotation_angle = mysql_real_escape_string($_POST['rotation_angle']);
+            $waypoint_id = escapeSqlString($_POST['waypoint_id']);
+            $alias = escapeSqlString($_POST['alias']);
+            $rotation_angle = escapeSqlString($_POST['rotation_angle']);
             $query = "INSERT INTO sc_waypoint_aliases SET wp_id='$waypoint_id', alias='$alias', rotation_angle='$rotation_angle'";
             $result = mysql_query2($query);
             echo '<p class="error">Creation Successful</p>';
@@ -47,10 +47,10 @@ function listwaypointaliases()
         if ($_POST['action'] == 'Edit')
         {
             $waypoints = PrepSelect('waypoints');
-            $id = mysql_real_escape_string($_POST['id']);
+            $id = escapeSqlString($_POST['id']);
             $query = "SELECT wp_id, alias, rotation_angle FROM sc_waypoint_aliases WHERE id='$id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
             echo '<form action="./index.php?do=waypointalias'.$navurl.'" method="post">';
             echo '<table border="1">';
@@ -74,12 +74,12 @@ function listwaypointaliases()
     $query = "SELECT wa.id, wa.wp_id, wa.alias, wp.name AS waypoint_name, s.name AS sector, wa.rotation_angle FROM sc_waypoint_aliases AS wa LEFT JOIN sc_waypoints AS wp ON wp.id=wa.wp_id LEFT JOIN sectors AS s ON s.id=wp.loc_sector_id";
     if (isset($_GET['id']) && $_GET['id']!='')
     {
-        $id = mysql_real_escape_string($_GET['id']);  // limit to 1 specific result if requested
+        $id = escapeSqlString($_GET['id']);  // limit to 1 specific result if requested
         $query .= " WHERE w.id='$id'";
     }
     elseif (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != 0)  // limit to sectors
     {
-        $sec = mysql_real_escape_string($_GET['sector']);
+        $sec = escapeSqlString($_GET['sector']);
         $query .= " WHERE wp.loc_sector_id='$sec'";
     }
     if (isset($_GET['sort']))  // get the sorting right
@@ -137,7 +137,7 @@ function listwaypointaliases()
     echo ' - Displaying records '.$prev_lim.' through '.$lim.' - ';
     $where = ($sid == 0 ? '' : " WHERE w.loc_sector_id=$sid");
     $result2 = mysql_query2('select count(w.id) AS mylimit FROM sc_waypoints AS w'.$where);
-    $row2 = mysql_fetch_array($result2);
+    $row2 = fetchSqlAssoc($result2);
     if ($row2['mylimit'] > $lim)
     {
         echo '<a href="./index.php?do=waypointalias';
@@ -174,7 +174,7 @@ function listwaypointaliases()
         -----------------------------------   End sector selection   -----------------------------------
     */
     
-    if (mysql_numrows($result) == 0){
+    if (sqlNumRows($result) == 0){
         echo '<p class="error">No Waypoint Aliases</p>';
     }    
     else // Print the table of results
@@ -197,7 +197,7 @@ function listwaypointaliases()
             echo '<th>Actions</th>';
         }
         echo '</tr>';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td><a href="./index.php?do=waypoint&amp;id='.$row['wp_id'].'" >'.$row['waypoint_name'].'</a></td>';

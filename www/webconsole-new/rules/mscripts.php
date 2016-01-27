@@ -16,8 +16,8 @@ jQuery(function($) {
 </script>';
     if (isset($_POST['commit'])){
       if (($_POST['commit']=='Change Name') && (checkaccess('crafting', 'edit'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $orig_name = mysql_real_escape_string($_POST['orig_name']);
+        $name = escapeSqlString($_POST['name']);
+        $orig_name = escapeSqlString($_POST['orig_name']);
         $query = "UPDATE math_scripts SET name='$name' WHERE name='$orig_name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -25,8 +25,8 @@ jQuery(function($) {
         rule_mscripts();
         return;
       }else if (($_POST['commit']=='Update Script') && (checkaccess('crafting', 'edit'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $math_script = mysql_real_escape_string($_POST['math_script']);
+        $name = escapeSqlString($_POST['name']);
+        $math_script = escapeSqlString($_POST['math_script']);
         $query = "UPDATE math_scripts SET math_script='$math_script' WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -34,7 +34,7 @@ jQuery(function($) {
         rule_mscripts();
         return;
       }else if (($_POST['commit']=='Delete') && (checkaccess('crafting', 'delete'))){
-        $name = mysql_real_escape_string($_POST['name']);
+        $name = escapeSqlString($_POST['name']);
         $query = "DELETE FROM math_scripts WHERE name='$name'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -42,8 +42,8 @@ jQuery(function($) {
         rule_mscripts();
         return;
       }else if (($_POST['commit']=='Create Script') && (checkaccess('crafting', 'create'))){
-        $name = mysql_real_escape_string($_POST['name']);
-        $math_script = mysql_real_escape_string($_POST['math_script']);
+        $name = escapeSqlString($_POST['name']);
+        $math_script = escapeSqlString($_POST['math_script']);
         $query = "INSERT INTO math_scripts (name, math_script) VALUES ('$name', '$math_script')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -55,11 +55,11 @@ jQuery(function($) {
       $query = "SELECT name, math_script FROM math_scripts";
       if (isset($_GET['name']))
       {
-        $query .= " WHERE name='".mysql_real_escape_string($_GET['name'])."'";
+        $query .= " WHERE name='".escapeSqlString($_GET['name'])."'";
       }
       $query .= " ORDER BY name";
       $result = mysql_query2($query);
-      if (mysql_num_rows($result) > 0){
+      if (sqlNumRows($result) > 0){
         echo '<table border="1" width="100%">';
         echo '<tr><th>Name</th><th id="scriptCol">Script</th>';
         if (checkaccess('crafting', 'delete')){
@@ -67,7 +67,7 @@ jQuery(function($) {
         }else{
           echo '</tr>';
         }
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<tr>';
           if (checkaccess('crafting', 'edit')){
             echo '<td><form action="index.php?do=mscripts" method="post">';

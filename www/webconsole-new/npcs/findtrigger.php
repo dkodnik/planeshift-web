@@ -3,7 +3,7 @@ function findtrigger(){
 
     if (checkaccess('npcs', 'read') && isset($_POST['commit']))
     {
-        $word = mysql_real_escape_string($_POST['word']);
+        $word = escapeSqlString($_POST['word']);
 
         if ($_POST['commit'] == 'Search Trigger')
         {
@@ -25,14 +25,14 @@ function findtrigger(){
         $query .= " GROUP BY id";
         $result = mysql_query2($query);
 
-        if (mysql_num_rows($result) == 0)
+        if (sqlNumRows($result) == 0)
         {
             echo '<p class="error">No results were found.</p>';
             return;
         }
         echo '<b>Triggers found</b><br /><br />';
         echo '<table border="1"><tr><th>ID</th><th>Trigger</th><th>Area</th>'.(isset($_POST['show_responses']) ? '<th>response1</th><th>response2</th><th>response3</th><th>response4</th><th>response5</th>' : '').'</tr>';
-        while ($line = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($line = fetchSqlAssoc($result)){
             echo '<tr><td><b>'.htmlentities($line['id']).'</b></td><td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($line['area']).'&amp;trigger='.htmlentities($line['id']).'">'.htmlentities($line['trigger_text']).
                 '</a></td><td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($line['area']).'">'.htmlentities($line['area']).'</a></td>'.(isset($_POST['show_responses']) ? '<td>'.htmlentities($line['response1']).'</td><td>'.
                 htmlentities($line['response2']).'</td><td>'.htmlentities($line['response3']).'</td><td>'.htmlentities($line['response4']).'</td><td>'.htmlentities($line['response5']).'</td>' : '').'</tr>'."\n";

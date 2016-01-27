@@ -65,7 +65,7 @@ function assetsitem()
 	$query = mysql_query2($sql);
 
 	$i=0;
-	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+	while($result = fetchSqlAssoc($query))
 	{
 		$db_meshfacts[$i] = $result['cstr_gfx_mesh'];
 		$i++;
@@ -91,7 +91,7 @@ function assetsitem()
 	$query = mysql_query2($sql);
 
 	$i=0;
-	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+	while($result = fetchSqlAssoc($query))
 	{
 		// strip path
 		if (strrpos($result['cstr_gfx_icon'],'/')) {

@@ -5,7 +5,7 @@ function gameboards(){
       echo "<table border=1>";
       $query2 = "SELECT * FROM gameboards";
       $result2 = mysql_query2($query2);
-      while ($row2 = mysql_fetch_array($result2, MYSQL_ASSOC)){
+      while ($row2 = fetchSqlAssoc($result2)){
         echo '<tr><td>'.$row2['name'].'</td><td>';
 
         // edit
@@ -49,15 +49,15 @@ function editgameboard(){
 echo $_POST['name'];
   if (checkaccess('als', 'edit')){
     if (isset($_POST['name'])){
-      $name = mysql_real_escape_string($_POST['name']);
-      $columns = mysql_real_escape_string($_POST['columns']);
-      $rows = mysql_real_escape_string($_POST['rows']);
-      $layout = mysql_real_escape_string($_POST['layout']);
-      $pieces = mysql_real_escape_string($_POST['pieces']);
-      $numplayers = mysql_real_escape_string($_POST['numplayers']);
-      $options = mysql_real_escape_string($_POST['options']);
-      $gameRules = mysql_real_escape_string($_POST['gameRules']);
-      $endgames = mysql_real_escape_string($_POST['endgames']);
+      $name = escapeSqlString($_POST['name']);
+      $columns = escapeSqlString($_POST['columns']);
+      $rows = escapeSqlString($_POST['rows']);
+      $layout = escapeSqlString($_POST['layout']);
+      $pieces = escapeSqlString($_POST['pieces']);
+      $numplayers = escapeSqlString($_POST['numplayers']);
+      $options = escapeSqlString($_POST['options']);
+      $gameRules = escapeSqlString($_POST['gameRules']);
+      $endgames = escapeSqlString($_POST['endgames']);
       $query = "UPDATE gameboards SET numColumns='$columns', numRows='$rows', layout='$layout', pieces='$pieces', numPlayers='$numplayers', gameboardOptions='$options', gameRules='$gameRules', endgames='$endgames' WHERE name='$name'";
       $result = mysql_query2($query);
       //echo $query;
@@ -75,12 +75,12 @@ echo $_POST['name'];
 function deletegameboard(){
   if (checkaccess('als', 'delete')){
     if (isset($_POST['commit']) && isset($_POST['pass']) && isset($_POST['id'])){
-      $id = mysql_real_escape_string($_POST['id']);
-      $password = mysql_real_escape_string($_POST['pass']);
-      $username = mysql_real_escape_string($_SESSION['username']);
+      $id = escapeSqlString($_POST['id']);
+      $password = escapeSqlString($_POST['pass']);
+      $username = escapeSqlString($_SESSION['username']);
       $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
       $result = mysql_query2($query);
-      $row = mysql_fetch_row($result);
+      $row = fetchSqlRow($result);
       if ($row[0] == 1){
         $query = "DELETE FROM gameboards WHERE name='$id'";
         $result = mysql_query2($query);
@@ -92,10 +92,10 @@ function deletegameboard(){
       }
     }else{
       if (isset($_POST['id'])){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT name, sectorname FROM gameboards WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p>You are about to permanently delete Game Board '.$id.'<br/>Name: '.$row['name'].'<br/>sector: '.$row['sectorname'].'</p>';
         echo '<form action="./index.php?do=deleteal" method="post"><p>Enter your password to confirm: <input type="hidden" name="id" value="'.$id.'" /><input type="password" name="pass" /><input type="submit" name="commit" value="Confirm Delete" /></p></form>';
       }else{

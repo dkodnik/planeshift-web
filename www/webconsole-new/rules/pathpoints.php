@@ -7,7 +7,7 @@ function listpathpoints()
 
         if (isset($_GET['sector']) && $_GET['sector'] != '' && $_GET['sector'] != '0')
         {
-            $sec = mysql_real_escape_string($_GET['sector']);
+            $sec = escapeSqlString($_GET['sector']);
             $query = $query . " WHERE w.loc_sector_id='$sec'";
         }
       
@@ -68,7 +68,7 @@ function listpathpoints()
         echo ' - Displaying records '.$prev_lim.' through '.$limit.' - ';
         $where = ($sid == 0 ? '' : " LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id WHERE w.loc_sector_id=$sid");
         $result2 = mysql_query2('SELECT COUNT(DISTINCT p.path_id) AS mylimit FROM sc_path_points AS p'.$where);
-        $row2 = mysql_fetch_array($result2);
+        $row2 = fetchSqlAssoc($result2);
         if ($row2['mylimit'] > $limit)
         {
             echo '<a href="./index.php?do=listpathpoints';
@@ -96,7 +96,7 @@ function listpathpoints()
         }
         echo DrawSelectBox('sectorid', $sectors, 'sector' ,$sid, true);
         echo '<input type="submit" name="submit" value="Limit By Sector" /></form>';
-        if (mysql_numrows($result) == 0){
+        if (sqlNumRows($result) == 0){
             echo '<p class="error">No Paths Found</p>';
             return;
         }
@@ -111,7 +111,7 @@ function listpathpoints()
             echo '<th>Actions</th>';
         }
         echo '</tr>';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['path_id'].'</td>';
@@ -146,7 +146,7 @@ function editpathpoint()
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))  // the form sends both post and get for this value, we use post because it's less likely to be user influenced. (accidentally)
         {
-            $path_id = mysql_real_escape_string($_POST['path_id']);
+            $path_id = escapeSqlString($_POST['path_id']);
         }
         else
         {
@@ -156,11 +156,11 @@ function editpathpoint()
         $prev_id = 0;
         for ($i = 0; count($_POST['id']) > $i; $i++)
         {
-            $id = mysql_real_escape_string($_POST['id'][$i]);
-            $x = mysql_real_escape_string($_POST['x'][$i]);
-            $y = mysql_real_escape_string($_POST['y'][$i]);
-            $z = mysql_real_escape_string($_POST['z'][$i]);
-            $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id'][$i]);
+            $id = escapeSqlString($_POST['id'][$i]);
+            $x = escapeSqlString($_POST['x'][$i]);
+            $y = escapeSqlString($_POST['y'][$i]);
+            $z = escapeSqlString($_POST['z'][$i]);
+            $loc_sector_id = escapeSqlString($_POST['loc_sector_id'][$i]);
             if ($id != -1)
             {
                 if ($x != '' && $y != '' && $z != '' && $loc_sector_id != '')  // we don't process any lines that are not completely filled out.
@@ -182,7 +182,7 @@ function editpathpoint()
                     mysql_query2($query);
                     $query = "SELECT id FROM sc_path_points WHERE path_id='$path_id' AND prev_point='$prev_id' AND x='$x' AND y='$y' AND z='$z' AND loc_sector_id='$loc_sector_id'";
                     $result = mysql_query2($query);  // We assume here, that there are no identical entries. (there should not be)
-                    $row = mysql_fetch_array($result, MYSQL_ASSOC); 
+                    $row = fetchSqlAssoc($result); 
                     $prev_id = $row['id']; // We could also have used mysql_insert_id here, but that is not guaranteed to be correct if multiple users are inserting at the same time.
                 }
                 else
@@ -213,10 +213,10 @@ function editpathpoint()
         }
         if (isset($_GET['delete']) && is_numeric($_GET['delete']))
         {
-            $delete_id = mysql_real_escape_string($_GET['delete']);
+            $delete_id = escapeSqlString($_GET['delete']);
             $query = "SELECT prev_point FROM sc_path_points WHERE id='$delete_id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             $prev_id = $row['prev_point'];
             $query = "DELETE FROM sc_path_points WHERE id='$delete_id' LIMIT 1";
             mysql_query2($query);
@@ -229,7 +229,7 @@ function editpathpoint()
         $result = mysql_query2($query);
         $query2 = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
         $result2 = mysql_query2($query2);
-        $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+        $row2 = fetchSqlAssoc($result2);
         echo '<form action="./index.php?do=editpathpoint&path_id='.$path_id.$navurl.'" method="post"><input type="hidden" name="path_id" value="'.$path_id.'" />';
         echo '<h3 class="bold">Path Points listing for waypoint link: '.$row2['name'].' ('.$path_id.') from "'.$row2['wp1_name'].'" to "'.$row2['wp2_name'].'"</h3>';
         echo '<p>Please note that both insert and delete ignore any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
@@ -243,7 +243,7 @@ function editpathpoint()
         echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert=0'.$navurl.'">Insert</a></td></tr>';
         $prev = 0;
         $sectors = PrepSelect('sectorid');
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) // This slightly more complex loop serves to get the entries in proper order.
+        while ($row = fetchSqlAssoc($result)) // This slightly more complex loop serves to get the entries in proper order.
         {
             if ($prev == $insert)
             {
@@ -263,7 +263,7 @@ function editpathpoint()
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
                 echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].$navurl.'">Insert</a><br><br><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&delete='.$row['id'].$navurl.'">Delete</a></td></tr>';
                 $prev = $row['id'];
-                mysql_data_seek($result, 0);
+                sqlSeek($result, 0);
             } // No else, we want the loop to continue, so else { continue; } could be done, but just a waste of space. :)
         }
         // Display the info for the end waypoint.
@@ -288,7 +288,7 @@ function createpathpoint()
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
-            $path_id = mysql_real_escape_string($_POST['path_id']);
+            $path_id = escapeSqlString($_POST['path_id']);
         }
         else
         {
@@ -298,17 +298,17 @@ function createpathpoint()
         $prev_id = 0;
         for ($i = 0; $i < count($_POST['x']); $i++)
         {
-            $x = mysql_real_escape_string($_POST['x'][$i]);
-            $y = mysql_real_escape_string($_POST['y'][$i]);
-            $z = mysql_real_escape_string($_POST['z'][$i]);
-            $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id'][$i]);
+            $x = escapeSqlString($_POST['x'][$i]);
+            $y = escapeSqlString($_POST['y'][$i]);
+            $z = escapeSqlString($_POST['z'][$i]);
+            $loc_sector_id = escapeSqlString($_POST['loc_sector_id'][$i]);
             if ($x != '' && $y != '' && $z != '' && $loc_sector_id != '')  // we don't process any lines that are not completely filled out.
             {
                 $query = "INSERT INTO sc_path_points (path_id, prev_point, x, y, z, loc_sector_id) VALUES ('$path_id', '$prev_id', '$x', '$y', '$z', '$loc_sector_id')";
                 mysql_query2($query);
                 $query = "SELECT id FROM sc_path_points WHERE path_id='$path_id' AND prev_point='$prev_id' AND x='$x' AND y='$y' AND z='$z' AND loc_sector_id='$loc_sector_id'";
                 $result = mysql_query2($query);  // We assume here, that there are no identical entries. (there should not be)
-                $row = mysql_fetch_array($result, MYSQL_ASSOC); 
+                $row = fetchSqlAssoc($result); 
                 $prev_id = $row['id']; // We could also have used mysql_insert_id here, but that is not guaranteed to be correct if multiple users are inserting at the same time.
             }
             else
@@ -324,7 +324,7 @@ function createpathpoint()
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
-            $path_id = mysql_real_escape_string($_POST['path_id']);
+            $path_id = escapeSqlString($_POST['path_id']);
         }
         else
         {
@@ -333,7 +333,7 @@ function createpathpoint()
         }
         $query = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, wp1.loc_sector_id AS wp1_loc, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, wp2.loc_sector_id AS wp2_loc, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $sectors = PrepSelect('sectorid');
         echo '<p class="bold">Create Path Points for waypoint link '.$row['name'].' ('.$path_id.') from "'.$row['wp1_name'].'" to "'.$row['wp2_name'].'"</p>'."\n"; // new path point
         echo 'If you leave any row empty, it will not be added.';
@@ -375,7 +375,7 @@ function createpathpoint()
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {
-            $path_id = mysql_real_escape_string($_GET['path_id']);
+            $path_id = escapeSqlString($_GET['path_id']);
         }
         else
         {
@@ -384,14 +384,14 @@ function createpathpoint()
         }
         $query = "SELECT id FROM sc_path_points WHERE path_id='$path_id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0)
+        if (sqlNumRows($result) > 0)
         {
             echo '<p class="error">A path for this waypoint ('.$path_id.') already exists.</p>';
             return;
         }
         $query = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, wp1.loc_sector_id AS wp1_loc, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, wp2.loc_sector_id AS wp2_loc, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $sectors = PrepSelect('sectorid');
         echo '<p class="bold">Create Path Point for: '.$row['name'].' ('.$path_id.') from "'.$row['wp1_name'].'" to "'.$row['wp2_name'].'"</p>'."\n"; // new path point
         echo 'If you leave any row empty, it will not be added.';
@@ -432,7 +432,7 @@ function deletepathpoint()
     {
         if (isset($_POST['path_id']) && is_numeric($_POST['path_id']))
         {
-            $path_id = mysql_real_escape_string($_POST['path_id']);
+            $path_id = escapeSqlString($_POST['path_id']);
         }
         else
         {
@@ -449,7 +449,7 @@ function deletepathpoint()
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {
-            $path_id = mysql_real_escape_string($_GET['path_id']);
+            $path_id = escapeSqlString($_GET['path_id']);
         }
         else
         {
@@ -458,7 +458,7 @@ function deletepathpoint()
         }
         $query = "SELECT DISTINCT s.name AS sector, w.name AS wp1_name, ww.name AS wp2_name FROM sc_path_points AS p LEFT JOIN sc_waypoint_links AS wl ON p.path_id=wl.id LEFT JOIN sc_waypoints AS w ON wl.wp1=w.id LEFT JOIN sc_waypoints AS ww ON wl.wp2=ww.id LEFT JOIN sectors AS s ON w.loc_sector_id=s.id WHERE p.path_id='$path_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo 'You are about to delete all path_points between '.$row['wp1_name'].' and '.$row['wp2_name'].' belonging to waypoint link '.$path_id.' - Please confirm you wish to do this<br/>';
         echo '<form action="./index.php?do=deletepathpoint" method="post">';
         echo '<input type="hidden" name="path_id" value="'.$path_id.'" /><input type="submit" name="commit" value="Confirm Delete" /></form>';

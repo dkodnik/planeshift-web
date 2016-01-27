@@ -14,20 +14,20 @@ function synonyms(){
         }
         if ($_POST['commit'] == 'Delete')
         {
-            $word = mysql_real_escape_string($_POST['word']);
-            $syn = mysql_real_escape_string($_GET['syn']);
+            $word = escapeSqlString($_POST['word']);
+            $syn = escapeSqlString($_GET['syn']);
             $query = "DELETE FROM npc_synonyms WHERE word='$word' AND synonym_of='$syn'";
         }
         else if ($_POST['commit'] == 'Add Synonym')
         {
-            $word = mysql_real_escape_string($_POST['new_syn']);
-            $syn = mysql_real_escape_string($_GET['syn']);
+            $word = escapeSqlString($_POST['new_syn']);
+            $syn = escapeSqlString($_GET['syn']);
             $query = "INSERT INTO npc_synonyms (synonym_of, word) VALUES ('$syn', '$word')";
         }
         else if ($_POST['commit'] == 'New Base Phrase')
         {
-            $word = mysql_real_escape_string(strtolower($_POST['new_syn']));
-            $syn = mysql_real_escape_string(strtolower($_POST['new_phrase']));
+            $word = escapeSqlString(strtolower($_POST['new_syn']));
+            $syn = escapeSqlString(strtolower($_POST['new_phrase']));
             $query = "INSERT INTO npc_synonyms (synonym_of, word) VALUES ('$syn', '$word')";
             $_GET['syn'] = $syn;
         }
@@ -51,7 +51,7 @@ function synonyms(){
             $result = mysql_query2($query);
             $alt = false;
             echo '<table><tr><th>Player Types</th><th>Server Parses</th></tr>'."\n";
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
                 echo '<td>'.htmlentities($row['word']).'</td>';
@@ -69,14 +69,14 @@ function synonyms(){
         $result = mysql_query2($query);
         if (isset($_GET['syn']))
         {
-            $syn = mysql_real_escape_string($_GET['syn']);
+            $syn = escapeSqlString($_GET['syn']);
         }
         else
         {
             $syn = "";
         }
         echo '<table border="1"><tr><th>Server Parses</th><th>Player Types</th></tr><tr class="top"><td>'."\n";
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($result))
         {
             if ($row['synonym_of'] != "")
             {
@@ -106,7 +106,7 @@ function synonyms(){
         {
             $query = "SELECT word FROM npc_synonyms WHERE synonym_of='$syn' ORDER BY word";
             $result = mysql_query2($query);
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 if (checkaccess('npcs', 'edit'))
                 {

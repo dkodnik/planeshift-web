@@ -20,7 +20,7 @@ function listguilds() {
             echo '</tr>';
             
             $mode = 'b';
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 $mode = ($mode == 'a' ? 'b': 'a');
                 
@@ -38,7 +38,7 @@ function listguilds() {
         else // Now we can get into the details.
         {
             $sql = 'SELECT g.*, c.name AS founder_name, a.name AS alliance_name, g2.name AS leading_guild from guilds AS g LEFT JOIN alliances AS a ON a.id = g.alliance LEFT JOIN guilds AS g2 ON g2.id = a.leading_guild LEFT JOIN characters AS c ON c.id=g.char_id_founder WHERE g.id='.$guild.' LIMIT 1';
-            $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+            $row = fetchSqlAssoc(mysql_query2($sql));
             
             echo '<p class="header">Guild Infos for "'.htmlentities($row['name']).'"</p>';
             echo '<a href="./index.php?do=listguilds">Back to listing</a><br />';
@@ -73,7 +73,7 @@ function listguilds() {
                     $sql = 'SELECT g.*, c.name as founder_name FROM guilds AS g, characters as c WHERE g.alliance = '.$row['alliance'].' AND c.id = g.char_id_founder ORDER BY name';
                     $query = mysql_query2($sql);
                     $mode = 'b';
-                    while($row2 = mysql_fetch_array($query, MYSQL_ASSOC))
+                    while($row2 = fetchSqlAssoc($query))
                     {
                         $mode = ($mode == 'a' ? 'b': 'a');
                         
@@ -104,7 +104,7 @@ function listguilds() {
             $sql = 'SELECT * FROM characters WHERE guild_member_of = '.$guild.' ORDER BY name';
             $query = mysql_query2($sql);
             $mode = 'b';
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 $mode = ($mode == 'a' ? 'b': 'a');
                 
@@ -146,8 +146,8 @@ function editguildmember()
     
     if($edit && isset($_POST['guild_public_notes']) && isset($_POST['guild_private_notes']))
     {
-        $public_notes = mysql_real_escape_string(str_replace("\r", '', $_POST['guild_public_notes']));
-        $private_notes = mysql_real_escape_string(str_replace("\r", '', $_POST['guild_private_notes']));
+        $public_notes = escapeSqlString(str_replace("\r", '', $_POST['guild_public_notes']));
+        $private_notes = escapeSqlString(str_replace("\r", '', $_POST['guild_private_notes']));
         
         $sql = 'UPDATE characters SET guild_public_notes = \''.$public_notes.'\', guild_private_notes = \''.$private_notes.'\' WHERE id = '.$member.' LIMIT 1';
         $query = mysql_query2($sql);
@@ -164,7 +164,7 @@ function editguildmember()
     echo '<p class="header">'.($edit ? 'Edit' : 'View').' a character\'s guild notes</p>';
     
     $sql = 'SELECT c.*, g.name as guild FROM characters AS c, guilds AS g WHERE c.id = '.$member.' AND g.id = c.guild_member_of LIMIT 1';
-    $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+    $row = fetchSqlAssoc(mysql_query2($sql));
     
     echo '<a href="./index.php?do=listguilds&amp;guild='.$row['guild_member_of'].'">Back</a><br/>';
     if($edit)
@@ -212,14 +212,14 @@ function deleteguildmember()
         }
         
         $sql = 'SELECT * FROM characters WHERE id = '.$id.' LIMIT 1';
-        $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+        $row = fetchSqlAssoc(mysql_query2($sql));
         
         $passed = false;
         $password = @$_POST['password'];
         if(!empty($password))
         {
             $sql = 'SELECT username FROM accounts WHERE password = \''.md5($password).'\' LIMIT 1';
-            $row2 = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+            $row2 = fetchSqlAssoc(mysql_query2($sql));
             if($_SESSION['username'] == $row2['username'])
             {
                 $passed = true;

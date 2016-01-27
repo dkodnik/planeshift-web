@@ -25,7 +25,7 @@ function listnpcscombat()
         $sql.= ' AND c.npc_impervious_ind=\'N\'';
 
         $sql2 = "SELECT COUNT(*) FROM characters WHERE character_type = 1 AND npc_impervious_ind='N'";
-        $item_count = mysql_fetch_array(mysql_query2($sql2), MYSQL_NUM);
+        $item_count = fetchSqlRow(mysql_query2($sql2));
         
         if (isset($_GET['sort']))
         {
@@ -66,7 +66,7 @@ function listnpcscombat()
         
 
         $query = mysql_query2($sql);
-        if (mysql_num_rows($query) == 0)
+        if (sqlNumRows($query) == 0)
         {
             echo '<p class="error">No NPCs Found</p>';
             return;
@@ -76,7 +76,7 @@ function listnpcscombat()
         echo '<tr><th><a href="./index.php?do=listnpcscombat&amp;sort=id">ID</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=name">Name</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=spawn">Spawn</a>/<a href="./index.php?do=listnpcscombat&amp;sort=loot">Loot</a></th><th>Position</th><th><a href="./index.php?do=listnpcscombat&amp;sort=sector">Sector</a></th><th>Region</th><th>Weapon Right Hand</th><th>Weapon Left Hand</th><th>Skills</th><th>Exp</th><th> </th></tr>';
 
         $npcs = array();
-        while ($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while ($row = fetchSqlAssoc($query))
         {
             // this if/else will fire some times for each specific npc to parse all it's skills and weapons.
             if(!isset($npcs[$row['id']]))

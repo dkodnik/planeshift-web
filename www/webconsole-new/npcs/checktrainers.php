@@ -71,7 +71,7 @@ function checktrainers()
         // array(npc), status, name, player_id, sector. The "array(npc) will later contain all npcs belonging to the combined range.
         // $skills[ID][RANGE_NR][RANGE_ELEMENT] is thus a 3d array, with the exception of the element npc, at which point it is 4d.
         
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
             if($row['max_rank'] < $row['min_rank'])
             {
@@ -102,7 +102,7 @@ function checktrainers()
         
         echo '<table><tr><th>Skill</th><th>Range</th><th>Status</th></tr>';
         $color = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
             $color = ($color == 'a' ? 'b' : 'a');
             $str = '';

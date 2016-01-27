@@ -17,16 +17,16 @@ function listprocess()
             $query .= ' ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name, t.process_id, t.subprocess_number';
         }
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $id = $row['process_id'];
-        mysql_data_seek($result, 0);
+        sqlSeek($result, 0);
         echo '<table><tr><th><a href="./index.php?do=listprocess&amp;sort=name">Name</a></th><th>Sub-<br/>Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>Script</th><th>Description</th>';
         if (checkaccess('crafting', 'edit')){
             echo '<th>Actions</th>';
         }
         echo '</tr>';
         $alt= FALSE;
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
             $alt = !$alt;
             if ($alt)
             {
@@ -66,32 +66,32 @@ function listprocess()
 
 function editprocess(){
   if (checkaccess('crafting', 'read')){
-    $id = mysql_real_escape_string($_GET['id']);
+    $id = escapeSqlString($_GET['id']);
     echo '<p class="header">Process Information';
     $result = mysql_query2("SELECT id, name FROM item_stats");
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $i = $row['id'];
       $Items["$i"] = $row['name'];
     }
     $Items[0] = "";
     $result = mysql_query2("SELECT skill_id, name FROM skills");
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $i = $row['skill_id'];
       $Skills["$i"] = $row['name'];
     }
     $Skills[0] = "";
     $query = "SELECT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, i.name AS workitem_name, i.category_id AS work_cat_id, t.equipment_id, ii.name AS equipment_name, ii.category_id AS equipment_cat_id, t.constraints, t.garbage_id, iii.name AS garbage_name, iii.category_id AS garbage_cat_id, t.garbage_qty, t.primary_skill_id, s.name AS primary_skill_name, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, ss.name AS secondary_skill_name, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.script, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id LEFT JOIN item_stats AS i ON i.id=t.workitem_id LEFT JOIN item_stats AS ii ON ii.id=t.equipment_id LEFT JOIN item_stats AS iii ON iii.id=t.garbage_id WHERE process_id = '$id' ORDER BY s.name, t.primary_min_skill, ss.name, secondary_min_skill, t.name";
     $result = mysql_query2($query);
-    $row = mysql_fetch_array($result, MYSQL_ASSOC);
+    $row = fetchSqlAssoc($result);
     echo '- '.$row['name'].'</p>';
-    mysql_data_seek($result, 0);
+    sqlSeek($result, 0);
     echo '<table><tr><th>Sub-Process</th><th>Animation</th><th>Work Item</th><th>Equipment Used</th><th>Constraints</th><th colspan="2">Garbage Item</th><th>Primary Skill / Min / Max / Practice / Quality</th><th>Secondary Skill / Min / Max / Practice / Quality</th><th>script</th><th>Description</th>';
     if (checkaccess('crafting', 'edit')){
       echo '<th>Actions</th>';
     }
     echo '</tr>';
     $Alt= FALSE;
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $Alt = !$Alt;
       if ($Alt){
         echo '<tr class="color_a">';
@@ -119,12 +119,12 @@ function editprocess(){
     }
     $query = "SELECT t.id, t.process_id, t.pattern_id, pat.pattern_name, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON t.pattern_id=pat.id WHERE t.process_id='$id' ORDER BY pattern_id";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)  
+    if (sqlNumRows($result) > 0)  
     {
         echo '<p>Transformations using this process:</p>';
         echo '<table><tr><th>Pattern</th><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
         $alt = false;
-        while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row=fetchSqlAssoc($result)){
             $alt = !$alt;
             if ($alt)
             {
@@ -181,29 +181,29 @@ function editsubprocess()
   {
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Process"))
     {
-        $process_id = mysql_real_escape_string($_GET['id']);
-        $subprocess_number = mysql_real_escape_string($_GET['sub']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $animation = mysql_real_escape_string($_POST['animation']);
-        $workitem_id = mysql_real_escape_string($_POST['workitem_id']);
+        $process_id = escapeSqlString($_GET['id']);
+        $subprocess_number = escapeSqlString($_GET['sub']);
+        $name = escapeSqlString($_POST['name']);
+        $animation = escapeSqlString($_POST['animation']);
+        $workitem_id = escapeSqlString($_POST['workitem_id']);
         $workitem_id = ($workitem_id == '' ? 0 : $workitem_id); // change id to 0 if it is not provided by user ('')
-        $equipment_id = mysql_real_escape_string($_POST['equipment_id']);
+        $equipment_id = escapeSqlString($_POST['equipment_id']);
         $equipment_id = ($equipment_id == '' ? 0 : $equipment_id);
-        $garbage_id = mysql_real_escape_string($_POST['garbage_id']);
+        $garbage_id = escapeSqlString($_POST['garbage_id']);
         $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
-        $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
-        $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
-        $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
-        $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
-        $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
-        $primary_quality_factor = mysql_real_escape_string($_POST['primary_quality_factor']);
-        $secondary_skill_id = mysql_real_escape_string($_POST['secondary_skill_id']);
-        $secondary_min_skill = mysql_real_escape_string($_POST['secondary_min_skill']);
-        $secondary_max_skill = mysql_real_escape_string($_POST['secondary_max_skill']);
-        $secondary_practice_points = mysql_real_escape_string($_POST['secondary_practice_points']);
-        $secondary_quality_factor = mysql_real_escape_string($_POST['secondary_quality_factor']);
-        $script = mysql_real_escape_string($_POST['script']);
-        $description = mysql_real_escape_string($_POST['description']);
+        $garbage_qty = escapeSqlString($_POST['garbage_qty']);
+        $primary_skill_id = escapeSqlString($_POST['primary_skill_id']);
+        $primary_min_skill = escapeSqlString($_POST['primary_min_skill']);
+        $primary_max_skill = escapeSqlString($_POST['primary_max_skill']);
+        $primary_practice_points = escapeSqlString($_POST['primary_practice_points']);
+        $primary_quality_factor = escapeSqlString($_POST['primary_quality_factor']);
+        $secondary_skill_id = escapeSqlString($_POST['secondary_skill_id']);
+        $secondary_min_skill = escapeSqlString($_POST['secondary_min_skill']);
+        $secondary_max_skill = escapeSqlString($_POST['secondary_max_skill']);
+        $secondary_practice_points = escapeSqlString($_POST['secondary_practice_points']);
+        $secondary_quality_factor = escapeSqlString($_POST['secondary_quality_factor']);
+        $script = escapeSqlString($_POST['script']);
+        $description = escapeSqlString($_POST['description']);
         $query = "UPDATE trade_processes SET name='$name', animation='$animation', workitem_id='$workitem_id', equipment_id='$equipment_id', garbage_id='$garbage_id', garbage_qty='$garbage_qty', primary_skill_id='$primary_skill_id', primary_min_skill='$primary_min_skill', primary_max_skill='$primary_max_skill', primary_practice_points='$primary_practice_points', primary_quality_factor='$primary_quality_factor', secondary_skill_id='$secondary_skill_id', secondary_min_skill='$secondary_min_skill', secondary_max_skill='$secondary_max_skill', secondary_practice_points='$secondary_practice_points', secondary_quality_factor='$secondary_quality_factor', script='$script', description='$description' WHERE process_id='$process_id' AND subprocess_number='$subprocess_number'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -212,12 +212,12 @@ function editsubprocess()
     }
     else
     {
-      $id = mysql_real_escape_string($_GET['id']);
-      $sub = mysql_real_escape_string($_GET['sub']);
+      $id = escapeSqlString($_GET['id']);
+      $sub = escapeSqlString($_GET['sub']);
       $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&amp;id='.$id.'&amp;sub='.$sub.'">Delete</a>' : '');
       $query = "SELECT * FROM trade_processes WHERE process_id = '$id' AND subprocess_number='$sub'";
       $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
+      $row = fetchSqlAssoc($result);
       echo '<p class="header">Edit Sub-Proccess</p>';
       echo '<form action="./index.php?do=editsubprocess&amp;id='.$id.'&amp;sub='.$sub.'" method="post">';
       echo '<table><tr><th>Field</th><th>Value</th></tr>';
@@ -257,41 +257,41 @@ function createprocess()
 {
     if (checkaccess('crafting','create') && isset($_POST['commit']) && $_POST['commit'] == "Create Process")
     {
-        $name = mysql_real_escape_string($_POST['name']);
-        $animation = mysql_real_escape_string($_POST['animation']);
-        $workitem_id = mysql_real_escape_string($_POST['workitem_id']);
+        $name = escapeSqlString($_POST['name']);
+        $animation = escapeSqlString($_POST['animation']);
+        $workitem_id = escapeSqlString($_POST['workitem_id']);
         $workitem_id = ($workitem_id == '' ? 0 : $workitem_id); // change id to 0 if it is not provided by user ('')
-        $equipment_id = mysql_real_escape_string($_POST['equipment_id']);
+        $equipment_id = escapeSqlString($_POST['equipment_id']);
         $equipment_id = ($equipment_id == '' ? 0 : $equipment_id);
-        $constraints = mysql_real_escape_string($_POST['constraints']);
-        $garbage_id = mysql_real_escape_string($_POST['garbage_id']);
+        $constraints = escapeSqlString($_POST['constraints']);
+        $garbage_id = escapeSqlString($_POST['garbage_id']);
         $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
-        $garbage_qty = mysql_real_escape_string($_POST['garbage_qty']);
-        $primary_skill_id = mysql_real_escape_string($_POST['primary_skill_id']);
-        $primary_min_skill = mysql_real_escape_string($_POST['primary_min_skill']);
-        $primary_max_skill = mysql_real_escape_string($_POST['primary_max_skill']);
-        $primary_practice_points = mysql_real_escape_string($_POST['primary_practice_points']);
-        $primary_quality_factor = mysql_real_escape_string($_POST['primary_quality_factor']);
-        $secondary_skill_id = mysql_real_escape_string($_POST['secondary_skill_id']);
-        $secondary_min_skill = mysql_real_escape_string($_POST['secondary_min_skill']);
-        $secondary_max_skill = mysql_real_escape_string($_POST['secondary_max_skill']);
-        $secondary_practice_points = mysql_real_escape_string($_POST['secondary_practice_points']);
-        $secondary_quality_factor = mysql_real_escape_string($_POST['secondary_quality_factor']);
-        $script = mysql_real_escape_string($_POST['script']);
-        $description = mysql_real_escape_string($_POST['description']);
+        $garbage_qty = escapeSqlString($_POST['garbage_qty']);
+        $primary_skill_id = escapeSqlString($_POST['primary_skill_id']);
+        $primary_min_skill = escapeSqlString($_POST['primary_min_skill']);
+        $primary_max_skill = escapeSqlString($_POST['primary_max_skill']);
+        $primary_practice_points = escapeSqlString($_POST['primary_practice_points']);
+        $primary_quality_factor = escapeSqlString($_POST['primary_quality_factor']);
+        $secondary_skill_id = escapeSqlString($_POST['secondary_skill_id']);
+        $secondary_min_skill = escapeSqlString($_POST['secondary_min_skill']);
+        $secondary_max_skill = escapeSqlString($_POST['secondary_max_skill']);
+        $secondary_practice_points = escapeSqlString($_POST['secondary_practice_points']);
+        $secondary_quality_factor = escapeSqlString($_POST['secondary_quality_factor']);
+        $script = escapeSqlString($_POST['script']);
+        $description = escapeSqlString($_POST['description']);
         if (isset($_POST['process_id'])) // we are adding a sub-process, determine the highest number and make this 1 above that.
         {
-            $process_id = mysql_real_escape_string($_POST['process_id']);
+            $process_id = escapeSqlString($_POST['process_id']);
             $query = "SELECT MAX(subprocess_number) FROM trade_processes WHERE process_id='$process_id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_row($result);
+            $row = fetchSqlRow($result);
             $subprocess_number = $row[0]+1;
         }
         else // we are adding a process, determine the highest number and add 1, set sub to 0.
         {
             $query = "SELECT MAX(process_id) FROM trade_processes";
             $result = mysql_query2($query);
-            $row = mysql_fetch_row($result);
+            $row = fetchSqlRow($result);
             $process_id = $row[0]+1;
             $subprocess_number = 0;
         }
@@ -309,14 +309,14 @@ function createprocess()
         echo '<form action="./index.php?do=createprocess" method="post"><table>';
         if ($id != "") // if ID was supplied, we are making a sub-process.
         {
-            $query = "SELECT name FROM trade_processes WHERE process_id='".mysql_real_escape_string($id)."'";
+            $query = "SELECT name FROM trade_processes WHERE process_id='".escapeSqlString($id)."'";
             $result = mysql_query2($query);
-            if (mysql_num_rows($result) < 1)
+            if (sqlNumRows($result) < 1)
             {
                 echo '<p class="error">Invalid process_id ('.$id.') supplied, could not create sub-process.</p>';
                 return;
             }
-            $row = mysql_fetch_array($result);
+            $row = fetchSqlAssoc($result);
             $name = $row['name'];
             echo '<tr><td>Process ID:</td><td><input type="hidden" name="process_id" value="'.$id.'" />'.$id.'</td></tr>';
             echo '<tr><td>Process Name:</td><td><input type="hidden" name="name" value="'.$name.'" />'.$name.'</td></tr>';
@@ -359,19 +359,19 @@ function deleteprocess()
 {
     if (checkaccess('crafting','delete') && isset($_POST['submit']))
     {
-        $process_id = mysql_real_escape_string($_GET['id']);
-        $subprocess_number = mysql_real_escape_string($_GET['sub']);
+        $process_id = escapeSqlString($_GET['id']);
+        $subprocess_number = escapeSqlString($_GET['sub']);
         if (!is_numeric($process_id) || !is_numeric($subprocess_number))
         {
             echo '<p class="error">Invalid (sub)process ID.</p>';
             return;
         }
         
-        $password = mysql_real_escape_string($_POST['passd']);
-        $username = mysql_real_escape_string($_SESSION['username']);
+        $password = escapeSqlString($_POST['passd']);
+        $username = escapeSqlString($_SESSION['username']);
         $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] == 1)
         {
             if ($subprocess_number == 0)
@@ -396,8 +396,8 @@ function deleteprocess()
     }
     elseif (checkaccess('crafting','delete'))
     {
-        $process_id = mysql_real_escape_string($_GET['id']);
-        $subprocess_number = mysql_real_escape_string($_GET['sub']);
+        $process_id = escapeSqlString($_GET['id']);
+        $subprocess_number = escapeSqlString($_GET['sub']);
         if (!is_numeric($process_id) || !is_numeric($subprocess_number))
         {
             echo '<p class="error">Invalid (sub)process ID.</p>';
@@ -405,17 +405,17 @@ function deleteprocess()
         }
         $query = "SELECT name FROM trade_processes WHERE process_id='$process_id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) < 1) // process_id does not exist
+        if (sqlNumRows($result) < 1) // process_id does not exist
         {
             echo '<p class="error">No process with ID '.$process_id.'</p>';
             return;
         }
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         $process_name = $row['name'];
 
         $query = "SELECT id, name FROM item_stats";
         $result = mysql_query2($query);
-        while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row=fetchSqlAssoc($result)){
             $iid=$row['id'];
             $items["$iid"]=$row['name'];
             $items[0] = "";
@@ -425,12 +425,12 @@ function deleteprocess()
         {
             $query = "SELECT t.id, t.pattern_id, t.process_id, p.name, t.result_id, t.result_qty, t.item_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_stats AS i ON i.id=t.result_id WHERE t.process_id='$process_id' ORDER BY p.name, i.name";
             $result = mysql_query2($query);
-            if (mysql_num_rows($result) > 0)  // there still are dependencies, do not offer to delete anything.
+            if (sqlNumRows($result) > 0)  // there still are dependencies, do not offer to delete anything.
             {
                 echo '<p class="error">You can NOT delete this process ('.$process_name.'), since the following transforms still use it.</p>';
                 echo '<table><tr><th>Source Item</th><th>Process</th><th>Result Item</th><th>Time</th><th>Resultant Quality</th><th>Actions</th></tr>';
                 $alt = FALSE;
-                while ($row=mysql_fetch_array($result, MYSQL_ASSOC))
+                while ($row=fetchSqlAssoc($result))
                 {
                     $alt = !$alt;
                     if ($alt)

@@ -21,12 +21,12 @@ function listtribes()
         }
     }
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         echo '<table border="1">';
         echo '<tr><th><a href="./index.php?do=listtribes&amp;sort=id">ID</a></th><th><a href="./index.php?do=listtribes&amp;sort=name">Name</a></th><th>Home Position</th><th>Home Radius</th><th><a href="./index.php?do=listtribes&amp;sort=sector">Home Sector</a></th><th>Max size</th><th>Wealth Resource Name</th><th>Wealth Resource Nick</th><th>Wealth Resource Area</th><th>Wealth Gather Need</th><th>Wealth Resource Growth</th><th>Wealth Resource Growth Active</th><th>Wealth Resource Growth Active Limit</th><th>Reproduction Cost</th><th>NPC idle behavior</th><th>Tribal Recipe</th></tr>';
 
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['id'].'</td>';
@@ -105,23 +105,23 @@ function edittribes()
             echo '<p class="error">You are not authorized to use these functions</p>';
             return;
         }
-        $name = mysql_real_escape_string($_POST['name']);
-        $home_sector_id = mysql_real_escape_string($_POST['home_sector_id']);
-        $home_x = mysql_real_escape_string($_POST['home_x']);
-        $home_y = mysql_real_escape_string($_POST['home_y']);
-        $home_z = mysql_real_escape_string($_POST['home_z']);
-        $home_radius = mysql_real_escape_string($_POST['home_radius']);
-        $max_size = mysql_real_escape_string($_POST['max_size']);
-        $wealth_resource_name = mysql_real_escape_string($_POST['wealth_resource_name']);
-        $wealth_resource_nick = mysql_real_escape_string($_POST['wealth_resource_nick']);
-        $wealth_resource_area = mysql_real_escape_string($_POST['wealth_resource_area']);
-        $wealth_gather_need = mysql_real_escape_string($_POST['wealth_gather_need']);
-        $wealth_resource_growth = mysql_real_escape_string($_POST['wealth_resource_growth']);
-        $wealth_resource_growth_active = mysql_real_escape_string($_POST['wealth_resource_growth_active']);
-        $wealth_resource_growth_active_limit = mysql_real_escape_string($_POST['wealth_resource_growth_active_limit']);
-        $reproduction_cost = mysql_real_escape_string($_POST['reproduction_cost']);
-        $npc_idle_behavior = mysql_real_escape_string($_POST['npc_idle_behavior']);
-        $tribal_recipe = mysql_real_escape_string($_POST['tribal_recipe']);
+        $name = escapeSqlString($_POST['name']);
+        $home_sector_id = escapeSqlString($_POST['home_sector_id']);
+        $home_x = escapeSqlString($_POST['home_x']);
+        $home_y = escapeSqlString($_POST['home_y']);
+        $home_z = escapeSqlString($_POST['home_z']);
+        $home_radius = escapeSqlString($_POST['home_radius']);
+        $max_size = escapeSqlString($_POST['max_size']);
+        $wealth_resource_name = escapeSqlString($_POST['wealth_resource_name']);
+        $wealth_resource_nick = escapeSqlString($_POST['wealth_resource_nick']);
+        $wealth_resource_area = escapeSqlString($_POST['wealth_resource_area']);
+        $wealth_gather_need = escapeSqlString($_POST['wealth_gather_need']);
+        $wealth_resource_growth = escapeSqlString($_POST['wealth_resource_growth']);
+        $wealth_resource_growth_active = escapeSqlString($_POST['wealth_resource_growth_active']);
+        $wealth_resource_growth_active_limit = escapeSqlString($_POST['wealth_resource_growth_active_limit']);
+        $reproduction_cost = escapeSqlString($_POST['reproduction_cost']);
+        $npc_idle_behavior = escapeSqlString($_POST['npc_idle_behavior']);
+        $tribal_recipe = escapeSqlString($_POST['tribal_recipe']);
         $query = "INSERT INTO tribes SET name='$name', home_sector_id='$home_sector_id', home_x='$home_x', home_y='$home_y', home_z='$home_z', home_radius='$home_radius', max_size='$max_size', wealth_resource_name='$wealth_resource_name', wealth_resource_nick='$wealth_resource_nick', wealth_resource_area='$wealth_resource_area', wealth_gather_need='$wealth_gather_need', wealth_resource_growth='$wealth_resource_growth', wealth_resource_growth_active='$wealth_resource_growth_active', wealth_resource_growth_active_limit='$wealth_resource_growth_active_limit', reproduction_cost='$reproduction_cost', npc_idle_behavior='$npc_idle_behavior', tribal_recipe='$tribal_recipe'";
         mysql_query2($query);
         echo '<p class="error">Tribe Successfully Created</p>';
@@ -141,10 +141,10 @@ function edittribes()
             echo '<p class="error">Invalid ID, cannot delete.</p>';
             return;
         }
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT name FROM tribes WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<p>You are about to delete the tribe named '.$row['name'].' id('.$id.') and *all* associated assets, knowledge, memories, resources and members.<br />';
         echo 'This action is permanent and can not be undone.</p>';
         echo '<form action="./index.php?do=edittribes" method="post">';
@@ -164,7 +164,7 @@ function edittribes()
             return;
         }
         
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM sc_tribe_assets WHERE tribe_id='$id'";
         mysql_query2($query);
         $query = "DELETE FROM sc_tribe_knowledge WHERE tribe_id='$id'";

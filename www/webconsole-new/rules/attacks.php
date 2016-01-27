@@ -9,8 +9,8 @@ function listattacks()
     }
     // navigation
     $sql = 'SELECT COUNT(*) FROM attacks';
-    $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-    $sort_column = (isset($_GET['sort_column']) && !empty($_GET['sort_column']) ? mysql_real_escape_string($_GET['sort_column']) : 'id');
+    $item_count = fetchSqlRow(mysql_query2($sql));
+    $sort_column = (isset($_GET['sort_column']) && !empty($_GET['sort_column']) ? escapeSqlString($_GET['sort_column']) : 'id');
     $sort_dir = (isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC');
     $nav = RenderNav(array('do' => 'listattacks', 'sort_column' => $sort_column, 'sort_dir' => $sort_dir), $item_count[0]);
     // actual query
@@ -31,7 +31,7 @@ function listattacks()
         echo '<th>actions</th>';
     }
     echo "</tr>\n";
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
@@ -68,11 +68,11 @@ function editattacks()
     $id = -1;
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     else
     {
@@ -86,18 +86,18 @@ function editattacks()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Attack"))
     {
-        $name = mysql_real_escape_string($_POST['name']);
-        $image_name = mysql_real_escape_string($_POST['image_name']);
-        $attack_anim = mysql_real_escape_string($_POST['attack_anim']);
-        $attack_description = mysql_real_escape_string($_POST['attack_description']);
-        $damage = mysql_real_escape_string($_POST['damage']);
-        $attackType = mysql_real_escape_string($_POST['attackType']);
-        $delay = mysql_real_escape_string($_POST['delay']);
-        $range = mysql_real_escape_string($_POST['range']);
-        $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
-        $aoe_angle = mysql_real_escape_string($_POST['aoe_angle']);
-        $outcome = mysql_real_escape_string($_POST['outcome']);
-        $requirements = mysql_real_escape_string($_POST['requirements']);
+        $name = escapeSqlString($_POST['name']);
+        $image_name = escapeSqlString($_POST['image_name']);
+        $attack_anim = escapeSqlString($_POST['attack_anim']);
+        $attack_description = escapeSqlString($_POST['attack_description']);
+        $damage = escapeSqlString($_POST['damage']);
+        $attackType = escapeSqlString($_POST['attackType']);
+        $delay = escapeSqlString($_POST['delay']);
+        $range = escapeSqlString($_POST['range']);
+        $aoe_radius = escapeSqlString($_POST['aoe_radius']);
+        $aoe_angle = escapeSqlString($_POST['aoe_angle']);
+        $outcome = escapeSqlString($_POST['outcome']);
+        $requirements = escapeSqlString($_POST['requirements']);
         $query = "UPDATE attacks SET name='$name', image_name='$image_name', attack_anim='$attack_anim', attack_description='$attack_description', damage='$damage', attackType='$attackType', delay='$delay', `range`='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', outcome='$outcome', requirements='$requirements' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -108,7 +108,7 @@ function editattacks()
     {
         $query = "SELECT * FROM attacks WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $attacktypes = PrepSelect('attacktypes');
         $mathscripts = PrepSelect('math_script');
 		$outcomes = PrepSelect('scripts');

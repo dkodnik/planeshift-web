@@ -12,7 +12,7 @@ function listrecipes()
     $id_url = '';
     if (isset($_GET['id']) && is_numeric($_GET['id'])) 
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " WHERE id='$id'";
         $id_url = '&amp;id='.$id;
     }
@@ -30,7 +30,7 @@ function listrecipes()
     }
     
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         echo '<table border="1">';
         echo '<tr><th><a href="./index.php?do=listrecipes&amp;sort=id'.$id_url.'">ID</a></th><th><a href="./index.php?do=listrecipes&amp;sort=name'.$id_url.'">Name</a></th><th>Requirements</th><th>Algorithm</th><th>Persistent</th><th>Uniqueness</th>';
@@ -40,7 +40,7 @@ function listrecipes()
         }
         echo '</tr>';
 
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['id'].'</td>';
@@ -112,9 +112,9 @@ function editrecipes()
             echo '<p class="error">You are not authorized to use these functions</p>';
             return;
         }
-        $name = mysql_real_escape_string($_POST['name']);
-        $requirements = mysql_real_escape_string($_POST['requirements']);
-        $algorithm = mysql_real_escape_string($_POST['algorithm']);
+        $name = escapeSqlString($_POST['name']);
+        $requirements = escapeSqlString($_POST['requirements']);
+        $algorithm = escapeSqlString($_POST['algorithm']);
         $persistent = (isset($_POST['persistent']) ? 1 : 0);
         $uniqueness = (isset($_POST['uniqueness']) ? 1 : 0);
         $query = "INSERT INTO tribe_recipes SET name='$name', requirements='$requirements', algorithm='$algorithm', persistent='$persistent', uniqueness='$uniqueness'";
@@ -136,7 +136,7 @@ function editrecipes()
             echo '<p class="error">Invalid ID, cannot delete.</p>';
             return;
         }
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM tribe_recipes WHERE id='$id' LIMIT 1";
         mysql_query2($query);
         echo '<p class="error">Tribe Recipe With ID '.$id.' Successfully Deleted</p>';
@@ -151,15 +151,15 @@ function editrecipes()
             echo '<p class="error">Invalid ID, cannot edit.</p>';
             return;
         }
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM tribe_recipes WHERE id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) == 0)
+        if (sqlNumRows($result) == 0)
         {
             echo '<p class="error">No database entry with ID '.$id.', cannot edit</p>';
             return;
         }
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<p>Edit Tribe Recipe With ID '.$id.' </p>';
         echo '<form action="./index.php?do=editrecipes" method="post">';
         echo '<table border="1">';
@@ -183,10 +183,10 @@ function editrecipes()
             echo '<p class="error">Invalid ID, cannot commit edit.</p>';
             return;
         }
-        $id = mysql_real_escape_string($_POST['id']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $requirements = mysql_real_escape_string($_POST['requirements']);
-        $algorithm = mysql_real_escape_string($_POST['algorithm']);
+        $id = escapeSqlString($_POST['id']);
+        $name = escapeSqlString($_POST['name']);
+        $requirements = escapeSqlString($_POST['requirements']);
+        $algorithm = escapeSqlString($_POST['algorithm']);
         $persistent = (isset($_POST['persistent']) ? 1 : 0);
         $uniqueness = (isset($_POST['uniqueness']) ? 1 : 0);
         $query = "UPDATE tribe_recipes SET name='$name', requirements='$requirements', algorithm='$algorithm', persistent='$persistent', uniqueness='$uniqueness' WHERE id='$id'";

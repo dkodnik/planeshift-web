@@ -12,19 +12,19 @@ function listtribemembers()
 
     if (isset($_GET['tribe_id']) && is_numeric($_GET['tribe_id'])) 
     {
-        $tribe_id = mysql_real_escape_string($_GET['tribe_id']);
+        $tribe_id = escapeSqlString($_GET['tribe_id']);
         $query .= " WHERE tm.tribe_id='$tribe_id'";
     }
     
     $query .= ' ORDER BY t.name, c.name';
     
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         echo '<table border="1">';
         echo '<tr><th>Tribe</th><th>Member Name</th><th>Member Type</th><th>Flags</th></tr>';
         
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['tribe_name'].'</td>';
