@@ -12,13 +12,13 @@ function statshardware()
 
 		$filter = 10;
 		if ( isset($_POST['filter']) ) {
-			$filter = mysql_real_escape_string($_POST['filter']);
+			$filter = escapeSqlString($_POST['filter']);
 		}
 
 		$sql = "SELECT id,operating_system,count(operating_system) as result FROM accounts where operating_system <>'' group by operating_system having result>=".$filter." order by result desc";
 		$query = mysql_query2($sql);
 
-		if(mysql_num_rows($query) < 1)
+		if(sqlNumRows($query) < 1)
 		{
 			echo '<p class="error">No data found! Try lowering the threshold</p>';
 		} else
@@ -29,7 +29,7 @@ function statshardware()
 		$sql = "SELECT id,graphics_card,count(graphics_card) as result FROM accounts where graphics_card <>'' group by graphics_card having result>=".$filter." order by result desc";
 		$query2 = mysql_query2($sql);
 
-		if(mysql_num_rows($query2) < 1)
+		if(sqlNumRows($query2) < 1)
 		{
 			echo '<p class="error">No data found! Try lowering the threshold</p>';
 		} else
@@ -40,7 +40,7 @@ function statshardware()
 		$sql = "SELECT id,graphics_version,count(graphics_version) as result FROM accounts where graphics_version <>'' group by graphics_version having result>=".$filter." order by result desc";
 		$query2 = mysql_query2($sql);
 
-		if(mysql_num_rows($query2) < 1)
+		if(sqlNumRows($query2) < 1)
 		{
 			echo '<p class="error">No data found! Try lowering the threshold</p>';
 		} else

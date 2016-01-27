@@ -21,7 +21,7 @@ function listgms()
         echo '<tr><th>Account/Character ID</th><th>Security Level</th><th>Account</th><th>Firstname</th><th>Lastname</th><th>Guild</th><th>Total Time Connected</th><th>Actions</th></tr>';        
         
         $color = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
             $color = ($color == 'a' ? 'b' : 'a');
             $sec_level = (isset($row['security_title']) && !empty($row['security_title']) ? $row['security_title'] : 'Unknown');
@@ -81,12 +81,12 @@ function viewgmlog()
         else
         {
             $sql = "SELECT name, lastname FROM characters WHERE id = '$id' LIMIT 1";
-            $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+            $row = fetchSqlAssoc(mysql_query2($sql));
             $name = $row['name'].' '.$row['lastname'];
             
             $sql = "SELECT COUNT(*) FROM gm_command_log WHERE gm = '$id'";
-            $page_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-            $page_count = ceil($page_count[0] / $lines_per_page);
+            $page_count_result = fetchSqlRow(mysql_query2($sql));
+            $page_count = ceil($page_count_result[0] / $lines_per_page);
             
             if($page >= $page_count)
             {
@@ -123,7 +123,7 @@ function viewgmlog()
             echo '<br/>';
             
             echo 'Viewing Commandlog of GM "'.htmlentities($name).'"<br/><pre>';
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 echo '('.$row['ex_time'].') '.htmlentities($row['command'])."\n";
             }
@@ -153,14 +153,14 @@ function addgm()
         else
         {
             $sql = 'SELECT a.id AS account_id, a.username AS account_name, c.id AS character_id, c.name AS firstname, c.lastname, c.time_connected_sec, g.id AS guild_id, g.name AS guild ';
-            $sql.= 'FROM characters AS c LEFT JOIN accounts AS a ON c.account_id = a.id LEFT JOIN guilds AS g ON g.id = c.guild_member_of WHERE a.security_level = 0 AND c.name'." LIKE '".mysql_real_escape_string($username)."'";
+            $sql.= 'FROM characters AS c LEFT JOIN accounts AS a ON c.account_id = a.id LEFT JOIN guilds AS g ON g.id = c.guild_member_of WHERE a.security_level = 0 AND c.name'." LIKE '".escapeSqlString($username)."'";
             $query = mysql_query2($sql);
             
             echo '<table>';
             echo '<tr><th>Account/Character ID</th><th>Account</th><th>Firstname</th><th>Lastname</th><th>Guild</th><th>Total Time Connected</th><th>Actions</th></tr>';        
             
             $color = 'b';
-            while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+            while($row = fetchSqlAssoc($query))
             {
                 $color = ($color == 'a' ? 'b' : 'a');
                 
@@ -221,7 +221,7 @@ function editgm()
             $sql = 'SELECT c.name, c.lastname, c.account_id, a.security_level FROM characters AS c, accounts AS a WHERE c.id = \''.$id.'\' AND a.id = c.account_id LIMIT 1';
             $query = mysql_query2($sql);
             
-            if(!checkaccess('admin', 'edit') && mysql_num_rows($query) > 0)
+            if(!checkaccess('admin', 'edit') && sqlNumRows($query) > 0)
             { // You don't have the right to edit!
                 echo '<p class="error">You are not authorized to use these functions</p>';
                 return false;
@@ -231,7 +231,7 @@ function editgm()
                 echo '<p class="error">You are not authorized to use these functions</p>';
                 return false;
             }
-            $row = mysql_fetch_array($query);
+            $row = fetchSqlAssoc($query);
             
             if($security_level != 'nan')
             {
@@ -245,7 +245,7 @@ function editgm()
             $arr = array();
             $sql = 'SELECT id AS level, group_name AS title FROM command_groups';
             $query2 = mysql_query2($sql);
-            while($row2 = mysql_fetch_array($query2))
+            while($row2 = fetchSqlAssoc($query2))
             {
                 if(in_array($row2['level'], $levels))
                 {

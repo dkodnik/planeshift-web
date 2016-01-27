@@ -1,13 +1,12 @@
 <?php
   include('./../secure/db_config.php');
   include('./commonfunctions.php');
+  $mysqli = null;
   SetUpDB("$db_hostname", "$db_username", "$db_password", "$db_name");
   session_save_path('sessions');
   session_start();
   date_default_timezone_set('UTC');
-  if (!isset($_SESSION['totalq'])){
-    $_SESSION['totalq'] = "SQL Queries Performed:";
-  }
+  $_SESSION['totalq'] = "SQL Queries Performed:"; // reset if already exists, we only want one of these collections per run.
   StripInput();
   if (isset($_GET['logout'])){
     if (isset($_COOKIE['autologin'])){
@@ -1086,5 +1085,6 @@
   echo "</div><hr/>This is Debugging Information Only: ".($_SESSION['totalq']);
   unset($_SESSION['totalq']);
   include('./footer.php');
+  $mysqli->close();
   exit;
 ?>

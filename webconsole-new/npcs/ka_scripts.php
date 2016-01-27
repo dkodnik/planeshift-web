@@ -6,7 +6,7 @@ function ka_scripts(){
       $result = mysql_query2($query);
       echo '<table border="1">';
       echo '<tr><th>Name</th><th>Action</th></tr>';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         $pos1 = strpos($row['script'], "\n")+1;
         $string = substr($row['script'], $pos1);
         $pos2 = strpos($string, ":");
@@ -31,12 +31,12 @@ function ka_scripts(){
         return;
       }
       if (isset($_GET['areaid'])){
-        $areaid = mysql_real_escape_string($_GET['areaid']);
+        $areaid = escapeSqlString($_GET['areaid']);
       }
       if ($_GET['sub'] == 'Read'){
         $query = "SELECT script FROM quest_scripts WHERE id='$areaid'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $pos1 = strpos($row['script'], "\n")+1;
         $string = substr($row['script'], $pos1);
         $pos2 = strpos($string, ":");
@@ -46,7 +46,7 @@ function ka_scripts(){
         echo $script.'<br/>';
       }else if ($_GET['sub'] == 'Edit'){
         if (isset($_POST['commit'])){
-          $script = mysql_real_escape_string($_POST['script']);
+          $script = escapeSqlString($_POST['script']);
           $query = "UPDATE quest_scripts SET script='$script' WHERE id='$areaid'";
           $result = mysql_query2($query);
           unset($_POST);
@@ -56,7 +56,7 @@ function ka_scripts(){
         }else{
           $query = "SELECT script FROM quest_scripts WHERE id='$areaid'";
           $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $row = fetchSqlAssoc($result);
           $pos1 = strpos($row['script'], "\n")+1;
           $string = substr($row['script'], $pos1);
           $pos2 = strpos($string, ":");
@@ -78,7 +78,7 @@ function ka_scripts(){
         }else{
           $query = "SELECT script FROM quest_scripts WHERE id='$areaid'";
           $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $row = fetchSqlAssoc($result);
           $pos1 = strpos($row['script'], "\n")+1;
           $string = substr($row['script'], $pos1);
           $pos2 = strpos($string, ":");
@@ -88,7 +88,7 @@ function ka_scripts(){
           echo '<input type="submit" name="commit" value="Confirm Delete"/></form>';
         }
       }else if ($_GET['sub'] == 'New'){
-        $name = mysql_real_escape_string($_POST['name']);
+        $name = escapeSqlString($_POST['name']);
         $script = " \n"."$name:\n#This is a temporary Entry -Needs to be changed";
         $query = "INSERT INTO quest_scripts (quest_id, script) VALUES ('-1', '$script')";
         $result = mysql_query2($query);

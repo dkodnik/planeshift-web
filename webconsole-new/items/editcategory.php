@@ -2,13 +2,13 @@
 function editcategory(){
     if (checkaccess('items', 'create')){
         if (isset($_GET['commit'])){
-            $id = mysql_real_escape_string($_GET['id']);
-            $name = mysql_real_escape_string($_POST['name']);
-            $item_stat_id_repair_tool = mysql_real_escape_string($_POST['item_stat_id_repair_tool']);
-            $is_repair_tool_consumed = mysql_real_escape_string($_POST['is_repair_tool_consumed']);
-            $skill_id_repair = mysql_real_escape_string($_POST['skill_id_repair']);
-            $identify_skill_id = mysql_real_escape_string($_POST['identify_skill_id']);
-            $identify_min_skill = mysql_real_escape_string($_POST['identify_min_skill']);
+            $id = escapeSqlString($_GET['id']);
+            $name = escapeSqlString($_POST['name']);
+            $item_stat_id_repair_tool = escapeSqlString($_POST['item_stat_id_repair_tool']);
+            $is_repair_tool_consumed = escapeSqlString($_POST['is_repair_tool_consumed']);
+            $skill_id_repair = escapeSqlString($_POST['skill_id_repair']);
+            $identify_skill_id = escapeSqlString($_POST['identify_skill_id']);
+            $identify_min_skill = escapeSqlString($_POST['identify_min_skill']);
             $query = "UPDATE item_categories SET name='$name', item_stat_id_repair_tool='$item_stat_id_repair_tool', is_repair_tool_consumed='$is_repair_tool_consumed', skill_id_repair='$skill_id_repair', identify_skill_id='$identify_skill_id', identify_min_skill='$identify_min_skill' WHERE category_id=".$id;
             $result = mysql_query2($query);
 
@@ -23,10 +23,10 @@ function editcategory(){
                 echo '<p class="error">Invalid ID</p>';
                 return;
             }
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             $query = "SELECT category_id, name, item_stat_id_repair_tool, is_repair_tool_consumed, skill_id_repair, identify_skill_id, identify_min_skill FROM item_categories WHERE category_id='$id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             
             $item_result = PrepSelect('items');
             $skill_result = PrepSelect('skill');
@@ -58,7 +58,7 @@ function editcategory(){
             $result = mysql_query2($query);
             $q2 = 'SELECT c.category_id, COUNT(i.id) AS items FROM item_categories AS c LEFT JOIN item_stats AS i ON c.category_id=i.category_id GROUP by c.category_id';
             $r2 = mysql_query2($q2);
-            while ($i_row = mysql_fetch_array($r2, MYSQL_ASSOC))
+            while ($i_row = fetchSqlAssoc($r2))
             {
                 $C_id=$i_row['category_id'];
                 $Count["$C_id"]['items']= $i_row['items'];
@@ -67,13 +67,13 @@ function editcategory(){
             unset($i_row);
             $q2 = 'SELECT c.category_id, COUNT(i.category_id) AS merchants FROM item_categories AS c LEFT JOIN merchant_item_categories AS i ON c.category_id=i.category_id GROUP by c.category_id';
             $r2 = mysql_query2($q2);
-            while ($i_row = mysql_fetch_array($r2, MYSQL_ASSOC))
+            while ($i_row = fetchSqlAssoc($r2))
             {
                 $C_id=$i_row['category_id'];
                 $Count["$C_id"]['merchants']= $i_row['merchants'];
             }
             echo '<table border="1"><tr><th>ID</th><th>Items</th><th>merchants</th><th>Category Name</th><th>Repair Tool</th><th>Actions</th></tr>'."\n";
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 $C_id = $row['category_id'];
                 echo '<tr><td>'.$row['category_id'].'</td><td>'.$Count["$C_id"]['items'].'</td><td>'.$Count["$C_id"]['merchants'].'</td>';
@@ -100,7 +100,7 @@ function editcategory(){
 
 function createcategory(){
   if (checkaccess('items', 'create')){
-    $category = mysql_real_escape_string($_POST['category']);
+    $category = escapeSqlString($_POST['category']);
     $query = "INSERT INTO item_categories SET name='$category'";
     $result = mysql_query2($query);
   }else{

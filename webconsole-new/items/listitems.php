@@ -26,7 +26,7 @@ function listitems(){
     echo '<table border="1" class="top">';
     echo '<tr><th>Category</th><th>Items</th><th>Details</th></tr>';
     echo '<tr class="top"><td>';
-    while ($row=mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row=fetchSqlAssoc($result)){
       if (isset($_GET['category']) && ($_GET['category']==$row['category_id']))
         echo '<b>';
       echo '<a href="./index.php?do=listitems&amp;category='.$row['category_id'];
@@ -47,14 +47,14 @@ function listitems(){
         }
         echo '&amp;category='.$_GET['category'].'&amp;item='.$_GET['item'].'">Override</a>';
       }else{
-        $category = mysql_real_escape_string($_GET['category']);
+        $category = escapeSqlString($_GET['category']);
         $query = 'SELECT id, name FROM item_stats WHERE category_id ='.$category;
         if (!isset($_GET['override2'])){
           $query = $query." AND stat_type = 'B'";
         }
         $query .= ' ORDER BY name';
         $result = mysql_query2($query);
-        while ($row = mysql_fetch_array($result)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<a href="./index.php?do=listitems&amp;category='.$_GET['category'].'&amp;item='.$row['id'];
           if (isset($_GET['override2'])){
             echo '&amp;override2';
@@ -65,10 +65,10 @@ function listitems(){
     }
     echo '</td><td>';
     if (isset($_GET['item'])){
-      $id = mysql_real_escape_string($_GET['item']);
+      $id = escapeSqlString($_GET['item']);
       $query = 'SELECT i.id, i.stat_type, i.name, i.weight, i.visible_distance, i.size, i.container_max_size, i.container_max_slots, i.valid_slots, i.flags, i.decay_rate, s1.name AS item_skill_id, s2.name AS item_skill_id_2, s3.name AS item_skill_id_3, i.item_bonus_1_attr, i.item_bonus_2_attr, i.item_bonus_3_attr, i.item_bonus_1_max, i.item_bonus_2_max, i.item_bonus_3_max, i.dmg_slash, i.dmg_blunt, i.dmg_pierce, i.weapon_speed, i.weapon_penetration, i.weapon_block_targeted, i.weapon_block_untargeted, i.weapon_counterblock, i.armor_hardness, i.cstr_gfx_mesh, i.cstr_gfx_icon, i.cstr_gfx_texture, i.cstr_part, i.cstr_part_mesh, i.removed_mesh, i.armorvsweapon_type, i.category_id, i.base_sale_price, i.item_type, i.requirement_1_name, i.requirement_1_value, i.requirement_2_name, i.requirement_2_value, i.requirement_3_name, i.requirement_3_value, i.item_type_id_ammo, i.spell_id_on_hit, i.spell_on_hit_prob, i.spell_id_feature, i.spell_feature_charges, i.spell_feature_timing, i.item_anim_id, i.description, i.sound, i.item_max_quality, i.equip_script, i.consume_script, i.creative_definition, i.max_charges, i.weapon_range, i.assigned_command, i.spawnable FROM item_stats i LEFT JOIN skills AS s1 ON i.item_skill_id_1=s1.skill_id LEFT JOIN skills AS s2 ON i.item_skill_id_2=s2.skill_id LEFT JOIN skills AS s3 ON i.item_skill_id_3=s3.skill_id WHERE id='.$id;
       $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
+      $row = fetchSqlAssoc($result);
       echo '<table border="1" class="top">';
       if (checkaccess('items','edit')){
         echo '<tr><td>Item Actions:</td><td><a href="./index.php?do=edititem&amp;item='.$_GET['item'].'">Edit Item</a>';
@@ -103,11 +103,11 @@ function showitemusage()
     $id = '';
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_GET['item'])) // some scripts call it this, should be refactored someday.
     {
-        $id = mysql_real_escape_string($_GET['item']);
+        $id = escapeSqlString($_GET['item']);
     }
     else
     {
@@ -117,7 +117,7 @@ function showitemusage()
     }
     $query = "SELECT name FROM item_stats WHERE id=$id";
     $result = mysql_query2($query);
-    $row = mysql_fetch_array($result);
+    $row = fetchSqlAssoc($result);
     $my_item_name = $row['name'];
     $item_is_used = false;
     
@@ -126,7 +126,7 @@ function showitemusage()
     // pattern
     $query = "SELECT t.id, t.pattern_name, t.description, i.name FROM trade_patterns AS t LEFT JOIN item_stats AS i ON t.designitem_id=i.id WHERE t.designitem_id='$id'";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('crafting', 'read'))
@@ -136,7 +136,7 @@ function showitemusage()
             echo '<table><tr><th>ID</th><th>Pattern Name</th><th>Description</th><th>Design Item</th>';
             echo '<th>Actions</th>';
             echo '</tr>'; 
-            while ($row = mysql_fetch_array($result)){
+            while ($row = fetchSqlAssoc($result)){
                 $alt = !$alt;
                 if ($alt)
                 {
@@ -168,7 +168,7 @@ function showitemusage()
     // transforms
     $query = "SELECT pat.pattern_name, t.pattern_id, t.id, t.process_id, p.name, t.result_id, i.name AS result_name, c.name AS result_cat, c.category_id AS result_cat_id, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.item_qty, t.trans_points, t.penalty_pct, t.description FROM trade_transformations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN trade_processes AS p ON t.process_id=p.process_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON pat.id=t.pattern_id WHERE t.result_id='$id' OR t.item_id='$id' GROUP BY id ORDER BY p.name, i.name";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('crafting', 'read'))
@@ -176,7 +176,7 @@ function showitemusage()
             echo '<p class="bold">Transforms using this item:</p>';
             echo '<table><tr><th>Pattern</th><th colspan="2">Source Item</th><th>Category</th><th>Process</th><th colspan="2">Result Item</th><th>Category</th><th>Time</th><th>Result Q</th><th>Actions</th></tr>';
             $alt = FALSE;
-            while ($row=mysql_fetch_array($result))
+            while ($row=fetchSqlAssoc($result))
             {
                 $alt = !$alt;
                 if ($alt)
@@ -230,7 +230,7 @@ function showitemusage()
     // Combinations
     $query = "SELECT DISTINCT pat.pattern_name, t.result_id, t.pattern_id, c.name AS result_cat, c.category_id AS result_cat_id, i.name AS result_name, t.result_qty, t.item_id, ii.name AS item_name, cc.name AS item_cat, cc.category_id AS item_cat_id, t.min_qty, t.max_qty, t.description FROM trade_combinations AS t LEFT JOIN item_stats AS i ON i.id=t.result_id LEFT JOIN item_stats AS ii ON ii.id=t.item_id LEFT JOIN item_categories AS c ON i.category_id=c.category_id LEFT JOIN item_categories AS cc ON ii.category_id=cc.category_id LEFT JOIN trade_patterns AS pat ON pat.id=t.pattern_id WHERE result_id='$id' OR item_id='$id' ORDER BY t.pattern_id, result_name";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('crafting', 'read'))
@@ -239,7 +239,7 @@ function showitemusage()
             $alt = false;
             $item = -1;
             echo '<table><tr><th>Pattern</th><th colspan="2">Result Item</th><th>Category</th><th>Source Items</th><th>Actions</th></tr>';
-            while ($row = mysql_fetch_array($result))
+            while ($row = fetchSqlAssoc($result))
             {
                 if ($item != $row['result_id'])
                 {
@@ -306,20 +306,20 @@ function showitemusage()
 
     // Processes
     $result = mysql_query2("SELECT id, name FROM item_stats");
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
         $i = $row['id'];
         $items["$i"] = $row['name'];
     }
     $items[0] = "";
     $result = mysql_query2("SELECT skill_id, name FROM skills");
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
         $i = $row['skill_id'];
         $skills["$i"] = $row['name'];
     }
     $skills[0] = "";
     $query = "SELECT DISTINCT t.process_id, t.subprocess_number, t.name, t.animation, t.render_effect, t.workitem_id, t.equipment_id, t.constraints, t.garbage_id, t.garbage_qty, t.primary_skill_id, t.primary_min_skill, t.primary_max_skill, t.primary_practice_points, t.primary_quality_factor, t.secondary_skill_id, t.secondary_min_skill, t.secondary_max_skill, t.secondary_practice_points, t.secondary_quality_factor, t.description FROM trade_processes as t LEFT JOIN skills AS s ON t.primary_skill_id=s.skill_id LEFT JOIN skills AS ss ON t.secondary_skill_id=ss.skill_id WHERE t.workitem_id='$id' OR t.equipment_id='$id' OR t.garbage_id='$id' ORDER BY s.name, t.primary_min_skill, ss.name, t.secondary_min_skill, t.name";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('crafting', 'read'))
@@ -331,7 +331,7 @@ function showitemusage()
             }
             echo '</tr>';
             $alt= FALSE;
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+            while ($row = fetchSqlAssoc($result)){
                 $alt = !$alt;
                 if ($alt)
                 {
@@ -378,7 +378,7 @@ function showitemusage()
     // Spells
     $query = "SELECT DISTINCT name, realm, spell_description, id FROM spells LEFT JOIN spell_glyphs ON spell_id=id WHERE item_id='$id' ORDER BY realm, name";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('spells', 'read'))
@@ -386,7 +386,7 @@ function showitemusage()
             echo '<p class="bold">Spells using this item:</p>';
             echo '<table border="1"><tr><th>Name</th><th>Realm</th><th>Description</th>';
             echo '</tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+            while ($row = fetchSqlAssoc($result)){
                 echo '<tr><td>';
                 echo '<a href="./index.php?do=spell&amp;id='.$row['id'].'">'.$row['name'].'</a>';
                 echo '</td><td>';
@@ -412,7 +412,7 @@ function showitemusage()
     
     $query = "SELECT r.id, r.loc_sector_id, s.name AS sector, r.loc_x, r.loc_y, r.loc_z, r.radius, r.visible_radius, r.probability, r.skill, sk.name AS skill_name, r.skill_level, r.item_cat_id, c.name AS category, r.item_quality, r.animation, r.anim_duration_seconds, r.item_id_reward, i.name AS item, r.reward_nickname, r.action FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id LEFT JOIN item_stats AS i on i.id=r.item_id_reward LEFT JOIN item_categories AS c ON r.item_cat_id=c.category_id LEFT JOIN skills AS sk on sk.skill_id=r.skill WHERE i.id='$id' ORDER BY sector";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         $item_is_used = true;
         if (checkaccess('natres', 'read'))
@@ -423,7 +423,7 @@ function showitemusage()
                 echo '<th>Actions</th>';
             }
             echo '</tr>';
-            while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+            while ($row = fetchSqlAssoc($result))
             {
                 echo '<tr>';
                 echo '<td>'.$row['sector'].'/'.$row['loc_x'].'/'.$row['loc_y'].'/'.$row['loc_z'].'</td>';
@@ -462,7 +462,7 @@ function showitemusage()
     // Item instances
     $query = "SELECT COUNT(id) FROM item_instances WHERE item_stats_id_standard=$id";
     $result = mysql_query2($query);
-    $row = mysql_fetch_row($result);
+    $row = fetchSqlRow($result);
     if (($num = $row[0]) > 0)
     {
         $item_is_used = true;
@@ -477,12 +477,12 @@ function showitemusage()
     // Loot tables
     $query = "SELECT DISTINCT lr.name, lrd.loot_rule_id FROM loot_rule_details AS lrd LEFT JOIN loot_rules AS lr ON lr.id=lrd.loot_rule_id WHERE lrd.item_stat_id=$id";
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0) {
+    if (sqlNumRows($result) > 0) {
         $item_is_used = true;
         if (checkaccess('npcs', 'read')) {
             echo '<p>The following loot rules use this item: </p>';
             echo '<table border="1">';
-            while($row = mysql_fetch_array($result))
+            while($row = fetchSqlAssoc($result))
             {
                 echo '<tr><td><a href="./index.php?do=listloot&amp;id='.$row['loot_rule_id'].'">'.$row['name'].'</a></tr></td>';
             }
@@ -506,10 +506,10 @@ function showitemusage()
     // that are not newlines. This effectively means they have to be on the same line, in the form of "give **** <item> ****" where *** can be anything or nothing at all.
     if(isset($_GET['checkquests']) && $_GET['checkquests'] == 'yes')
     {
-        $escaped_item_name = mysql_real_escape_string($my_item_name);
+        $escaped_item_name = escapeSqlString($my_item_name);
         $query = "SELECT q.id, q.name, q.category FROM quests AS q LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n](Player Gives|Give|Require Equipped|Require not Equipped|Require no Equipped|Require Possessed|Require not Possessed|Require no Possessed)[^\\n]*$escaped_item_name' ORDER BY q.name ASC";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0)
+        if (sqlNumRows($result) > 0)
         {
             if (checkaccess('quests', 'read'))
             {
@@ -519,7 +519,7 @@ function showitemusage()
                       Possessed Item" block anywhere in the text (like "P: Give Golden Ring". Use this quest data as a pointer, not as an absolute truth. </p>';
                 echo '<table border="1">'."\n";
                 echo '<tr><th>ID</th><th>Category</th><th>Name</th><th>Actions</th></tr>';
-                while ($row = mysql_fetch_array($result))
+                while ($row = fetchSqlAssoc($result))
                 {
                     echo '<tr><td>'.$row['id'].'</td><td>'.$row['category'].'</td><td>'.$row['name'].'</td>';
                     echo '<td><a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';

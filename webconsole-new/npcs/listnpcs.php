@@ -38,8 +38,8 @@ function listnpcs($a, $b = NULL){
       $query = $query . ' ORDER BY sector, name';
     }
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0){
-      while ($row = mysql_fetch_array($result)){
+    if (sqlNumRows($result) > 0){
+      while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
         echo '<td>'.$row['id'].'</td>';
         $T_id = $row['id'];

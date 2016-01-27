@@ -144,7 +144,7 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=location\" >";
   $res = mysql_query2($query);
 
   $result = '';
-  while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+  while ($line = fetchSqlRow($res)){
     $elem = $line[0] . '|I: '.$line[0].' N:' . $line[6] . ' R:'.$line[4].' F:'.$line[5].'|x|' . $line[1]  . '|' . $line[2].'|'.$line[3].'|'.$line[7].'|'.$line[8];
     $result .= ($elem . "\n");
    }

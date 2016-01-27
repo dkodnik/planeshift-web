@@ -17,7 +17,7 @@ function liststances()
         echo '<th>actions</th>';
     }
     echo "</tr>\n";
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
@@ -47,11 +47,11 @@ function editstances()
     $id = -1;
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     else
     {
@@ -65,12 +65,12 @@ function editstances()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Stance"))
     {
-        $stamina_drain_P = mysql_real_escape_string($_POST['stamina_drain_P']);
-        $stamina_drain_M = mysql_real_escape_string($_POST['stamina_drain_M']);
-        $attack_speed_mod = mysql_real_escape_string($_POST['attack_speed_mod']);
-        $attack_damage_mod = mysql_real_escape_string($_POST['attack_damage_mod']);
-        $defense_avoid_mod = mysql_real_escape_string($_POST['defense_avoid_mod']);
-        $defense_absorb_mod = mysql_real_escape_string($_POST['defense_absorb_mod']);
+        $stamina_drain_P = escapeSqlString($_POST['stamina_drain_P']);
+        $stamina_drain_M = escapeSqlString($_POST['stamina_drain_M']);
+        $attack_speed_mod = escapeSqlString($_POST['attack_speed_mod']);
+        $attack_damage_mod = escapeSqlString($_POST['attack_damage_mod']);
+        $defense_avoid_mod = escapeSqlString($_POST['defense_avoid_mod']);
+        $defense_absorb_mod = escapeSqlString($_POST['defense_absorb_mod']);
         $query = "UPDATE stances SET stamina_drain_P='$stamina_drain_P', stamina_drain_M='$stamina_drain_M', attack_speed_mod='$attack_speed_mod', attack_damage_mod='$attack_damage_mod', defense_avoid_mod='$defense_avoid_mod', defense_absorb_mod='$defense_absorb_mod' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -81,7 +81,7 @@ function editstances()
     {
         $query = "SELECT * FROM stances WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p class="header">Edit Stance</p>';
         echo '<form action="./index.php?do=editstances&amp;id='.$id.'" method="post">';
         echo "<table>\n";

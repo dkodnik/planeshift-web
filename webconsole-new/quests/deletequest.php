@@ -13,10 +13,10 @@ function deletequest()
         {
             if (!isset($_GET['commit']))
             {
-                $id = mysql_real_escape_string($_GET['id']);
+                $id = escapeSqlString($_GET['id']);
                 $query = 'SELECT name, task FROM quests WHERE id='.$id;
                 $result = mysql_query2($query);
-                $row = mysql_fetch_array($result, MYSQL_ASSOC);
+                $row = fetchSqlAssoc($result);
                 echo '<p> you are about to permanently delete quest '.$id.' from the database<br />';
                 echo 'Quest Name: '.$row['name'].'<br/>Quest Description: '.$row['task'].'</p>';
                 echo '<form action="./index.php?do=deletequest&amp;id='.$id.'&amp;commit" method="post">';
@@ -25,12 +25,12 @@ function deletequest()
             else
             {
                 //First we double check the password
-                $id = mysql_real_escape_string($_GET['id']);
-                $password=mysql_real_escape_string($_POST['pwd']);
+                $id = escapeSqlString($_GET['id']);
+                $password=escapeSqlString($_POST['pwd']);
                 $username=$_SESSION['username'];
                 $query = "SELECT count(*) FROM accounts WHERE username='$username' AND password=MD5('$password')";
                 $result = mysql_query2($query);
-                $row = mysql_fetch_row($result);
+                $row = fetchSqlRow($result);
                 if ($row[0] == 1)
                 {
                     echo '<p class="error">Quest ID: '.$id.' has been removed from the database - Returning to Quest Listing</p>';

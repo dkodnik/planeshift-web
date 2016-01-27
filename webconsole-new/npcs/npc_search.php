@@ -8,13 +8,13 @@ function npc_search(){
       include('./npcs/listnpcs.php');
       $string = (is_numeric($_POST['char_type']) ? "WHERE c.character_type='{$_POST['char_type']}'" : "WHERE c.character_type='1'");
       if ($_POST['pid'] != ''){
-        $pid = mysql_real_escape_string($_POST['pid']);
+        $pid = escapeSqlString($_POST['pid']);
         $string .= " AND c.id='$pid'";
         listnpcs(TRUE, $string);
         $_SESSION['searchstring']=$string;
       }else if ($_POST['name'] != ''){
         $name = explode(' ', $_POST['name'], 3);
-        $name[0] = mysql_real_escape_string($name[0]);
+        $name[0] = escapeSqlString($name[0]);
         if (strpos($name[0], '*') === FALSE){
           $string .= " AND c.name='$name[0]'";
         }else{
@@ -22,7 +22,7 @@ function npc_search(){
           $string .= " AND c.name LIKE '$name[0]'";
         }
         if (isset($name[1])){
-          $name[1] = mysql_real_escape_string($name[1]);
+          $name[1] = escapeSqlString($name[1]);
           if (strpos($name[1], '*') === FALSE){
             $string .= " AND c.lastname='$name[1]'";
           }else{
@@ -33,7 +33,7 @@ function npc_search(){
         listnpcs(TRUE, $string);
         $_SESSION['searchstring']=$string;
       }else if ($_POST['sectorid'] != ''){
-        $sec = mysql_real_escape_string($_POST['sectorid']);
+        $sec = escapeSqlString($_POST['sectorid']);
         $string .= " AND c.loc_sector_id='$sec'";
         listnpcs(TRUE, $string);
         $_SESSION['searchstring']=$string;

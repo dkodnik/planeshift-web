@@ -11,7 +11,7 @@ function viewcommands()
         $query = 'SELECT * FROM command_groups';
         $result = mysql_query2($query);
         echo'<table><tr><td valign="top"><table>';
-        while ($row = mysql_fetch_array($result, MYSQL_NUM)){
+        while ($row = fetchSqlRow($result)){
             echo "<tr><td><a href='index.php?do=viewcommands&amp;group=".$row[0]."'>".$row[1]."</a></td></tr>";
         }
         echo'</table>';
@@ -19,7 +19,7 @@ function viewcommands()
         // get group name
         $query = "SELECT * FROM command_groups WHERE id ='$group'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_NUM);
+        $row = fetchSqlRow($result);
         $groupname=$row[1];
 
 
@@ -29,7 +29,7 @@ function viewcommands()
 
         $found = false;
         echo"<tr><th><b>Group: $groupname</b></th><th>Action</th></tr>";
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
             $found = true;
             $actions = (checkaccess('admin', 'edit') ? '<a href="./index.php?do=deletecommand&amp;group='.$group.'&amp;command='.$row['command_name'].'">Delete</a>' : '');
             echo '<tr><td>'.$row['command_name'].'</td><td>'.$actions.'</td></tr>';
@@ -50,8 +50,8 @@ function deletecommand()
     {
         if (isset($_GET['group']) && isset($_GET['command']))
         {
-            $group = mysql_real_escape_string($_GET['group']);
-            $command = mysql_real_escape_string($_GET['command']);
+            $group = escapeSqlString($_GET['group']);
+            $command = escapeSqlString($_GET['command']);
             $query = "DELETE FROM command_group_assignment WHERE command_name='$command' AND group_member='$group' LIMIT 1";
             mysql_query2($query);
             echo '<p class="error">update succesful</p>';
@@ -74,8 +74,8 @@ function createcommand()
     {
         if (isset($_GET['group']) && isset($_POST['command']))
         {
-            $group = mysql_real_escape_string($_GET['group']);
-            $command = mysql_real_escape_string($_POST['command']);
+            $group = escapeSqlString($_GET['group']);
+            $command = escapeSqlString($_POST['command']);
             $query = "INSERT INTO command_group_assignment (command_name, group_member) VALUES ('$command', '$group')";
             mysql_query2($query);
             echo '<p class="error">update succesful</p>';

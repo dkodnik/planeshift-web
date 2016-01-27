@@ -3,57 +3,57 @@ function raceinfo(){
   if (checkaccess('other','read')){
     if (checkaccess('other', 'edit') && isset($_POST['commit'])){
       if ($_POST['commit'] == "Confirm Spawn Point Delete"){
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $raceid = mysql_real_escape_string($_POST['id']);
-        $yrot = mysql_real_escape_string($_POST['yrot']);
-        $range = mysql_real_escape_string($_POST['range']);
-        $sec = mysql_real_escape_string($_POST['sec']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $raceid = escapeSqlString($_POST['id']);
+        $yrot = escapeSqlString($_POST['yrot']);
+        $range = escapeSqlString($_POST['range']);
+        $sec = escapeSqlString($_POST['sec']);
         $query = "DELETE FROM race_spawns WHERE x='$x' AND y='$y' AND z='$z' AND yrot='$yrot' AND `range`='$range' AND sector_id='$sec' AND raceid='$raceid' LIMIT 1";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         raceinfo();
       }else if ($_POST['commit'] == 'Confirm Update'){
-        $id = mysql_real_escape_string($_POST['id']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $sex = mysql_real_escape_string($_POST['sex']);
-        $size_x = mysql_real_escape_string($_POST['size_x']);
-        $size_y = mysql_real_escape_string($_POST['size_y']);
-        $size_z = mysql_real_escape_string($_POST['size_z']);
-        $initial_cp = mysql_real_escape_string($_POST['initial_cp']);
-        $start_str = mysql_real_escape_string($_POST['start_str']);
-        $start_end = mysql_real_escape_string($_POST['start_end']);
-        $start_agi = mysql_real_escape_string($_POST['start_agi']);
-        $start_int = mysql_real_escape_string($_POST['start_int']);
-        $start_will = mysql_real_escape_string($_POST['start_will']);
-        $start_cha = mysql_real_escape_string($_POST['start_cha']);
-        $base_physical_regen_still = mysql_real_escape_string($_POST['base_physical_regen_still']);
-        $base_physical_regen_walk = mysql_real_escape_string($_POST['base_physical_regen_walk']);
-        $base_mental_regen_still = mysql_real_escape_string($_POST['base_mental_regen_still']);
-        $base_mental_regen_walk = mysql_real_escape_string($_POST['base_mental_regen_walk']);
-        $armor_id = mysql_real_escape_string($_POST['armor_id']);
-        $weapon_id = mysql_real_escape_string($_POST['weapon_id']);
-        $helm = mysql_real_escape_string($_POST['helm']);
-        $bracer = mysql_real_escape_string($_POST['bracer']);
-        $belt = mysql_real_escape_string($_POST['belt']);
-        $cloak = mysql_real_escape_string($_POST['cloak']);
-        $speed_modifier = mysql_real_escape_string($_POST['speed_modifier']);
-        $scale = mysql_real_escape_string($_POST['scale']);
+        $id = escapeSqlString($_POST['id']);
+        $name = escapeSqlString($_POST['name']);
+        $sex = escapeSqlString($_POST['sex']);
+        $size_x = escapeSqlString($_POST['size_x']);
+        $size_y = escapeSqlString($_POST['size_y']);
+        $size_z = escapeSqlString($_POST['size_z']);
+        $initial_cp = escapeSqlString($_POST['initial_cp']);
+        $start_str = escapeSqlString($_POST['start_str']);
+        $start_end = escapeSqlString($_POST['start_end']);
+        $start_agi = escapeSqlString($_POST['start_agi']);
+        $start_int = escapeSqlString($_POST['start_int']);
+        $start_will = escapeSqlString($_POST['start_will']);
+        $start_cha = escapeSqlString($_POST['start_cha']);
+        $base_physical_regen_still = escapeSqlString($_POST['base_physical_regen_still']);
+        $base_physical_regen_walk = escapeSqlString($_POST['base_physical_regen_walk']);
+        $base_mental_regen_still = escapeSqlString($_POST['base_mental_regen_still']);
+        $base_mental_regen_walk = escapeSqlString($_POST['base_mental_regen_walk']);
+        $armor_id = escapeSqlString($_POST['armor_id']);
+        $weapon_id = escapeSqlString($_POST['weapon_id']);
+        $helm = escapeSqlString($_POST['helm']);
+        $bracer = escapeSqlString($_POST['bracer']);
+        $belt = escapeSqlString($_POST['belt']);
+        $cloak = escapeSqlString($_POST['cloak']);
+        $speed_modifier = escapeSqlString($_POST['speed_modifier']);
+        $scale = escapeSqlString($_POST['scale']);
         $query = "UPDATE race_info SET name='$name', sex='$sex', size_x='$size_x', size_y='$size_y', size_z='$size_z', initial_cp='$initial_cp', start_str='$start_str', start_end='$start_end', start_agi='$start_agi', start_int='$start_int', start_will='$start_will', start_cha='$start_cha', base_physical_regen_still='$base_physical_regen_still', base_physical_regen_walk='$base_physical_regen_walk', base_mental_regen_still='$base_mental_regen_still', base_mental_regen_walk='$base_mental_regen_walk', armor_id='$armor_id', weapon_id='$weapon_id', helm='$helm', bracer='$bracer', belt='$belt', cloak='$cloak', speed_modifier='$speed_modifier', scale='$scale' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         raceinfo();
       }else if ($_POST['commit'] == 'Add Spawn Point'){
-        $id = mysql_real_escape_string($_POST['id']);
-        $sector_id = mysql_real_escape_string($_POST['sector_id']);
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $yrot = mysql_real_escape_string($_POST['yrot']);
-        $range = mysql_real_escape_string($_POST['range']);
+        $id = escapeSqlString($_POST['id']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $yrot = escapeSqlString($_POST['yrot']);
+        $range = escapeSqlString($_POST['range']);
         $query = "INSERT INTO race_spawns (raceid, sector_id, x, y, z, yrot, `range`) VALUES ('$id', '$sector_id', '$x', '$y', '$z', '$yrot', '$range')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -62,17 +62,17 @@ function raceinfo(){
       }
     }else if (checkaccess('other', 'edit') && isset($_POST['action'])){
       if ($_POST['action'] == "Delete"){
-        $x = mysql_real_escape_string($_POST['x']);
-        $y = mysql_real_escape_string($_POST['y']);
-        $z = mysql_real_escape_string($_POST['z']);
-        $yrot = mysql_real_escape_string($_POST['yrot']);
-        $range = mysql_real_escape_string($_POST['range']);
-        $raceid = mysql_real_escape_string($_POST['id']);
-        $sec = mysql_real_escape_string($_POST['sec']);
+        $x = escapeSqlString($_POST['x']);
+        $y = escapeSqlString($_POST['y']);
+        $z = escapeSqlString($_POST['z']);
+        $yrot = escapeSqlString($_POST['yrot']);
+        $range = escapeSqlString($_POST['range']);
+        $raceid = escapeSqlString($_POST['id']);
+        $sec = escapeSqlString($_POST['sec']);
         $query = "SELECT r.name, r.sex, p.x, p.y, p.z, s.name AS sector FROM race_spawns AS p LEFT JOIN race_info AS r ON r.id=p.raceid LEFT JOIN sectors AS s ON s.id=p.sector_id WHERE p.sector_id='$sec' AND p.raceid='$raceid' AND p.x='$x' AND p.z='$z' AND p.y='$y' AND p.yrot='$yrot' AND p.range='$range'";
         $result = mysql_query2($query);
-        if (mysql_numrows($result) > 0){
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        if (sqlNumRows($result) > 0){
+          $row = fetchSqlAssoc($result);
           echo 'You are about to delete the following Spawn-Point:<br/>'.$row['name'].' '.$row['sex'].': '.$row['x'].' / '.$row['y'].' / '.$row['z'].' / '.$row['sector'].' yrot: '.$yrot.' range: '.$range.'<br/>';
           echo '<form action="./index.php?do=raceinfo" method="post">';
           echo '<input type="hidden" name="x" value="'.$x.'" />';
@@ -86,10 +86,10 @@ function raceinfo(){
           echo '</form>';
         }
       }else if ($_POST['action'] == "Edit Values"){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM race_info WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=raceinfo" method="post"><input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Race:</td><td><input type="text" name="name" value="'.$row['name'].'"/></td></tr>';
@@ -127,7 +127,7 @@ function raceinfo(){
         echo '</table><input type="submit" name="commit" value="Confirm Update" />';
         echo '</form>';
       }else if ($_POST['action'] == "Add Spawn Point"){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $Sectors = PrepSelect('sectorid');
         echo '<form action="./index.php?do=raceinfo" method="post"><input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
@@ -144,7 +144,7 @@ function raceinfo(){
     }else{    
       $query = "SELECT r.*, s.name FROM race_spawns AS r LEFT JOIN sectors AS s ON r.sector_id=s.id";
       $result = mysql_query2($query);
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         $raceid = $row['raceid'];
         if (isset($Spawns[$raceid])){
           $i = count($Spawns[$raceid]);
@@ -169,7 +169,7 @@ function raceinfo(){
       }
       echo '</tr>';
       $Alt = FALSE;
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         $Alt = !$Alt;
         $raceid = $row['id'];
         if ($Alt){

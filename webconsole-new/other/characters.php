@@ -9,7 +9,7 @@ function listcharacters()
         echo '<p class="header">List Characters</p>';
         
         $sql = 'SELECT COUNT(*) FROM characters'.($account_id == 'nan' ? '' : ' WHERE account_id = '.$account_id);
-        $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+        $item_count = fetchSqlRow(mysql_query2($sql));
         
         $nav = RenderNav(array('do' => 'listcharacters', 'account_id' => $account_id), $item_count[0]);
         
@@ -28,7 +28,7 @@ function listcharacters()
         // commented this dropdown for now, 500k + records make it a bit hard to use/load. :)
         /*echo 'List all characters of this account: <select name="account_id" onChange="this.form.submit();">'; 
         echo '<option value=""'.($account_id == 'nan' ? ' selected="selected"' : '').'>All</option>';
-        while($row = mysql_fetch_array($query2, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query2))
         {
             echo '<option value="'.$row['id'].'"'.($row['id'] == $account_id ? ' selected="selected"' : '').'>'.htmlentities($row['username']).'</option>';
         }
@@ -39,7 +39,7 @@ function listcharacters()
         echo '<table>';
         echo '<tr><th>ID</th><th>Firstname</th><th>Lastname</th><th>NPC</th><th>Guild</th><th>Account</th><th>Total time connected</th><th>Actions</th></tr>';
         $color = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
             $color = ($color == 'a' ? 'b' : 'a');
             

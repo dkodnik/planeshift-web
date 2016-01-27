@@ -11,14 +11,14 @@ function editcombine()
         }
         for ($i = 0; $i < count($_POST['id']); $i++)
         {
-            $id = mysql_real_escape_string($_POST['id'][$i]);
-            $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
-            $result_id = mysql_real_escape_string($_POST['result_id']);
-            $result_qty = mysql_real_escape_string($_POST['result_qty']);
-            $item_id = mysql_real_escape_string($_POST['item_id'][$i]);
-            $min_qty = mysql_real_escape_string($_POST['min_qty'][$i]);
-            $max_qty = mysql_real_escape_string($_POST['max_qty'][$i]);
-            $description = mysql_real_escape_string($_POST['description'][$i]);
+            $id = escapeSqlString($_POST['id'][$i]);
+            $pattern_id = escapeSqlString($_POST['pattern_id']);
+            $result_id = escapeSqlString($_POST['result_id']);
+            $result_qty = escapeSqlString($_POST['result_qty']);
+            $item_id = escapeSqlString($_POST['item_id'][$i]);
+            $min_qty = escapeSqlString($_POST['min_qty'][$i]);
+            $max_qty = escapeSqlString($_POST['max_qty'][$i]);
+            $description = escapeSqlString($_POST['description'][$i]);
             
             if ($item_id != '0')
             {
@@ -56,11 +56,11 @@ function editcombine()
     }
     elseif (checkaccess('crafting','edit') && isset($_GET['id']) && isset($_GET['pattern_id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
-        $pattern_id = mysql_real_escape_string($_GET['pattern_id']);
+        $id = escapeSqlString($_GET['id']);
+        $pattern_id = escapeSqlString($_GET['pattern_id']);
         $query = "SELECT id, pattern_id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE result_id='$id' AND pattern_id='$pattern_id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) < 1)
+        if (sqlNumRows($result) < 1)
         {
             echo '<p class="error">No combinations were found with result id'.$id.'</p>';
             return;
@@ -68,7 +68,8 @@ function editcombine()
         
         $items_results = PrepSelect('items');
         $pattern_name = "";
-        while ($row=mysql_fetch_row($items_results)){
+        while ($row = fetchSqlRow($items_results))
+        {
             if ($row[0] == $_GET['id'])
             {
                 $result_item = $row[1];
@@ -76,7 +77,7 @@ function editcombine()
         }
         $patterns = PrepSelect('patterns');
         $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&amp;pattern_id='.$pattern_id.'&amp;result_id='.$id.'">Delete Combination</a>' : "");
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<p class="bold">Edit Combine</p>'."\n"; 
         echo 'If you set any item to "NONE", it will be removed from the combination.';
         echo '<form action="./index.php?do=editcombine&amp;id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
@@ -92,7 +93,7 @@ function editcombine()
             echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="'.$row['max_qty'].'" /></td></tr>';
             echo '<tr><td>Description</td><td><input type="text" name="description[]" value="'.$row['description'].'" /></td></tr>';
             echo '<tr><td></td><td></td></tr>';
-        } while ($row = mysql_fetch_array($result));
+        } while ($row = fetchSqlAssoc($result));
         echo '<tr><td colspan="2">If you fill in the item below, it will be added to the combination.<input type="hidden" name="id[]" value="0" /></td></tr>';
         echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', '', true).'</td></tr>'; // add 1 more row so we can add new lines.
         echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="0" /></td></tr>';
@@ -119,13 +120,13 @@ function createcombine()
         }
         for ($i = 0; $i < count($_POST['item_id']); $i++)
         {
-            $pattern_id = mysql_real_escape_string($_POST['pattern_id']);
-            $result_id = mysql_real_escape_string($_POST['result_id']);
-            $result_qty = mysql_real_escape_string($_POST['result_qty']);
-            $item_id = mysql_real_escape_string($_POST['item_id'][$i]);
-            $min_qty = mysql_real_escape_string($_POST['min_qty'][$i]);
-            $max_qty = mysql_real_escape_string($_POST['max_qty'][$i]);
-            $description = mysql_real_escape_string($_POST['description'][$i]);
+            $pattern_id = escapeSqlString($_POST['pattern_id']);
+            $result_id = escapeSqlString($_POST['result_id']);
+            $result_qty = escapeSqlString($_POST['result_qty']);
+            $item_id = escapeSqlString($_POST['item_id'][$i]);
+            $min_qty = escapeSqlString($_POST['min_qty'][$i]);
+            $max_qty = escapeSqlString($_POST['max_qty'][$i]);
+            $description = escapeSqlString($_POST['description'][$i]);
             
             if ($item_id != '0') // if this is '0', the user has left this line empty because they didn't need it.
             {
@@ -209,15 +210,15 @@ function deletecombine()
             echo '<p class="error">Non-numeric ID provided, aborting.</p>';
             return;
         }
-        $password = mysql_real_escape_string($_POST['passd']);
-        $username = mysql_real_escape_string($_SESSION['username']);
+        $password = escapeSqlString($_POST['passd']);
+        $username = escapeSqlString($_SESSION['username']);
         $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] == 1)
         {
-            $pattern_id = mysql_real_escape_string($_GET['id']);
-            $result_id = mysql_real_escape_string($_GET['result_id']);
+            $pattern_id = escapeSqlString($_GET['id']);
+            $result_id = escapeSqlString($_GET['result_id']);
             $query = "DELETE FROM trade_combinations WHERE pattern_id='$pattern_id' AND result_id='$result_id'";
             mysql_query2($query);
             echo '<p class="error">Combination was succesfully deleted.</p>';
@@ -237,21 +238,22 @@ function deletecombine()
     {
         $query = "SELECT id, name FROM item_stats";
         $temp = mysql_query2($query);
-        $items="";
-        while ($row=mysql_fetch_array($temp, MYSQL_ASSOC)){
-            $iid=$row['id'];
-            $items["$iid"]=$row['name'];
+        $items = "";
+        while ($row = fetchSqlAssoc($temp))
+        {
+            $iid = $row['id'];
+            $items["$iid"] = $row['name'];
         }
-        $pattern_id = mysql_real_escape_string($_GET['pattern_id']);
-        $result_id = mysql_real_escape_string($_GET['result_id']);
+        $pattern_id = escapeSqlString($_GET['pattern_id']);
+        $result_id = escapeSqlString($_GET['result_id']);
         echo '<p>You are about to permanently delete the following combinations:</p>';
         $query = "SELECT result_id, result_qty, item_id, min_qty, max_qty, description FROM trade_combinations WHERE pattern_id='$pattern_id' AND result_id='$result_id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<table><tr><th>Result Item</th><th>Source Items</th></tr>';
         echo '<td>'.$row['result_qty'].' '.$items[$row['result_id']].'</td>';
         echo '<td>'.$row['min_qty'].' to '.$row['max_qty'].' '.$items[$row['item_id']].'<br>';
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo $row['min_qty'].' to '.$row['max_qty'].' '.$items[$row['item_id']].'<br>';
         }

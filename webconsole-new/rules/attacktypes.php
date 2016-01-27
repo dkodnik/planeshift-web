@@ -11,14 +11,14 @@ function listattacktypes()
     $query = 'SELECT id, name FROM weapon_types';
     $result = mysql_query2($query);
     $weapontypes = array();
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         $weapontypes[$row['id']] = $row['name'];
     }
     // navigation
     $sql = 'SELECT COUNT(*) FROM attack_types';
-    $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
-    $sort_column = (isset($_GET['sort_column']) && !empty($_GET['sort_column']) ? mysql_real_escape_string($_GET['sort_column']) : 'id');
+    $item_count = fetchSqlRow(mysql_query2($sql));
+    $sort_column = (isset($_GET['sort_column']) && !empty($_GET['sort_column']) ? escapeSqlString($_GET['sort_column']) : 'id');
     $sort_dir = (isset($_GET['sort_dir']) && $_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC');
     $nav = RenderNav(array('do' => 'listattacktypes', 'sort_column' => $sort_column, 'sort_dir' => $sort_dir), $item_count[0]);
     // actual query
@@ -38,7 +38,7 @@ function listattacktypes()
         echo '<th>actions</th>';
     }
     echo "</tr>\n";
-    while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while($row = fetchSqlAssoc($result))
     {
         echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
         echo '<td>'.$row['id'].'</td>';
@@ -74,11 +74,11 @@ function editattacktypes()
     $id = -1;
     if (isset($_GET['id']))
     {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
     }
     elseif (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     else
     {
@@ -92,8 +92,8 @@ function editattacktypes()
     }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Attack Type"))
     {
-        $name = mysql_real_escape_string($_POST['name']);
-        $weaponID = ($_POST['weaponID'] === '' ? '0' : mysql_real_escape_string($_POST['weaponID']));
+        $name = escapeSqlString($_POST['name']);
+        $weaponID = ($_POST['weaponID'] === '' ? '0' : escapeSqlString($_POST['weaponID']));
         $weaponType = '';
         if (!isset($_POST['weaponType']))
         {
@@ -103,12 +103,12 @@ function editattacktypes()
         {
             foreach ($_POST['weaponType'] as $wtype)
             {
-                $weaponType .= (is_numeric($wtype) ? mysql_real_escape_string($wtype).' ' : '');
+                $weaponType .= (is_numeric($wtype) ? escapeSqlString($wtype).' ' : '');
             }
             $weaponType = trim($weaponType); // remove the last space.
         }
         $onehand = (isset($_POST['onehand']) ? '1' : '0');
-        $stat = mysql_real_escape_string($_POST['stat']);
+        $stat = escapeSqlString($_POST['stat']);
         // sanity check on the data
         if (($weaponType == 'NULL' && $weaponID == '0') || ($weaponType != 'NULL' && $weaponID != '0'))
         {
@@ -125,7 +125,7 @@ function editattacktypes()
     {
         $query = "SELECT * FROM attack_types WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $wtype_query = 'SELECT id, name FROM weapon_types';
         $wtype_result = mysql_query2($wtype_query);
         $weapontypes = explode(' ', $row['weaponType']);
@@ -138,7 +138,7 @@ function editattacktypes()
         echo '<tr><td>Name</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>'."\n";
         echo '<tr><td>WeaponID</td><td>'.DrawItemSelectBox('weaponID', $row['weaponID'], true, true).'</td></tr>'."\n";
         echo '<tr><td>WeaponType</td><td>';
-        while ($wtype_row = mysql_fetch_array($wtype_result, MYSQL_ASSOC))
+        while ($wtype_row = fetchSqlAssoc($wtype_result))
         {
             echo '<input type="checkbox" name="weaponType[]" value="'.$wtype_row['id'].'"'.(in_array($wtype_row['id'], $weapontypes, true) ? ' checked="checked"' : '').' />'.$wtype_row['name'].'<br />'."\n";
         }

@@ -3,28 +3,28 @@ function listresources(){
   if (checkaccess('natres', 'read')){
     if (isset($_POST['commit']) && (checkaccess('natres', 'edit'))){
       if ($_POST['commit'] == "Commit Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
-        $loc_x = mysql_real_escape_string($_POST['loc_x']);
-        $loc_y = mysql_real_escape_string($_POST['loc_y']);
-        $loc_z = mysql_real_escape_string($_POST['loc_z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
-        $visible_radius = mysql_real_escape_string($_POST['visible_radius']);
-        $probability = mysql_real_escape_string($_POST['probability']);
-        $skill = mysql_real_escape_string($_POST['skill']);
-        $skill_level = mysql_real_escape_string($_POST['skill_level']);
-        $item_cat_id = mysql_real_escape_string($_POST['item_cat_id']);
-        $item_quality = mysql_real_escape_string($_POST['item_quality']);
-        $item_id_reward = mysql_real_escape_string($_POST['item_id_reward']);
-        $animation = mysql_real_escape_string($_POST['animation']);
-        $anim_duration_seconds = mysql_real_escape_string($_POST['anim_duration_seconds']);
-        $action = mysql_real_escape_string($_POST['action']);
-        $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
-		$amount = mysql_real_escape_string($_POST['amount']);
+        $id = escapeSqlString($_POST['id']);
+        $loc_sector_id = escapeSqlString($_POST['loc_sector_id']);
+        $loc_x = escapeSqlString($_POST['loc_x']);
+        $loc_y = escapeSqlString($_POST['loc_y']);
+        $loc_z = escapeSqlString($_POST['loc_z']);
+        $radius = escapeSqlString($_POST['radius']);
+        $visible_radius = escapeSqlString($_POST['visible_radius']);
+        $probability = escapeSqlString($_POST['probability']);
+        $skill = escapeSqlString($_POST['skill']);
+        $skill_level = escapeSqlString($_POST['skill_level']);
+        $item_cat_id = escapeSqlString($_POST['item_cat_id']);
+        $item_quality = escapeSqlString($_POST['item_quality']);
+        $item_id_reward = escapeSqlString($_POST['item_id_reward']);
+        $animation = escapeSqlString($_POST['animation']);
+        $anim_duration_seconds = escapeSqlString($_POST['anim_duration_seconds']);
+        $action = escapeSqlString($_POST['action']);
+        $reward_nickname = escapeSqlString($_POST['reward_nickname']);
+		$amount = escapeSqlString($_POST['amount']);
 		if (!$amount)
 			$amount = 'NULL';
-		$interval = mysql_real_escape_string($_POST['interval']);
-		$max_random = mysql_real_escape_string($_POST['max_random']);
+		$interval = escapeSqlString($_POST['interval']);
+		$max_random = escapeSqlString($_POST['max_random']);
         $query = "UPDATE natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname', amount=$amount, `interval`=$interval, max_random=$max_random WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -32,22 +32,22 @@ function listresources(){
         listresources();
         return; 
       }else if($_POST['commit'] == "Commit New" && checkaccess('natres', 'create')){
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
-        $loc_x = mysql_real_escape_string($_POST['loc_x']);
-        $loc_y = mysql_real_escape_string($_POST['loc_y']);
-        $loc_z = mysql_real_escape_string($_POST['loc_z']);
-        $radius = mysql_real_escape_string($_POST['radius']);
-        $visible_radius = mysql_real_escape_string($_POST['visible_radius']);
-        $probability = mysql_real_escape_string($_POST['probability']);
-        $skill = mysql_real_escape_string($_POST['skill']);
-        $skill_level = mysql_real_escape_string($_POST['skill_level']);
-        $item_cat_id = mysql_real_escape_string($_POST['item_cat_id']);
-        $item_quality = mysql_real_escape_string($_POST['item_quality']);
-        $item_id_reward = mysql_real_escape_string($_POST['item_id_reward']);
-        $animation = mysql_real_escape_string($_POST['animation']);
-        $anim_duration_seconds = mysql_real_escape_string($_POST['anim_duration_seconds']);
-        $action = mysql_real_escape_string($_POST['action']);
-        $reward_nickname = mysql_real_escape_string($_POST['reward_nickname']);
+        $loc_sector_id = escapeSqlString($_POST['loc_sector_id']);
+        $loc_x = escapeSqlString($_POST['loc_x']);
+        $loc_y = escapeSqlString($_POST['loc_y']);
+        $loc_z = escapeSqlString($_POST['loc_z']);
+        $radius = escapeSqlString($_POST['radius']);
+        $visible_radius = escapeSqlString($_POST['visible_radius']);
+        $probability = escapeSqlString($_POST['probability']);
+        $skill = escapeSqlString($_POST['skill']);
+        $skill_level = escapeSqlString($_POST['skill_level']);
+        $item_cat_id = escapeSqlString($_POST['item_cat_id']);
+        $item_quality = escapeSqlString($_POST['item_quality']);
+        $item_id_reward = escapeSqlString($_POST['item_id_reward']);
+        $animation = escapeSqlString($_POST['animation']);
+        $anim_duration_seconds = escapeSqlString($_POST['anim_duration_seconds']);
+        $action = escapeSqlString($_POST['action']);
+        $reward_nickname = escapeSqlString($_POST['reward_nickname']);
         $query = "INSERT INTO natural_resources SET loc_sector_id='$loc_sector_id', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', radius='$radius', visible_radius='$visible_radius', probability='$probability', skill='$skill', skill_level='$skill_level', item_cat_id='$item_cat_id', item_quality='$item_quality', item_id_reward='$item_id_reward', animation='$animation', anim_duration_seconds='$anim_duration_seconds', action='$action', reward_nickname='$reward_nickname'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -55,7 +55,7 @@ function listresources(){
         listresources();
         return;
       }else if($_POST['commit'] == "Confirm Delete" && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM natural_resources WHERE id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
@@ -65,13 +65,13 @@ function listresources(){
       }
     }else if (isset($_POST['action']) && (checkaccess('natres', 'edit'))){
       if ($_POST['action'] == 'Edit'){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT id, loc_sector_id, loc_x, loc_y, loc_z, radius, visible_radius, probability, skill, skill_level, item_cat_id, item_quality, animation, anim_duration_seconds, item_id_reward, reward_nickname, action, amount, `interval`, max_random FROM natural_resources WHERE id='$id'";
         $result = mysql_query2($query);
         $Sectors = PrepSelect('sectorid');
         $Category = PrepSelect('category');
         $Skills = PrepSelect('skill');
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<table border="1">';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', $row['loc_sector_id']).'</td>';
@@ -116,10 +116,10 @@ function listresources(){
         echo '</table><div><input type="submit" name="commit" value="Commit New" /></div>';
         echo '</form>';
       }else if ($_POST['action'] == 'Delete' && checkaccess('natres', 'delete')){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT r.reward_nickname, s.name FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id WHERE r.id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=resource" method="post">';
         echo '<p>Please Confirm that you wish to delete the '.$row['reward_nickname'].' resource in sector '.$row['name'].'</p>';
         echo '<input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete"/>';
@@ -131,7 +131,7 @@ function listresources(){
       $query = "SELECT r.id, r.loc_sector_id, s.name AS sector, r.loc_x, r.loc_y, r.loc_z, r.radius, r.visible_radius, r.probability, r.skill, sk.name AS skill_name, r.skill_level, r.item_cat_id, c.name AS category, r.item_quality, r.animation, r.anim_duration_seconds, r.item_id_reward, i.name AS item, r.reward_nickname, r.action, r.amount, r.interval, r.max_random FROM natural_resources AS r LEFT JOIN sectors AS s ON r.loc_sector_id=s.id LEFT JOIN item_stats AS i on i.id=r.item_id_reward LEFT JOIN item_categories AS c ON r.item_cat_id=c.category_id LEFT JOIN skills AS sk on sk.skill_id=r.skill";
       if (isset($_GET['id']))
       {
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query .= " WHERE r.id='$id'";
       }
       if (isset($_GET['sort'])){
@@ -153,7 +153,7 @@ function listresources(){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
         echo '<td>'.$row['sector'].'/'.$row['loc_x'].'/'.$row['loc_y'].'/'.$row['loc_z'].'</td>';
         echo '<td>'.$row['radius'].'</td>';

@@ -6,7 +6,7 @@ function listtips(){
         $query = 'SELECT * FROM tips ORDER BY tip';
         $result = mysql_query2($query);
         echo'<table border="1">';
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr><td>';
             if(checkaccess('admin', 'edit')) 
@@ -59,11 +59,11 @@ function edittips(){
 
     if (isset($_POST['tip']))
     {
-        $tip = mysql_real_escape_string($_POST['tip']);
+        $tip = escapeSqlString($_POST['tip']);
     }
     if (isset($_POST['id']))
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
     if ((trim($tip) == '' && !isset($_POST['submit'])) || (!is_numeric($id) && $action != 'Add'))
     {
@@ -93,11 +93,11 @@ function edittips(){
 	}
     elseif ($action == 'Delete' && isset($_POST['submit']) && $_POST['submit'] == 'Confirm Delete')
     {
-        $password = mysql_real_escape_string($_POST['passd']);
-        $username = mysql_real_escape_string($_SESSION['username']);
+        $password = escapeSqlString($_POST['passd']);
+        $username = escapeSqlString($_SESSION['username']);
         $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] == 1)
         {
             mysql_query2("DELETE FROM tips WHERE id ='$id' LIMIT 1");

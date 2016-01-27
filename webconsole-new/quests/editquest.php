@@ -10,13 +10,13 @@ function editquest()
         }   
         else if(!isset($_GET['commit']))
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             $query = 'SELECT name, category, player_lockout_time, quest_lockout_time, prerequisite, task FROM quests WHERE id='.$id;
             $result = mysql_query2($query);
             $query2 = 'SELECT script FROM quest_scripts WHERE quest_id='.$id;
             $result2 = mysql_query2($query2);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
-            $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
+            $row2 = fetchSqlAssoc($result2);
             $script = $row2['script'];
             $return_url = '';
             if (isset($_GET['sort']) && isset($_GET['direction']))
@@ -44,16 +44,16 @@ function editquest()
                 // no &amp; in javascript, it's gonna be directly into the url bar like that.
                 $return_url = '&sort='.htmlspecialchars($_GET['sort']).'&direction='.htmlspecialchars($_GET['direction']);
             }
-            $id = mysql_real_escape_string($_GET['id']);
-            $name = mysql_real_escape_string($_POST['name']);
-            $category = mysql_real_escape_string($_POST['category']);
-            $task = mysql_real_escape_string($_POST['task']);
-            $player_lockout_time = mysql_real_escape_string($_POST['player_lockout_time']);
-            $quest_lockout_time = mysql_real_escape_string($_POST['quest_lockout_time']);
-            $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
+            $id = escapeSqlString($_GET['id']);
+            $name = escapeSqlString($_POST['name']);
+            $category = escapeSqlString($_POST['category']);
+            $task = escapeSqlString($_POST['task']);
+            $player_lockout_time = escapeSqlString($_POST['player_lockout_time']);
+            $quest_lockout_time = escapeSqlString($_POST['quest_lockout_time']);
+            $prerequisite = escapeSqlString($_POST['prerequisite']);
             $query = "UPDATE quests SET name='$name', category='$category', task='$task', player_lockout_time='$player_lockout_time', quest_lockout_time='$quest_lockout_time', prerequisite='$prerequisite' WHERE id='$id'";
             $result = mysql_query2($query);
-            $script = mysql_real_escape_string($_POST['script']);
+            $script = escapeSqlString($_POST['script']);
             $query = "UPDATE quest_scripts SET script='$script' WHERE quest_id='$id'";
             $result = mysql_query2($query);
             if (isset($_POST['submit2']))

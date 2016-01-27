@@ -25,7 +25,7 @@ function assetsnpc()
 		echo '<table><tr><th>Count</th><th>Race</th><th>Gender</th></tr>';
 		$i=0;
         $characters = array();
-		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+		while($result = fetchSqlAssoc($query))
 		{
 				if ($result['num'] == 0)
                 {
@@ -42,7 +42,7 @@ function assetsnpc()
 		$sql = 'SELECT name, sex FROM race_info';
 		$query = mysql_query2($sql);
 		$i=0;
-		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+		while($result = fetchSqlAssoc($query))
 		{
 			$races[$i] = $result['name'].$result['sex'];
 			$i++;
@@ -72,7 +72,7 @@ function assetsnpc()
 		echo '<table><tr><th>Count</th><th>Trait ID</th><th>Trait Name</th><th>Race</th><th>Gender</th></tr>';
 		$i=0;
         $traits_char_id = array();
-		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+		while($result = fetchSqlAssoc($query))
 		{
 				if ($result['num']==0)
                 {
@@ -97,7 +97,7 @@ function assetsnpc()
 		$traits_sex = array();
 		$traits_race = array();
 		
-		while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+		while($result = fetchSqlAssoc($query))
 		{
 			$traits_id[$i]=$result['id'];
 			$traits_name[$i]=$result['name'];
@@ -125,15 +125,15 @@ function runBaseQuery($groupid, $period, $time, $to_exclude) {
 
 	$dates = getDatesFromPeriod($period);
 	
-    $startDate = mysql_real_escape_string($dates[1]);
-    $endDate = mysql_real_escape_string($dates[2]);
-    $myExclude = mysql_real_escape_string($to_exclude);
-    $myTime = mysql_real_escape_string($time);
+    $startDate = escapeSqlString($dates[1]);
+    $endDate = escapeSqlString($dates[2]);
+    $myExclude = escapeSqlString($to_exclude);
+    $myTime = escapeSqlString($time);
 	$sql = "SELECT count(*) AS result FROM characters AS c WHERE character_type=0 AND last_login IS NOT NULL AND creation_time>=DATE('$startDate') AND creation_time<DATE('$endDate') AND account_id NOT IN $myExclude";
 	$sql .= " and time_connected_sec>$myTime";
 	//echo $sql;
 	$query = mysql_query2($sql);
-	$result = mysql_fetch_array($query, MYSQL_ASSOC);
+	$result = fetchSqlAssoc($query);
 	$counted_items = $result['result'];
 	return $counted_items;
 }

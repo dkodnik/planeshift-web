@@ -39,7 +39,7 @@ function listpetitions() {
         $sort_dir = (@$_GET['sort_dir'] == 'DESC' ? 'DESC' : 'ASC');
         
         $sql = 'SELECT COUNT(*) FROM petitions';
-        $item_count = mysql_fetch_array(mysql_query2($sql), MYSQL_NUM);
+        $item_count = fetchSqlRow(mysql_query2($sql));
         
         $nav = RenderNav(array('do' => 'listpetitions', 'sort_column' => $sort_column, 'sort_dir' => $sort_dir), $item_count[0]);
         
@@ -70,7 +70,7 @@ function listpetitions() {
         echo '</tr>';
         
         $mode = 'b';
-        while($row = mysql_fetch_array($query, MYSQL_ASSOC))
+        while($row = fetchSqlAssoc($query))
         {
            $mode = ($mode == 'a' ? 'b' : 'a');
            echo '<tr class="color_'.$mode.'">';
@@ -99,7 +99,7 @@ function listpetitions() {
         echo '<p class="header">Information about the Petition #'.$id.'</p>';
         
         $sql = 'SELECT p.*, c.name AS player_name, c2.name AS gm_name FROM petitions as p LEFT JOIN characters AS c ON c.id = p.player LEFT JOIN characters AS c2 ON c2.id = p.assigned_gm WHERE p.id = '.$id.' LIMIT 1';
-        $row = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+        $row = fetchSqlAssoc(mysql_query2($sql));
         
         echo '<a href="./index.php?do=listpetitions">Back</a><br/>';
         echo '<table>';

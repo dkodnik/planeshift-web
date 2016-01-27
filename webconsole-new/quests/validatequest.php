@@ -68,12 +68,12 @@ to what line in your browser).</p>
 function parseScripts($quest_id, $show_lines) 
 {
     $result = mysql_query2("SELECT script FROM quest_scripts WHERE quest_id = '$quest_id'"); 
-    if (mysql_num_rows($result) < 1)
+    if (sqlNumRows($result) < 1)
     {
         echo '<p class="error">Error: no quest found with ID '.$quest_id.'</p>';
         return;
     }
-    for($i = 1; $row = mysql_fetch_row($result); $i++)
+    for($i = 1; $row = fetchSqlRow($result); $i++)
     {
         append_log('<p class="error">');
         append_log("parsing script # $i with ID $quest_id"); 
@@ -505,15 +505,15 @@ function validate_npc($name)
     $split = explode(" ", trim($name));  // explode is faster than split if you don't use regex, returns input if pattern is not found.
     if (count($split) == 1) // single name npc
     {
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", mysql_real_escape_string($split[0]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", escapeSqlString($split[0]));
         $result = mysql_query2($query);
-        if(mysql_num_rows($result) > 0) // we found a valid npc
+        if(sqlNumRows($result) > 0) // we found a valid npc
         {
             return true;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($split[0]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", escapeSqlString($split[0]));
         $result = mysql_query2($query);
-        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        if(sqlNumRows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
             append_log("Parse Error: NPC ({$split[0]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return false;
@@ -521,15 +521,15 @@ function validate_npc($name)
     }
     elseif (count($split) == 2) // dual name npc
     {
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", mysql_real_escape_string($split[0]), mysql_real_escape_string($split[1]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", escapeSqlString($split[0]), escapeSqlString($split[1]));
         $result = mysql_query2($query);
-        if(mysql_num_rows($result) > 0) // we found a valid npc
+        if(sqlNumRows($result) > 0) // we found a valid npc
         {
             return true;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($split[0]), mysql_real_escape_string($split[1]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0 AND npc_master_id = 0", escapeSqlString($split[0]), escapeSqlString($split[1]));
         $result = mysql_query2($query);
-        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        if(sqlNumRows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
             append_log("Parse Error: NPC ({$split[0]} {$split[1]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return false;
@@ -658,30 +658,30 @@ function handle_player_action($line)
             append_log("Parse Error: no npc name following 'player gives' at line $line_number");
             return;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", mysql_real_escape_string($words[2]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", escapeSqlString($words[2]));
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0) // we found a valid npc
+        if (sqlNumRows($result) > 0) // we found a valid npc
         {
             $name_count = 1;
         }
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", mysql_real_escape_string($words[2]));
+        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", escapeSqlString($words[2]));
         $result = mysql_query2($query);
-        if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+        if(sqlNumRows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
         {
             append_log("Parse Error: NPC ({$words[2]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
             return;
         }
         if ($name_count == 0 && count($words) > 3)
         {
-            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
+            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", escapeSqlString($words[2]), escapeSqlString($words[3]));
             $result = mysql_query2($query);
-            if (mysql_num_rows($result) > 0) // we found a valid npc
+            if (sqlNumRows($result) > 0) // we found a valid npc
             {
                 $name_count = 2;
             }
-            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id = 0 AND character_type != 0", mysql_real_escape_string($words[2]), mysql_real_escape_string($words[3]));
+            $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id = 0 AND character_type != 0", escapeSqlString($words[2]), escapeSqlString($words[3]));
             $result = mysql_query2($query);
-            if(mysql_num_rows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
+            if(sqlNumRows($result) > 0) // we found a valid npc, but the master_ID is 0, that will crash the server.
             {
                 append_log("Parse Error: NPC ({$words[2]} {$words[3]}) has npc_master_id set to 0, and thus can not be used in a quest on line $line_number");
                 return;
@@ -781,11 +781,11 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             return; // in all cases, when $quest_id is 0, do not go further than here. (the other checks are on the database, and thus will fail.
         }
-        $query = sprintf("SELECT name FROM quests WHERE id = '%s'", mysql_real_escape_string($quest_id));
+        $query = sprintf("SELECT name FROM quests WHERE id = '%s'", escapeSqlString($quest_id));
         $result = mysql_query2($query); // this may bug up if more quests have the same id (which they shouldn't have(?)) (KA scripts are exluded since they can't complete.
-        if(mysql_num_rows($result) > 0)
+        if(sqlNumRows($result) > 0)
         {
-            $row = mysql_fetch_row($result);
+            $row = fetchSqlRow($result);
             $name = $row[0];
             // can complete previous steps too
             if (strcasecmp(trim($command), "complete $name") === 0) 
@@ -1020,9 +1020,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             append_log("Parse Error: no admin command found on line $line_number");
             return;
         }
-        $query = sprintf("SELECT group_member FROM command_group_assignment WHERE command_name = '%s'", mysql_real_escape_string($cmd));
+        $query = sprintf("SELECT group_member FROM command_group_assignment WHERE command_name = '%s'", escapeSqlString($cmd));
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) < 1)
+        if (sqlNumRows($result) < 1)
         {
             append_log("Parse Error: could not find admin command ($cmd) in the database");
         } // else it's found, do nothing.
@@ -1372,9 +1372,9 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         // else we need to run past the rest of the checks, though the next one is guaranteed to fail with quest_id 0, the one after that may pass.
     }
     $result = mysql_query2("SELECT name FROM quests WHERE id = '$quest_id'");
-    if (mysql_num_rows($result) > 0) // First we check if it's a reference to this script (most of them are)
+    if (sqlNumRows($result) > 0) // First we check if it's a reference to this script (most of them are)
     {
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         $name = $row[0];
         if (strcasecmp(trim($quest), $name) === 0)
         {
@@ -1418,12 +1418,12 @@ function check_completion($quest_id, $step, $quest, $quest_name)
             return;
         }
     }
-    $query = sprintf("SELECT id FROM quests WHERE name='%s'", mysql_real_escape_string($name));
+    $query = sprintf("SELECT id FROM quests WHERE name='%s'", escapeSqlString($name));
     $result = mysql_query2($query); 
-    if (mysql_num_rows($result) > 0)  // found a quest with that name
+    if (sqlNumRows($result) > 0)  // found a quest with that name
     {
         append_log("Warning: references to another quest are not recommended, only use if you really must: line $line_number");
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         $id = $row[0];
         if($complete_step == '')
         {
@@ -1433,9 +1433,9 @@ function check_completion($quest_id, $step, $quest, $quest_name)
         else
         {
             $result = mysql_query2("SELECT script FROM quest_scripts WHERE quest_id = '$id'"); 
-            if (mysql_num_rows($result) > 0)  // found a quest with that name
+            if (sqlNumRows($result) > 0)  // found a quest with that name
             {
-                $row = mysql_fetch_row($result);
+                $row = fetchSqlRow($result);
                 $target_steps = explode('...', $row[0]);
                 if ($complete_step > count($target_steps)) // target quest does not have this many steps
                 {
@@ -1491,7 +1491,7 @@ function validate_skill($skillname)
     global $line_number;
     $query = sprintf("SELECT skill_id FROM skills WHERE name = '%s'", $skillname);
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) == 1)
+    if (sqlNumRows($result) == 1)
     {
         // valid skill, do nothing
     } else
@@ -1506,25 +1506,25 @@ function validate_item($itemname, $case_sensitive = false)
         append_log("Parse Error: could not read item name on line $line_number");
         return;
     }
-    $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
+    $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", escapeSqlString($itemname));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) == 1)
+    if (sqlNumRows($result) == 1)
     {
         if (!$case_sensitive)
         {
             return; // valid item, do nothing.
         }
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         $item_case = $row[0];
-        $query = sprintf("SELECT name FROM item_stats WHERE name = BINARY '%s' AND stat_type='B'", mysql_real_escape_string($itemname));
+        $query = sprintf("SELECT name FROM item_stats WHERE name = BINARY '%s' AND stat_type='B'", escapeSqlString($itemname));
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) < 1)
+        if (sqlNumRows($result) < 1)
         {
             append_log("Parse Error: item name at this position is case sensitive, use '$item_case' instead of '$itemname' in database on line $line_number");
         }
         // valid item, do nothing
     }
-    elseif (mysql_num_rows($result) > 1)
+    elseif (sqlNumRows($result) > 1)
     {
         append_log("warning: multiple items with name: $itemname in database on line $line_number");
     }
@@ -1541,9 +1541,9 @@ function validate_category($categoryname)
     {
         append_log("Parse Error: could not read category name on line $line_number");
     }
-    $query = sprintf("SELECT category_id FROM item_categories WHERE name = '%s'", mysql_real_escape_string($categoryname));
+    $query = sprintf("SELECT category_id FROM item_categories WHERE name = '%s'", escapeSqlString($categoryname));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) < 1)
+    if (sqlNumRows($result) < 1)
     {
         append_log("Parse Error: no category with name: $categoryname in database on line $line_number");
     }
@@ -1553,9 +1553,9 @@ function validate_category($categoryname)
 function validate_faction($factionname)
 {
     global $line_number;
-    $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", mysql_real_escape_string($factionname));
+    $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", escapeSqlString($factionname));
     $result = mysql_query2($query);
-    if(mysql_num_rows($result) < 1)
+    if(sqlNumRows($result) < 1)
     {
         append_log("Parse Error: no faction ($faction) found in database on line $line_number");
     }
@@ -1565,13 +1565,13 @@ function validate_magic($magic_name, $otherbuffs = false)
 {
     global $line_number;
     $magic = trim($magic_name);
-    $query = sprintf("SELECT id FROM spells WHERE name = '%s'", mysql_real_escape_string($magic));
+    $query = sprintf("SELECT id FROM spells WHERE name = '%s'", escapeSqlString($magic));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) < 1 && !$otherbuffs)
+    if (sqlNumRows($result) < 1 && !$otherbuffs)
     {
         append_log("Parse Error: could not find magic ($magic) in the database at line $line_number");
     }
-    elseif (mysql_num_rows($result) < 1 && $otherbuffs)
+    elseif (sqlNumRows($result) < 1 && $otherbuffs)
     {
         append_log("Warning: could not find magic ($magic) in the magic database, please double check ". 
             "the spelling against the script you want to use a buff from (this warning can show in valid cases too) at line $line_number");
@@ -1582,9 +1582,9 @@ function validate_race($race_name)
 {
     global $line_number;
     $race = trim($race_name);
-    $query = sprintf("SELECT id FROM race_info WHERE name = '%s'", mysql_real_escape_string($race));
+    $query = sprintf("SELECT id FROM race_info WHERE name = '%s'", escapeSqlString($race));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) < 1)
+    if (sqlNumRows($result) < 1)
     {
         append_log("Parse Error: could not find race ($race) in the database at line $line_number");
     }
@@ -1594,9 +1594,9 @@ function validate_scriptname($scriptname)
 {
     global $line_number;
     $script = trim($scriptname);
-    $query = sprintf("SELECT name FROM progression_events WHERE name = '%s'", mysql_real_escape_string($script));
+    $query = sprintf("SELECT name FROM progression_events WHERE name = '%s'", escapeSqlString($script));
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) < 1)
+    if (sqlNumRows($result) < 1)
     {
         append_log("Parse Error: could not find script name ($script) in the database at line $line_number");
     }

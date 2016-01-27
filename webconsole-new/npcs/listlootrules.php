@@ -9,14 +9,14 @@ function listlootrules()
 	$query = 'SELECT l.id, lr.id AS loot_rule_id, l.item_stat_id, i.name AS item_name, l.min_item, l.max_item, l.probability, l.min_money, l.max_money, l.randomize, l.randomize_probability, lr.name FROM loot_rule_details AS l RIGHT JOIN loot_rules AS lr ON lr.id=l.loot_rule_id LEFT JOIN item_stats AS i ON i.id=l.item_stat_id';
 	if (isset($_GET['id']))
 	{
-		$id = mysql_real_escape_string($_GET['id']);
+		$id = escapeSqlString($_GET['id']);
 		$query .= ' WHERE lr.id='.$id;
 	}
 	$query .= ' ORDER BY lr.id';
 	$result = mysql_query2($query);
 	$rule_id = '';
 	echo '<table border="1" cellspacing="0">';
-	while ($row = mysql_fetch_array($result))
+	while ($row = fetchSqlAssoc($result))
 	{
 		$delete_text = '';
 		if (checkaccess('npcs', 'delete'))
@@ -65,7 +65,7 @@ function listlootrules()
 		}
 		echo '</td></tr>';
 	}
-	if (mysql_num_rows($result) > 0) // Check if there were results, if there were, we need to add the last "add details" function.
+	if (sqlNumRows($result) > 0) // Check if there were results, if there were, we need to add the last "add details" function.
 	{
 		if (checkaccess('npcs', 'edit'))
 		{
@@ -83,15 +83,15 @@ function editlootruledetail()
 {
     if (checkaccess('npcs', 'edit') && isset($_POST['commit']) && $_POST['commit'] == 'Update Rule Detail')
     {
-        $id = mysql_real_escape_string($_POST['id']);
-        $item_stat_id = mysql_real_escape_string($_POST['item_stat_id']);
-		$min_item = mysql_real_escape_string($_POST['min_item']);
-        $max_item = mysql_real_escape_string($_POST['max_item']);
-		$probability = mysql_real_escape_string($_POST['probability']);
-        $min_money = mysql_real_escape_string($_POST['min_money']);
-        $max_money = mysql_real_escape_string($_POST['max_money']);
-        $randomize = mysql_real_escape_string($_POST['randomize']);
-		$randomize_probability = mysql_real_escape_string($_POST['randomize_probability']);
+        $id = escapeSqlString($_POST['id']);
+        $item_stat_id = escapeSqlString($_POST['item_stat_id']);
+		$min_item = escapeSqlString($_POST['min_item']);
+        $max_item = escapeSqlString($_POST['max_item']);
+		$probability = escapeSqlString($_POST['probability']);
+        $min_money = escapeSqlString($_POST['min_money']);
+        $max_money = escapeSqlString($_POST['max_money']);
+        $randomize = escapeSqlString($_POST['randomize']);
+		$randomize_probability = escapeSqlString($_POST['randomize_probability']);
         $query = "UPDATE loot_rule_details SET item_stat_id='$item_stat_id', min_item='$min_item', max_item='$max_item', probability='$probability', min_money='$min_money', max_money='$max_money', randomize='$randomize', randomize_probability='$randomize_probability' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -100,7 +100,7 @@ function editlootruledetail()
     }
     elseif (checkaccess('npcs', 'edit') && isset($_POST['delete']) && $_POST['delete'] == 'Confirm Delete')
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "DELETE FROM loot_rule_details WHERE id='$id' LIMIT 1";
         $result = mysql_query2($query);
         echo '<p class="error">Delete Successful</p>';
@@ -111,7 +111,7 @@ function editlootruledetail()
     {
         if (isset($_GET['id']))
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             if (!is_numeric($id))
             {
                 echo '<p class="error">Invalid (non numeric) ID</p>';
@@ -125,13 +125,13 @@ function editlootruledetail()
         }
         $query = "SELECT * FROM loot_rule_details WHERE id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) != 1)
+        if (sqlNumRows($result) != 1)
         {
             echo '<p class="error">No loot rule detail found in the database with this ID ('.$id.')</p>';
             return;
         }
         $item_result = PrepSelect('items');
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<table><tr><th>'; // We set the ID in the form to the rule ID instead of the detail, so we can redirect back to ListRules.
         echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/>Item</th><th>Min Quantity</th><th>Max Quantity</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th><th>Random %</th><th>Action</th></tr>';
         echo '<tr><td>'.DrawSelectBox('items', $item_result, 'item_stat_id', $row['item_stat_id'], true).'</td>';
@@ -158,7 +158,7 @@ function editlootruledetail()
     {
         if (isset($_GET['id']))
         {
-            $id = mysql_real_escape_string($_GET['id']);
+            $id = escapeSqlString($_GET['id']);
             if (!is_numeric($id))
             {
                 echo '<p class="error">Invalid (non numeric) ID</p>';
@@ -172,12 +172,12 @@ function editlootruledetail()
         }
         $query = "SELECT i.name AS item_name, l.probability, l.loot_rule_id, l.min_money, l.max_money, l.randomize FROM loot_rule_details AS l LEFT JOIN item_stats AS i ON i.id=l.item_stat_id WHERE l.id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) != 1)
+        if (sqlNumRows($result) != 1)
         {
             echo '<p class="error">No loot rule detail found in the database with this ID ('.$id.')</p>';
             return;
         }
-        $row = mysql_fetch_array($result);
+        $row = fetchSqlAssoc($result);
         echo '<p class="error">You are about to permanently delete Loot Rule Detail '.$id.' </p>';
         echo '<table><tr><td>'.$row['item_name'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td></tr></table>';
         echo '<form action="./index.php?do=editlootruledetail&id='.$row['loot_rule_id'].'" method="post"><input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="delete" value="Confirm Delete"></form>';
@@ -192,12 +192,12 @@ function createlootruledetail()
 {
     if (checkaccess('npcs', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Rule Detail')
     {
-        $loot_rule_id = mysql_real_escape_string($_POST['loot_rule_id']);
-        $item_stat_id = mysql_real_escape_string($_POST['item_stat_id']);
-        $probability = mysql_real_escape_string($_POST['probability']);
-        $min_money = mysql_real_escape_string($_POST['min_money']);
-        $max_money = mysql_real_escape_string($_POST['max_money']);
-        $randomize = mysql_real_escape_string($_POST['randomize']);
+        $loot_rule_id = escapeSqlString($_POST['loot_rule_id']);
+        $item_stat_id = escapeSqlString($_POST['item_stat_id']);
+        $probability = escapeSqlString($_POST['probability']);
+        $min_money = escapeSqlString($_POST['min_money']);
+        $max_money = escapeSqlString($_POST['max_money']);
+        $randomize = escapeSqlString($_POST['randomize']);
         $query = "INSERT INTO loot_rule_details (loot_rule_id, item_stat_id, probability, min_money, max_money, randomize) VALUES ('$loot_rule_id', '$item_stat_id', '$probability', '$min_money', '$max_money', '$randomize')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -208,7 +208,7 @@ function createlootruledetail()
     {
         $item_result = PrepSelect('items');        
         $item_box = DrawSelectBox('items', $item_result, 'item_stat_id', '', true);
-        $loot_rule_id = mysql_real_escape_string($_GET['id']);
+        $loot_rule_id = escapeSqlString($_GET['id']);
         echo '<table border="1"><form action="./index.php?do=createlootruledetail&id='.$loot_rule_id.'" method="post"><input type="hidden" name="loot_rule_id" value="'.$loot_rule_id.'"/>';
         echo '<tr><th>Item</th><th>Probability</th><th>Minimum Money</th><th>Maxiumum Money</th><th>Randomize</th></tr>';
         echo '<tr><td>'.$item_box.'</td>';
@@ -230,10 +230,10 @@ function editlootrule()
     {
         if (isset($_POST['id']))
         {
-            $id = mysql_real_escape_string($_POST['id']);
+            $id = escapeSqlString($_POST['id']);
             if ($_POST['commit'] == 'Change Name')
             {
-                $name = mysql_real_escape_string($_POST['name']);
+                $name = escapeSqlString($_POST['name']);
                 $query = "UPDATE loot_rules SET name='$name' WHERE id='$id'";
                 $result = mysql_query2($query);
                 echo '<p class="error">Update Successful</p>';
@@ -249,11 +249,11 @@ function editlootrule()
                 }
                 $query = "SELECT id, name, lastname FROM characters WHERE npc_addl_loot_category_id='$id'";
                 $result = mysql_query2($query);
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
                     echo '<p class="error">You can not delete this Loot Rule, it is still in use by the following NPCs:</p>';
                     echo '<table border="1"><tr><th>ID</th><th>Name</th></tr>';
-                    while ($row = mysql_fetch_array($result))
+                    while ($row = fetchSqlAssoc($result))
                     {
                         echo '<tr><td>'.$row['id'].'</td><td><a href="./index.php?do=npc_details&sub=main&npc_id='.$row['id'].'">'.$row['name'].' '.$row['lastname'].'</a></td></tr>';
                     }
@@ -262,9 +262,9 @@ function editlootrule()
                 }
                 $query = "SELECT name FROM loot_rules WHERE id='$id'";
                 $result = mysql_query2($query);
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
-                    $row = mysql_fetch_array($result);
+                    $row = fetchSqlAssoc($result);
                     echo '<p class="error">You are about to permanently delete rule: '.$row['name'].' with ID: '.$id.'</p>';
                 }
                 else
@@ -273,11 +273,11 @@ function editlootrule()
                 }
                 $query = "SELECT i.name AS item_name, l.probability, l.loot_rule_id, l.min_money, l.max_money, l.randomize FROM loot_rule_details AS l LEFT JOIN item_stats AS i ON i.id=l.item_stat_id WHERE l.loot_rule_id='$id'";
                 $result = mysql_query2($query);
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
                     echo '<p class="error">Deleting this rule will also delete the following Loot Rule Details:</p>';
                     echo '<table border="1"><tr><td>Item</td><td>Probability</td><td>Minimum Money</td><td>Maxiumum Money</td><td>Randomize</td></tr>';
-                    while ($row = mysql_fetch_array($result))
+                    while ($row = fetchSqlAssoc($result))
                     {
                         echo '<tr><td>'.$row['item_name'].'</td><td>'.$row['probability'].'</td><td>'.$row['min_money'].'</td><td>'.$row['max_money'].'</td><td>'.($row['randomize'] == 1 ? 'Yes' : 'No').'</td></tr>';
                     }
@@ -303,7 +303,7 @@ function editlootrule()
             }
             else if ($_POST['commit'] == "Create New Rule")
             {
-                $name = mysql_real_escape_string($_POST['name']);
+                $name = escapeSqlString($_POST['name']);
                 $query = "INSERT INTO loot_rules (name) VALUES ('$name')";
                 $result = mysql_query2($query);
                 echo '<p class="error">Update Successful</p>';

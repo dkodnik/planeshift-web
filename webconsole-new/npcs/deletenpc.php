@@ -24,7 +24,7 @@ function deletenpc()
         }
         
         $sql = 'SELECT name, character_type FROM characters WHERE id='.$id;
-        $info = mysql_fetch_array(mysql_query2($sql), MYSQL_ASSOC);
+        $info = fetchSqlAssoc(mysql_query2($sql));
         
         if($info['character_type'] != 1 && $info['character_type'] != 3)
         {

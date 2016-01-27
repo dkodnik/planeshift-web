@@ -9,10 +9,10 @@ function npc_main(){
           return;
       }
       if (!isset($_POST['commit'])){
-        $id = mysql_real_escape_string($_GET['npc_id']);
+        $id = escapeSqlString($_GET['npc_id']);
         $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post" id="npc_details_form"><table>';
         echo '<tr><td>First Name/Last Name:</td><td><input type="text" name="first_name" value="'.$row['name'].'" />/<input type="text" name="last_name" value="'.$row['lastname'].'" /></td></tr>';
         echo '<tr><td>Description:</td><td><textarea name="description" rows="4" cols="50">'.$row['description'].'</textarea></td></tr>';
@@ -90,7 +90,7 @@ function npc_main(){
             $B_Regions = PrepSelect('b_region');
             $query = "SELECT npctype, region FROM sc_npc_definitions WHERE char_id='$id'";
             $r2 = mysql_query2($query);
-            $row2 = mysql_fetch_array($r2, MYSQL_ASSOC);
+            $row2 = fetchSqlAssoc($r2);
             echo '<tr><td>Behaviour/Region</td><td>'.DrawSelectBox('behaviour', $Behaviours, 'sc_npctype', $row2['npctype']).'/'.DrawSelectBox('b_region', $B_Regions, 'sc_region', $row2['region'], true).'</td></tr>';
         }
         echo '<tr><td colspan="2"><input type="hidden" name="char_type" value="'.$row['character_type'].'" /><input type="submit" name="commit" value="update" /></td></tr>';
@@ -135,38 +135,38 @@ function npc_main(){
       }
       else
       {
-        $id = mysql_real_escape_string($_GET['npc_id']);
+        $id = escapeSqlString($_GET['npc_id']);
         $query = "UPDATE characters SET ";
-        $description = mysql_real_escape_string($_POST['description']);
+        $description = escapeSqlString($_POST['description']);
         $query .= "description = '$description', ";
-        $firstname = mysql_real_escape_string($_POST['first_name']);
+        $firstname = escapeSqlString($_POST['first_name']);
         $query .= "name = '$firstname', ";
-        $lastname = mysql_real_escape_string($_POST['last_name']);
+        $lastname = escapeSqlString($_POST['last_name']);
         $query .= "lastname = '$lastname', ";
-        $description_ooc = mysql_real_escape_string($_POST['description_ooc']);
+        $description_ooc = escapeSqlString($_POST['description_ooc']);
         $query .= "description_ooc = '$description_ooc', ";
-        $creation_info = mysql_real_escape_string($_POST['creation_info']);
+        $creation_info = escapeSqlString($_POST['creation_info']);
         $query .= "creation_info = '$creation_info', ";
-        $description_life = mysql_real_escape_string($_POST['description_life']);
+        $description_life = escapeSqlString($_POST['description_life']);
         $query .= "description_life = '$description_life', ";
         if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $npc_master_id = mysql_real_escape_string($_POST['npc_master_id']);
+            $npc_master_id = escapeSqlString($_POST['npc_master_id']);
             $query .= "npc_master_id = '$npc_master_id', ";
         }
-        $loc_sector_id = mysql_real_escape_string($_POST['loc_sector_id']);
+        $loc_sector_id = escapeSqlString($_POST['loc_sector_id']);
         $query .= "loc_sector_id = '$loc_sector_id', ";
-        $loc_x = mysql_real_escape_string($_POST['loc_x']);
+        $loc_x = escapeSqlString($_POST['loc_x']);
         $query .= "loc_x = '$loc_x', ";
-        $loc_y = mysql_real_escape_string($_POST['loc_y']);
+        $loc_y = escapeSqlString($_POST['loc_y']);
         $query .= "loc_y = '$loc_y', ";
-        $loc_z = mysql_real_escape_string($_POST['loc_z']);
+        $loc_z = escapeSqlString($_POST['loc_z']);
         $query .= "loc_z = '$loc_z', ";
-        $loc_yrot = mysql_real_escape_string($_POST['loc_yrot']);
+        $loc_yrot = escapeSqlString($_POST['loc_yrot']);
         $query .= "loc_yrot = '$loc_yrot', ";
-        $loc_instance = mysql_real_escape_string($_POST['loc_instance']);
+        $loc_instance = escapeSqlString($_POST['loc_instance']);
         $query .= "loc_instance = '$loc_instance', ";
-        $racegender_id = mysql_real_escape_string($_POST['racegender_id']);
+        $racegender_id = escapeSqlString($_POST['racegender_id']);
         $query .= "racegender_id = '$racegender_id', ";
         if (isset($_POST['base_hitpoints_null'])) 
         {
@@ -174,7 +174,7 @@ function npc_main(){
         }
         else
         {
-            $base_hitpoints_max = mysql_real_escape_string($_POST['base_hitpoints_max']);
+            $base_hitpoints_max = escapeSqlString($_POST['base_hitpoints_max']);
             $query .= "base_hitpoints_max = '$base_hitpoints_max', ";
         }
         if (isset($_POST['base_mana_null']))
@@ -183,21 +183,21 @@ function npc_main(){
         }
         else
         {
-            $base_mana_max = mysql_real_escape_string($_POST['base_mana_max']);
+            $base_mana_max = escapeSqlString($_POST['base_mana_max']);
             $query .= "base_mana_max = '$base_mana_max', ";
         }
         if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $npc_impervious_ind = mysql_real_escape_string($_POST['npc_impervious_ind']);
+            $npc_impervious_ind = escapeSqlString($_POST['npc_impervious_ind']);
             $query .= "npc_impervious_ind = '$npc_impervious_ind', ";
         }
-        $kill_exp = mysql_real_escape_string($_POST['kill_exp']);
+        $kill_exp = escapeSqlString($_POST['kill_exp']);
         $query .= "kill_exp = '$kill_exp', ";
         if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $npc_spawn_rule = mysql_real_escape_string($_POST['npc_spawn_rule']);
+            $npc_spawn_rule = escapeSqlString($_POST['npc_spawn_rule']);
             $query .= "npc_spawn_rule = '$npc_spawn_rule', ";
-            $npc_addl_loot_category_id = mysql_real_escape_string($_POST['npc_addl_loot_category_id']);
+            $npc_addl_loot_category_id = escapeSqlString($_POST['npc_addl_loot_category_id']);
             $query .= "npc_addl_loot_category_id = '$npc_addl_loot_category_id', ";
             if (isset($_POST['banker'])) 
             {
@@ -219,8 +219,8 @@ function npc_main(){
         $query .= "WHERE id='$id'";
         if ($_POST['char_type'] > 0) // Don't update for players
         {
-            $sc_npctype = mysql_real_escape_string($_POST['sc_npctype']);
-            $sc_region = mysql_real_escape_string($_POST['sc_region']);
+            $sc_npctype = escapeSqlString($_POST['sc_npctype']);
+            $sc_region = escapeSqlString($_POST['sc_region']);
             $query2 = "UPDATE sc_npc_definitions SET npctype='$sc_npctype', region='$sc_region' WHERE char_id='$id'";
             
         }
@@ -258,8 +258,8 @@ function npc_skills()
                     echo '<p class="error">You are not authorized to edit NPCs</p>';
                     return;
                 }
-                $id = mysql_real_escape_string($_GET['npc_id']);
-                $skill_id = mysql_real_escape_string($_POST['skill_id']);
+                $id = escapeSqlString($_GET['npc_id']);
+                $skill_id = escapeSqlString($_POST['skill_id']);
                 $query = '';
                 if ($_POST['commit'] == 'Remove')
                 {
@@ -267,14 +267,14 @@ function npc_skills()
                 }
                 else if($_POST['commit'] == 'Add Skill')
                 {
-                    $skill_rank = mysql_real_escape_string($_POST['skill_rank']);
+                    $skill_rank = escapeSqlString($_POST['skill_rank']);
                     $query = "INSERT INTO character_skills (character_id, skill_id, skill_rank) VALUES ('$id', '$skill_id', '$skill_rank') ON DUPLICATE KEY UPDATE skill_rank='$skill_rank'";
                 }
                 else if($_POST['commit'] == 'Edit')
                 {
-                    $skill_rank = mysql_real_escape_string($_POST['skill_rank']);
-                    $skill_Z = mysql_real_escape_string($_POST['skill_Z']);
-                    $skill_Y = mysql_real_escape_string($_POST['skill_Y']);
+                    $skill_rank = escapeSqlString($_POST['skill_rank']);
+                    $skill_Z = escapeSqlString($_POST['skill_Z']);
+                    $skill_Y = escapeSqlString($_POST['skill_Y']);
                     $query = "UPDATE character_skills SET skill_rank='$skill_rank', skill_Z='$skill_Z', skill_Y='$skill_Y' WHERE character_id='$id' AND skill_id='$skill_id'";
                 }
                 else
@@ -290,18 +290,18 @@ function npc_skills()
             else
             {
                 $Skill_result = PrepSelect('skill');
-                while ($row = mysql_fetch_array($Skill_result, MYSQL_ASSOC))
+                while ($row = fetchSqlAssoc($Skill_result))
                 {
                     $s_id = $row['skill_id'];
                     $Skills[$s_id] = $row['name'];
                 }
-                $id = mysql_real_escape_string($_GET['npc_id']);
+                $id = escapeSqlString($_GET['npc_id']);
                 $query = 'SELECT skill_id, skill_Z, skill_Y, skill_rank FROM character_skills WHERE character_id='.$id.' ORDER BY skill_id';
                 $result = mysql_query2($query);
                 echo '<table border="1"><tr><th>Skill</th><th>Rank</th><th>Skill Z</th><th>Skill Y</th><th>Actions</th></tr>';
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
-                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    while ($row = fetchSqlAssoc($result))
                     {
                         $s_id = $row['skill_id'];
                         echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=skills" method="post">';
@@ -340,14 +340,14 @@ function npc_skills()
 function npc_traits(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
           return;
       }
       if (isset($_POST['commit'])){
-        $trait_id = mysql_real_escape_string($_POST['trait_id']);
+        $trait_id = escapeSqlString($_POST['trait_id']);
         if ($_POST['commit'] == "Remove"){
           $query = "DELETE FROM character_traits WHERE character_id='$id' AND trait_id='$trait_id'";
         }else if ($_POST['commit'] == "Add"){
@@ -360,11 +360,11 @@ function npc_traits(){
       }else{
         $query = "SELECT racegender_id FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $race = $row['racegender_id'];
         $query = "SELECT id, location, name, cstr_mesh, cstr_material, cstr_texture, shader FROM traits WHERE race_id='$race'";
         $Traits_Result = mysql_query2($query);
-        while ($row = mysql_fetch_array($Traits_Result)){
+        while ($row = fetchSqlAssoc($Traits_Result)){
           $t_id = $row['id'];
           $Traits["$t_id"]['id']=$t_id;
           $Traits["$t_id"]['location'] = $row['location'];
@@ -376,9 +376,9 @@ function npc_traits(){
         }
         $query = "SELECT trait_id FROM character_traits WHERE character_id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0){
+        if (sqlNumRows($result) > 0){
           echo '<table border="1"><tr><th>Location</th><th>Name</th><th>Image</th><th>Mesh</th><th>Material</th><th>Actions</th></tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             $t_id = $row['trait_id'];
             echo '<tr><td>'.$Traits["$t_id"]['location'].'</td>';
             echo '<td>'.$Traits["$t_id"]['name'].'</td>';
@@ -391,11 +391,11 @@ function npc_traits(){
         }else{
           echo '<p class="error">NPC has no traits</p>';
         }
-        if (mysql_num_rows($Traits_Result) > 0){
+        if (sqlNumRows($Traits_Result) > 0){
           echo '<p>Add a new Trait</p>';
-          mysql_data_seek($Traits_Result, 0);
+          sqlSeek($Traits_Result, 0);
           echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=traits" method="post"><select name="trait_id">';
-          while ($row = mysql_fetch_array($Traits_Result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($Traits_Result)){
             echo '<option value="'.$row['id'].'">Name='.$row['name'].' Location='.$row['location'];
             echo '</option>';
           }
@@ -415,16 +415,16 @@ function npc_traits(){
 function npc_kas(){
   if (checkaccess('npcs','read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
           return;
       }
       if (isset($_POST['commit'])){
-        $area = mysql_real_escape_string($_POST['area']);
+        $area = escapeSqlString($_POST['area']);
         if (isset($_POST['priority'])){
-          $priority = mysql_real_escape_string($_POST['priority']);
+          $priority = escapeSqlString($_POST['priority']);
         }
         if ($_POST['commit'] == 'Remove'){
           $query = "DELETE FROM npc_knowledge_areas WHERE player_id='$id' AND area='$area'";
@@ -434,7 +434,7 @@ function npc_kas(){
           if ($area == "SELF"){
             $query = "SELECT name, lastname FROM characters WHERE id='$id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             $name = $row['name'];
             if ($row['lastname'] != ""){
               $name = $name . ' ' .$row['lastname'];
@@ -454,15 +454,15 @@ function npc_kas(){
         // find npc name
         $query = "SELECT name,lastname FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0){
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        if (sqlNumRows($result) > 0){
+          $row = fetchSqlAssoc($result);
           $npcname = trim($row['name']." ".$row['lastname']);
           // find the knowledge area "scripts" for the NPC
           $query2 = "SELECT id, script FROM quest_scripts WHERE quest_id='-1' and script like '%".$npcname.":%'";
           echo "<b>KA Scripts:</b></br>";
           $result2 = mysql_query2($query2);
-          if (mysql_num_rows($result2) > 0){
-            $row2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+          if (sqlNumRows($result2) > 0){
+            $row2 = fetchSqlAssoc($result2);
             $npcscript = $row2['id'];
             echo "A KA script is present for ".$npcname.". ";
             echo " <a href=index.php?do=ka_scripts&sub=Read&areaid=".$npcscript."> Read </a> ";
@@ -474,8 +474,8 @@ function npc_kas(){
         // find all knowledge area "triggers" for the NPC
         $query = "SELECT area, priority FROM npc_knowledge_areas WHERE player_id='$id' ORDER BY priority";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0){
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        if (sqlNumRows($result) > 0){
+          while ($row = fetchSqlAssoc($result)){
             echo '<tr>';
             echo '<td><a href="./index.php?do=ka_detail&area='.rawurlencode($row['area']).'">'.$row['area'].'</a></td>';
             echo '<td>'.$row['priority'].'</td>';
@@ -503,12 +503,12 @@ function npc_kas(){
         }
         $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";
         $result = mysql_query2($query);
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
         $areas[] = $row['area'];
         }
         $query = "SELECT DISTINCT name, lastname FROM characters WHERE character_type=1 ORDER by name";
         $result = mysql_query2($query);
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
         if ($row['lastname'] == ""){
           $names[] = $row['name'];
         }else{
@@ -546,7 +546,7 @@ function npc_kas(){
 function npc_items(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
 
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
@@ -555,18 +555,18 @@ function npc_items(){
       }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == 'Remove'){
-          $inst_id = mysql_real_escape_string($_POST['id']);
+          $inst_id = escapeSqlString($_POST['id']);
           $query = "DELETE FROM item_instances WHERE id='$inst_id'";
         }else if ($_POST['commit'] == 'Change Location'){
-          $inst_id = mysql_real_escape_string($_POST['id']);
-          $slot = mysql_real_escape_string($_POST['slot']);
+          $inst_id = escapeSqlString($_POST['id']);
+          $slot = escapeSqlString($_POST['slot']);
           $query = "UPDATE item_instances SET location_in_parent='$slot' WHERE id='$inst_id'";
         }else if ($_POST['commit'] == 'Add'){
-          $item = mysql_real_escape_string($_POST['item_id']);
+          $item = escapeSqlString($_POST['item_id']);
           $query = "SELECT MAX(location_in_parent) AS loc FROM item_instances WHERE char_id_owner='$id' AND location_in_parent>15";
           $result = mysql_query2($query);
           $location = '';
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $row = fetchSqlAssoc($result);
           $location = $row['loc'];
           $location = ($location == null ? 15 : $location) + 1;
           if ($location > 47){
@@ -575,13 +575,13 @@ function npc_items(){
 
           $query = "SELECT item_max_quality FROM item_stats WHERE id = '$item'";
           $result = mysql_query2($query);
-          $row = mysql_fetch_array($result);
+          $row = fetchSqlAssoc($result);
           $quality = $row['item_max_quality'];
           $query = "INSERT INTO item_instances (char_id_owner, location_in_parent, stack_count, item_stats_id_standard, item_quality, crafted_quality) VALUES ('$id', $location, '1', '$item', '$quality', '$quality')";
         }else if ($_POST['commit'] == 'Update'){
-          $stack_count = mysql_real_escape_string($_POST['stack_count']);
-          $item_quality = mysql_real_escape_string($_POST['item_quality']);
-          $inst_id = mysql_real_escape_string($_POST['id']);
+          $stack_count = escapeSqlString($_POST['stack_count']);
+          $item_quality = escapeSqlString($_POST['item_quality']);
+          $inst_id = escapeSqlString($_POST['id']);
           $query = "UPDATE item_instances SET stack_count='$stack_count', item_quality='$item_quality', crafted_quality='$item_quality' WHERE id='$inst_id'";
         }
         unset($_POST);
@@ -591,9 +591,9 @@ function npc_items(){
       }else{
         $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_quality, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) > 0){
+        if (sqlNumRows($result) > 0){
           echo '<table border=1><tr><th>Item</th><th>Location</th><th>Count/Quality</th><th>Functions</th></tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             echo '<tr>';
             echo '<td>'.$row['name'].'</td>';
             echo '<td>'.LocationToString($row['location_in_parent']).'</td>';
@@ -808,7 +808,7 @@ function npc_items(){
 function npc_training(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
@@ -816,13 +816,13 @@ function npc_training(){
       }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == "Remove"){
-          $skill_id = mysql_real_escape_string($_POST['skill_id']);
+          $skill_id = escapeSqlString($_POST['skill_id']);
           $query = "DELETE FROM trainer_skills WHERE skill_id='$skill_id' AND player_id='$id'";
         }else if ($_POST['commit'] == "Add"){
-          $skill_id = mysql_real_escape_string($_POST['skill_id']);
-          $min_rank = mysql_real_escape_string($_POST['min_rank']);
-          $max_rank = mysql_real_escape_string($_POST['max_rank']);
-          $min_faction = mysql_real_escape_string($_POST['min_faction']);
+          $skill_id = escapeSqlString($_POST['skill_id']);
+          $min_rank = escapeSqlString($_POST['min_rank']);
+          $max_rank = escapeSqlString($_POST['max_rank']);
+          $min_faction = escapeSqlString($_POST['min_faction']);
           $query = "INSERT INTO trainer_skills (player_id, skill_id, min_rank, max_rank, min_faction) VALUES ('$id', '$skill_id', '$min_rank', '$max_rank', '$min_faction') ON DUPLICATE KEY UPDATE min_rank='$min_rank', max_rank='$max_rank', min_faction='$min_faction'";
         }
         $result = mysql_query2($query);
@@ -832,12 +832,12 @@ function npc_training(){
       }else{
         $query = "SELECT t.skill_id, t.min_rank, t.max_rank, t.min_faction, s.name FROM trainer_skills AS t LEFT JOIN skills AS s ON t.skill_id=s.skill_id WHERE t.player_id='$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) == 0){
+        if (sqlNumRows($result) == 0){
           echo '<p class="error">NPC is not currently a trainer</p>';
         }else{
           echo '<table border="1">';
           echo '<tr><th>Skill</th><th>Min Rank</th><th>Max Rank</th><th>Min Faction</th><th>Actions</th></tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             echo '<tr>';
             echo '<td>'.$row['name'].'</td>';
             echo '<td>'.$row['min_rank'].'</td>';
@@ -871,14 +871,14 @@ function npc_training(){
 function npc_merchant(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
           return;
       }
       if (isset($_POST['commit'])){
-        $category_id = mysql_real_escape_string($_POST['category_id']);
+        $category_id = escapeSqlString($_POST['category_id']);
         if ($_POST['commit'] == 'Remove'){
           $query = "DELETE FROM merchant_item_categories WHERE category_id = '$category_id' AND player_id = '$id'";
         }else if ($_POST['commit'] == 'Add'){
@@ -891,11 +891,11 @@ function npc_merchant(){
       }else{
         $query = "SELECT m.category_id, c.name FROM merchant_item_categories AS m LEFT JOIN item_categories AS c ON m.category_id = c.category_id WHERE m.player_id = '$id'";
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) == 0){
+        if (sqlNumRows($result) == 0){
           echo '<p class="error">This NPC is not currently a Merchant</p>';
         }else{
           echo '<table border="1"><tr><th>Category</th><th>Actions</th></tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             echo '<tr>';
             echo '<td>'.$row['name'].'</td>';
             echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=merchant" method="post">';
@@ -923,7 +923,7 @@ function npc_merchant(){
 function npc_specific(){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
-      $id = mysql_real_escape_string($_GET['npc_id']);
+      $id = escapeSqlString($_GET['npc_id']);
       // block unauthorized access
       if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
@@ -931,29 +931,29 @@ function npc_specific(){
       }
       if (isset($_POST['commit'])){
         if ($_POST['commit'] == "Update Trigger"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+          $tid = escapeSqlString($_POST['trigger_id']);
+          $trigger_text = escapeSqlString($_POST['trigger_text']);
           $query = "UPDATE npc_triggers SET trigger_text='$trigger_text' WHERE id='$tid'";
         }else if ($_POST['commit'] == "Update Responses"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
-          $response1 = mysql_real_escape_string($_POST['response1']);
-          $response2 = mysql_real_escape_string($_POST['response2']);
-          $response3 = mysql_real_escape_string($_POST['response3']);
-          $response4 = mysql_real_escape_string($_POST['response4']);
-          $response5 = mysql_real_escape_string($_POST['response5']);
-          $script = mysql_real_escape_string($_POST['script']);
-          $prerequisite = mysql_real_escape_string($_POST['prerequisite']);
+          $tid = escapeSqlString($_POST['trigger_id']);
+          $response1 = escapeSqlString($_POST['response1']);
+          $response2 = escapeSqlString($_POST['response2']);
+          $response3 = escapeSqlString($_POST['response3']);
+          $response4 = escapeSqlString($_POST['response4']);
+          $response5 = escapeSqlString($_POST['response5']);
+          $script = escapeSqlString($_POST['script']);
+          $prerequisite = escapeSqlString($_POST['prerequisite']);
           if (isset($_POST['c'])){
             $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite'";
           }else{
             $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite' WHERE trigger_id='$tid'";
           }
         }else if ($_POST['commit'] == "Create Sub-Trigger"){
-          $tid_o = mysql_real_escape_string($_POST['trigger_id']);
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+          $tid_o = escapeSqlString($_POST['trigger_id']);
+          $trigger_text = escapeSqlString($_POST['trigger_text']);
           $query = "SELECT name, lastname FROM characters WHERE id='$id'";
           $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $row = fetchSqlAssoc($result);
           $npcname = $row['name'];
           if ($row['lastname'] != ''){
             $npcname = $npcname . ' ' .$row['lastname'];
@@ -963,15 +963,15 @@ function npc_specific(){
           $result = mysql_query2($query);
           $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
         }else if ($_POST['commit'] == "Remove"){
-          $tid = mysql_real_escape_string($_POST['trigger_id']);
+          $tid = escapeSqlString($_POST['trigger_id']);
           $query = "DELETE FROM npc_triggers WHERE id='$tid'";
           $result = mysql_query2($query);
           $query = "DELETE FROM npc_responses WHERE trigger_id='$tid'";
         }else if ($_POST['commit'] == "Create New Trigger"){
-          $trigger_text = mysql_real_escape_string($_POST['trigger_text']);
+          $trigger_text = escapeSqlString($_POST['trigger_text']);
           $query = "SELECT name, lastname FROM characters WHERE id='$id'";
           $result = mysql_query2($query);
-          $row = mysql_fetch_array($result, MYSQL_ASSOC);
+          $row = fetchSqlAssoc($result);
           $npcname = $row['name'];
           if ($row['lastname'] != ''){
             $npcname = $npcname . ' ' .$row['lastname'];
@@ -988,24 +988,24 @@ function npc_specific(){
       }else{
         $query = "SELECT name, lastname FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         $npcname = $row['name'];
         if ($row['lastname'] != ""){
           $npcname = $npcname . ' ' . $row['lastname'];
         }
         $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$npcname'";
         if (isset($_GET['trigger'])){
-          $t = mysql_real_escape_string($_GET['trigger']);
+          $t = escapeSqlString($_GET['trigger']);
           $query = $query . " ORDER BY t.id IN ('$t') DESC";
         }else{
           $query = $query . " ORDER BY t.id";
         }
         $result = mysql_query2($query);
-        if (mysql_num_rows($result) == 0){
+        if (sqlNumRows($result) == 0){
           echo '<p class="error">NPC has no Specific KAs</p>';
         }else{
           echo '<table border="1"><tr><th>Trigger</th><th>Response</th><th>Action</th></tr>';
-          while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+          while ($row = fetchSqlAssoc($result)){
             $t_id = $row['id'];
             echo '<tr>';
             echo '<td>';
@@ -1075,10 +1075,10 @@ function npcdetails(){
     $uri_string = './index.php?do=npc_details';
     if (isset($_GET['npc_id'])){
       if (is_numeric($_GET['npc_id'])){
-        $id = mysql_real_escape_string($_GET['npc_id']);
+        $id = escapeSqlString($_GET['npc_id']);
         $query = "SELECT name, lastname, character_type FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         if (checkaccess('npcs', 'delete'))
@@ -1169,8 +1169,8 @@ function npc_factions()
             }
             if (isset($_POST['commit']))
             {
-                $id = mysql_real_escape_string($_GET['npc_id']);
-                $faction_id = mysql_real_escape_string($_POST['faction_id']);
+                $id = escapeSqlString($_GET['npc_id']);
+                $faction_id = escapeSqlString($_POST['faction_id']);
                 $query = '';
                 if ($_POST['commit'] == 'Remove')
                 {
@@ -1178,12 +1178,12 @@ function npc_factions()
                 }
                 else if($_POST['commit'] == 'Add Faction')
                 {
-                    $faction_value = mysql_real_escape_string($_POST['faction_value']);
+                    $faction_value = escapeSqlString($_POST['faction_value']);
                     $query = "INSERT INTO character_factions (character_id, faction_id, value) VALUES ('$id', '$faction_id', '$faction_value') ON DUPLICATE KEY UPDATE value='$faction_value'";
                 }
                 else if($_POST['commit'] == 'Edit')
                 {
-                    $faction_value = mysql_real_escape_string($_POST['faction_value']);
+                    $faction_value = escapeSqlString($_POST['faction_value']);
                     $query = "UPDATE character_factions SET value='$faction_value'WHERE character_id='$id' AND faction_id='$faction_id'";
                 }
                 else
@@ -1199,18 +1199,18 @@ function npc_factions()
             else
             {
                 $faction_result = PrepSelect('factions');
-                while ($row = mysql_fetch_array($faction_result, MYSQL_ASSOC))
+                while ($row = fetchSqlAssoc($faction_result))
                 {
                     $f_id = $row['id'];
                     $factions[$f_id] = $row['faction_name'];
                 }
-                $id = mysql_real_escape_string($_GET['npc_id']);
+                $id = escapeSqlString($_GET['npc_id']);
                 $query = 'SELECT faction_id, value FROM character_factions WHERE character_id='.$id.' ORDER BY faction_id';
                 $result = mysql_query2($query);
                 echo '<table border="1"><tr><th>Faction</th><th>Value</th><th>Actions</th></tr>';
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
-                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    while ($row = fetchSqlAssoc($result))
                     {
                         $f_id = $row['faction_id'];
                         echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=factions" method="post">';
@@ -1255,8 +1255,8 @@ function npc_variables()
             }
             if (isset($_POST['commit']))
             {
-                $id = mysql_real_escape_string($_GET['npc_id']);
-                $variable_name = mysql_real_escape_string($_POST['variable_name']);
+                $id = escapeSqlString($_GET['npc_id']);
+                $variable_name = escapeSqlString($_POST['variable_name']);
                 $query = '';
                 if ($_POST['commit'] == 'Remove')
                 {
@@ -1264,12 +1264,12 @@ function npc_variables()
                 }
                 else if($_POST['commit'] == 'Add Variable')
                 {
-                    $variable_value = mysql_real_escape_string($_POST['variable_value']);
+                    $variable_value = escapeSqlString($_POST['variable_value']);
                     $query = "INSERT INTO character_variables (character_id, name, value) VALUES ('$id', '$variable_name', '$variable_value') ON DUPLICATE KEY UPDATE value='$variable_value'";
                 }
                 else if($_POST['commit'] == 'Edit')
                 {
-                    $variable_value = mysql_real_escape_string($_POST['variable_value']);
+                    $variable_value = escapeSqlString($_POST['variable_value']);
                     $query = "UPDATE character_variables SET value='$variable_value' WHERE character_id='$id' AND name='$variable_name'";
                 }
                 else
@@ -1284,13 +1284,13 @@ function npc_variables()
             }
             else
             {
-                $id = mysql_real_escape_string($_GET['npc_id']);
+                $id = escapeSqlString($_GET['npc_id']);
                 $query = 'SELECT name, value FROM character_variables WHERE character_id='.$id.' ORDER BY name';
                 $result = mysql_query2($query);
                 echo '<table border="1"><tr><th>Variable</th><th>Value</th><th>Actions</th></tr>';
-                if (mysql_num_rows($result) > 0)
+                if (sqlNumRows($result) > 0)
                 {
-                    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+                    while ($row = fetchSqlAssoc($result))
                     {
                         echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
                         echo '<input type="text" name="variable_name" value="'.$row['name'].'" /></td>';

@@ -17,10 +17,6 @@
 
 
     SetUpDB("$db_hostname", "$db_username", "$db_password", "$db_name");
-    if (!isset($_SESSION['totalq']))
-    {
-        $_SESSION['totalq'] = "SQL Queries Performed:";
-    }
     
     natural_resources_draw();
     
@@ -113,12 +109,12 @@ function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$sc
     $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
     $i=0;
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
         $id          = $line[0];
         $x           = $line[1];
         $y           = $line[2];
@@ -143,11 +139,11 @@ function draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
     $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
         $id          = $line[0];
         $x1          = $line[1];
         $y1          = $line[2];
@@ -192,12 +188,12 @@ function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
     $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
     $i=0;
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
         $id          = $line[0];
         $x           = $line[1];
         $y           = $line[2];
@@ -214,15 +210,15 @@ function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
 function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$fg_color_no_wander){
     $query = " select id,x,y,z,radius,flags from sc_waypoints where " . $sectors;
     //echo $query;
-    $res = mysql_query($query);
+    $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
     $i=0;
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
         $id      = $line[0];
         $x       = $line[1];
         $y       = $line[2];
@@ -286,8 +282,8 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,IMG_COLOR_STYLED);
 
         $query2 = "select wp1.x,wp1.y,wp1.z,wp2.x,wp2.y,wp2.z,l.flags,wp1.id,wp2.id from sc_waypoint_links l, sc_waypoints wp1, sc_waypoints wp2 where l.wp1 = wp1.id and l.wp2 = wp2.id and wp1.id = ".$id;
-        $res2=mysql_query($query2); 
-        while ($line2 = mysql_fetch_array($res2, MYSQL_NUM)){
+        $res2=mysql_query2($query2); 
+        while ($line2 = fetchSqlRow($res2)){
             $x1 = $line2[0];
             $y1 = $line2[1];
             $z1 = $line2[2];
@@ -339,14 +335,14 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
 function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color,$bg_color){
     $query = "select distinct wl.id,wl.flags from sc_waypoint_links wl, sc_waypoints wp where (wp.id = wl.wp1 or wp.id=wl.wp2) and ".$sectors;
     //echo $query;
-    $res = mysql_query($query);
+    $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
-    while ($line = mysql_fetch_array($res, MYSQL_NUM))
+    while ($line = fetchSqlRow($res))
     {
        $path_id = $line[0];
        $flags   = $line[1];
@@ -372,8 +368,8 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
        {
             // Draw from start wp to first point
             $query2 = "select w.x,w.z from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp1 and wl.id=".$path_id;
-            $res2=mysql_query($query2);
-            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+            $res2=mysql_query2($query2);
+            while ($line2 = fetchSqlRow($res2))
             {
                 $x1 = $line2[0];
                 $z1 = $line2[1];
@@ -390,8 +386,8 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
                 $found = false;
 		// Draw from start wp to first point
             	$query2 = "select id,x,z from sc_path_points where path_id=".$path_id." and prev_point=".$point_id;
-            	$res2=mysql_query($query2);
-            	while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+            	$res2=mysql_query2($query2);
+            	while ($line2 = fetchSqlRow($res2))
 	    	{
                     $found = true;
 
@@ -415,8 +411,8 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
         {
             // Draw from start wp to first point
             $query2 = "select w.x,w.z  from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp2 and wl.id=".$path_id;
-            $res2=mysql_query($query2);
-            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM))
+            $res2=mysql_query2($query2);
+            while ($line2 = fetchSqlRow($res2))
             {
                 // Shift the start point    
                 $ix1 = $ix2;
@@ -436,15 +432,15 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
 
 function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$fg_color){
     $query = "select id,x,y,z,radius,id_prev_loc_in_region from sc_locations where " . $sectors;
-    $res = mysql_query($query);
+    $res = mysql_query2($query);
 
     // exit if there is no data
-    $num = mysql_num_rows($res);
+    $num = sqlNumRows($res);
     if ($num==0)
       return;
 
     $i=0;
-    while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+    while ($line = fetchSqlRow($res)){
         $id      = $line[0];
         $x       = $line[1];
         $y       = $line[2];
@@ -460,8 +456,8 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
 	if ( $id_prev > 0 )
         {
 	    $query2 = "select x,y,z from sc_locations where " . $sectors . " and id = " . $id_prev;
-	    $res2 = mysql_query($query2);
-            while ($line2 = mysql_fetch_array($res2, MYSQL_NUM)){
+	    $res2 = mysql_query2($query2);
+            while ($line2 = fetchSqlRow($res2)){
                $x2       = $line2[0];
                $y2       = $line2[1];
                $z2       = $line2[2];

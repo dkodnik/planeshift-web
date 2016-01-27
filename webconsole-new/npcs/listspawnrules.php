@@ -3,21 +3,21 @@ function listspawnrules(){
   if (checkaccess('npcs', 'read')){
     $query = 'SELECT * FROM npc_spawn_rules';
     if (isset($_GET['id'])){
-      $id = mysql_real_escape_string($_GET['id']);
+      $id = escapeSqlString($_GET['id']);
       $query = $query . ' WHERE id='.$id;
     }
     $result = mysql_query2($query);
     echo '<table border="1">';
     $query = "SELECT id, CONCAT_WS(' ', name, lastname) AS name, npc_spawn_rule FROM characters WHERE npc_spawn_rule !=0";
     $c_result = mysql_query2($query);
-    while ($c_row = mysql_fetch_array($c_result, MYSQL_ASSOC)){
+    while ($c_row = fetchSqlAssoc($c_result)){
       $rule = $c_row['npc_spawn_rule'];
       $id = $c_row['id'];
       $chars[$rule][$id] = $c_row['name'];
     }
     $query = "SELECT r.id, r.npc_spawn_rule_id, r.x1, r.y1, r.z1, r.x2, r.y2, r.z2, r.sector_id, r.range_type_code, r.radius, s.name FROM npc_spawn_ranges AS r LEFT JOIN sectors AS s ON r.sector_id=s.id";
     $r_result = mysql_query2($query);
-    while ($r_row = mysql_fetch_array($r_result, MYSQL_ASSOC)){
+    while ($r_row = fetchSqlAssoc($r_result)){
       $rule = $r_row['npc_spawn_rule_id'];
       $id = $r_row['id'];
       $Rules[$rule][$id]['id'] = $id;
@@ -34,7 +34,7 @@ function listspawnrules(){
     }
     $Sectors = PrepSelect('sectorid');
     echo '<tr><th>Rule</th><th>Details</th><th>NPCs</th></tr>';
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       echo '<tr>';
       echo '<td>'.$row['id'].'<br/>';
       if (checkaccess('npcs', 'edit')){
@@ -160,33 +160,33 @@ function listspawnrules(){
 function editspawnrule(){
   if (checkaccess('npcs', 'edit')){
     if (isset($_POST['id'])){
-      $id = mysql_real_escape_string($_POST['id']);
+      $id = escapeSqlString($_POST['id']);
       if ($_POST['commit'] == "Update Spawn Rule"){
-        $min_spawn_time = mysql_real_escape_string($_POST['min_spawn_time']);
-        $max_spawn_time = mysql_real_escape_string($_POST['max_spawn_time']);
-        $substitute_spawn_odds = mysql_real_escape_string($_POST['substitute_spawn_odds']);
-        $substitute_player = mysql_real_escape_string($_POST['substitute_player']);
-        $fixed_spawn_x = mysql_real_escape_string($_POST['fixed_spawn_x']);
-        $fixed_spawn_y = mysql_real_escape_string($_POST['fixed_spawn_y']);
-        $fixed_spawn_z = mysql_real_escape_string($_POST['fixed_spawn_z']);
-        $fixed_spawn_rot = mysql_real_escape_string($_POST['fixed_spawn_rot']);
-        $fixed_spawn_sector = mysql_real_escape_string($_POST['fixed_spawn_sector']);
-        $fixed_spawn_instance = mysql_real_escape_string($_POST['fixed_spawn_instance']);
-        $loot_category_id = mysql_real_escape_string($_POST['loot_category_id']);
-        $dead_remain_time = mysql_real_escape_string($_POST['dead_remain_time']);
-        $min_spawn_spacing_dist = mysql_real_escape_string($_POST['min_spawn_spacing_dist']);
+        $min_spawn_time = escapeSqlString($_POST['min_spawn_time']);
+        $max_spawn_time = escapeSqlString($_POST['max_spawn_time']);
+        $substitute_spawn_odds = escapeSqlString($_POST['substitute_spawn_odds']);
+        $substitute_player = escapeSqlString($_POST['substitute_player']);
+        $fixed_spawn_x = escapeSqlString($_POST['fixed_spawn_x']);
+        $fixed_spawn_y = escapeSqlString($_POST['fixed_spawn_y']);
+        $fixed_spawn_z = escapeSqlString($_POST['fixed_spawn_z']);
+        $fixed_spawn_rot = escapeSqlString($_POST['fixed_spawn_rot']);
+        $fixed_spawn_sector = escapeSqlString($_POST['fixed_spawn_sector']);
+        $fixed_spawn_instance = escapeSqlString($_POST['fixed_spawn_instance']);
+        $loot_category_id = escapeSqlString($_POST['loot_category_id']);
+        $dead_remain_time = escapeSqlString($_POST['dead_remain_time']);
+        $min_spawn_spacing_dist = escapeSqlString($_POST['min_spawn_spacing_dist']);
         $query = "UPDATE npc_spawn_rules SET min_spawn_time='$min_spawn_time', max_spawn_time='$max_spawn_time', substitute_spawn_odds='$substitute_spawn_odds', substitute_player='$substitute_player', fixed_spawn_x='$fixed_spawn_x', fixed_spawn_y='$fixed_spawn_y', fixed_spawn_z='$fixed_spawn_z', fixed_spawn_rot='$fixed_spawn_rot', fixed_spawn_sector='$fixed_spawn_sector', fixed_spawn_instance='$fixed_spawn_instance', loot_category_id='$loot_category_id', dead_remain_time='$dead_remain_time', min_spawn_spacing_dist='$min_spawn_spacing_dist' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else if ($_POST['commit'] == "Change Name"){
-        $name = mysql_real_escape_string($_POST['name']);
+        $name = escapeSqlString($_POST['name']);
         $query = "UPDATE npc_spawn_rules SET name='$name' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else if ($_POST['commit'] == "Remove NPC"){
-        $npc_id = mysql_real_escape_string($_POST['npc_id']);
+        $npc_id = escapeSqlString($_POST['npc_id']);
         $query = "UPDATE characters SET npc_spawn_rule='0' WHERE id='$npc_id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
@@ -195,27 +195,27 @@ function editspawnrule(){
         if (!checkaccess('npcs', 'create')) {
             echo '<p class="error">You are not authorized to use these functions</p>';
         }
-        $name = mysql_real_escape_string($_POST['name']);
+        $name = escapeSqlString($_POST['name']);
         $query = "INSERT INTO npc_spawn_rules (name) VALUES ('$name')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else if ($_POST['commit'] == "Remove Range"){
-        $id = mysql_real_escape_string($_POST['range_id']);
+        $id = escapeSqlString($_POST['range_id']);
         $query = "DELETE FROM npc_spawn_ranges WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         listspawnrules();
       }else if ($_POST['commit'] == "New Range"){
-        $x1 = mysql_real_escape_string($_POST['x1']);
-        $y1 = mysql_real_escape_string($_POST['y1']);
-        $z1 = mysql_real_escape_string($_POST['z1']);
-        $x2 = mysql_real_escape_string($_POST['x2']);
-        $y2 = mysql_real_escape_string($_POST['y2']);
-        $z2 = mysql_real_escape_string($_POST['z2']);
-        $sector_id = mysql_real_escape_string($_POST['sector_id']);
-        $range_type_code = mysql_real_escape_string($_POST['code']);
-        $radius = mysql_real_escape_string($_POST['radius']);
+        $x1 = escapeSqlString($_POST['x1']);
+        $y1 = escapeSqlString($_POST['y1']);
+        $z1 = escapeSqlString($_POST['z1']);
+        $x2 = escapeSqlString($_POST['x2']);
+        $y2 = escapeSqlString($_POST['y2']);
+        $z2 = escapeSqlString($_POST['z2']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $range_type_code = escapeSqlString($_POST['code']);
+        $radius = escapeSqlString($_POST['radius']);
         $query = "INSERT INTO npc_spawn_ranges (npc_spawn_rule_id, x1, y1, z1, x2, y2, z2, sector_id, range_type_code, radius) VALUES ('$id', '$x1', '$y1', '$z1', '$x2', '$y2', '$z2', '$sector_id', '$range_type_code', '$radius')";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';

@@ -11,7 +11,7 @@ function listLootModifiers()
     $query = 'SELECT * from loot_modifiers';
     if (isset($_GET['id']) && is_numeric($_GET['id']))
     {
-        $query .= ' WHERE id = ' . mysql_real_escape_string($_GET['id']);
+        $query .= ' WHERE id = ' . escapeSqlString($_GET['id']);
     }
     if (isset($_GET['sort']))
     {
@@ -35,7 +35,7 @@ function listLootModifiers()
     echo '<table border="1"><tr><th><a href="./index.php?do=listlootmodifiers&amp;sort=modifier_type">Modifier Type</a></th>';
     echo '<th><a href="./index.php?do=listlootmodifiers&amp;sort=name">Name</a></th><th>Probability</th>';
     echo '<th>Cost Modifier</th><th>Mesh</th><th>Icon</th><th>Not Usable With</th><th>actions</th></tr>';
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
+    while ($row = fetchSqlAssoc($result))
     {
         echo '<tr><td>'.$row['modifier_type'].'</td>';
         echo '<td>'.$row['name'].'</td>';
@@ -88,7 +88,7 @@ function editLootModifiers()
     $id = -1;
     if (isset($_POST['id']) && is_numeric($_POST['id']) && $_POST['id'] > -1)
     {
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
     }
 
     if (isset($_POST['action'])) 
@@ -103,7 +103,7 @@ function editLootModifiers()
         {
             $query = "SELECT * from loot_modifiers WHERE id='$id'";
             $result = mysql_query2($query);
-            $row = mysql_fetch_array($result, MYSQL_ASSOC);
+            $row = fetchSqlAssoc($result);
             echo '<h3> Edit loot modifier #'.$id.': </h3>';
             echo '<table><form action="./index.php?do=editlootmodifiers" method="post">';
             $selected = ' SELECTED="SELECTED"';
@@ -126,16 +126,16 @@ function editLootModifiers()
         }
         elseif ($_POST['action'] == 'Save Changes')
         {
-            $modifier_type = mysql_real_escape_string($_POST['modifier_type']);
-            $name = mysql_real_escape_string($_POST['name']);
-            $effect = mysql_real_escape_string($_POST['effect']);
-            $probability = mysql_real_escape_string($_POST['probability']);
-            $stat_req_modifier = mysql_real_escape_string($_POST['stat_req_modifier']);
-            $cost_modifier = mysql_real_escape_string($_POST['cost_modifier']);
-            $mesh = mysql_real_escape_string($_POST['mesh']);
-            $icon = mysql_real_escape_string($_POST['icon']);
-            $not_usable_with = mysql_real_escape_string($_POST['not_usable_with']);
-            $equip_script = mysql_real_escape_string($_POST['equip_script']);
+            $modifier_type = escapeSqlString($_POST['modifier_type']);
+            $name = escapeSqlString($_POST['name']);
+            $effect = escapeSqlString($_POST['effect']);
+            $probability = escapeSqlString($_POST['probability']);
+            $stat_req_modifier = escapeSqlString($_POST['stat_req_modifier']);
+            $cost_modifier = escapeSqlString($_POST['cost_modifier']);
+            $mesh = escapeSqlString($_POST['mesh']);
+            $icon = escapeSqlString($_POST['icon']);
+            $not_usable_with = escapeSqlString($_POST['not_usable_with']);
+            $equip_script = escapeSqlString($_POST['equip_script']);
             $query = "UPDATE loot_modifiers SET modifier_type='$modifier_type', name='$name', effect='$effect', probability='$probability', stat_req_modifier='$stat_req_modifier', ";
             $query .= "cost_modifier='$cost_modifier', mesh='$mesh', icon='$icon', not_usable_with='$not_usable_with', equip_script='$equip_script' WHERE id='$id'";
             mysql_query2($query);
@@ -151,16 +151,16 @@ function editLootModifiers()
                 echo '<p class="error">You are not authorized to create loot modifiers</p>';
                 return;
             }
-            $modifier_type = mysql_real_escape_string($_POST['modifier_type']);
-            $name = mysql_real_escape_string($_POST['name']);
-            $effect = mysql_real_escape_string($_POST['effect']);
-            $probability = mysql_real_escape_string($_POST['probability']);
-            $stat_req_modifier = mysql_real_escape_string($_POST['stat_req_modifier']);
-            $cost_modifier = mysql_real_escape_string($_POST['cost_modifier']);
-            $mesh = mysql_real_escape_string($_POST['mesh']);
-            $icon = mysql_real_escape_string($_POST['icon']);
-            $not_usable_with = mysql_real_escape_string($_POST['not_usable_with']);
-            $equip_script = mysql_real_escape_string($_POST['equip_script']);
+            $modifier_type = escapeSqlString($_POST['modifier_type']);
+            $name = escapeSqlString($_POST['name']);
+            $effect = escapeSqlString($_POST['effect']);
+            $probability = escapeSqlString($_POST['probability']);
+            $stat_req_modifier = escapeSqlString($_POST['stat_req_modifier']);
+            $cost_modifier = escapeSqlString($_POST['cost_modifier']);
+            $mesh = escapeSqlString($_POST['mesh']);
+            $icon = escapeSqlString($_POST['icon']);
+            $not_usable_with = escapeSqlString($_POST['not_usable_with']);
+            $equip_script = escapeSqlString($_POST['equip_script']);
             $query = "INSERT INTO loot_modifiers SET modifier_type='$modifier_type', name='$name', effect='$effect', probability='$probability', stat_req_modifier='$stat_req_modifier', ";
             $query .= "cost_modifier='$cost_modifier', mesh='$mesh', icon='$icon', not_usable_with='$not_usable_with', equip_script='$equip_script'";
             mysql_query2($query);

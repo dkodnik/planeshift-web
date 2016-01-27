@@ -3,7 +3,7 @@ function listmerchant(){
   if (checkaccess('npcs', 'read')){
     $query = 'SELECT category_id, name FROM item_categories';
     $result = mysql_query2($query);
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $C_id = $row['category_id'];
       $Categories["$C_id"] = $row['name'];
     }
@@ -11,7 +11,7 @@ function listmerchant(){
     unset($row);
     $query = "SELECT DISTINCT m.player_id, m.category_id, CONCAT_WS(' ', c.name, c.lastname) AS name, s.name AS sector FROM merchant_item_categories AS m LEFT JOIN characters AS c ON m.player_id=c.id LEFT JOIN sectors AS s ON c.loc_sector_id=s.id ORDER BY sector, name, category_id";
     $result = mysql_query2($query);
-    while (list($player_id, $category_id, $name, $sector) = mysql_fetch_array($result)){
+    while (list($player_id, $category_id, $name, $sector) = fetchSqlAssoc($result)){
       $Merchant["$player_id"]['id'] = $player_id;
       $Merchant["$player_id"]['name'] = $name;
       $Merchant["$player_id"]['sector'] = $sector;
@@ -31,7 +31,7 @@ function listmerchant(){
     $result = mysql_query2($query);
     echo '<table border="1"><tr><th><a href="./index.php?do=listmerchant&amp;sort=name">NPC</a></th><th><a href="./index.php?do=listmerchant&amp;sort=sector">Sector</a></th><th>Categories</th></tr>';
     $cat_result = PrepSelect('category');
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       $pid = $row['player_id'];
       $P = $Merchant["$pid"];
       echo '<tr><td>';
@@ -72,8 +72,8 @@ function listmerchant(){
 function editmerchant(){
   if (checkaccess('npcs', 'edit')){
     if (isset($_POST['commit'])){
-      $player_id = mysql_real_escape_string($_POST['player_id']);
-      $category_id = mysql_real_escape_string($_POST['category_id']);
+      $player_id = escapeSqlString($_POST['player_id']);
+      $category_id = escapeSqlString($_POST['category_id']);
       if ($_POST['commit'] == 'Remove'){
         $query = "DELETE FROM merchant_item_categories WHERE player_id='$player_id' AND category_id='$category_id'";
         $result = mysql_query2($query);

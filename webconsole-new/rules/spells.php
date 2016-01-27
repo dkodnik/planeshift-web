@@ -2,7 +2,7 @@
 function spells(){
   if (checkaccess('spells', 'read')){
     if (checkaccess('spells', 'delete') && isset($_POST['commit']) && isset($_GET['way'])){
-      $id = mysql_real_escape_string($_POST['id']);
+      $id = escapeSqlString($_POST['id']);
       if ($_POST['commit'] == 'Confirm Delete'){
         $query = "DELETE FROM spells WHERE id='$id'";
         $result = mysql_query2($query);
@@ -11,23 +11,23 @@ function spells(){
         echo '<p class="error">Please Confirm you want to delete spell id '.$id;
         $query = "SELECT name FROM spells WHERE id='$id'";
         $result = mysql_query2($query);
-        $r = mysql_fetch_array($result, MYSQL_ASSOC);
+        $r = fetchSqlAssoc($result);
         $name = $r['name'];
         $way = $_GET['way'];
         echo ' - '.$name.'</p><form action="./index.php?do=spells&amp;way='.$way.'" method="post"><input type="hidden" name="id" value="'.$id.'"/><input type="submit" name="commit" value="Confirm Delete"></form>';
       }
     }
     if (isset($_GET['way'])){
-      $way = mysql_real_escape_string($_GET['way']);
+      $way = escapeSqlString($_GET['way']);
       $query = "SELECT name, realm, spell_description, id FROM spells WHERE way_id='$way' ORDER BY realm, name";
       $result = mysql_query2($query);
-      if (mysql_num_rows($result) > 0){
+      if (sqlNumRows($result) > 0){
         echo '<table border="1"><tr><th>Name</th><th>Realm</th><th>Description</th>';
         if (checkaccess('spells', 'delete')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<tr><td>';
           echo '<a href="./index.php?do=spell&amp;id='.$row['id'].'">'.$row['name'].'</a>';
           echo '</td><td>';
@@ -47,9 +47,9 @@ function spells(){
     }else{
       $query = "SELECT w.name, w.id, COUNT(s.id) AS count FROM ways AS w LEFT JOIN spells AS s ON w.id=s.way_id GROUP BY w.id ORDER BY w.name";
       $result = mysql_query2($query);
-      if (mysql_num_rows($result) > 0){
+      if (sqlNumRows($result) > 0){
         echo '<table border="1"><tr><th>Way</th><th>Number of Spells</th></tr>';
-        while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+        while ($row = fetchSqlAssoc($result)){
           echo '<tr><td><a href="./index.php?do=spells&amp;way='.$row['id'].'">'.$row['name'].'</a></td>';
           echo '<td>'.$row['count'].'</td></tr>';
         }
@@ -66,35 +66,35 @@ function spells(){
 function spell(){
   if (checkaccess('spells', 'read')){
     if (isset($_GET['id'])){
-      $id = mysql_real_escape_string($_GET['id']);
+      $id = escapeSqlString($_GET['id']);
       $query = "SELECT s.name, s.way_id, s.realm, s.casting_effect, s.spell_description, s.offensive, s.outcome, s.max_power, s.npc_spell_power, s.target_type, s.cast_duration, s.range, s.aoe_radius, s.aoe_angle, s.image_name, s.cstr_npc_spell_category AS cstr FROM spells AS s WHERE s.id='$id'";
       $result = mysql_query2($query);
-      $row = mysql_fetch_array($result, MYSQL_ASSOC);
+      $row = fetchSqlAssoc($result);
       if (checkaccess('spells', 'edit')){
         if (isset($_POST['commit'])){
-          $name = mysql_real_escape_string($_POST['name']);
-          $way_id = mysql_real_escape_string($_POST['way_id']);
-          $realm = mysql_real_escape_string($_POST['realm']);
-          $casting_effect = mysql_real_escape_string($_POST['casting_effect']);
-          $spell_description = mysql_real_escape_string($_POST['spell_description']);
-          $offensive = mysql_real_escape_string($_POST['offensive']);
-          $outcome = mysql_real_escape_string($_POST['outcome']);
-          $max_power = mysql_real_escape_string($_POST['max_power']);
-          $npc_spell_power = mysql_real_escape_string($_POST['npc_spell_power']);
+          $name = escapeSqlString($_POST['name']);
+          $way_id = escapeSqlString($_POST['way_id']);
+          $realm = escapeSqlString($_POST['realm']);
+          $casting_effect = escapeSqlString($_POST['casting_effect']);
+          $spell_description = escapeSqlString($_POST['spell_description']);
+          $offensive = escapeSqlString($_POST['offensive']);
+          $outcome = escapeSqlString($_POST['outcome']);
+          $max_power = escapeSqlString($_POST['max_power']);
+          $npc_spell_power = escapeSqlString($_POST['npc_spell_power']);
           $target_type=0;
           foreach ($_POST['tt'] AS $key => $value){
             $target_type += $value;
           } 
-          $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
-          $range = mysql_real_escape_string($_POST['range']);
-          $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
-          $aoe_angle = mysql_real_escape_string($_POST['aoe_angle']);
-          $image_name = mysql_real_escape_string($_POST['image_name']);
-          $cstr_npc_spell_category = mysql_real_escape_string($_POST['cstr_npc_spell_category']);
-          $pos0 = mysql_real_escape_string($_POST['position-0']);
-          $pos1 = mysql_real_escape_string($_POST['position-1']);
-          $pos2 = mysql_real_escape_string($_POST['position-2']);
-          $pos3 = mysql_real_escape_string($_POST['position-3']);
+          $cast_duration = escapeSqlString($_POST['cast_duration']);
+          $range = escapeSqlString($_POST['range']);
+          $aoe_radius = escapeSqlString($_POST['aoe_radius']);
+          $aoe_angle = escapeSqlString($_POST['aoe_angle']);
+          $image_name = escapeSqlString($_POST['image_name']);
+          $cstr_npc_spell_category = escapeSqlString($_POST['cstr_npc_spell_category']);
+          $pos0 = escapeSqlString($_POST['position-0']);
+          $pos1 = escapeSqlString($_POST['position-1']);
+          $pos2 = escapeSqlString($_POST['position-2']);
+          $pos3 = escapeSqlString($_POST['position-3']);
           $query = "UPDATE spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', `range`='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category' WHERE id='$id'";
           $result = mysql_query2($query);
           if ($pos0 == ''){
@@ -204,7 +204,7 @@ function spell(){
           $i = 0;
           $glyphs = PrepSelect('Glyphs');
           while ($i < 4){
-            $r2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+            $r2 = fetchSqlAssoc($result2);
             $j = $i+1;
             echo '<tr><td>Glyph Slot '. $j.':</td><td>';
             if ($i == $r2['position']){
@@ -269,7 +269,7 @@ function spell(){
         $result2 = mysql_query2($query);
         $i = 0;
         while ($i < 4){
-          $r2 = mysql_fetch_array($result2, MYSQL_ASSOC);
+          $r2 = fetchSqlAssoc($result2);
           $j = $i+1;
           echo '<tr><td>Glyph Slot '. $j.':</td><td>';
           if ($i == $r2['position']){
@@ -294,36 +294,36 @@ function spell(){
 function createspell(){
   if (checkaccess('spells', 'create')){
     if (isset($_POST['commit'])){
-      $name = mysql_real_escape_string($_POST['name']);
-      $way_id = mysql_real_escape_string($_POST['way_id']);
-      $realm = mysql_real_escape_string($_POST['realm']);
-      $casting_effect = mysql_real_escape_string($_POST['casting_effect']);
-      $spell_description = mysql_real_escape_string($_POST['spell_description']);
-      $offensive = mysql_real_escape_string($_POST['offensive']);
-      $outcome = mysql_real_escape_string($_POST['outcome']);
-      $max_power = mysql_real_escape_string($_POST['max_power']);
-      $npc_spell_power = mysql_real_escape_string($_POST['npc_spell_power']);
+      $name = escapeSqlString($_POST['name']);
+      $way_id = escapeSqlString($_POST['way_id']);
+      $realm = escapeSqlString($_POST['realm']);
+      $casting_effect = escapeSqlString($_POST['casting_effect']);
+      $spell_description = escapeSqlString($_POST['spell_description']);
+      $offensive = escapeSqlString($_POST['offensive']);
+      $outcome = escapeSqlString($_POST['outcome']);
+      $max_power = escapeSqlString($_POST['max_power']);
+      $npc_spell_power = escapeSqlString($_POST['npc_spell_power']);
       $target_type=0;
       if (isset($_POST['tt'])){
         foreach ($_POST['tt'] AS $key => $value){
           $target_type += $value;
         }
       }
-      $cast_duration = mysql_real_escape_string($_POST['cast_duration']);
-      $range = mysql_real_escape_string($_POST['range']);
-      $aoe_radius = mysql_real_escape_string($_POST['aoe_radius']);
-      $aoe_angle = mysql_real_escape_string($_POST['aoe_angle']);  
-      $image_name = mysql_real_escape_string($_POST['image_name']);
-      $cstr_npc_spell_category = mysql_real_escape_string($_POST['cstr_npc_spell_category']);
-      $pos0 = mysql_real_escape_string($_POST['position-0']);
-      $pos1 = mysql_real_escape_string($_POST['position-1']);
-      $pos2 = mysql_real_escape_string($_POST['position-2']);
-      $pos3 = mysql_real_escape_string($_POST['position-3']);
+      $cast_duration = escapeSqlString($_POST['cast_duration']);
+      $range = escapeSqlString($_POST['range']);
+      $aoe_radius = escapeSqlString($_POST['aoe_radius']);
+      $aoe_angle = escapeSqlString($_POST['aoe_angle']);  
+      $image_name = escapeSqlString($_POST['image_name']);
+      $cstr_npc_spell_category = escapeSqlString($_POST['cstr_npc_spell_category']);
+      $pos0 = escapeSqlString($_POST['position-0']);
+      $pos1 = escapeSqlString($_POST['position-1']);
+      $pos2 = escapeSqlString($_POST['position-2']);
+      $pos3 = escapeSqlString($_POST['position-3']);
       $query = "INSERT INTO spells SET name='$name', way_id='$way_id', realm='$realm', casting_effect='$casting_effect', spell_description='$spell_description', offensive='$offensive', outcome='$outcome', max_power='$max_power', npc_spell_power='$npc_spell_power', target_type='$target_type', cast_duration='$cast_duration', `range`='$range', aoe_radius='$aoe_radius', aoe_angle='$aoe_angle', image_name='$image_name', cstr_npc_spell_category='$cstr_npc_spell_category'";
       $result = mysql_query2($query);
       $query = "SELECT id FROM spells WHERE name='$name'";
       $result = mysql_query2($query);
-      $r = mysql_fetch_array($result, MYSQL_ASSOC);
+      $r = fetchSqlAssoc($result);
       $id = $r['id'];
       if ($pos0 == ''){
         $query = "DELETE FROM spell_glyphs WHERE spell_id='$id' AND position='0'";

@@ -3,13 +3,13 @@ function listskills(){
   if (checkaccess('other', 'read')){
     if (isset($_POST['commit']) && checkaccess('other', 'edit')){
       if ($_POST['commit'] == "Commit Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
-        $description = mysql_real_escape_string($_POST['description']);
-        $practice_factor = mysql_real_escape_string($_POST['practice_factor']);
-        $mental_factor = mysql_real_escape_string($_POST['mental_factor']);
-        $price = mysql_real_escape_string($_POST['price']);
-        $base_rank_cost = mysql_real_escape_string($_POST['base_rank_cost']);
-		$cost_script = mysql_real_escape_string($_POST['cost_script']);
+        $id = escapeSqlString($_POST['id']);
+        $description = escapeSqlString($_POST['description']);
+        $practice_factor = escapeSqlString($_POST['practice_factor']);
+        $mental_factor = escapeSqlString($_POST['mental_factor']);
+        $price = escapeSqlString($_POST['price']);
+        $base_rank_cost = escapeSqlString($_POST['base_rank_cost']);
+		$cost_script = escapeSqlString($_POST['cost_script']);
         $query = "UPDATE skills SET description='$description', practice_factor='$practice_factor', mental_factor='$mental_factor', price='$price', base_rank_cost='$base_rank_cost', cost_script='$cost_script' WHERE skill_id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
@@ -24,10 +24,10 @@ function listskills(){
       }
     }else if (isset($_POST['action']) && checkaccess('other', 'edit')){
       if ($_POST['action'] == "Edit"){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM skills WHERE skill_id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=skills" method="post">';
         echo '<input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
@@ -51,7 +51,7 @@ function listskills(){
     }else{
       $query = "SELECT * FROM skills";
       $result = mysql_query2($query);
-      if (mysql_numrows($result) == 0 ){
+      if (sqlNumRows($result) == 0 ){
         echo 'No Skills Found!';
       }
       echo '<table border="1"><tr><th>ID</th><th>Skill</th><th>Description</th><th>Practice Factor</th><th>Mental Factor</th><th>Price</th><th>Base Rank Cost</th><th>Category</th>';
@@ -59,7 +59,7 @@ function listskills(){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
-      while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+      while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
         echo '<td>'.$row['skill_id'].'</td>';
         echo '<td>'.$row['name'].'</td>';

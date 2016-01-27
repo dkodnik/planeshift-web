@@ -3,11 +3,11 @@ function deletecategory(){
   if (checkaccess('items', 'delete')){
     if (isset($_GET['id'])){
       if (isset($_GET['commit']) && isset($_POST['pwd'])){
-        $id = mysql_real_escape_string($_GET['id']);
-        $pwd = mysql_real_escape_string($_POST['pwd']);
+        $id = escapeSqlString($_GET['id']);
+        $pwd = escapeSqlString($_POST['pwd']);
         $query = 'SELECT COUNT(*) FROM item_stats WHERE category_id='.$id;
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] != 0){
           include('./items/editcategory.php');
           echo '<p class="error">Error: category has items assigned, unable to delete, returning to category listing</p>';
@@ -17,7 +17,7 @@ function deletecategory(){
         }
         $query = 'SELECT COUNT(*) FROM merchant_item_categories WHERE category_id='.$id;
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] != 0){
           include('./items/editcategory.php');
           echo '<p class="error">Error: Category has merchants assigned, unable to delete, returning to category listing</p>';
@@ -28,7 +28,7 @@ function deletecategory(){
         $username = $_SESSION['username'];
         $query = "SELECT count(username) FROM accounts WHERE username='$username' AND password=MD5('$pwd')";
         $result = mysql_query2($query);
-        $row = mysql_fetch_row($result);
+        $row = fetchSqlRow($result);
         if ($row[0] != 1){
           include('./items/editcategory.php');
           echo '<p class="error">Error: Password check failed, unable to delete, returning to category listing</p>';
@@ -45,10 +45,10 @@ function deletecategory(){
 <?
       exit;
       }else{
-        $id = mysql_real_escape_string($_GET['id']);
+        $id = escapeSqlString($_GET['id']);
         $query = 'SELECT name, category_id FROM item_categories WHERE category_id='.$id;
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p>You are about to delete permenently Item Category: '.$row['name'].'</p>';
         echo '<form action="./index.php?do=deletecategory&amp;id='.$id.'&amp;commit" method="post">';
         echo '<p>Enter your password to confirm: <input type="password" name="pwd" /><input type="submit" name="submit" value="confirm" /></p></form>';

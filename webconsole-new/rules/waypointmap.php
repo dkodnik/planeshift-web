@@ -143,12 +143,12 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint\" >";
   $res = mysql_query2($query);
 
   $result="";
-  while ($line = mysql_fetch_array($res, MYSQL_NUM))
+  while ($line = fetchSqlRow($res))
   {
     $aliases = "";
     $aliasQuery = "select alias from sc_waypoint_aliases where wp_id = ".$line[0];
     $aliasResult = mysql_query2($aliasQuery);
-    while ($alias = mysql_fetch_array($aliasResult, MYSQL_NUM))
+    while ($alias = fetchSqlRow($aliasResult))
     {
       $aliases=$aliases." ".$alias[0];
     }

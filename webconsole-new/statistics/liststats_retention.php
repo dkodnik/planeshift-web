@@ -13,7 +13,7 @@ function liststats_retention()
 
 	$groupid = (isset($_GET['groupid']) && is_numeric($_GET['groupid']) ? $_GET['groupid'] : 'nan');
 	$op = (isset($_GET['op']) && ($_GET['op'] == 'add' || $_GET['op'] == 'calc')  ? $_GET['op'] : 'list');
-	$period = (isset($_POST['period']) ? mysql_real_escape_string($_POST['period']) : 'nan');
+	$period = (isset($_POST['period']) ? escapeSqlString($_POST['period']) : 'nan');
 	if (validatePeriod($period)==0)
 		$period = 'nan';
 
@@ -48,7 +48,7 @@ function liststats_retention()
 				// check if period already exists, if not add it
 				$sql = "SELECT * FROM wc_statistics where groupid=".$groupid." and periodname='".$period."'";
 				$query = mysql_query2($sql);
-				if(mysql_num_rows($query) < 1)
+				if(sqlNumRows($query) < 1)
 				{
 					$sql = "INSERT INTO wc_statistics (groupid, periodname, result, param1) VALUES ('$groupid', '".$period."', ".$result.", 180)";
 					$query = mysql_query2($sql);
@@ -101,7 +101,7 @@ function liststats_retention()
 	$line2 = '';
 	$line3 = '';
 	$current_period = '';
-	while($result = mysql_fetch_array($query, MYSQL_ASSOC))
+	while($result = fetchSqlAssoc($query))
 	{
 		if ($result['periodname']!=$current_period) {
 			$current_period = $result['periodname'];
@@ -136,7 +136,7 @@ function runBaseQuery($groupid, $period, $time, $to_exclude) {
 	$sql .= " and time_connected_sec>".$time;
 	//echo $sql;
 	$query = mysql_query2($sql);
-	$result = mysql_fetch_array($query, MYSQL_ASSOC);
+	$result = fetchSqlAssoc($query);
 	$counted_items = $result['result'];
 	return $counted_items;
 }

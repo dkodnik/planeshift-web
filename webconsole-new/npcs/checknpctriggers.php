@@ -15,7 +15,7 @@ function checknpctriggers(){
         echo "  <TH> ID </TH> <TH> NAME</TH><TH> Sector</TH><TH> Position</TH><TH> Missing Triggers</TH><TH> Loaded in game?</TH>";
 
         // for each NPC
-        while ($line = mysql_fetch_array($result, MYSQL_NUM)) 
+        while ($line = fetchSqlRow($result)) 
         {
 
             $fullname = $line[1] . " " . $line[2];
@@ -23,23 +23,23 @@ function checknpctriggers(){
             // search his triggers
             $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='greetings'";
             $result2 = mysql_query2($query2);
-            $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+            $line2 = fetchSqlRow($result2);
             $found1 = $line2[0];
             if ($found1=="0") {
                 $query2 = "select count(*) from npc_knowledge_areas where area like 'greetings%' and player_id=$line[0]";
                 $result2 = mysql_query2($query2);
-                $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+                $line2 = fetchSqlRow($result2);
                 $found1 = $line2[0];
             }
 
             $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='about you'";
             $result2 = mysql_query2($query2);
-            $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+            $line2 = fetchSqlRow($result2);
             $found2 = $line2[0];
 
             $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='how you'";
             $result2 = mysql_query2($query2);
-            $line2 = mysql_fetch_array($result2, MYSQL_NUM);
+            $line2 = fetchSqlRow($result2);
             $found3 = $line2[0];
             
             $loaded = "yes";

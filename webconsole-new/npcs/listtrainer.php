@@ -22,7 +22,7 @@ function listtrainer(){
         $skill_result = PrepSelect('skill');
         $skill_box = DrawSelectBox('skill', $skill_result, 'skill_id', '', false);
         echo '<table border="1" cellspacing="0"><tr><th><a href="./index.php?do=listtrainer&amp;sort=name">NPC</a></th><th><a href="./index.php?do=listtrainer&amp;sort=sector">Sector</a></th><th>Details</th></tr>';
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             if ($id == "")
             {
@@ -111,11 +111,11 @@ function listtrainer(){
 function edittrainer(){
   if (checkaccess('npcs', 'edit')){
     if (isset($_POST['commit'])){
-      $skill_id = mysql_real_escape_string($_POST['skill_id']);
-      $player_id = mysql_real_escape_string($_POST['player_id']);
-      $min_rank = mysql_real_escape_string($_POST['min_rank']);
-      $max_rank = mysql_real_escape_string($_POST['max_rank']);
-      $min_faction = mysql_real_escape_string($_POST['min_faction']);
+      $skill_id = escapeSqlString($_POST['skill_id']);
+      $player_id = escapeSqlString($_POST['player_id']);
+      $min_rank = escapeSqlString($_POST['min_rank']);
+      $max_rank = escapeSqlString($_POST['max_rank']);
+      $min_faction = escapeSqlString($_POST['min_faction']);
       if ($_POST['commit'] == "Add"){
         $query = "INSERT INTO trainer_skills (player_id, skill_id, min_rank, max_rank, min_faction) VALUES ('$player_id', '$skill_id', '$min_rank', '$max_rank', '$min_faction')";
         $result = mysql_query2($query);

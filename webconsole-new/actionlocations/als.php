@@ -4,7 +4,7 @@ function alsector(){
     $query = "SELECT name FROM sectors ORDER BY name";
     $result = mysql_query2($query);
     echo '<p> Select Sector:<br/>';
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){ 
+    while ($row = fetchSqlAssoc($result)){ 
       echo '<a href="./index.php?do=listals&amp;sector='.$row['name'].'">'.$row['name'].'</a><br/>'."\n";
     }
     echo '</p>';
@@ -17,7 +17,7 @@ function listals(){
 
   if (checkaccess('als', 'read')){
     if (isset($_GET['sector'])){
-      $sector = mysql_real_escape_string($_GET['sector']);
+      $sector = escapeSqlString($_GET['sector']);
       $query = "SELECT * FROM action_locations WHERE sectorname='$sector'";
       $result = mysql_query2($query);
     } else if (isset($_GET['gameboards'])) {
@@ -31,7 +31,7 @@ function listals(){
     }
 
     echo '<table border="1">';
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)){
+    while ($row = fetchSqlAssoc($result)){
       if (checkaccess('als', 'edit')){
         echo '<tr><td>';
         echo 'id: '.$row['id'];
@@ -99,16 +99,16 @@ function listals(){
 function edital(){
   if (checkaccess('als', 'edit')){
     if (isset($_POST['id'])){
-      $id = mysql_real_escape_string($_POST['id']);
-      $master_id = mysql_real_escape_string($_POST['master_id']);
-      $name = mysql_real_escape_string($_POST['name']);
-      $meshname = mysql_real_escape_string($_POST['meshname']);
-      $polygon = mysql_real_escape_string($_POST['polygon']);
-      $radius = mysql_real_escape_string($_POST['radius']);
-      $triggertype = mysql_real_escape_string($_POST['radius']);
-      $responsetype = mysql_real_escape_string($_POST['responsetype']);
-      $response = mysql_real_escape_string($_POST['response']);
-      $pos_instance = mysql_real_escape_string($_POST['pos_instance']);
+      $id = escapeSqlString($_POST['id']);
+      $master_id = escapeSqlString($_POST['master_id']);
+      $name = escapeSqlString($_POST['name']);
+      $meshname = escapeSqlString($_POST['meshname']);
+      $polygon = escapeSqlString($_POST['polygon']);
+      $radius = escapeSqlString($_POST['radius']);
+      $triggertype = escapeSqlString($_POST['radius']);
+      $responsetype = escapeSqlString($_POST['responsetype']);
+      $response = escapeSqlString($_POST['response']);
+      $pos_instance = escapeSqlString($_POST['pos_instance']);
       $query = "UPDATE action_locations SET master_id='$master_id', name='$name', meshname='$meshname', polygon='$polygon', radius='$radius', triggertype='$triggertype', responsetype='$responsetype', response='$response', pos_instance='$pos_instance' WHERE id='$id'";
       $result = mysql_query2($query);
       $_GET['sector'] = $_POST['sector'];
@@ -126,12 +126,12 @@ function edital(){
 function deleteal(){
   if (checkaccess('als', 'delete')){
     if (isset($_POST['commit']) && isset($_POST['pass']) && isset($_POST['id'])){
-      $id = mysql_real_escape_string($_POST['id']);
-      $password = mysql_real_escape_string($_POST['pass']);
-      $username = mysql_real_escape_string($_SESSION['username']);
+      $id = escapeSqlString($_POST['id']);
+      $password = escapeSqlString($_POST['pass']);
+      $username = escapeSqlString($_SESSION['username']);
       $query = "SELECT COUNT(username) FROM accounts WHERE username='$username' AND password=MD5('$password')";
       $result = mysql_query2($query);
-      $row = mysql_fetch_row($result);
+      $row = fetchSqlRow($result);
       if ($row[0] == 1){
         $query = "DELETE FROM action_locations WHERE id='$id'";
         $result = mysql_query2($query);
@@ -143,10 +143,10 @@ function deleteal(){
       }
     }else{
       if (isset($_POST['id'])){
-        $id = mysql_real_escape_string($_POST['id']);
+        $id = escapeSqlString($_POST['id']);
         $query = "SELECT name, sectorname FROM action_locations WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p>You are about to permanently delete Action Location '.$id.'<br/>Name: '.$row['name'].'<br/>sector: '.$row['sectorname'].'</p>';
         echo '<form action="./index.php?do=deleteal" method="post"><p>Enter your password to confirm: <input type="hidden" name="id" value="'.$id.'" /><input type="password" name="pass" /><input type="submit" name="commit" value="Confirm Delete" /></p></form>';
       }else{

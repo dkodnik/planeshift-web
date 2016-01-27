@@ -157,7 +157,7 @@ if(!isset($_GET['live'])){
 	
 	$i=0;
     $result = '';
-	while ($line = mysql_fetch_array($res, MYSQL_NUM)){
+	while ($line = fetchSqlRow($res)){
 	$elem = $line[0] . "|" . $line[1] . "|x|" . $line[2]  . "|" . $line[4]."|".$line[6];
 	$result .= $elem . "\n";
 	}

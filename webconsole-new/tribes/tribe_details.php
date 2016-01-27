@@ -5,10 +5,10 @@ function tribedetails(){
     $uri_string = './index.php?do=tribe_details';
     if (isset($_GET['tribe_id'])){
       if (is_numeric($_GET['tribe_id'])){
-        $id = mysql_real_escape_string($_GET['tribe_id']);
+        $id = escapeSqlString($_GET['tribe_id']);
         $query = "SELECT name FROM tribes WHERE id='$id'";
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">Tribe: '.$id.' - '.$row['name'].'</p>';
         if (checkaccess('npcs', 'delete'))
         {
@@ -58,10 +58,10 @@ function tribe_main(){
           return;
       }
       if (!isset($_POST['commit'])){
-        $id = mysql_real_escape_string($_GET['tribe_id']);
+        $id = escapeSqlString($_GET['tribe_id']);
         $query = 'SELECT * FROM tribes WHERE id='.$id;
         $result = mysql_query2($query);
-        $row = mysql_fetch_array($result, MYSQL_ASSOC);
+        $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=tribe_details&amp;sub=main&amp;tribe_id='.$id.'" method="post" id="tribe_details_form"><table>';
         echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>';
         $Sectors = PrepSelect('sectorid');
@@ -89,24 +89,24 @@ function tribe_main(){
       }
       else
       {
-        $id = mysql_real_escape_string($_POST['id']);
-        $name = mysql_real_escape_string($_POST['name']);
-        $home_sector_id = mysql_real_escape_string($_POST['home_sector_id']);
-        $home_x = mysql_real_escape_string($_POST['home_x']);
-        $home_y = mysql_real_escape_string($_POST['home_y']);
-        $home_z = mysql_real_escape_string($_POST['home_z']);
-        $home_radius = mysql_real_escape_string($_POST['home_radius']);
-        $max_size = mysql_real_escape_string($_POST['max_size']);
-        $wealth_resource_name = mysql_real_escape_string($_POST['wealth_resource_name']);
-        $wealth_resource_nick = mysql_real_escape_string($_POST['wealth_resource_nick']);
-        $wealth_resource_area = mysql_real_escape_string($_POST['wealth_resource_area']);
-        $wealth_gather_need = mysql_real_escape_string($_POST['wealth_gather_need']);
-        $wealth_resource_growth = mysql_real_escape_string($_POST['wealth_resource_growth']);
-        $wealth_resource_growth_active = mysql_real_escape_string($_POST['wealth_resource_growth_active']);
-        $wealth_resource_growth_active_limit = mysql_real_escape_string($_POST['wealth_resource_growth_active_limit']);
-        $reproduction_cost = mysql_real_escape_string($_POST['reproduction_cost']);
-        $npc_idle_behavior = mysql_real_escape_string($_POST['npc_idle_behavior']);
-        $tribal_recipe = mysql_real_escape_string($_POST['tribal_recipe']);
+        $id = escapeSqlString($_POST['id']);
+        $name = escapeSqlString($_POST['name']);
+        $home_sector_id = escapeSqlString($_POST['home_sector_id']);
+        $home_x = escapeSqlString($_POST['home_x']);
+        $home_y = escapeSqlString($_POST['home_y']);
+        $home_z = escapeSqlString($_POST['home_z']);
+        $home_radius = escapeSqlString($_POST['home_radius']);
+        $max_size = escapeSqlString($_POST['max_size']);
+        $wealth_resource_name = escapeSqlString($_POST['wealth_resource_name']);
+        $wealth_resource_nick = escapeSqlString($_POST['wealth_resource_nick']);
+        $wealth_resource_area = escapeSqlString($_POST['wealth_resource_area']);
+        $wealth_gather_need = escapeSqlString($_POST['wealth_gather_need']);
+        $wealth_resource_growth = escapeSqlString($_POST['wealth_resource_growth']);
+        $wealth_resource_growth_active = escapeSqlString($_POST['wealth_resource_growth_active']);
+        $wealth_resource_growth_active_limit = escapeSqlString($_POST['wealth_resource_growth_active_limit']);
+        $reproduction_cost = escapeSqlString($_POST['reproduction_cost']);
+        $npc_idle_behavior = escapeSqlString($_POST['npc_idle_behavior']);
+        $tribal_recipe = escapeSqlString($_POST['tribal_recipe']);
         $query = "UPDATE tribes SET name='$name', home_sector_id='$home_sector_id', home_x='$home_x', home_y='$home_y', home_z='$home_z', home_radius='$home_radius', max_size='$max_size', wealth_resource_name='$wealth_resource_name', wealth_resource_nick='$wealth_resource_nick', wealth_resource_area='$wealth_resource_area', wealth_gather_need='$wealth_gather_need', wealth_resource_growth='$wealth_resource_growth', wealth_resource_growth_active='$wealth_resource_growth_active', wealth_resource_growth_active_limit='$wealth_resource_growth_active_limit', reproduction_cost='$reproduction_cost', npc_idle_behavior='$npc_idle_behavior', tribal_recipe='$tribal_recipe' WHERE id='$id'";
         mysql_query2($query);
         echo '<p class="error">Tribe Successfully Updated</p>';
@@ -133,19 +133,19 @@ function tribe_members()
 
     if (isset($_GET['tribe_id']) && is_numeric($_GET['tribe_id'])) 
     {
-        $tribe_id = mysql_real_escape_string($_GET['tribe_id']);
+        $tribe_id = escapeSqlString($_GET['tribe_id']);
         $query .= " WHERE tm.tribe_id='$tribe_id'";
     }
     
     $query .= ' ORDER BY t.name, c.name';
     
     $result = mysql_query2($query);
-    if (mysql_num_rows($result) > 0)
+    if (sqlNumRows($result) > 0)
     {
         echo '<table border="1">';
         echo '<tr><th>Tribe</th><th>Member Name</th><th>Member Type</th><th>Flags</th></tr>';
         
-        while ($row = mysql_fetch_array($result))
+        while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
             echo '<td>'.$row['tribe_name'].'</td>';
