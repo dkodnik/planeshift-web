@@ -36,10 +36,8 @@ function natural_resources_draw()
         return;
     }
     header("Content-type: image/png");
-    
-    
+
     draw_map($sector, $type);
-    
 }
 
 function draw_map($sector, $type)
@@ -448,24 +446,25 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         $radius  = $line[4];
         $id_prev = $line[5];
 
-	$ix1 = $centerx+($x*$scalefactorx);
-	$iy1 = $centery-($z*$scalefactory);
+        $ix1 = $centerx+($x*$scalefactorx);
+        $iy1 = $centery-($z*$scalefactory);
         $ir = $radius*$scalefactorx;
         imagearc($im,$ix1,$iy1,2*$ir,2*$ir,0,360,$fg_color);
 
-	if ( $id_prev > 0 )
+        if ( $id_prev > 0 )
         {
-	    $query2 = "select x,y,z from sc_locations where " . $sectors . " and id = " . $id_prev;
-	    $res2 = mysql_query2($query2);
-            while ($line2 = fetchSqlRow($res2)){
-               $x2       = $line2[0];
-               $y2       = $line2[1];
-               $z2       = $line2[2];
+            $query2 = "select x,y,z from sc_locations where " . $sectors . " and id = " . $id_prev;
+            $res2 = mysql_query2($query2);
+            while ($line2 = fetchSqlRow($res2))
+            {
+                $x2       = $line2[0];
+                $y2       = $line2[1];
+                $z2       = $line2[2];
  
-	       $ix2 = $centerx+($x2*$scalefactorx);
-               $iy2 = $centery-($z2*$scalefactory);
-               imageline($im,$ix1,$iy1,$ix2,$iy2,$fg_color);
-	    }
+                $ix2 = $centerx+($x2*$scalefactorx);
+                $iy2 = $centery-($z2*$scalefactory);
+                imageline($im,$ix1,$iy1,$ix2,$iy2,$fg_color);
+            }
         }
 
     }

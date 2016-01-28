@@ -130,28 +130,28 @@ echo "<h1>Map View $sector</h1>";
 
 if (! extension_loaded('gd')) { echo "You need to install GD<BR>"; return; }
 
-echo "<font color=\"orange\">Waypoints points</font> ";
-echo "<font color=\"white\">Path points</font> ";
-echo "<font color=\"red\">Locations</font> ";
-echo "<font color=\"lightgreen\">Resources inner</font> ";
-echo "<font color=\"green\">Resources edge</font> ";
-echo "<font color=\"blue\">Tribe home</font> ";
-echo "<font color=\"brown\">Spawn</font> ";
+echo "<font color=\"orange\">Waypoints points</font> \n";
+echo "<font color=\"white\">Path points</font> \n";
+echo "<font color=\"red\">Locations</font> \n";
+echo "<font color=\"lightgreen\">Resources inner</font> \n";
+echo "<font color=\"green\">Resources edge</font> \n";
+echo "<font color=\"blue\">Tribe home</font> \n";
+echo "<font color=\"brown\">Spawn</font> \n";
 
 
-echo "<div id=Layer2 style=\"position:relative; \">";    
+echo "<div id=Layer2 style=\"position:relative; \">\n";    
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:250px\">";    
-echo "<img src=\"rules/draw_map.php?sector=$sector&type=path,waypoint,resource,location,tribe,spawn\" >";
+echo "<img src=\"rules/draw_map.php?sector=$sector&amp;type=path&#44;waypoint&#44;resource&#44;location&#44;tribe&#44;spawn\" />\n";
 }
 
  $sectors_list = PrepSelect('sector');
-  echo '  <FORM action="index.php?do=rulesmap" METHOD=POST>';
-  echo '  <b>Select one area:</b> <br><br> Area: ';
+  echo '  <FORM action="index.php?do=rulesmap" METHOD=POST>'."\n";
+  echo '  <b>Select one area:</b> <br><br> Area: '."\n";
   //echo DrawSelectBox('sector', $sectors_list, 'sector', '', false);
   SelectAreas($sector,'sector');
-  echo ' <br><br><INPUT type=submit value=view><br><br>';
+  echo ' <br><br><INPUT type=submit value=view><br><br>'."\n";
   echo '</FORM>';
-  echo '</div>';
+  echo '</div>'."\n";
 
 }
 
