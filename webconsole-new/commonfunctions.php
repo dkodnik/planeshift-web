@@ -9,7 +9,10 @@ function mysql_query2($query, $log=true)
     $t2 = microtime(true);
     $t_fin = $t2 - $t1;
     $t_fin = sprintf("%01.4f", $t_fin);
-    $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($query) .' -- '.$t_fin.' Seconds.';
+    if(isset($_SESSION['totalq'])) 
+    {
+        $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($query) .' -- '.$t_fin.' Seconds.';
+    }
     if ($log === true){
         $foo = explode(' ', $query, 2);
         if (strcasecmp($foo[0], 'SELECT') != 0) // we don't log select statements
