@@ -190,7 +190,7 @@ function editlootruledetail()
 
 function createlootruledetail()
 {
-    if (checkaccess('npcs', 'create') && isset($_POST['commit']) && $_POST['commit'] == 'Create Rule Detail')
+    if (checkaccess('npcs', 'edit') && isset($_POST['commit']) && $_POST['commit'] == 'Create Rule Detail')
     {
         $loot_rule_id = escapeSqlString($_POST['loot_rule_id']);
         $item_stat_id = escapeSqlString($_POST['item_stat_id']);
@@ -204,7 +204,7 @@ function createlootruledetail()
         unset($_POST);
         listlootrules();
     }
-    elseif (checkaccess('npcs', 'create') && isset($_POST['create']))
+    elseif (checkaccess('npcs', 'edit') && isset($_POST['create']))
     {
         $item_result = PrepSelect('items');        
         $item_box = DrawSelectBox('items', $item_result, 'item_stat_id', '', true);
@@ -220,6 +220,10 @@ function createlootruledetail()
         echo '</select></td></tr>';
         echo '</table><input type="submit" name="commit" value="Create Rule Detail"/></form>';
     
+    }
+    else
+    {
+        echo '<p class="error">You have either insufficient access, or the provided invalid post variables.</p>';
     }
 }
 
