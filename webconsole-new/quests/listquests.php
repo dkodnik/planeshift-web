@@ -15,9 +15,6 @@ function listquests()
             $query = "SELECT id, name, flags, category, prerequisite FROM quests ORDER BY name";
             // used for statistics: slower query
             if ($mode=='hiercount') {
-                //$query = "SELECT id, name, flags, category, prerequisite, count(IF(c.status='".$countstatus."',1,NULL)) as num FROM quests q LEFT JOIN character_quests c ";
-                //$query .= "ON q.id=c.quest_id GROUP BY q.id ORDER BY name";
-                // test
                 $query = "SELECT q.id, q.name, flags, category, prerequisite, c.status, count(IF(c.status='".$countstatus."',1,NULL)) as num FROM quests q LEFT JOIN character_quests c ";
                 $query .= "ON q.id=c.quest_id, characters ch where ch.id=c.player_id and ch.creation_time>DATE_SUB(CURDATE(),INTERVAL 90 DAY) GROUP BY q.id ORDER BY name";
             }
@@ -60,89 +57,63 @@ function listquests()
         } 
         else  // normal quest listing mode. (chosen by default)
         {
-            $factionlimit = '';
-            /* Factions not used at moment so will hide
-			if (isset($_GET['factionLimit'])) {
-                $factionlimit = escapeSqlString($_GET['factionLimit']);
+            echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>'."\n";
+            
+            //Setup search form
+            echo '<td><form method="get" action="index.php"><div>'."\n";
+            echo '<input type="hidden" name="do" value="listquests" />'."\n";
+            if (isset($_GET['sort'])) 
+            {
+                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'" />'."\n";
             }
-            $factions = PrepSelect('factionnames');*/
-            echo '<table border="0" width="80%"><tr><td><a href="index.php?do=listquests&amp;mode=hier">Show quest scripts in hierarchical view</a></td>';
-            echo '<td><form method="get" action="index.php"><div>';
-			/* Factions not used at moment so will hide
-            echo '<input type="hidden" name="do" value="listquests" />';
-            if (isset($_GET['sort'])) {
-                echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'" />';
+            if (isset($_GET['direction'])) 
+            {
+                echo '<input type="hidden" name="direction" value="'.$_GET['direction'].'" />'."\n";
             }
-            echo 'limit to: '.DrawSelectBox('factionnames', $factions, 'factionLimit', $factionlimit, true);
-            echo '<input type="submit" name="submit" value="limit results" /></div></form></td>';*/
-			
-			
-			//Setup search for key words
-			echo '<td><form method="get" action="index.php?do=listquests';
-			if($_GET['sort'])
-			{
-				echo('&amp;sort=' . $_GET['sort'] . '&amp;direction=' . $_GET['direction']);
-			}
-			$key_match_opt = '<option value="any">Match any word</option><option value="all">Match all words</option><option value="phrase">Match whole phrase</option>';
-			if($_GET['key_match'] == 'all')
-			{
-				$key_match_opt = '<option value="all">Match all words</option><option value="any">Match any word</option><option value="phrase">Match whole phrase</option>';
-			}
-			else if($_GET['key_match'] == 'phrase')
-			{
-				$key_match_opt = '<option value="phrase">Match whole phrase</option><option value="any">Match any word</option><option value="all">Match all words</option>';
-			}
-			echo '"><input type="text" name="quest_keys" value="' . trim($_GET['quest_keys'], '"\' ') . '">
-			<select name="key_match">' . $key_match_opt . '</select>
-			<input type="hidden" name="do" value="listquests" /><input type="submit" value="Search Keys"></form></td></tr></table><br/>';
+            echo '<input type="text" name="searchText" value="'.(isset($_GET['searchText']) ? htmlentities($_GET['searchText']) : '' ).'" />'."\n";
+            $matchType = (isset($_GET['matchType']) ? $_GET['matchType'] : '');
+            echo '<select name="matchType">'."\n";
+            echo '<option value="any" '.($matchType == 'any' ? 'selected="selected"' : '').'>Match any word</option>'."\n";
+            echo '<option value="all" '.($matchType == 'all' ? 'selected="selected"' : '').'>Match all words</option>'."\n";
+            echo '<option value="phrase" '.($matchType == 'phrase' ? 'selected="selected"' : '').'>Match the whole phrase</option>'."\n";
+            echo '</select>'."\n";
+            echo '<input type="submit" value="Search" /></div></form></td></tr></table>';
             
             $query = 'SELECT q.id, q.name, q.flags, q.category, q.player_lockout_time, q.quest_lockout_time, q.prerequisite FROM quests AS q';
-			
-			//Search based on keys to allow searches for any key, all keys or a key phrase
-			if($_GET['quest_keys'])
-			{
-				
-				$query .= ' LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE (';
-				$searchtext = '';
-				$keys = trim($_GET['quest_keys'], '"\' ');
-				if($_GET['key_match'] == 'any')
-				{
-					$keywords = explode(' ', $keys);
-					foreach($keywords as $k)
-					{
-						$searchtext .= ' or q.name like "%' . $k . '%" or q.task like "%' . $k . '%" or qs.script like "%' . $k . '%"';
-					}
-					$query .= substr($searchtext,4) . ')';
-				}
-				else if($_GET['key_match'] == 'all')
-				{
-					$keywords = explode(' ', $keys);
-					foreach($keywords as $k)
-					{
-						$searchtext .= ' and (q.name like "%' . $k . '%" or q.task like "%' . $k . '%" or qs.script like "%' . $k . '_ %")';
-					}
-					$query .= substr($searchtext,5) . ')';
-				}
-				else if($_GET['key_match'] == 'phrase')
-				{
-					$searchtext .= '(q.name like "%' . $keys . '%" or q.task like "%' . $keys . '%" or qs.script like "%' . $keys . '%")';
-					$query .= $searchtext . ')';
-				}
-			}
-			
             
-            // REGEXP queries match case-insensitive. To do this on a "blob" field, we first need to convert the data to a charset. (SQL supports REGEXP on binary data, but it'll become case sensitive, so we don't want that.)
-            // in a regexp, you can make a character group (in our case \n (with an additional \ to escape it in the PHP string)) by placing something between []. (Also note that a ' must be escaped in sql, or it will signify the end of the regexp.)
-            // so we get '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>' In this case our second character group is 'NOT newline' where \n is the newline, and ^ means not. Finally, the * after the group means zero or more of this character.
-            // In other words, we are looking for a character sequence that contains a newline (so it must be at the start of the line), followed by "Run script give_quest_faction <<\'$factionlimit\',"  
-            // "$factionlimit" (being one of the factions that exist in the database, if this script was properly used.
-            // Because we say there can be no newline characters between the matches, this effectively means they have to be on the same line, in the form of "<<'faction name', ***>>" where *** can be anything or nothing at all (but in practive will prove to be a number).
-
-            else if ($factionlimit != '') 
+            //Search based on words to allow searches for any word, all words or a whole text
+            if (isset($_GET['searchText']))
             {
-                // Dev note: If you are using this script on a server which does not have (or uses) the standard PS faction reward script, but does use the "give 1 faction orcs" type of rewards in quest_scripts, uncomment the commented assignment below, and comment the other.
-                // $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE CONVERT(qs.script USING latin1) REGEXP '[\\n]Give[^\\n]*faction $factionlimit'";
-                $query .= " LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE (CONVERT(qs.script USING latin1) REGEXP '[\\n]Run script give_quest_faction <<\'$factionlimit\',[^\\n]*>>')";
+                
+                $query .= ' LEFT JOIN quest_scripts AS qs ON q.id=qs.quest_id WHERE';
+                $searchText = (isset($_GET['searchText']) ? escapeSqlString($_GET['searchText']) : '');
+                $matchType = (isset($_GET['matchType']) ? $_GET['matchType'] : '');
+                $tempQueryText = '';
+                if($matchType == 'any')
+                {
+                    foreach(explode(' ', $searchText) as $word)
+                    {
+                        $tempQueryText .= " OR q.name LIKE '%$word%' OR q.task LIKE '%$word%' OR qs.script LIKE '%$word%'";
+                    }
+                    $query .= substr($tempQueryText, 3); // removes the first " OR" from the first loop iteration
+                }
+                elseif ($matchType == 'all')
+                {
+                    foreach(explode(' ', $searchText) as $word)
+                    {
+                        $tempQueryText .= " AND (q.name LIKE '%$word%' OR q.task LIKE '%$word%' OR qs.script LIKE '%$word%')";
+                    }
+                    $query .= substr($tempQueryText, 4); // removes the first " AND" from the first loop iteration
+                }
+                elseif ($matchType == 'phrase')
+                {
+                    $query .= " q.name LIKE '%$searchText%' OR q.task LIKE '%$searchText%' OR qs.script LIKE '%$searchText%'";
+                }
+                else
+                {
+                    echo '<p class="error">Invalid matchType parameter.</p>';
+                    return;
+                }
             }
             
             $direction_url = '&amp;direction=asc';
@@ -195,13 +166,15 @@ function listquests()
                         $current_sort_url  = '&amp;sort=name'.$current_sort_url;
                 }
             }
+            $searchTextUrl = (isset($_GET['searchText']) ? '&amp;searchText='.htmlentities($_GET['searchText']) : '');
+            $matchTypeUrl = (isset($_GET['matchType']) ? '&amp;matchType='.htmlentities($_GET['matchType']) : '');
             $result = mysql_query2($query);
             echo '<table border="1">'."\n";
-            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">ID</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Category</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Name</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Player Lockout</a></th>';
-            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.($factionlimit==''?'':'&amp;factionLimit='.$factionlimit).($_GET['quest_keys']==''?'':'&amp;quest_keys='.$_GET['quest_keys'].'&amp;key_match='.$_GET['key_match']).'">Quest Lockout</a></th>';
+            echo '<tr><th><a href="./index.php?do=listquests&amp;sort=id'.$direction_url.$searchTextUrl.$matchTypeUrl.'">ID</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=category'.$direction_url.$searchTextUrl.$matchTypeUrl.'">Category</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=name'.$direction_url.$searchTextUrl.$matchTypeUrl.'">Name</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=plock'.$direction_url.$searchTextUrl.$matchTypeUrl.'">Player Lockout</a></th>';
+            echo '<th><a href="./index.php?do=listquests&amp;sort=qlock'.$direction_url.$searchTextUrl.$matchTypeUrl.'">Quest Lockout</a></th>';
             echo '<th>Prerequisites</th><th>Actions</th></tr>';
             while ($row = fetchSqlAssoc($result))
             {
@@ -215,12 +188,12 @@ function listquests()
                     echo '<td>'.$row['name'].'</td>';
                 }
                 echo '<td>'.$row['player_lockout_time'];
-                echo '</td><td>'.$row['quest_lockout_time'].'</td><td>'.htmlspecialchars($row['prerequisite']).'</td>';
+                echo '</td><td>'.$row['quest_lockout_time'].'</td><td>'.htmlentities($row['prerequisite']).'</td>';
                 echo '<td><a href="./index.php?do=readquest&amp;id='.$row['id'].'">Read</a>';
                 echo '<br /><a href="./index.php?do=validatequest&amp;id='.$row['id'].'">Validate</a>';
                 if (checkaccess('quests', 'edit'))
                 {
-                    echo '<br/><a href="./index.php?do=editquest'.$current_sort_url.'&amp;id='.$row['id'].'">Edit</a>';
+                    echo '<br/><a href="./index.php?do=editquest'.$current_sort_url.$searchTextUrl.$matchTypeUrl.'&amp;id='.$row['id'].'">Edit</a>';
                 }
                 if (checkaccess('quests', 'delete'))
                 {
@@ -242,14 +215,14 @@ function listquests()
 }
 function parsePrereqScript($prereq)
 {
-	$pos = stristr($prereq, '<pre>');
-	$istrigger = 0;
-	$quest_name = null;
+    $pos = stristr($prereq, '<pre>');
+    $istrigger = 0;
+    $quest_name = null;
     $error = '';
-	if ($pos != false) {
-		$istrigger = 1;
-		$quest_name = 1;
-	}
+    if ($pos != false) {
+        $istrigger = 1;
+        $quest_name = 1;
+    }
 
     // parse trigger
     if ($istrigger==1)
