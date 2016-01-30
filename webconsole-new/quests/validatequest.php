@@ -433,7 +433,7 @@ function append_log($msg)
 /**
 * get the count for $trigger in $line and put it in $count. If any trigger has no text following it, return false otherwise true.
 */ 
-function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
+function getTriggerCount($line, $trigger, &$count)
 {
     global $line_number;
     $count = 0;
@@ -465,10 +465,6 @@ function getTriggerCount($line, $trigger, &$count, $max_chars_per_line='99999')
         else 
         {
             $count++;
-        }
-        if (strlen($temp_line) > $max_chars_per_line)
-        {
-            append_log("Warning: more than $max_chars_per_line char found in trigger on line $line_number");
         }
         check_parenthesis($temp_line); // check for parenthesis and and if they're found, check if they're valid.
         $pos += strlen($trigger); // move the position pointer past our first find so it doesn't get seen again.
