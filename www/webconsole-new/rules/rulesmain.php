@@ -10,7 +10,7 @@ function rulesmain()
         echo '<a href="./index.php?do=scripts&amp;type=CG">List CharGen Scripts</a> <br/>'."\n";
         echo '<a href="./index.php?do=scripts&amp;type=S">List Spell Scripts</a> <br/>'."\n";
         echo '<a href="./index.php?do=mscripts">List Math Scripts</a> <br/>'."\n";
-		echo '<a href="./index.php?do=scripts&amp;type=A">List Special Attack Scripts</a> <br/>'."\n";
+        echo '<a href="./index.php?do=scripts&amp;type=A">List Special Attack Scripts</a> <br/>'."\n";
         echo '<a href="./index.php?do=scripts&amp;type=O">List Other Scripts</a> <br/>'."\n";
         echo '<hr/>'."\n";
         echo '<a href="./index.php?do=spells">List Spells</a><br/>'."\n";
