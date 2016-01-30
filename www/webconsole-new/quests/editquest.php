@@ -21,7 +21,11 @@ function editquest()
             $return_url = '';
             if (isset($_GET['sort']) && isset($_GET['direction']))
             {
-                $return_url = '&amp;sort='.htmlspecialchars($_GET['sort']).'&amp;direction='.htmlspecialchars($_GET['direction']);
+                $return_url = '&amp;sort='.htmlentities($_GET['sort']).'&amp;direction='.htmlentities($_GET['direction']);
+            }
+            if (isset($_GET['matchType']) && isset($_GET['searchText']))
+            {
+                $return_url .= '&amp;matchType='.htmlentities($_GET['matchType']).'&amp;searchText='.htmlentities($_GET['searchText']);
             }
             echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit'.$return_url.'" method="post"><div><table border="0">';
             echo '<tr><td>Quest ID:</td><td> '.$id."</td></tr>\n";
@@ -30,9 +34,9 @@ function editquest()
             echo '<tr><td>Quest Description:</td><td> <textarea name="task" rows="2" cols="45">'.$row['task']."</textarea></td></tr>\n";
             echo '<tr><td>Player Lockout Time:</td><td> <input type="text" name="player_lockout_time" value="'.$row['player_lockout_time'].'" />'."</td></tr>\n";
             echo '<tr><td>Quest Lockout Time:</td><td> <input type="text" name="quest_lockout_time" value="'.$row['quest_lockout_time'].'" />'."</td></tr>\n";
-            echo '<tr><td>Prerequisites:</td><td> <textarea name="prerequisite" rows="2" cols="50">'.htmlspecialchars($row['prerequisite'])."</textarea></td></tr>\n";
+            echo '<tr><td>Prerequisites:</td><td> <textarea name="prerequisite" rows="2" cols="50">'.htmlentities($row['prerequisite'])."</textarea></td></tr>\n";
             echo '</table></div><hr/>';
-            echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.htmlspecialchars($script)."</textarea><br />\n";
+            echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.htmlentities($script)."</textarea><br />\n";
             echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" />';
             echo '</p></form>';
         }
@@ -42,7 +46,11 @@ function editquest()
             if (isset($_GET['sort']) && isset($_GET['direction']))
             {
                 // no &amp; in javascript, it's gonna be directly into the url bar like that.
-                $return_url = '&sort='.htmlspecialchars($_GET['sort']).'&direction='.htmlspecialchars($_GET['direction']);
+                $return_url = '&sort='.htmlentities($_GET['sort']).'&direction='.htmlentities($_GET['direction']);
+            }
+            if (isset($_GET['matchType']) && isset($_GET['searchText']))
+            {
+                $return_url .= '&matchType='.htmlentities($_GET['matchType']).'&searchText='.htmlentities($_GET['searchText']);
             }
             $id = escapeSqlString($_GET['id']);
             $name = escapeSqlString($_POST['name']);
