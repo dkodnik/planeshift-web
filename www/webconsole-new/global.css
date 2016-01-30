@@ -108,6 +108,10 @@ td{
   color:red;
 }
 
+.warning{
+  color:#FFFF00;
+}
+
 p.error{
   color:red;
 }

@@ -7,26 +7,18 @@
 
 $parse_log = '';
 $line_number = 0;
+$hideWarnings = false;
+
 function validatequest()
 {
     if(checkaccess('quests', 'read'))
     {
         global $parse_log;
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
-       $warncheck = '';
-        if($_POST['no_warnings'])
-        {
-            $warncheck = 'checked';
-        }
-        $warnQNcheck = '';
-        if($_POST['no_QN_warnings'])
-        {
-            $warnQNcheck = 'checked';
-        }
-        if($_POST['show_lines'])
-        {
-            $showLines = 'checked';
-        }
+        $warnCheck = (isset($_POST['noWarnings']) ? 'checked="checked"' : '');
+        $warnQNCheck = (isset($_POST['noQNWarnings']) ? 'checked="checked"' : '');
+        $showLinesCheck = (isset($_POST['showLines']) ? 'checked="checked"' : '');
+
         echo '
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser).</p>
@@ -34,9 +26,9 @@ to what line in your browser).</p>
     <div>
         <table>
             <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'" /></td></tr>
-            <tr><td><input type="checkbox" name="show_lines" ' . $showLines . ' />Show script lines?</td><td></td></tr>
-            <tr><td><input type="checkbox" name="no_warnings" ' . $warncheck . ' />Hide Warnings?</td><td></td></tr>
-            <tr><td><input type="checkbox" name="no_QN_warnings" ' . $warnQNcheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
+            <tr><td><input type="checkbox" name="showLines" ' . $showLinesCheck . ' />Show script lines?</td><td></td></tr>
+            <tr><td><input type="checkbox" name="noWarnings" ' . $warnCheck . ' />Hide Warnings?</td><td></td></tr>
+            <tr><td><input type="checkbox" name="noQNWarnings" ' . $warnQNCheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
         </table>
         <input type="submit" name="submit" value="submit" />
     </div>
@@ -45,10 +37,9 @@ to what line in your browser).</p>
 
         if(isset($_POST['submit']))
         {
-            $show_lines = isset($_POST['show_lines']);
             if (is_numeric($id))
             {
-                parseScripts($id, $show_lines);
+                parseScripts($id, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']));
             }
             append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script</a>');
             append_log('');
@@ -65,7 +56,7 @@ to what line in your browser).</p>
 
 // quest_id is not unique, (KA scripts for example, but others too are not enforced to be unique.
 // So we need to collect them all, and then handle the actual script the next method
-function parseScripts($quest_id, $show_lines) 
+function parseScripts($quest_id, $showLines, $hideWarnings, $hideQNWarnings) 
 {
     $result = mysql_query2("SELECT script FROM quest_scripts WHERE quest_id = '$quest_id'"); 
     if (sqlNumRows($result) < 1)
@@ -77,13 +68,13 @@ function parseScripts($quest_id, $show_lines)
     {
         append_log('<p class="error">');
         append_log("parsing script # $i with ID $quest_id"); 
-        parseScript($quest_id, $row[0], $show_lines);
+        parseScript($quest_id, $row[0], $showLines, $hideWarnings, $hideQNWarnings);
         append_log("parsing script # $i with ID $quest_id completed");
         append_log('</p>');
     }
 }
 
-function parseScript($quest_id, $script, $show_lines, $quest_name='') 
+function parseScript($quest_id, $script, $show_lines, $HideWarnings, $hideQNWarnings, $quest_name='') 
 {
     $line = '';
     $p_count = 0;
@@ -94,6 +85,8 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
+    global $hideWarnings;
+    $GLOBALS['hideWarnings'] = $HideWarnings;
     $ready_for_complete = false; // this var is used to see if there has been an "NPC: trigger before we use the "complete quest" command. without it, the server crashes on loadquest.
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
@@ -113,7 +106,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
     {
         if($show_lines)
         {
-            echo "$line_number: $line <br />\n"; // debug line, shows you all the lines of the script.
+            echo "$line_number: ".htmlentities($line)." <br />\n"; // debug line, shows you all the lines of the script.
         }
         if(strncasecmp($line, '#', 1) === 0) //comment line
         {
@@ -184,7 +177,7 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
         }
         elseif (strpos($line, ":") !== false) // NPC_NAME: trigger, check for content, and match with the amount of P: triggers
         {
-            // if a line starts with questnote, the : was likely added as a mistake since no NPCs are named "questnote". Send warning.
+            // if a line starts with questnote, the : was likely added as a mistake since no NPCs are named "questnote". Send error.
             if(strncasecmp($line, 'QuestNote', 9) === 0)
             {
                 append_log("Parse Error: found QuestNote and a colon ':' on the same line, the QuestNote command can not contain colons at line $line_number");
@@ -250,17 +243,13 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
             $p_count++; // this is a valid trigger too for npc:
             checkVariables($line, 'player');
         }
-        elseif(strncasecmp($line, 'QuestNote', 9) === 0) // Quest Note
+        elseif(strncasecmp($line, 'QuestNote ', 10) === 0) // Quest Note
         {
             if ($quest_note_found) 
             {
                 append_log("Parse Error: there already is a QuestNote defined in the same step $step before line $line_number.");
             }
-            if(trim(substr($line,9,1)) == ':')
-            {
-                append_log("Parse Error: Questnote contains ':' at line $line_number.");
-            }
-            elseif (trim(substr($line, 10)) == '')
+            if (trim(substr($line, 10)) == '')
             {
                 append_log("Parse Error: empty Questnote at line $line_number.");
             }
@@ -309,13 +298,12 @@ function parseScript($quest_id, $script, $show_lines, $quest_name='')
                 }
             }
             // check for quest notes
-            if (!$quest_note_found && $step > 1 && !$_POST['no_QN_warnings']) 
+            if (!$quest_note_found && $step > 1 && !$hideQNWarnings) 
             {
                 append_log("Warning: step $step has no QuestNote before line $line_number");
             }
-            $quest_note_found = false;
             $step++;
-            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = $ready_for_complete = false;
+            $pStar = $menuInputBox = $seen_npc_triggers = $seen_menu_triggers = $quest_note_found = $ready_for_complete = false;
             $count = $m_count = $p_count = 0;
 
         }
@@ -417,11 +405,12 @@ function isspace($char)
 function append_log($msg) 
 {
     global $parse_log;
+    global $hideWarnings;
     if(strtolower(substr($msg, 0, 7)) == "warning")
     {
-        if(!$_POST['no_warnings'])
+        if(!$hideWarnings)
         {
-            $parse_log.= '<font color="#FFFF00">' . $msg . "</font><br />\n";
+            $parse_log.= '<span class="warning">' . $msg . "</span><br />\n";
         }
     }
     else
