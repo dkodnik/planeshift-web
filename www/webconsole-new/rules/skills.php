@@ -1,7 +1,7 @@
 <?php
 function listskills(){
-  if (checkaccess('other', 'read')){
-    if (isset($_POST['commit']) && checkaccess('other', 'edit')){
+  if (checkaccess('natres', 'read')){
+    if (isset($_POST['commit']) && checkaccess('natres', 'edit')){
       if ($_POST['commit'] == "Commit Edit"){
         $id = escapeSqlString($_POST['id']);
         $description = escapeSqlString($_POST['description']);
@@ -22,7 +22,7 @@ function listskills(){
         listskills();
         return;
       }
-    }else if (isset($_POST['action']) && checkaccess('other', 'edit')){
+    }else if (isset($_POST['action']) && checkaccess('natres', 'edit')){
       if ($_POST['action'] == "Edit"){
         $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM skills WHERE skill_id='$id'";
@@ -55,7 +55,7 @@ function listskills(){
         echo 'No Skills Found!';
       }
       echo '<table border="1"><tr><th>ID</th><th>Skill</th><th>Description</th><th>Practice Factor</th><th>Mental Factor</th><th>Price</th><th>Base Rank Cost</th><th>Category</th>';
-      if (checkaccess('other', 'edit')){
+      if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
@@ -69,7 +69,7 @@ function listskills(){
         echo '<td>'.$row['price'].'</td>';
         echo '<td>'.$row['base_rank_cost'].'</td>';
         echo '<td>'.$row['category'].'</td>';
-        if (checkaccess('other', 'edit')){
+        if (checkaccess('natres', 'edit')){
           echo '<td>';
           echo '<form action="./index.php?do=skills" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['skill_id'].'"/>';
