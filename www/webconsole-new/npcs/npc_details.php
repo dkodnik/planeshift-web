@@ -1099,7 +1099,7 @@ function npcdetails(){
     echo '<a href="'.$uri_string.'&amp;sub=skills">skills</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=traits">traits</a><br/>';
     echo '<a href="'.$uri_string.'&amp;sub=factions">Factions</a><br/>';
-	echo '<a href="'.$uri_string.'&amp;sub=variables">Variables</a><br/>';
+    echo '<a href="'.$uri_string.'&amp;sub=variables">Variables</a><br/>';
     if ($row['character_type'] > 0)   // don't display for players
     {
         echo '<a href="'.$uri_string.'&amp;sub=kas">KA\'s</a><br/>';
@@ -1118,7 +1118,7 @@ function npcdetails(){
         case 'factions':
           npc_factions();
           break;
-		case 'variables':
+        case 'variables':
           npc_variables();
           break;
         case 'main':
@@ -1257,6 +1257,11 @@ function npc_variables()
             {
                 $id = escapeSqlString($_GET['npc_id']);
                 $variable_name = escapeSqlString($_POST['variable_name']);
+                if (trim($variable_name) == '')
+                {
+                    echo '<p class="error">Invalid variable name.</p>';
+                    return;
+                }
                 $query = '';
                 if ($_POST['commit'] == 'Remove')
                 {
@@ -1265,7 +1270,7 @@ function npc_variables()
                 else if($_POST['commit'] == 'Add Variable')
                 {
                     $variable_value = escapeSqlString($_POST['variable_value']);
-                    $query = "INSERT INTO character_variables (character_id, name, value) VALUES ('$id', '$variable_name', '$variable_value') ON DUPLICATE KEY UPDATE value='$variable_value'";
+                    $query = "INSERT INTO character_variables (character_id, name, value) VALUES ('$id', '$variable_name', '$variable_value')";
                 }
                 else if($_POST['commit'] == 'Edit')
                 {
@@ -1287,23 +1292,24 @@ function npc_variables()
                 $id = escapeSqlString($_GET['npc_id']);
                 $query = 'SELECT name, value FROM character_variables WHERE character_id='.$id.' ORDER BY name';
                 $result = mysql_query2($query);
-                echo '<table border="1"><tr><th>Variable</th><th>Value</th><th>Actions</th></tr>';
                 if (sqlNumRows($result) > 0)
                 {
+                    echo '<div class="table">'."\n";
+                    echo '<div class="tr">'."\n";
+                    echo '<div class="th">Variable</div><div class="th">Value</div><div class="th">Actions</div>'."\n";
+                    echo '</div>'."\n";
                     while ($row = fetchSqlAssoc($result))
                     {
-                        echo '<tr><td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
-                        echo '<input type="text" name="variable_name" value="'.$row['name'].'" /></td>';
-                        echo '<td><input type="text" size="9" name="variable_value" value="'.$row['value'].'" /></td>';
-                        echo '<td><input type="submit" name="commit" value="Edit" /></form>';
-                        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">';
-                        echo '<input type="hidden" name="variable_name" value="'.$row['name'].'" /><input type="submit" name="commit" value="Remove" /></form></td></tr>';
+                        echo '<form class="tr" action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=variables" method="post">'."\n";
+                        echo '<div class="td"><input type="hidden" name="variable_name" value="'.htmlentities($row['name']).'" />'.htmlentities($row['name']).'</div>'."\n";
+                        echo '<div class="td"><input type="text" size="9" name="variable_value" value="'.htmlentities($row['value']).'" /></div>'."\n";
+                        echo '<div class="td"><input type="submit" name="commit" value="Edit" /><br /><input type="submit" name="commit" value="Remove" /></div>'."\n";
+                        echo '</form>'."\n"; // ends tr
                     }
-                    echo '</table>';
+                    echo '</div>'."\n"; // ends table
                 }
                 else
                 {
-                    echo '</table>';
                     echo '<p class="error">NPC has no variables</p>';
                 }
                 echo '<p>Add a variable to this NPC</p>';
