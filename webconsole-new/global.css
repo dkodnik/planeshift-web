@@ -67,6 +67,32 @@ div.main{
   display:block;
 }
 
+.table{
+    display:table;
+    border:1px solid;
+    border-spacing:1px;
+    padding:0.1em 0.1em 0.1em 0.1em;
+}
+
+.tr{
+    display:table-row;
+}
+
+.td{
+    display:table-cell;
+    border:1px solid;
+    padding:0.4em 0.4em 0.4em 0.4em;
+}
+
+.th{
+    display:table-cell;
+    font-weight:bold;
+    text-align: center;
+    border:1px solid;
+    padding:0.4em 0.4em 0.4em 0.4em;
+}
+
+
 th{
   text-transform:capitalize;
 }
