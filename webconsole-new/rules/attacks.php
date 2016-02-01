@@ -4,7 +4,7 @@ function listattacks()
 {
     if (!checkaccess('natres', 'read'))
     {
-        echo '<p class="error">You are not authorized to use these functions</p>';
+        echo '<p class="error">You are not authorized to use these functions.</p>';
         return;
     }
     // navigation
@@ -111,7 +111,7 @@ function editattacks()
         $row = fetchSqlAssoc($result);
         $attacktypes = PrepSelect('attacktypes');
         $mathscripts = PrepSelect('math_script');
-		$outcomes = PrepSelect('scripts');
+        $scripts = PrepSelect('scripts');
         echo '<p class="header">Edit Attack Type</p>';
         echo '<form action="./index.php?do=editattacks&amp;id='.$id.'" method="post">';
         echo "<table>\n";
@@ -122,9 +122,8 @@ function editattacks()
         echo '<tr><td>Attack Animation</td><td><input type="text" name="attack_anim" value="'.htmlentities($row['attack_anim']).'" /></td></tr>'."\n";
         echo '<tr><td>Attack Description</td><td><textarea name="attack_description" rows="4" cols="60">'.htmlentities($row['attack_description']).'</textarea></td></tr>'."\n";
         echo '<tr><td>Damage</td><td>'.DrawSelectBox('math_script', $mathscripts, 'damage', $row['damage']).'</td></tr>'."\n";
-        echo '<tr><td>Attack Type</td><td>'.DrawSelectBox('attacktypes', $attacktypes, 'attackType', $row['attackType'],true).'</td></tr>'."\n";
-		echo '<tr><td>Outcome</td><td>'.DrawSelectBox('script', $outcomes, 'outcome', $row['outcome'],true).'</td></tr>'."\n";
-		//echo '<tr><td>Outcome</td><td><input type="text" name="outcome" value="'.htmlentities($row['outcome']).'" /></td></tr>'."\n";
+        echo '<tr><td>Attack Type</td><td>'.DrawSelectBox('attacktypes', $attacktypes, 'attackType', $row['attackType'], true).'</td></tr>'."\n";
+        echo '<tr><td>Outcome</td><td>'.DrawSelectBox('scripts', $scripts, 'outcome', $row['outcome'], true).'</td></tr>'."\n";
         echo '<tr><td>Delay</td><td><textarea name="delay" rows="4" cols="60">'.htmlentities($row['delay']).'</textarea></td></tr>'."\n";
         echo '<tr><td>Range</td><td><textarea name="range" rows="4" cols="60">'.htmlentities($row['range']).'</textarea></td></tr>'."\n";
         echo '<tr><td>AOE Radius</td><td><textarea name="aoe_radius" rows="4" cols="60">'.htmlentities($row['aoe_radius']).'</textarea></td></tr>'."\n";
