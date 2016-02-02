@@ -39,7 +39,7 @@ function listquests()
                     // When editing any of this, remember "display_children" has the same code.
                     $data = $data2[0];
                     $quest_name = ($data[3] == 1 ? '<span class="red">'.$key.'</span>' : $key);
-                    $quest_url = (checkaccess('quest', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
+                    $quest_url = (checkaccess('quests', 'edit') ? 'index.php?do=editquest' : 'index.php?do=readquest'); // change link depending on access level.
             
                     echo '<li>'.$data2[2].' <a href="'.$quest_url.'&amp;id='.$data[0].'" >'.$quest_name.'</a> ( '.$data[2].' )';
                     if ($mode=='hiercount') { // used for statistics            
