@@ -1,37 +1,3 @@
-<script type="text/javascript" language="javascript">
-function editdelform(i, a)
-{
-	document.getElementById('edid').value = i;
-	document.getElementById('edaction').value = a;
-	document.getElementById('editdelform').submit();
-}
-function showflags()
-{
-	var wr = document.getElementById('wayrows').value;
-	document.getElementById('mainflagedit').style.display = 'none';
-	document.getElementById('mainflagsave').style.display = 'inline';
-	document.getElementById('editflagdiv').style.display = 'block';
-	for(i=0; i<wr; i++)
-	{
-		document.getElementById(i +'_stndflagdiv').style.display = 'none';
-		document.getElementById(i +'_editflagdiv').style.display = 'block';
-	}
-}
-function toggleflag(flag)
-{
-	var setflag = false;
-	if(document.getElementById(flag + "flag").checked)
-	{
-		setflag = true;	
-	}
-	var wr = document.getElementById('wayrows').value;
-	for(i=0; i<wr; i++)
-	{
-		document.getElementById(i + "_" +  flag).checked = setflag;
-	}
-}
-</script>
-
 <?php
 function listwaypoints(){
   if (checkaccess('natres', 'read')){
@@ -86,8 +52,8 @@ function listwaypoints(){
       unset($_POST);
       listwaypoints();
       return;
-    }else if (checkaccess('natres', 'edit') && isset($_POST['action'])){		
-		
+    }else if (checkaccess('natres', 'edit') && isset($_POST['action'])){        
+        
       $id = escapeSqlString($_POST['id']);
       if ($_POST['action'] == 'Edit'){
         $query = "SELECT * FROM sc_waypoints WHERE id='$id'";
@@ -190,59 +156,59 @@ function listwaypoints(){
         return;
       }
     }else{
-	if(checkaccess('natres', 'edit'))
-	{
-		if($_POST['flagedit'])
-		{
-			for($tmp = 0; $tmp < $_POST['wayrows']; $tmp++)
-			{
-				$tmp_flag = '';
-				if(isset($_POST[$tmp.'_ar']))
-				{
-					$tmp_flag .= 'ALLOW_RETURN, ';
-				}
-				if(isset($_POST[$tmp.'_ug']))
-				{
-					$tmp_flag .= 'UNDERGROUND, ';
-				}
-				if(isset($_POST[$tmp.'_uw']))
-				{
-					$tmp_flag .= 'UNDERWATER, ';
-				}
-				if(isset($_POST[$tmp.'_pr']))
-				{
-					$tmp_flag .= 'PRIVATE, ';
-				}
-				if(isset($_POST[$tmp.'_pu']))
-				{
-					$tmp_flag .= 'PUBLIC, ';
-				}
-				if(isset($_POST[$tmp.'_ct']))
-				{
-					$tmp_flag .= 'CITY, ';
-				}
-				if(isset($_POST[$tmp.'_in']))
-				{
-					$tmp_flag .= 'INDOOR, ';
-				}
-				if(isset($_POST[$tmp.'_pa']))
-				{
-					$tmp_flag .= 'PATH, ';
-				}
-				if(isset($_POST[$tmp.'_rd']))
-				{
-					$tmp_flag .= 'ROAD, ';
-				}
-				if(isset($_POST[$tmp.'_gr']))
-				{
-					$tmp_flag .= 'GROUND, ';
-				}
-				$upd_flag = 'update sc_waypoints set flags="' . substr($tmp_flag, 0, -2) . '" where id=' . $_POST[$tmp.'_id'];
-				mysql_query2($upd_flag);
-			}
-		}
-	}
-		
+    if(checkaccess('natres', 'edit'))
+    {
+        if(isset($_POST['flagedit']))
+        {
+            for($tmp = 0; $tmp < $_POST['wayrows']; $tmp++)
+            {
+                $tmp_flag = '';
+                if(isset($_POST[$tmp.'_ar']))
+                {
+                    $tmp_flag .= 'ALLOW_RETURN, ';
+                }
+                if(isset($_POST[$tmp.'_ug']))
+                {
+                    $tmp_flag .= 'UNDERGROUND, ';
+                }
+                if(isset($_POST[$tmp.'_uw']))
+                {
+                    $tmp_flag .= 'UNDERWATER, ';
+                }
+                if(isset($_POST[$tmp.'_pr']))
+                {
+                    $tmp_flag .= 'PRIVATE, ';
+                }
+                if(isset($_POST[$tmp.'_pu']))
+                {
+                    $tmp_flag .= 'PUBLIC, ';
+                }
+                if(isset($_POST[$tmp.'_ct']))
+                {
+                    $tmp_flag .= 'CITY, ';
+                }
+                if(isset($_POST[$tmp.'_in']))
+                {
+                    $tmp_flag .= 'INDOOR, ';
+                }
+                if(isset($_POST[$tmp.'_pa']))
+                {
+                    $tmp_flag .= 'PATH, ';
+                }
+                if(isset($_POST[$tmp.'_rd']))
+                {
+                    $tmp_flag .= 'ROAD, ';
+                }
+                if(isset($_POST[$tmp.'_gr']))
+                {
+                    $tmp_flag .= 'GROUND, ';
+                }
+                $upd_flag = 'update sc_waypoints set flags="' . substr($tmp_flag, 0, -2) . '" where id=' . $_POST[$tmp.'_id'];
+                mysql_query2($upd_flag);
+            }
+        }
+    }
+        
       $query = "SELECT w.id, w.name, w.wp_group, w.x, w.y, w.z, w.radius, w.flags, w.loc_sector_id, s.name AS sector FROM sc_waypoints AS w LEFT JOIN sectors AS s on s.id=w.loc_sector_id";
       if (isset($_GET['id']) && $_GET['id']!=''){
         $id = escapeSqlString($_GET['id']);
@@ -310,25 +276,22 @@ function listwaypoints(){
         if (!isset($_GET['sector'])){
           $_GET['sector']="NULL";
         }
-        echo ' - <form action="./index.php" method="get"><input type="hidden" name="do" value="waypoint"/>';
+        echo ' - <form action="./index.php" method="get"><div><input type="hidden" name="do" value="waypoint"/>';
         if (isset($_GET['sort'])){
           echo '<input type="hidden" name="sort" value="'.$_GET['sort'].'"/>';
         }
-       /* if (isset($_GET['limit'])){
-          echo '<input type="hidden" name="limit" value="'.$_GET['limit'].'"/>';
-        }*/
-        echo DrawSelectBox('sectorid', $Sectors, 'sector' ,$_GET['sector'], true).'<input type="submit" name="submit" value="Limit By Sector" /></form>';
+        echo DrawSelectBox('sectorid', $Sectors, 'sector' ,$_GET['sector'], true).'<input type="submit" name="submit" value="Limit By Sector" /></div></form>';
         if ($_GET['sector'] == "NULL"){
           unset($_GET['sector']);
         }
-		// Form for edit/delete buttons
-		 $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
-            echo '<form id="editdelform" action="./index.php?do=waypoint'.$navurl.'" method="post">';
-            echo '<input type="hidden" name="id" id="edid" value="0" />';
-            echo '<input type="hidden" id="edaction" name="action" value="Edit" />';
-            echo '</form>';
-		echo '<form id="editflagform" action="./index.php?do=waypoint'.$navurl.'" method="post">
-		<input type="hidden" name="flagedit" value="true">';		
+        // Form for edit/delete buttons
+        $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
+        echo '<form id="editdelform" action="./index.php?do=waypoint'.$navurl.'" method="post">';
+        echo '<div><input type="hidden" name="id" id="edid" value="0" />';
+        echo '<input type="hidden" id="edaction" name="action" value="Edit" /></div>';
+        echo '</form>';
+        echo '<form id="editflagform" action="./index.php?do=waypoint'.$navurl.'" method="post">
+        <div><input type="hidden" name="flagedit" value="true" /></div>';        
         echo '<table border="1">';
         echo '<tr><th><a href="./index.php?do=waypoint&amp;sort=name';
         if (isset($_GET['limit'])){
@@ -354,27 +317,27 @@ function listwaypoints(){
           echo '&amp;sector='.$_GET['sector'];
         }
         echo '">Sector</a></th><th>X</th><th>Y</th><th>Z</th><th>Radius</th><th>Flags - <input type="button" id="mainflagedit" value="Edit Flags" onclick="showflags();"/><input type="submit" id="mainflagsave" value="Save Flags" style="display:none" /><div id="editflagdiv" style="display:none"><table>
-		<tr>
-		<td>AR<br /><input type="checkbox" id="arflag" onchange="toggleflag(\'ar\')" title="ALLOW_RETURN"></td>
-		<td>UG<br /><input type="checkbox" id="ugflag" onchange="toggleflag(\'ug\')" title="UNDERGROUND"></td>
-		<td>UW<br /><input type="checkbox" id="uwflag" onchange="toggleflag(\'uw\')" title="UNDERWATER"></td>
-		<td>PR<br /><input type="checkbox" id="prflag" onchange="toggleflag(\'pr\')" title="PRIVATE"></td>
-		<td>PU<br /><input type="checkbox" id="puflag" onchange="toggleflag(\'pu\')" title="PUBLIC"></td>
-		<td>CT<br /><input type="checkbox" id="ctflag" onchange="toggleflag(\'ct\')" title="CITY"></td>
-		<td>IN<br /><input type="checkbox" id="inflag" onchange="toggleflag(\'in\')" title="INSIDE"></td>
-		<td>PA<br /><input type="checkbox" id="paflag" onchange="toggleflag(\'pa\')" title="PATH"></td>
-		<td>RD<br /><input type="checkbox" id="rdflag" onchange="toggleflag(\'rd\')" title="ROAD"></td>
-		<td>GR<br /><input type="checkbox" id="grflag" onchange="toggleflag(\'gr\')" title="GROUND"></td>
-		</tr></table></div></th>';
+        <tr>
+        <td>AR<br /><input type="checkbox" id="arflag" onchange="toggleflag(\'ar\')" title="ALLOW_RETURN" /></td>
+        <td>UG<br /><input type="checkbox" id="ugflag" onchange="toggleflag(\'ug\')" title="UNDERGROUND" /></td>
+        <td>UW<br /><input type="checkbox" id="uwflag" onchange="toggleflag(\'uw\')" title="UNDERWATER" /></td>
+        <td>PR<br /><input type="checkbox" id="prflag" onchange="toggleflag(\'pr\')" title="PRIVATE" /></td>
+        <td>PU<br /><input type="checkbox" id="puflag" onchange="toggleflag(\'pu\')" title="PUBLIC" /></td>
+        <td>CT<br /><input type="checkbox" id="ctflag" onchange="toggleflag(\'ct\')" title="CITY" /></td>
+        <td>IN<br /><input type="checkbox" id="inflag" onchange="toggleflag(\'in\')" title="INSIDE" /></td>
+        <td>PA<br /><input type="checkbox" id="paflag" onchange="toggleflag(\'pa\')" title="PATH" /></td>
+        <td>RD<br /><input type="checkbox" id="rdflag" onchange="toggleflag(\'rd\')" title="ROAD" /></td>
+        <td>GR<br /><input type="checkbox" id="grflag" onchange="toggleflag(\'gr\')" title="GROUND" /></td>
+        </tr></table></div></th>';
         if (checkaccess('natres','edit')){
           echo '<th>Actions</th>';
         }
         echo '</tr>';
-		$r = 0;
-		
+        $r = 0;
+        
         while ($row = fetchSqlAssoc($result))
-		{
-		
+        {
+        
           echo '<tr>';
           echo '<td>'.$row['name'].'</td>';
           echo '<td>'.$row['wp_group'].'</td>';
@@ -383,119 +346,115 @@ function listwaypoints(){
           echo '<td>'.$row['y'].'</td>';
           echo '<td>'.$row['z'].'</td>';
           echo '<td>'.$row['radius'].'</td>';
-          echo '<td><div id="' . $r . '_stndflagdiv" style="display:block">'.$row['flags'].'</div>';
-		  
-		  if (checkaccess('natres', 'edit'))
-		  {
-				$flags = ' '.$row['flags'];
-			echo('<div id="' . $r . '_editflagdiv" style="display:none"><input type="hidden" name="' . $r . '_id" id="' . $r . '_id" value="'.$row['id'].'"/><table width="100%"><tr><td>');	
-			if (strpos($flags, 'ALLOW_RETURN')){
-			  echo '<input type="checkbox" name="' . $r . '_ar" id="' . $r . '_ar" value="ALLOW_RETURN" checked="true" title="ALLOW_RETURN" />';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_ar" id="' . $r . '_ar" value="ALLOW_RETURN" title="ALLOW_RETURN" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'UNDERGROUND')){
-			  echo '<input type="checkbox" name="' . $r . '_ug" id="' . $r . '_ug" value="UNDERGROUND" title="UNDERGROUND" checked="true" />';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_ug" id="' . $r . '_ug" value="UNDERGROUND" title="UNDERGROUND" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'UNDERWATER')){
-			  echo '<input type="checkbox" name="' . $r . '_uw" id="' . $r . '_uw" value="UNDERWATER" title="UNDERWATER" checked="true" />';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_uw" id="' . $r . '_uw" value="UNDERWATER" title="UNDERWATER" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'PRIVATE')){
-			  echo '<input type="checkbox" name="' . $r . '_pr" id="' . $r . '_pr" value="PRIVATE" title="PRIVATE" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_pr" id="' . $r . '_pr" value="PRIVATE" title="PRIVATE" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'PUBLIC')){
-			  echo '<input type="checkbox" name="' . $r . '_pu" id="' . $r . '_pu" value="PUBLIC" title="PUBLIC" checked="true" />';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_pu" id="' . $r . '_pu" value="PUBLIC" title="PUBLIC" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'CITY')){
-			  echo '<input type="checkbox" name="' . $r . '_ct" id="' . $r . '_ct" value="CITY" title="CITY" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_ct" id="' . $r . '_ct" value="CITY" title="CITY" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'INDOOR')){
-			  echo '<input type="checkbox" name="' . $r . '_in" id="' . $r . '_in" value="INDOOR" title="INDOOR" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_in" id="' . $r . '_in" value="INDOOR" title="INDOOR" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'PATH')){
-			  echo '<input type="checkbox" name="' . $r . '_pa" id="' . $r . '_pa" value="PATH" title="PATH" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_pa" id="' . $r . '_pa" value="PATH" title="PATH" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'ROAD')){
-			  echo '<input type="checkbox" name="' . $r . '_rd" id="' . $r . '_rd" value="ROAD" title="ROAD" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_rd" id="' . $r . '_rd" value="ROAD" title="ROAD" />';
-			}
-			echo '</td><td>';
-			if (strpos($flags, 'GROUND')){
-			  echo '<input type="checkbox" name="' . $r . '_gr" id="' . $r . '_gr" value="GROUND" title="GROUND" checked="true"/>';
-			}else{
-			  echo '<input type="checkbox" name="' . $r . '_gr" id="' . $r . '_gr" value="GROUND" title="GROUND" />';
-			}
-			echo('</td></tr></table></div>');
-		  }
-		  
-		  echo '</td>';
+          echo '<td><div id="stndflagdiv_' . $r . '" style="display:block">'.$row['flags'].'</div>';
+          
           if (checkaccess('natres', 'edit'))
-		  {
-            echo '<td><input type="button" name="action" value="Edit" onClick="editdelform(\''.$row['id'].'\', \'Edit\');"/>';
+          {
+            $flags = ' '.$row['flags'];
+            $checked = ' checked="checked"';
+            echo('<div id="editflagdiv_' . $r . '" style="display:none"><input type="hidden" name="' . $r . '_id" id="id_' . $r . '" value="'.$row['id'].'"/><table width="100%"><tr><td>');    
+
+            echo '<input type="checkbox" name="' . $r . '_ar" id="ar_' . $r . '" value="ALLOW_RETURN" title="ALLOW_RETURN"'.(strpos($flags, 'ALLOW_RETURN') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_ug" id="ug_' . $r . '" value="UNDERGROUND" title="UNDERGROUND"'.(strpos($flags, 'UNDERGROUND') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_uw" id="uw_' . $r . '" value="UNDERWATER" title="UNDERWATER"'.(strpos($flags, 'UNDERWATER') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_pr" id="pr_' . $r . '" value="PRIVATE" title="PRIVATE"'.(strpos($flags, 'PRIVATE') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_pu" id="pu_' . $r . '" value="PUBLIC" title="PUBLIC"'.(strpos($flags, 'PUBLIC') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_ct" id="ct_' . $r . '" value="CITY" title="CITY"'.(strpos($flags, 'CITY') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_in" id="in_' . $r . '" value="INDOOR" title="INDOOR"'.(strpos($flags, 'INDOOR') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_pa" id="pa_' . $r . '" value="PATH" title="PATH"'.(strpos($flags, 'PATH') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_rd" id="rd_' . $r . '" value="ROAD" title="ROAD"'.(strpos($flags, 'ROAD') ? $checked : '').' />';
+            echo '</td><td>';
+            echo '<input type="checkbox" name="' . $r . '_gr" id="gr_' . $r . '" value="GROUND" title="GROUND"'.(strpos($flags, 'GROUND') ? $checked : '').' />';
+            echo('</td></tr></table></div>');
+          }
+          
+          echo '</td>';
+          if (checkaccess('natres', 'edit'))
+          {
+            echo '<td><input type="button" name="action" value="Edit" onclick="editdelform(\''.$row['id'].'\', \'Edit\');"/>';
             if (checkaccess('natres', 'delete'))
-			{
-              echo '<br/><input type="button" name="action" value="Delete" onClick="editdelform(\''.$row['id'].'\', \'Delete\');" />';
+            {
+              echo '<br/><input type="button" name="action" value="Delete" onclick="editdelform(\''.$row['id'].'\', \'Delete\');" />';
             }
             echo '</td>';
           }
-		  $r++;
+          $r++;
           echo '</tr>';
         }
-		
-        echo '</table><input type="hidden" name="wayrows" id="wayrows" value="' . $r . '"/></form>';
+        
+        echo '</table><div><input type="hidden" name="wayrows" id="wayrows" value="' . $r . '"/></div></form>';
         if (checkaccess('natres', 'create')){
-        echo '<hr/><p>Create New Waypoint:</p><form action="./index.php?do=waypoint" method="post">';
-        echo '<table border="1">';
-        echo '<tr><th>Field</th><th>Value</th></tr>';
-        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
-        echo '<tr><td>Group</td><td><input type="text" name="group"/></td></tr>';
-        $Sectors = PrepSelect('sectorid');
-        echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', '' ).'</td></tr>';
-        echo '<tr><td>X</td><td><input type="text" name="x"/></td></tr>';
-        echo '<tr><td>Y</td><td><input type="text" name="y"/></td></tr>';
-        echo '<tr><td>Z</td><td><input type="text" name="z"/></td></tr>';
-        echo '<tr><td>Radius</td><td><input type="text" name="radius" /></td></tr>';
-        echo '<tr><td>Flags</td><td>';
-        $flags = ' '.$row['flags'];
-          echo 'ALLOW_RETURN: <input type="checkbox" name="flags[]" value="ALLOW_RETURN" /><br/>';
-          echo 'UNDERGROUND: <input type="checkbox" name="flags[]" value="UNDERGROUND" /><br/>';
-          echo 'UNDERWATER: <input type="checkbox" name="flags[]" value="UNDERWATER" /><br/>';
-          echo 'PRIVATE: <input type="checkbox" name="flags[]" value="PRIVATE" /><br/>';
-          echo 'PUBLIC: <input type="checkbox" name="flags[]" value="PUBLIC" /><br/>';
-          echo 'CITY: <input type="checkbox" name="flags[]" value="CITY" /><br/>';
-          echo 'INDOOR: <input type="checkbox" name="flags[]" value="INDOOR" /><br/>';
-          echo 'PATH: <input type="checkbox" name="flags[]" value="PATH" /><br/>';
-          echo 'ROAD: <input type="checkbox" name="flags[]" value="ROAD" /><br/>';
-          echo 'GROUND: <input type="checkbox" name="flags[]" value="GROUND" /><br/>';
-        echo '</td></tr>';
-        echo '</table>';
-        echo '<input type="submit" name="commit" value="Create Waypoint" />';
-        echo '</form>';
+            echo '<hr/><p>Create New Waypoint:</p><form action="./index.php?do=waypoint" method="post">';
+            echo '<table border="1">';
+            echo '<tr><th>Field</th><th>Value</th></tr>';
+            echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
+            echo '<tr><td>Group</td><td><input type="text" name="group"/></td></tr>';
+            $Sectors = PrepSelect('sectorid');
+            echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $Sectors, 'loc_sector_id', '' ).'</td></tr>';
+            echo '<tr><td>X</td><td><input type="text" name="x"/></td></tr>';
+            echo '<tr><td>Y</td><td><input type="text" name="y"/></td></tr>';
+            echo '<tr><td>Z</td><td><input type="text" name="z"/></td></tr>';
+            echo '<tr><td>Radius</td><td><input type="text" name="radius" /></td></tr>';
+            echo '<tr><td>Flags</td><td>';
+            echo 'ALLOW_RETURN: <input type="checkbox" name="flags[]" value="ALLOW_RETURN" /><br/>';
+            echo 'UNDERGROUND: <input type="checkbox" name="flags[]" value="UNDERGROUND" /><br/>';
+            echo 'UNDERWATER: <input type="checkbox" name="flags[]" value="UNDERWATER" /><br/>';
+            echo 'PRIVATE: <input type="checkbox" name="flags[]" value="PRIVATE" /><br/>';
+            echo 'PUBLIC: <input type="checkbox" name="flags[]" value="PUBLIC" /><br/>';
+            echo 'CITY: <input type="checkbox" name="flags[]" value="CITY" /><br/>';
+            echo 'INDOOR: <input type="checkbox" name="flags[]" value="INDOOR" /><br/>';
+            echo 'PATH: <input type="checkbox" name="flags[]" value="PATH" /><br/>';
+            echo 'ROAD: <input type="checkbox" name="flags[]" value="ROAD" /><br/>';
+            echo 'GROUND: <input type="checkbox" name="flags[]" value="GROUND" /><br/>';
+            echo '</td></tr>';
+            echo '</table>';
+            echo '<div><input type="submit" name="commit" value="Create Waypoint" /></div>';
+            echo '</form>';
 
         }
+        echo '<script type="text/javascript">
+            //<![CDATA[
+            function editdelform(i, a)
+            {
+                document.getElementById("edid").value = i;
+                document.getElementById("edaction").value = a;
+                document.getElementById("editdelform").submit();
+            }
+            function showflags()
+            {
+                var wr = document.getElementById("wayrows").value;
+                document.getElementById("mainflagedit").style.display = "none";
+                document.getElementById("mainflagsave").style.display = "inline";
+                document.getElementById("editflagdiv").style.display = "block";
+                for(i=0; i<wr; i++)
+                {
+                    document.getElementById("stndflagdiv_"+i).style.display = "none";
+                    document.getElementById("editflagdiv_"+i).style.display = "block";
+                }
+            }
+            function toggleflag(flag)
+            {
+                var setflag = false;
+                if(document.getElementById(flag + "flag").checked)
+                {
+                    setflag = true;    
+                }
+                var wr = document.getElementById("wayrows").value;
+                for(i=0; i<wr; i++)
+                {
+                    document.getElementById(flag + "_" + i).checked = setflag;
+                }
+            }
+            //]]>
+            </script>';
       }
    // }
   }else{
