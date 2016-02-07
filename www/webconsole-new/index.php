@@ -72,6 +72,7 @@
         include('./quests/questmain.php');
         include('./quests/listquests.php');
         questmain();
+        listquests();
         countquests();
         break;
       case 'listquests':
