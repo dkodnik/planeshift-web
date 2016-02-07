@@ -67,11 +67,12 @@ div.main{
   display:block;
 }
 
+/* the following turn divs into tables */
 .table{
     display:table;
     border:1px solid;
     border-spacing:1px;
-    padding:0.1em 0.1em 0.1em 0.1em;
+    padding:1px 1px 1px 1px;
 }
 
 .tr{
@@ -81,7 +82,7 @@ div.main{
 .td{
     display:table-cell;
     border:1px solid;
-    padding:0.4em 0.4em 0.4em 0.4em;
+    padding:6px 6px 6px 6px;
 }
 
 .th{
@@ -89,9 +90,43 @@ div.main{
     font-weight:bold;
     text-align: center;
     border:1px solid;
-    padding:0.4em 0.4em 0.4em 0.4em;
+    padding:6px 6px 6px 6px;
+}
+/* end divs into tables */
+
+/* the following are used to create frozen columns and floating table headers */
+.scrollingtablediv {
+    overflow-x:scroll;
+    width:100%;
 }
 
+.scrollingtbody {
+    display:block;
+    overflow-y:scroll;
+    height:350px;
+}
+
+.scrollingthead {
+    display:block;
+}
+
+.firstfrozencol {
+    position:relative;
+}
+
+.secondfrozencol{
+    position:relative;
+}
+
+.color_a{
+  background:#003344;
+}
+
+.color_b{
+  background:#003300;
+}
+
+/* end styles used to create frozen columns and floating table headers */
 
 th{
   text-transform:capitalize;
@@ -109,8 +144,8 @@ tr.color_b{
   background-color:#003300;
 }
 
-td{
-  padding:0.4em 0.4em 0.4em 0.4em;
+td, th{
+  padding:6px 6px 6px 6px;
 }
 
 .center{
