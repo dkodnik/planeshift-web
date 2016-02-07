@@ -203,7 +203,7 @@ function listwaypoints(){
                 {
                     $tmp_flag .= 'GROUND, ';
                 }
-                $upd_flag = 'update sc_waypoints set flags="' . substr($tmp_flag, 0, -2) . '" where id=' . $_POST[$tmp.'_id'];
+                $upd_flag = 'update sc_waypoints set flags="' . substr($tmp_flag, 0, -2) . '" where id=' . escapeSqlString($_POST[$tmp.'_id']);
                 mysql_query2($upd_flag);
             }
         }
