@@ -127,7 +127,7 @@
         itemmain();
         listitems();
         break;
-	  case 'compareitems':
+      case 'compareitems':
         include('./items/itemmain.php');
         include('./items/compareitems.php');
         itemmain();
@@ -701,7 +701,7 @@
         craftingmain();
         listcraftitems();
         break;
-	  case 'checkminditemusage':
+      case 'checkminditemusage':
         include('./crafting/craftingmain.php');
         include('./crafting/checkminditemusage.php');
         craftingmain();
@@ -1026,17 +1026,17 @@
         editgm();
         break;
       case 'events';
-      	include('./other/othermain.php');
-      	include('./other/events.php');
-      	othermain();
-      	listevents();
-      	break;
+          include('./other/othermain.php');
+          include('./other/events.php');
+          othermain();
+          listevents();
+          break;
       case 'viewevent';
-      	include('./other/othermain.php');
-      	include('./other/events.php');
-      	othermain();
-      	viewevent();
-      	break;
+          include('./other/othermain.php');
+          include('./other/events.php');
+          othermain();
+          viewevent();
+          break;
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
     }
