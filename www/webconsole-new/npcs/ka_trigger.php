@@ -207,7 +207,7 @@ function ka_detail(){
             echo '<th>Action</th>';
           }
           echo '<td rowspan="'.(sqlNumRows($result)+2).'">The following NPC use this KA:<br />';
-          $query2 = "SELECT c.id, c.name FROM npc_knowledge_areas AS nka LEFT JOIN characters AS c ON c.id=nka.player_id WHERE area='$area'";
+          $query2 = "SELECT c.id, c.name FROM npc_knowledge_areas AS nka LEFT JOIN characters AS c ON c.id=nka.player_id WHERE area='$area' ORDER BY c.name";
           $result2 = mysql_query2($query2);
           while ($row2 = fetchSqlAssoc($result2)) 
           {
