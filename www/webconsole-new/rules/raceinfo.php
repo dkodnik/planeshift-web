@@ -1,7 +1,7 @@
 <?php
 function raceinfo(){
-  if (checkaccess('other','read')){
-    if (checkaccess('other', 'edit') && isset($_POST['commit'])){
+  if (checkaccess('natres','read')){
+    if (checkaccess('natres', 'edit') && isset($_POST['commit'])){
       if ($_POST['commit'] == "Confirm Spawn Point Delete"){
         $x = escapeSqlString($_POST['x']);
         $y = escapeSqlString($_POST['y']);
@@ -60,7 +60,7 @@ function raceinfo(){
         unset($_POST);
         raceinfo();
       }
-    }else if (checkaccess('other', 'edit') && isset($_POST['action'])){
+    }else if (checkaccess('natres', 'edit') && isset($_POST['action'])){
       if ($_POST['action'] == "Delete"){
         $x = escapeSqlString($_POST['x']);
         $y = escapeSqlString($_POST['y']);
@@ -164,7 +164,7 @@ function raceinfo(){
       $result = mysql_query2($query);
       echo '<table>';
       echo '<tr><th>ID</th><th>Race</th><th>Sex</th><th>Size</th><th>CP\'s</th><th>Base STR</th><th>Base END</th><th>Base AGI</th><th>Base INT</th><th>Base WILL</th><th>Base CHA</th><th>Physical Regen (Standing/Walking)</th><th>Mental Regen (Standing/Walking)</th><th>armor_id</th><th>weapon_id</th><th>helm</th><th>bracer</th><th>belt</th><th>cloak</th><th>Speed Modifier</th><th>Scale</th><th>Spawn Points</th>';
-      if (checkaccess('other', 'edit')){
+      if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
@@ -201,7 +201,7 @@ function raceinfo(){
         echo '<td>';
         if (isset($Spawns[$raceid])){
           echo '<table border="1"><tr><th>X</th><th>Y</th><th>Z</th><th>Angle</th><th>range</th><th>Sector</th>';
-          if (checkaccess('other', 'edit')){
+          if (checkaccess('natres', 'edit')){
             echo '<th>Actions</th>';
           }
           echo '</tr>';
@@ -214,7 +214,7 @@ function raceinfo(){
             echo '<td>'.$angle.'</td>';
             echo '<td>'.$spawn['range'].'</td>';
             echo '<td>'.$spawn['sector_name'].'</td>';
-            if (checkaccess('other','edit')){
+            if (checkaccess('natres','edit')){
               echo '<td>';
               echo '<form action="./index.php?do=raceinfo" method="post">';
               echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
@@ -234,7 +234,7 @@ function raceinfo(){
           echo 'No Spawn Points';
         }
         echo '</td>';
-        if (checkaccess('other', 'edit')){
+        if (checkaccess('natres', 'edit')){
           echo '<td>';
           echo '<form action="./index.php?do=raceinfo" method="post">';
           echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
