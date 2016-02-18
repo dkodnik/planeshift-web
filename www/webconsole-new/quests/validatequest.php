@@ -1054,7 +1054,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'known spell', 11) === 0)
             {
-                validate_magic(substr($require, 11), false);
+                validate_magic(substr($require, 11));
             }
             elseif (strncasecmp($require, 'race', 4) === 0)
             {
@@ -1126,8 +1126,8 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     $item = trim(substr($item, strlen($items[0])));
                 }
                 
-                $cat_pos = stripos($item, 'category');
-                $item_pos = stripos($item, 'item');
+                $cat_pos = strpos($item, 'category');
+                $item_pos = strpos($item, 'item');
                 if ($cat_pos === false && $item_pos === false)
                 {
                     append_log("Parse Error: no 'item' or 'category' identifier in possessed/equipped command at line $line_number");
