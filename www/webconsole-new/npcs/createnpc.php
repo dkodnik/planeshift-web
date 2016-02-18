@@ -25,12 +25,12 @@ function createnpc()
             {
                 $npc_master_id = $_POST['npc_master_id'];
                 $npcname = $_POST['npcname'];
-                if (strpos($npcname, ' ') !== false)
+                $lastname = $_POST['lastname'];
+                if (strpos($lastname, ' ') !== false)
                 {
-                    echo '<p class="error">You can not use spaces in the NPC name field, put multiple names in the Last Name field instead.</p>';
+                    echo '<p class="error">You can not use spaces in the NPC last name field, put multiple names in the Name field instead.</p>';
                     $doit = false;
                 }
-                $lastname = $_POST['lastname'];
                 $description = str_replace("\r", '', $_POST['description']);
                 $race = $_POST['race'];
                 $stats = $_POST['stats'];

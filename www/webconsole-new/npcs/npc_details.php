@@ -1,30 +1,41 @@
 <?php
-function npc_main(){
-  if (checkaccess('npcs', 'read')){
-    if (isset($_GET['npc_id'])){
-
-      // block unauthorized access
-      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
-          echo '<p class="error">You are not authorized to edit NPCs</p>';
-          return;
-      }
-      if (!isset($_POST['commit'])){
+function npc_main()
+{
+    if (!checkaccess('npcs', 'read'))
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+        return;
+    }
+    if (!isset($_GET['npc_id']))
+    {
+        echo '<p class="error">Error: No NPC Selected</p>';
+    }
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+        echo '<p class="error">You are not authorized to edit NPCs</p>';
+        return;
+    }
+    if (!isset($_POST['commit']))
+    {
         $id = escapeSqlString($_GET['npc_id']);
         $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$id.'" method="post" id="npc_details_form"><table>';
-        echo '<tr><td>First Name/Last Name:</td><td><input type="text" name="first_name" value="'.$row['name'].'" />/<input type="text" name="last_name" value="'.$row['lastname'].'" /></td></tr>';
+        echo '<tr><td>First Name/Last Name:</td><td><input type="text" name="first_name" value="'.$row['name'].'" />/<input type="text" name="last_name" value="'.$row['lastname'].'" /><span id="lastNameWarning" class="warning"></span></td></tr>';
         echo '<tr><td>Description:</td><td><textarea name="description" rows="4" cols="50">'.$row['description'].'</textarea></td></tr>';
         echo '<tr><td>OOC Description:</td><td><textarea name="description_ooc" rows="4" cols="50">'.$row['description_ooc'].'</textarea></td></tr>';
         echo '<tr><td>Creation Info:</td><td><textarea name="creation_info" rows="4" cols="50">'.$row['creation_info'].'</textarea></td></tr>';
         echo '<tr><td>Life Description:</td><td><textarea name="description_life" rows="4" cols="50">'.$row['description_life'].'</textarea></td></tr>';
         if ($row['character_type'] > 0) // don't show for players
         {
-            if ($row['npc_master_id'] == $id){
-              echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
-            }else{
-              echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+            if ($row['npc_master_id'] == $id)
+            {
+                echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+            }
+            else
+            {
+                echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
             }
         }
         else // show only for players (npcs are 0000-00-00 00:00:00
@@ -51,10 +62,13 @@ function npc_main(){
         if ($row['character_type'] > 0) // don't show for players
         {
             echo '<tr><td>Invulnerable</td><td>';
-            if ($row['npc_impervious_ind'] == "Y"){
-              echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="selected">True</option></select>';
-            }else{
-              echo '<select name="npc_impervious_ind"><option value="N" selected="selected">False</option><option value="Y">True</option></select>';
+            if ($row['npc_impervious_ind'] == "Y")
+            {
+                echo '<select name="npc_impervious_ind"><option value="N">False</option><option value="Y" selected="selected">True</option></select>';
+            }
+            else
+            {
+                echo '<select name="npc_impervious_ind"><option value="N" selected="selected">False</option><option value="Y">True</option></select>';
             }
             echo '</td></tr>';
         }
@@ -122,7 +136,17 @@ function npc_main(){
                     {
                         document.getElementById("npc_details_form").base_mana_max.value = old_manapoints;
                     }
-                }';
+                }
+                function changeLastName()
+                {
+                    if (document.getElementById("npc_details_form").last_name.value.indexOf(" ") >= 0)
+                    {
+                        document.getElementById("npc_details_form").last_name.value = document.getElementById("npc_details_form").last_name.value.replace(/ /g, "")
+                        document.getElementById("lastNameWarning").innerHTML = "You cannot use spaces in last name, they were automatically removed.";
+                    }
+                }
+                document.getElementById("npc_details_form").last_name.addEventListener("input", changeLastName);
+                ';
         if ($row['base_hitpoints_max'] == null)
         {
             echo 'document.getElementById("npc_details_form").base_hitpoints_null.click();';
@@ -132,9 +156,9 @@ function npc_main(){
             echo 'document.getElementById("npc_details_form").base_mana_null.click();';
         }
         echo ' //]]></script>'."\n"; // End of java script started at previous comment.
-      }
-      else
-      {
+    }
+    else
+    {
         $id = escapeSqlString($_GET['npc_id']);
         $query = "UPDATE characters SET ";
         $description = escapeSqlString($_POST['description']);
@@ -142,6 +166,11 @@ function npc_main(){
         $firstname = escapeSqlString($_POST['first_name']);
         $query .= "name = '$firstname', ";
         $lastname = escapeSqlString($_POST['last_name']);
+        if (strpos($lastname, ' ') !== false)
+        {
+            echo '<p class="error">You can not use spaces in the NPC last name field, put multiple names in the Name field instead.</p>';
+            return;
+        }
         $query .= "lastname = '$lastname', ";
         $description_ooc = escapeSqlString($_POST['description_ooc']);
         $query .= "description_ooc = '$description_ooc', ";
@@ -232,13 +261,7 @@ function npc_main(){
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         npc_main();
-      }
-    }else{
-      echo '<p class="error">Error: No NPC Selected</p>';
     }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
 }
 
 function npc_skills()
