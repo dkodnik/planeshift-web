@@ -1215,36 +1215,46 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             }
             elseif (strncasecmp($require, 'variable', 8) === 0)
             {
-              //echo('<font color="#00FF00">Line: ' . $line_number . ' ' . $require . '</font><br>');
-              $parameters = explode(" ", trim(substr($require,8)));
-              //echo('<font color="#FF00FF"> "' . $parameters[0] . '" "' . $parameters[1] . '" "' . $parameters[2] . '" "' . $parameters[3] . '"</font><br>');
-              if (count($parameters) >= 4)
-              {
-                append_log("Parse Error: Require variable too many arguments at line $line_number");
-              }
-              else if(trim($parameters[0]) == "")
-              {
-                append_log("Parse Error: Require variable blank or missing variable name (check for double spaces) at line $line_number");
-              }
-              else
-              {
-                if(substr($parameters[0],0,6) != 'Quest_')
+                $parameters = explode(' ', trim(substr($require, 8)));
+                if (count($parameters) > 3)
+                {
+                    append_log("Parse Error: Require variable too many arguments at line $line_number");
+                    return;
+                }
+                if (trim($parameters[0]) == "")
+                {
+                    append_log("Parse Error: No require variable name (check for double spaces) at line $line_number");
+                    return;
+                }
+                if (strncmp($parameters[0], 'Quest_', 6) !== 0) // case sensitive check
                 {
                     append_log("Warning: Variables for quests should start \"Quest_\" at line $line_number");
                 }
-                for($i=1; $i < count($parameters); $i++)
+                if (count($parameters) == 1)
                 {
-                    if(trim($parameters[$i]) == "")
-                      {
-                        append_log("Parse Error: Require variable parameter " . ($i+1) . " blank or missing (check for double spaces) at line $line_number");
-                      }
-                    else if(!is_numeric($parameters[$i]) && trim($parameters[$i]) != 'none')
-                    {
-                        append_log("Parse Error: Require variable parameter " . ($i+1) . " is invalid must be a number or \"none\"  at line $line_number");
-                    }
-                    
+                    return; // valid, we already checked empty/other cases above.
                 }
-              }
+                if (count($parameters) == 2) // 2 params means a key/value pair.
+                {
+                    if ($parameters[1] == '')
+                    {
+                        append_log("Parse Error: No require variable value (check for double spaces) at line $line_number");
+                    }
+                    return; // valid case, we're done.
+                }
+                // that leaves the 3 param case, it takes the form of "require variable <name> <min> <max>"
+                if (!is_numeric($parameters[1]) && $parameters[1] != 'none' && $parameters[1] != '')
+                {
+                    append_log("Parse Error: Require variable parameter 'min' must be a number or 'none' at line $line_number");
+                }
+                if (!is_numeric($parameters[2]) && $parameters[2] != 'none' && $parameters[2] != '')
+                {
+                    append_log("Parse Error: Require variable parameter 'max' must be a number or 'none' at line $line_number");
+                }
+                if ($parameters[1] != 'none' && $parameters[2] != 'none' && $parameters[2] < $parameters[1])
+                {
+                    append_log("Parse Error: Require variable parameter 'max' must be higher than 'min' at line $line_number");
+                }
             }
             else 
             {
