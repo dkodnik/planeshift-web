@@ -820,9 +820,8 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 append_log("Parse Error: while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
             }
             // else: valid
-        }
-        // check for "give faction"
-        if (is_numeric($words[0]) && count($words) > 1 && strtolower($words[1]) == 'faction')
+        } // check for "give faction"
+        elseif (is_numeric($words[0]) && count($words) > 1 && strtolower($words[1]) == 'faction')
         {
             if (count($words) < 3)  // "give" is stripped from $words, so we check < 3 rather than < 4.
             {
@@ -836,7 +835,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
             { // the remaining words should be the faction name.
                 validate_faction(implode(' ', array_slice($words, 2)));
             }
-        }
+        } // check for give exp.
         elseif (is_numeric($words[0]) && count($words) > 1 && strtolower($words[1]) == 'exp')
         {
             if(count($words) != 2)
@@ -1149,7 +1148,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 else
                 { // $item hold an item name.
-                    validate_item(trim(substr($item, 4)), true);
+                    validate_item(trim(substr($item, 4)));
                 }
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
@@ -1418,39 +1417,29 @@ function validate_skill($skillname)
         append_log ("Parse Error: skill $skillname not valid at line $line_number");
 }
 
-function validate_item($itemname, $case_sensitive = false)
+function validate_item($itemName)
 {
     global $line_number;
-    if (trim($itemname) == '')
+    if (trim($itemName) == '')
     {
         append_log("Parse Error: could not read item name on line $line_number");
         return;
     }
-    $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", escapeSqlString($itemname));
+    $query = sprintf("SELECT name FROM item_stats WHERE name = '%s' AND stat_type='B'", escapeSqlString($itemName));
     $result = mysql_query2($query);
-    if (sqlNumRows($result) == 1)
+    if (sqlNumRows($result) > 0)
     {
-        if (!$case_sensitive)
-        {
-            return; // valid item, do nothing.
-        }
         $row = fetchSqlRow($result);
-        $item_case = $row[0];
-        $query = sprintf("SELECT name FROM item_stats WHERE name = BINARY '%s' AND stat_type='B'", escapeSqlString($itemname));
-        $result = mysql_query2($query);
-        if (sqlNumRows($result) < 1)
+        // notice that the "where" in sql is not case sensitive, but the result of the query is, and might differ from what we used to search.
+        if ($row[0] != $itemName) 
         {
-            append_log("Parse Error: item name at this position is case sensitive, use '$item_case' instead of '$itemname' in database on line $line_number");
+            append_log("Parse Error: item name is case sensitive, use '{$row[0]}' instead of '$itemName' in database on line $line_number");
         }
         // valid item, do nothing
     }
-    elseif (sqlNumRows($result) > 1)
-    {
-        append_log("warning: multiple items with name: $itemname in database on line $line_number");
-    }
     else
     {
-        append_log("Parse Error: no item with name: $itemname in database on line $line_number");
+        append_log("Parse Error: no item with name: $itemName in database on line $line_number");
     } 
 }
 
