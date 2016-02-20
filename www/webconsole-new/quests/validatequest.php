@@ -809,112 +809,89 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     }
     elseif (strncasecmp($command, 'give', 4) === 0)
     {
-        $given = explode(' or ', substr($command, 5));
-        if (count(explode(' or ', strtolower($command))) > count($given))
-        {
-            append_log("Parse Error: encountered uppercase \"or\" in give command on line $line_number");
-            return;
+        $words = explode(' ', trim(substr($command, 4)));
+        // we convert to lower because this check is not case sensitive. In addition, array_slice returns an empty string if there are no elements.
+        $trias = strtolower(implode(' ', array_slice($words, 1))); 
+        // check all cases of "give money".
+        if (is_numeric($words[0]) && ($trias == 'tria' || $trias == 'hexa' || $trias == 'octa' || $trias == 'circle'))
+        { 
+            if ($words[0] < 0)
+            { 
+                append_log("Parse Error: while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
+            }
+            // else: valid
         }
-        for ($i = 0; $i < count($given); $i++)  // a choice may be presented seperated by "or", so we need to validate them all.
+        // check for "give faction"
+        if (is_numeric($words[0]) && count($words) > 1 && strtolower($words[1]) == 'faction')
         {
-            if (trim($given[$i] == ''))
+            if (count($words) < 3)  // "give" is stripped from $words, so we check < 3 rather than < 4.
             {
-                append_log("Parse Error: nothing to give on line $line_number");
+                append_log("Parse Error: 'give 1 faction factionname' (example) requires at least 4 paramers at line $line_number");
+            }
+            elseif ($words[0] < 0)
+            {
+                append_log("Parse Error: 'give 1 faction factionname' (example) requires the second parameter to be a positive number at line $line_number");
+            }
+            else
+            { // the remaining words should be the faction name.
+                validate_faction(implode(' ', array_slice($words, 2)));
+            }
+        }
+        elseif (is_numeric($words[0]) && count($words) > 1 && strtolower($words[1]) == 'exp')
+        {
+            if(count($words) != 2)
+            {
+                append_log("Parse Error: too much/few parameters for exp command 'give 1 exp' (example) at line $line_number");
+            }
+            elseif ($words[0] < 0)
+            {
+                append_log("Parse Error: 'give 1 exp' (example) requires the second parameter to be a positive number at line $line_number");
+            }
+            // else: valid
+        }
+        else // it's an item, or an offering of items.
+        {
+            $given = explode(' or ', substr($command, 5));
+            if (count(explode(' or ', strtolower($command))) > count($given))
+            {
+                append_log("Parse Error: encountered uppercase \"or\" in give command on line $line_number");
                 return;
             }
-            // to lower case so we can handle this case insensitive.
-            $words = explode(' ', trim(strtolower($given[$i])));
-            // check all cases of "give money".
-            if (in_array('tria', $words, true) || in_array('hexa', $words, true) || in_array('octa', $words, true) || in_array('circle', $words, true))
-            { 
-                if(count($words) > 2)
-                {
-                    append_log("Parse Error: too much parameters for 'give 1 money'(example) (money = tria/hexa/octa/circle) at line $line_number");
-                }
-                elseif (count($words) == 1)
-                {
-                    continue; // valid
-                }
-                elseif (strcasecmp($words[1], 'hexa') === 0 || strcasecmp($words[1], 'tria') === 0 || strcasecmp($words[1], 'octa') === 0 || strcasecmp($words[1], 'circle') === 0)
-                {
-                    if (is_numeric($words[0]) && $words[0] > 0)
-                    { // valid case
-                        continue;
-                    }
-                    else
-                    {
-                        append_log("Parse Error: while giving money (tria/hexa/octa/circle), the parameter before the currency should be a positive number at line $line_number");
-                    }
-                }
-                else
-                {
-                    append_log("Parse Error: while giving money (tria/hexa/octa/circle), the currency should be the last parameter at line $line_number");
-                }
-            }
-            elseif (in_array('faction', $words, true))
+            for ($i = 0; $i < count($given); $i++)  // a choice may be presented seperated by "or", so we need to validate them all.
             {
-                if (count($words) < 3) 
+                if (trim($given[$i] == ''))
                 {
-                    append_log("Parse Error: 'give 1 faction factionname' (example) requires at least 4 paramers at line $line_number");
+                    append_log("Parse Error: nothing to give on line $line_number");
+                    return;
                 }
-                elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'faction') !== 0)
-                {
-                    append_log("Parse Error: 'give 1 faction factionname' (example) requires the second parameter to be a positive number and the third to be 'faction' at line $line_number");
-                }
-                else
-                { // the remaining words should be the faction name.
-                    validate_faction(implode(' ', array_slice($words, 2)));
-                }
-            }
-            elseif (in_array('exp', $words, true))
-            {
-                if(count($words) != 2)
-                {
-                    append_log("Parse Error: too much/few parameters for exp command 'give 1 exp'(example) at line $line_number");
-                }
-                elseif (!is_numeric($words[0]) || $words[0] < 0 || strcasecmp($words[1], 'exp') !== 0)
-                {
-                    append_log("Parse Error: 'give 1 exp' (example) requires the second parameter to be a positive number and the third to be 'exp' at line $line_number");
-                }
-                else
-                { // valid
-                    continue;
-                }
-            }
-            else // it's an item.
-            {
+                $words = explode(' ', trim($given[$i]));
+                
                 if(count($words) == 1)
                 {
                     validate_item($words[0]);
                 }
-                else
+                elseif (is_numeric($words[0]))
                 {
-                    if (is_numeric($words[0]))
+                    if ($words[0] < 0)
                     {
-                        if ($words[0] < 0)
-                        {
-                            append_log("Parse Error: item quantity must be positive at line $line_number");
-                        }
-                        else
-                        {
-                            if  (count($words) == 2 || !is_numeric($words[1]))
-                            {
-                                validate_item(implode(' ', array_slice($words, 1)));
-                            }
-                            elseif ($words[1] < 0 || $words[1] > 300)
-                            {
-                                append_log("Parse Error: item quality must be positive and 300 or less at line $line_number");
-                            }
-                            else
-                            {
-                                validate_item(implode(' ', array_slice($words, 2)));
-                            }
-                        }
+                        append_log("Parse Error: item quantity must be positive at line $line_number");
                     }
-                    else // all words are part of the item name.
+                    elseif  (count($words) == 2 || !is_numeric($words[1]))
                     {
-                        validate_item(implode(' ', $words));
+                        validate_item(implode(' ', array_slice($words, 1)));
                     }
+                    elseif ($words[1] < 0 || $words[1] > 300)
+                    {
+                        append_log("Parse Error: item quality must be positive and 300 or less at line $line_number");
+                    }
+                    else
+                    {
+                        validate_item(implode(' ', array_slice($words, 2)));
+                    }
+                }
+                else // all words are part of the item name.
+                {
+                    validate_item(implode(' ', $words));
                 }
             }
         }
@@ -1493,14 +1470,14 @@ function validate_category($categoryname)
 }
     
 
-function validate_faction($factionname)
+function validate_faction($factionName)
 {
     global $line_number;
-    $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", escapeSqlString($factionname));
+    $query = sprintf("SELECT id FROM factions WHERE faction_name = '%s'", escapeSqlString($factionName));
     $result = mysql_query2($query);
     if(sqlNumRows($result) < 1)
     {
-        append_log("Parse Error: no faction ($faction) found in database on line $line_number");
+        append_log("Parse Error: no faction ($factionName) found in database on line $line_number");
     }
 }
 
