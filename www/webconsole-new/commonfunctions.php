@@ -1,9 +1,13 @@
 <?php
+
+$lastInsertId = 0;
+
 /*mysql_query2() calls mysql_query and dies with a failure message if there
 are any mysql errors*/
 function mysql_query2($query, $log=true)
 {
     global $mysqli;
+    global $lastInsertId;
     $t1 = microtime(true);
     $result = $mysqli->query($query) or die('<p class="error">Query: '.$query.' failed with Error:'.$mysqli->error.'</p>');
     $t2 = microtime(true);
@@ -17,6 +21,7 @@ function mysql_query2($query, $log=true)
         $foo = explode(' ', $query, 2);
         if (strcasecmp($foo[0], 'SELECT') != 0) // we don't log select statements
         {
+            $lastInsertId = $mysqli->insert_id; // need to store that here or it will be overwritten by our command log.
             $foo = escapeSqlString($query);
             $user = escapeSqlString($_SESSION['username']);
             date_default_timezone_set('UTC');
@@ -69,6 +74,15 @@ implementation.*/
 function sqlSeek($result, $location) 
 {
     return $result->data_seek($location);
+}
+
+/*Centralized version of the SQL function, so it can be replaced at just 1 place in case anyone ever wants to switch to PDO, or another sql 
+implementation.*/
+function sqlInsertId() 
+{
+    // we stored this value in mysql_query2() already.
+    global $lastInsertId;
+    return $lastInsertId;
 }
 
 /*SetUpDB() creates the connections to the DataBase - no return value*/
