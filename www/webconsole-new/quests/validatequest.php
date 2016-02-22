@@ -15,6 +15,7 @@ function validatequest()
     {
         global $parse_log;
         $id = (isset($_POST['id']) ? $_POST['id'] : (isset($_GET['id']) ? $_GET['id'] : 0)); // If an ID is posted, use that, otherwise, use GET, if neither is available, use 0.
+        $scriptId = (isset($_POST['script_id']) ? $_POST['script_id'] : (isset($_GET['script_id']) ? $_GET['script_id'] : ''));
         $warnCheck = (isset($_POST['noWarnings']) ? 'checked="checked"' : '');
         $warnQNCheck = (isset($_POST['noQNWarnings']) ? 'checked="checked"' : '');
         $showLinesCheck = (isset($_POST['showLines']) ? 'checked="checked"' : '');
@@ -23,23 +24,38 @@ function validatequest()
 <p>show script lines means it will show all lines it found in the script and number them (so you can look at what errors belong
 to what line in your browser).</p>
 <form method="post" action="./index.php?do=validatequest&amp;id='.$id.'">
-    <div>
-        <table>
-            <tr><td>Quest ID:</td><td><input type="text" name="id" value="'.$id.'" /></td></tr>
-            <tr><td><input type="checkbox" name="showLines" ' . $showLinesCheck . ' />Show script lines?</td><td></td></tr>
-            <tr><td><input type="checkbox" name="noWarnings" ' . $warnCheck . ' />Hide Warnings?</td><td></td></tr>
-            <tr><td><input type="checkbox" name="noQNWarnings" ' . $warnQNCheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
-        </table>
-        <input type="submit" name="submit" value="submit" />
-    </div>
+    <table>
+        <tr><td>Quest ID: (use -1 for KA scripts)</td><td><input type="text" name="id" id="questId" value="'.$id.'" /></td></tr>
+        <tr id="scriptRow"><td>Script ID: (KA scripts only)</td><td><input type="text" id="scriptId" name="script_id" value="'.$scriptId.'" /></td></tr>
+        <tr><td><input type="checkbox" name="showLines" ' . $showLinesCheck . ' />Show script lines?</td><td></td></tr>
+        <tr><td><input type="checkbox" name="noWarnings" ' . $warnCheck . ' />Hide Warnings?</td><td></td></tr>
+        <tr><td><input type="checkbox" name="noQNWarnings" ' . $warnQNCheck . ' />Hide "No QuestNote" Warnings?</td><td></td></tr>
+        <tr><td><input type="submit" name="submit" value="submit" /></td><td></td></tr>
+    </table>
 </form>
+<script type="text/javascript">//<![CDATA[
+    // this function hides the script ID field if quest ID is not -1 (script ID is only relevant to KA scripts, which have a quest ID of -1.
+    function changeQuestId()
+    {
+        if (document.getElementById("questId").value == "-1")
+        {
+            document.getElementById("scriptRow").style.display = "table-row";
+        }
+        else
+        {
+            document.getElementById("scriptRow").style.display = "none";
+        }
+    }
+    document.getElementById("questId").addEventListener("input", changeQuestId);
+    changeQuestId(); // call it once to set innitial hiding/display of the field in accordance to the actual value.
+//]]></script>
 ';
 
         if(isset($_POST['submit']))
         {
             if (is_numeric($id))
             {
-                parseScripts($id, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']));
+                parseScripts($id, $scriptId, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']));
             }
             append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script</a>');
             append_log('');
@@ -56,25 +72,26 @@ to what line in your browser).</p>
 
 // quest_id is not unique, (KA scripts for example, but others too are not enforced to be unique.
 // So we need to collect them all, and then handle the actual script the next method
-function parseScripts($quest_id, $showLines, $hideWarnings, $hideQNWarnings) 
+function parseScripts($questId, $scriptId, $showLines, $hideWarnings, $hideQNWarnings) 
 {
-    $result = mysql_query2("SELECT script FROM quest_scripts WHERE quest_id = '$quest_id'"); 
+    $condition = ($questId == -1 && is_numeric($scriptId) ? "id = '$scriptId'" : "quest_id = '$questId'");
+    $result = mysql_query2("SELECT script FROM quest_scripts WHERE $condition"); 
     if (sqlNumRows($result) < 1)
     {
-        echo '<p class="error">Error: no quest found with ID '.$quest_id.'</p>';
+        echo '<p class="error">Error: no quest found with ID '.$questId.($questId != -1 ? '' : ' and script ID '.$scriptId).'</p>';
         return;
     }
     for($i = 1; $row = fetchSqlRow($result); $i++)
     {
         append_log('<p class="error">');
-        append_log("parsing script # $i with ID $quest_id"); 
-        parseScript($quest_id, $row[0], $showLines, $hideWarnings, $hideQNWarnings);
-        append_log("parsing script # $i with ID $quest_id completed");
+        append_log("parsing script # $i with ID $questId"); 
+        parseScript($questId, $row[0], $showLines, $hideWarnings, $hideQNWarnings);
+        append_log("parsing script # $i with ID $questId completed");
         append_log('</p>');
     }
 }
 
-function parseScript($quest_id, $script, $show_lines, $HideWarnings, $hideQNWarnings, $quest_name='') 
+function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarnings, $quest_name='') 
 {
     $line = '';
     $p_count = 0;
@@ -85,8 +102,7 @@ function parseScript($quest_id, $script, $show_lines, $HideWarnings, $hideQNWarn
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
-    global $hideWarnings;
-    $GLOBALS['hideWarnings'] = $HideWarnings;
+    $GLOBALS['hideWarnings'] = $hideWarnings;
     $ready_for_complete = false; // this var is used to see if there has been an "NPC: trigger before we use the "complete quest" command. without it, the server crashes on loadquest.
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
