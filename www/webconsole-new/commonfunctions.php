@@ -99,24 +99,6 @@ function SetUpDB($adress, $username, $password, $database)
     }
 }
 
-
-/*StripInput() gets rid of any artifacts of magic_slashes, and prepares
-everything for mysql_real_escape_string*/
-function StripInput(){
-  if (get_magic_quotes_gpc()){
-  function stripslashes_deep($value){
-    $value = is_array($value) ?
-    array_map('stripslashes_deep', $value) :
-    stripslashes($value);
-    return $value;
-  }
-  $_POST = array_map('stripslashes_deep', $_POST);
-  $_GET = array_map('stripslashes_deep', $_GET);
-  $_COOKIE = array_map('stripslashes_deep', $_COOKIE);
-  $_REQUEST = array_map('stripslashes_deep', $_REQUEST);
-  }
-}
-
 /*CheckLogin() returns 1 if logged in, 0 if not logged in - Also checks 
   session information to validate login connection */
 function CheckLogin(){

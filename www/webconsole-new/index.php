@@ -7,7 +7,6 @@
   session_start();
   date_default_timezone_set('UTC');
   $_SESSION['totalq'] = "SQL Queries Performed:"; // reset if already exists, we only want one of these collections per run.
-  StripInput();
   if (isset($_GET['logout'])){
     if (isset($_COOKIE['autologin'])){
       setcookie('autologin', "", time()-60*60*24*30);
