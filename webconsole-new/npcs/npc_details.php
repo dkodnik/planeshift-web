@@ -435,135 +435,168 @@ function npc_traits(){
   }
 }
 
-function npc_kas(){
-  if (checkaccess('npcs','read')){
-    if (isset($_GET['npc_id'])){
-      $id = escapeSqlString($_GET['npc_id']);
-      // block unauthorized access
-      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
+function npc_kas()
+{
+    if (!checkaccess('npcs','read'))
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+        return;
+    }
+    if (!isset($_GET['npc_id']))
+    {
+        echo '<p class="error">Error: No npc id</p>';
+        return;
+    }
+    $id = escapeSqlString($_GET['npc_id']);
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
           echo '<p class="error">You are not authorized to edit NPCs</p>';
           return;
-      }
-      if (isset($_POST['commit'])){
+    }
+    
+    if (isset($_POST['commit']))
+    {
+        $query = '';
         $area = escapeSqlString($_POST['area']);
-        if (isset($_POST['priority'])){
-          $priority = escapeSqlString($_POST['priority']);
+        if ($_POST['commit'] == 'Remove')
+        {
+            $query = "DELETE FROM npc_knowledge_areas WHERE player_id='$id' AND area='$area'";
         }
-        if ($_POST['commit'] == 'Remove'){
-          $query = "DELETE FROM npc_knowledge_areas WHERE player_id='$id' AND area='$area'";
-        }else if ($_POST['commit'] == 'Update Priority'){
-          $query = "UPDATE npc_knowledge_areas SET priority='$priority' WHERE player_id='$id' AND area='$area'";
-        }else if ($_POST['commit'] == 'Add KA'){
-          if ($area == "SELF"){
-            $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-            $result = mysql_query2($query);
-            $row = fetchSqlAssoc($result);
-            $name = $row['name'];
-            if ($row['lastname'] != ""){
-              $name = $name . ' ' .$row['lastname'];
+        else if ($_POST['commit'] == 'Update Priority')
+        {
+            $priority = escapeSqlString($_POST['priority']);
+            $query = "UPDATE npc_knowledge_areas SET priority='$priority' WHERE player_id='$id' AND area='$area'";
+        }
+        else if ($_POST['commit'] == 'Add KA')
+        {
+            $priority = escapeSqlString($_POST['priority']);
+            if ($area == "SELF")
+            {
+                $query = "SELECT name, lastname FROM characters WHERE id='$id'";
+                $result = mysql_query2($query);
+                $row = fetchSqlAssoc($result);
+                $name = $row['name'];
+                if ($row['lastname'] != ""){
+                  $name = $name . ' ' .$row['lastname'];
+                }
+                $query = "INSERT INTO npc_knowledge_areas (player_id, area, priority) VALUES ('$id', '$name', '$priority')";
             }
-            $query = "INSERT INTO npc_knowledge_areas (player_id, area, priority) VALUES ('$id', '$name', '$priority')";
-          }else{
-            $query = "INSERT INTO npc_knowledge_areas (player_id, area, priority) VALUES ('$id', '$area', '$priority')";
-          }
+            else
+            {
+                $query = "INSERT INTO npc_knowledge_areas (player_id, area, priority) VALUES ('$id', '$area', '$priority')";
+            }
         }
-        $result = mysql_query2($query);
+        mysql_query2($query);
         unset($_POST);
         echo '<p class="error">Update Successful</p>';
         npc_kas();
-      }else{
-        echo '<table border="1">';
-        echo '<tr><th>Area</th><th>Priority</th><th>Actions</th></tr>';
+    }
+    else
+    {
         // find npc name
         $query = "SELECT name,lastname FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
-        if (sqlNumRows($result) > 0){
-          $row = fetchSqlAssoc($result);
-          $npcname = trim($row['name']." ".$row['lastname']);
-          // find the knowledge area "scripts" for the NPC
-          $query2 = "SELECT id, script FROM quest_scripts WHERE quest_id='-1' and script like '%".$npcname.":%'";
-          echo "<b>KA Scripts:</b></br>";
-          $result2 = mysql_query2($query2);
-          if (sqlNumRows($result2) > 0){
-            $row2 = fetchSqlAssoc($result2);
-            $npcscript = $row2['id'];
-            echo "A KA script is present for ".$npcname.". ";
-            echo " <a href=index.php?do=ka_scripts&sub=Read&areaid=".$npcscript."> Read </a> ";
-            echo " <a href=index.php?do=ka_scripts&sub=Edit&areaid=".$npcscript."> Edit </a> <br/><br/>";
-          } else {
-            echo "None<br/><br/>";
-          }
+        if (sqlNumRows($result) > 0)
+        {
+            $row = fetchSqlAssoc($result);
+            $npcname = trim($row['name']." ".$row['lastname']);
+            // find the knowledge area "scripts" for the NPC
+            $query2 = "SELECT id, script FROM quest_scripts WHERE quest_id='-1' and script like '%".$npcname.":%'";
+            echo '<div><span class="bold">KA Scripts:</span><br/>';
+            $result2 = mysql_query2($query2);
+            if (sqlNumRows($result2) > 0)
+            {
+                echo 'The following KA scripts are present for '.$npcname.': <br/>';
+                while ($row2 = fetchSqlAssoc($result2))
+                {
+                    echo ' <a href="index.php?do=ka_scripts&amp;sub=Read&amp;areaid='.$row2['id'].'"> '.$row2['id'].' </a> ';
+                    echo '( <a href="index.php?do=validatequest&amp;id=-1&amp;script_id='.$row2['id'].'"> Validate </a> ';
+                    if (checkaccess('npcs', 'edit'))
+                    {
+                        echo '| <a href="index.php?do=ka_scripts&amp;sub=Edit&amp;areaid='.$row2['id'].'"> Edit </a>';
+                    }
+                    echo ' ) <br/>';
+                }
+            } 
+            else 
+            {
+                echo 'None found. ';
+                echo '<form method="post" action="index.php?do=ka_scripts&amp;sub=New"><div><input type="hidden" name="name" value="'.$npcname.'"/>';
+                echo '<input type="submit" name="commit" value="Create KA Script"/></div></form>';
+            }
+            echo '</div>';
         }
+        echo '<p class="bold">Knowledge Areas: </p>';
         // find all knowledge area "triggers" for the NPC
         $query = "SELECT area, priority FROM npc_knowledge_areas WHERE player_id='$id' ORDER BY priority";
         $result = mysql_query2($query);
-        if (sqlNumRows($result) > 0){
-          while ($row = fetchSqlAssoc($result)){
-            echo '<tr>';
-            echo '<td><a href="./index.php?do=ka_detail&area='.rawurlencode($row['area']).'">'.$row['area'].'</a></td>';
-            echo '<td>'.$row['priority'].'</td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
-            echo '<input type="hidden" name="area" value="'.$row['area'].'" />';
-            echo '<input type="submit" name="commit" value="Remove" /><br/>';
-            echo '<input type="submit" name="commit" value="Update Priority" /><select name="priority">';
-            $i = 1;
-            while ($i <= 10){
-            echo '<option value="'.$i.'"';
-            if ($i == $row['priority']){
-              echo ' selected="true"';
+        if (sqlNumRows($result) > 0)
+        {
+            echo '<table border="1">';
+            echo '<tr><th>Area</th><th>Priority</th><th>Actions</th></tr>';
+            while ($row = fetchSqlAssoc($result))
+            {
+                echo '<tr>';
+                echo '<td><a href="./index.php?do=ka_detail&amp;area='.htmlentities($row['area']).'">'.$row['area'].'</a></td>';
+                echo '<td>'.$row['priority'].'</td>';
+                echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post"><div>';
+                echo '<input type="hidden" name="area" value="'.$row['area'].'" />';
+                echo '<input type="submit" name="commit" value="Remove" /><br/>';
+                echo '<input type="submit" name="commit" value="Update Priority" /><select name="priority">';
+                for ($i = 1; $i <= 10; $i++)
+                {
+                    echo '<option value="'.$i.'" '.($i == $row['priority'] ? 'selected="selected"' : '').'>'.$i.'</option>';
+                }
+                echo '</select>';
+                echo '</div></form></td>';
+                echo '</tr>';
             }
-            echo '>'.$i.'</option>';
-            $i++;
-            }
-            echo '</select>';
-            echo '</form></td>';
-            echo '</tr>';
-          }
-          echo '</table>';
-        }else{
-          echo '</table>';
-          echo '<p class="error">NPC has no KAs Assigned</p>';
+            echo '</table>';
+        }
+        else
+        {
+            echo '<p class="error">NPC has no KAs Assigned</p>';
         }
         $query = "SELECT DISTINCT area FROM npc_triggers ORDER BY area";
         $result = mysql_query2($query);
-        while ($row = fetchSqlAssoc($result)){
-        $areas[] = $row['area'];
+        while ($row = fetchSqlAssoc($result))
+        {
+            $areas[] = $row['area'];
         }
         $query = "SELECT DISTINCT name, lastname FROM characters WHERE character_type=1 ORDER by name";
         $result = mysql_query2($query);
-        while ($row = fetchSqlAssoc($result)){
-        if ($row['lastname'] == ""){
-          $names[] = $row['name'];
-        }else{
-          $names[] = $row['name'].' '.$row['lastname'];
-        }
+        while ($row = fetchSqlAssoc($result))
+        {
+            if ($row['lastname'] == "")
+            {
+                $names[] = $row['name'];
+            }
+            else
+            {
+                $names[] = $row['name'].' '.$row['lastname'];
+            }
         }
         /* what this does is creating a list of all KA areas (areas of conversation), and then subtracting the list of all known npcs from that
            (since those are "personal" scripts). Then, it offers whatever is left to be assigned as "general" scripts. */
         $display = array_values(array_diff($areas, $names)); 
         echo '<p>Add a Knowledge Area to this NPC:</p><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=kas" method="post">';
-        echo '<select name="area">';
+        echo '<div><select name="area">';
         echo '<option value="SELF">[Add KA of this NPC]</option>';
-        foreach ($display as $name){
-        echo '<option value="'.$name.'">'.$name.'</option>';
+        foreach ($display as $name)
+        {
+            echo '<option value="'.$name.'">'.$name.'</option>';
         }
         echo '</select>';
         echo '<select name="priority">';
-        $i = 1;
-        while ($i <= 10){
-        echo '<option value="'.$i.'">'.$i.'</option>';
-        $i++;
+        for ($i = 1; $i <= 10; $i++)
+        {
+            echo '<option value="'.$i.'">'.$i.'</option>';
         }
         echo '</select>';
         echo '<input type="submit" name="commit" value="Add KA" />';
-        echo '</form>';
-      }
-    }else{
-      echo '<p class="error">Error: No npc id</p>';
+        echo '</div></form>';
     }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
 }
 
 function npc_items(){
