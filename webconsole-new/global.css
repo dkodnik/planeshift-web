@@ -83,6 +83,7 @@ div.main{
     display:table-cell;
     border:1px solid;
     padding:6px 6px 6px 6px;
+    vertical-align: middle;
 }
 
 .th{
@@ -91,6 +92,7 @@ div.main{
     text-align: center;
     border:1px solid;
     padding:6px 6px 6px 6px;
+    vertical-align: middle;
 }
 /* end divs into tables */
 
