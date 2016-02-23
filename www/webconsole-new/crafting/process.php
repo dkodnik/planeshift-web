@@ -177,8 +177,11 @@ function editprocess(){
 
 function editsubprocess()
 {
-  if (checkaccess('crafting','edit'))
-  {
+    if (!checkaccess('crafting','edit'))
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+        return;
+    }
     if (isset($_POST['commit']) && ($_POST['commit'] == "Update Process"))
     {
         $process_id = escapeSqlString($_GET['id']);
@@ -189,6 +192,7 @@ function editsubprocess()
         $workitem_id = ($workitem_id == '' ? 0 : $workitem_id); // change id to 0 if it is not provided by user ('')
         $equipment_id = escapeSqlString($_POST['equipment_id']);
         $equipment_id = ($equipment_id == '' ? 0 : $equipment_id);
+        $constraints = escapeSqlString($_POST['constraints']);
         $garbage_id = escapeSqlString($_POST['garbage_id']);
         $garbage_id = ($garbage_id == '' ? 0 : $garbage_id);
         $garbage_qty = escapeSqlString($_POST['garbage_qty']);
@@ -204,7 +208,7 @@ function editsubprocess()
         $secondary_quality_factor = escapeSqlString($_POST['secondary_quality_factor']);
         $script = escapeSqlString($_POST['script']);
         $description = escapeSqlString($_POST['description']);
-        $query = "UPDATE trade_processes SET name='$name', animation='$animation', workitem_id='$workitem_id', equipment_id='$equipment_id', garbage_id='$garbage_id', garbage_qty='$garbage_qty', primary_skill_id='$primary_skill_id', primary_min_skill='$primary_min_skill', primary_max_skill='$primary_max_skill', primary_practice_points='$primary_practice_points', primary_quality_factor='$primary_quality_factor', secondary_skill_id='$secondary_skill_id', secondary_min_skill='$secondary_min_skill', secondary_max_skill='$secondary_max_skill', secondary_practice_points='$secondary_practice_points', secondary_quality_factor='$secondary_quality_factor', script='$script', description='$description' WHERE process_id='$process_id' AND subprocess_number='$subprocess_number'";
+        $query = "UPDATE trade_processes SET name='$name', animation='$animation', workitem_id='$workitem_id', equipment_id='$equipment_id', constraints='$constraints', garbage_id='$garbage_id', garbage_qty='$garbage_qty', primary_skill_id='$primary_skill_id', primary_min_skill='$primary_min_skill', primary_max_skill='$primary_max_skill', primary_practice_points='$primary_practice_points', primary_quality_factor='$primary_quality_factor', secondary_skill_id='$secondary_skill_id', secondary_min_skill='$secondary_min_skill', secondary_max_skill='$secondary_max_skill', secondary_practice_points='$secondary_practice_points', secondary_quality_factor='$secondary_quality_factor', script='$script', description='$description' WHERE process_id='$process_id' AND subprocess_number='$subprocess_number'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -212,45 +216,41 @@ function editsubprocess()
     }
     else
     {
-      $id = escapeSqlString($_GET['id']);
-      $sub = escapeSqlString($_GET['sub']);
-      $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&amp;id='.$id.'&amp;sub='.$sub.'">Delete</a>' : '');
-      $query = "SELECT * FROM trade_processes WHERE process_id = '$id' AND subprocess_number='$sub'";
-      $result = mysql_query2($query);
-      $row = fetchSqlAssoc($result);
-      echo '<p class="header">Edit Sub-Proccess</p>';
-      echo '<form action="./index.php?do=editsubprocess&amp;id='.$id.'&amp;sub='.$sub.'" method="post">';
-      echo '<table><tr><th>Field</th><th>Value</th></tr>';
-      echo '<tr><td>Process ID:</td><td>'.$row['process_id'].'</tr>';
-      echo '<tr><td>SubProcess ID:</td><td>'.$row['subprocess_number'].'</td></tr>';
-      echo '<tr><td>Name:</td><td><input type="hidden" name="name" value="'.$row['name'].'">'.$row['name'].'</td></tr>';
-      echo '<tr><td>Description:</td><td><input type="text" name="description" value="'.$row['description'].'" /></td></tr>';
-      echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td></tr>';
-      echo '<tr><td>Work Item:</td><td>'.DrawItemSelectBox('workitem_id', $row['workitem_id'], false, true).'</td></tr>';
-      echo '<tr><td>Equipment:</td><td>'.DrawItemSelectBox('equipment_id', $row['equipment_id'], false, true).'</td></tr>';
-      echo '<tr><td>Garbage Item:</td><td>'.DrawItemSelectBox('garbage_id', $row['garbage_id'], true, true).'</td></tr>';
-      echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="'.$row['garbage_qty'].'" /></td></tr>';
-      $Skills = PrepSelect('skill');
-      echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'primary_skill_id', $row['primary_skill_id'], true).'</td></tr>';
-      echo '<tr><td>Primary Minimum Skill Level:</td><td><input type="text" name="primary_min_skill" value="'.$row['primary_min_skill'].'"/></td></tr>';
-      echo '<tr><td>Primary Maximum Skill Level:</td><td><input type="text" name="primary_max_skill" value="'.$row['primary_max_skill'].'"/></td></tr>';
-      echo '<tr><td>Primary Practice Points:</td><td><input type="text" name="primary_practice_points" value="'.$row['primary_practice_points'].'"/></td></tr>';
-      echo '<tr><td>Primary Quality Factor:</td><td><input type="text" name="primary_quality_factor" value="'.$row['primary_quality_factor'].'"/></td></tr>';
-      echo '<tr><td>Secondary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'secondary_skill_id', $row['secondary_skill_id'], true).'</td></tr>';
-      echo '<tr><td>Secondary Minimum Skill Level:</td><td><input type="text" name="secondary_min_skill" value="'.$row['secondary_min_skill'].'"/></td></tr>';
-      echo '<tr><td>Secondary Maximum Skill Level:</td><td><input type="text" name="secondary_max_skill" value="'.$row['secondary_max_skill'].'"/></td></tr>';
-      echo '<tr><td>Secondary Practice Points:</td><td><input type="text" name="secondary_practice_points" value="'.$row['secondary_practice_points'].'"/></td></tr>';
-      echo '<tr><td>Secondary Quality Factor:</td><td><input type="text" name="secondary_quality_factor" value="'.$row['secondary_quality_factor'].'"/></td></tr>';
-      $scripts = PrepSelect('math_script');
-      echo '<tr><td>Script:</td><td>'.DrawSelectBox('math_script', $scripts, 'script', $row['script']).'</td></tr>';
-      echo '<tr><td>'.$delete.'</td><td><input type="submit" name="commit" value="Update Process"/></td></tr>';
-      echo '</table></form>';
+        $id = escapeSqlString($_GET['id']);
+        $sub = escapeSqlString($_GET['sub']);
+        $delete = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deleteprocess&amp;id='.$id.'&amp;sub='.$sub.'">Delete</a>' : '');
+        $query = "SELECT * FROM trade_processes WHERE process_id = '$id' AND subprocess_number='$sub'";
+        $result = mysql_query2($query);
+        $row = fetchSqlAssoc($result);
+        echo '<p class="header">Edit Sub-Proccess</p>';
+        echo '<form action="./index.php?do=editsubprocess&amp;id='.$id.'&amp;sub='.$sub.'" method="post">';
+        echo '<table><tr><td class="bold">Field</td><td class="bold">Value</td></tr>';
+        echo '<tr><td>Process ID:</td><td>'.$row['process_id'].'</td></tr>';
+        echo '<tr><td>SubProcess ID:</td><td>'.$row['subprocess_number'].'</td></tr>';
+        echo '<tr><td>Name:</td><td><input type="hidden" name="name" value="'.htmlentities($row['name']).'" />'.htmlentities($row['name']).'</td></tr>';
+        echo '<tr><td>Description:</td><td><input type="text" name="description" value="'.htmlentities($row['description']).'" /></td></tr>';
+        echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td></tr>';
+        echo '<tr><td>Work Item:</td><td>'.DrawItemSelectBox('workitem_id', $row['workitem_id'], false, true).'</td></tr>';
+        echo '<tr><td>Equipment:</td><td>'.DrawItemSelectBox('equipment_id', $row['equipment_id'], false, true).'</td></tr>';
+        echo '<tr><td>Constraints:</td><td><textarea rows="6" cols="55" name="constraints">'.htmlentities($row['constraints']).'</textarea></td></tr>';
+        echo '<tr><td>Garbage Item:</td><td>'.DrawItemSelectBox('garbage_id', $row['garbage_id'], true, true).'</td></tr>';
+        echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="'.$row['garbage_qty'].'" /></td></tr>';
+        $Skills = PrepSelect('skill');
+        echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'primary_skill_id', $row['primary_skill_id'], true).'</td></tr>';
+        echo '<tr><td>Primary Minimum Skill Level:</td><td><input type="text" name="primary_min_skill" value="'.$row['primary_min_skill'].'"/></td></tr>';
+        echo '<tr><td>Primary Maximum Skill Level:</td><td><input type="text" name="primary_max_skill" value="'.$row['primary_max_skill'].'"/></td></tr>';
+        echo '<tr><td>Primary Practice Points:</td><td><input type="text" name="primary_practice_points" value="'.$row['primary_practice_points'].'"/></td></tr>';
+        echo '<tr><td>Primary Quality Factor:</td><td><input type="text" name="primary_quality_factor" value="'.$row['primary_quality_factor'].'"/></td></tr>';
+        echo '<tr><td>Secondary Skill:</td><td>'.DrawSelectBox('skill', $Skills, 'secondary_skill_id', $row['secondary_skill_id'], true).'</td></tr>';
+        echo '<tr><td>Secondary Minimum Skill Level:</td><td><input type="text" name="secondary_min_skill" value="'.$row['secondary_min_skill'].'"/></td></tr>';
+        echo '<tr><td>Secondary Maximum Skill Level:</td><td><input type="text" name="secondary_max_skill" value="'.$row['secondary_max_skill'].'"/></td></tr>';
+        echo '<tr><td>Secondary Practice Points:</td><td><input type="text" name="secondary_practice_points" value="'.$row['secondary_practice_points'].'"/></td></tr>';
+        echo '<tr><td>Secondary Quality Factor:</td><td><input type="text" name="secondary_quality_factor" value="'.$row['secondary_quality_factor'].'"/></td></tr>';
+        $scripts = PrepSelect('math_script');
+        echo '<tr><td>Script:</td><td>'.DrawSelectBox('math_script', $scripts, 'script', $row['script']).'</td></tr>';
+        echo '<tr><td>'.$delete.'</td><td><input type="submit" name="commit" value="Update Process"/></td></tr>';
+        echo '</table></form>';
     }
-  }
-  else
-  {
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
 }
 
 function createprocess()
@@ -330,7 +330,7 @@ function createprocess()
         $items = PrepSelect('items');
         echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $items, 'workitem_id', '', true).'</td></tr>';
         echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $items, 'equipment_id', '', true).'</td></tr>';
-        echo '<tr><td>Constraints:</td><td><input type="text" name="constraints" /></td></tr>';
+        echo '<tr><td>Constraints:</td><td><textarea rows="6" cols="55" name="constraints"></textarea></td></tr>';
         echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $items, 'garbage_id', '', true).'</td></tr>';
         echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="0"/></td></tr>';
         $skills = PrepSelect('skill');
@@ -456,13 +456,13 @@ function deleteprocess()
             else
             {
                 echo '<p>You are about to permanently delete process id '.$process_id.' ('.$process_name.') and all known subprocesses</p>';
-                echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+                echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post"><div>Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete" /></div></form>';
             }
         }
         else // we have a sub-process, we can delete those without question.
         {
             echo '<p>You are about to permanently delete sub process number: '.$subprocess_number.' from process id '.$process_id.' ('.$process_name.')</p>';
-            echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post">Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete"></form>';
+            echo '<form action="./index.php?do=deleteprocess&amp;id='.$process_id.'&amp;sub='.$subprocess_number.'" method="post"><div>Enter your password to confirm: <input type="password" name="passd" /><input type="submit" name="submit" value="Confirm Delete" /></div></form>';
         }    
     }
     else
