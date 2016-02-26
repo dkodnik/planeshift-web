@@ -714,12 +714,38 @@ function handle_player_action($line)
                 }
                 else
                 {
-                    validate_item(trim(implode(' ', array_slice($parts, 1))));
+                    $itemName = trim(implode(' ', array_slice($parts, 1)));
+                    validate_item($itemName);
+                    // check for invalid flags on the item.
+                    validateItemFlags($itemName);
+                    // check if an item is stackable, and how many items were given. (will not yield any result if itemname is not valid).
+                    $query = sprintf("SELECT flags FROM item_stats WHERE name = '%s'", escapeSqlString($itemName));
+                    $result = mysql_query2($query);
+                    if (sqlNumRows($result) > 0)
+                    {
+                        $row = fetchSqlAssoc($result);
+                        if (stripos($row['flags'], 'STACKABLE') !== false)
+                        {
+                            if ($parts[0] > 65)
+                            {
+                                append_log("Parse Error: cannot give more than 65 (max stack size) of $itemName in 'player gives' on line $line_number");
+                            }
+                        }
+                        else
+                        {
+                            if ($parts[0] != 1)
+                            {
+                                append_log("Parse Error: cannot give more than 1 of $itemName (not flagged STACKABLE) in 'player gives' on line $line_number");
+                            }
+                        }
+                    }
                 }
             }
             else
             {
-                validate_item(trim($item[$i]));
+                $itemName = trim($item[$i]);
+                validate_item($itemName);
+                validateItemFlags($itemName);
             }
         }
     }
@@ -881,11 +907,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 $words = explode(' ', trim($given[$i]));
                 
-                if(count($words) == 1)
-                {
-                    validate_item($words[0]);
-                }
-                elseif (is_numeric($words[0]))
+                if (is_numeric($words[0]))
                 {
                     if ($words[0] < 0)
                     {
@@ -893,7 +915,9 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     }
                     elseif  (count($words) == 2 || !is_numeric($words[1]))
                     {
-                        validate_item(implode(' ', array_slice($words, 1)));
+                        $itemName = implode(' ', array_slice($words, 1));
+                        validate_item($itemName);
+                        validateItemFlags($itemName);
                     }
                     elseif ($words[1] < 0 || $words[1] > 300)
                     {
@@ -901,12 +925,16 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                     }
                     else
                     {
-                        validate_item(implode(' ', array_slice($words, 2)));
+                        $itemName = implode(' ', array_slice($words, 2));
+                        validate_item($itemName);
+                        validateItemFlags($itemName);
                     }
                 }
                 else // all words are part of the item name.
                 {
-                    validate_item(implode(' ', $words));
+                    $itemName = implode(' ', $words);
+                    validate_item($itemName);
+                    validateItemFlags($itemName);
                 }
             }
         }
@@ -1457,6 +1485,23 @@ function validate_item($itemName)
     {
         append_log("Parse Error: no item with name: $itemName in database on line $line_number");
     } 
+}
+
+// items that have certain flags cannot be given in quests, this function checks those. This function does not check item names itself, if an 
+// invalid item name is given, this function will not yield any result. Always use validate_Item first.
+function validateItemFlags($itemName)
+{
+    global $line_number;
+    $query = sprintf("SELECT flags FROM item_stats WHERE name = '%s'", escapeSqlString($itemName));
+    $result = mysql_query2($query);
+    if (sqlNumRows($result) > 0)
+    {
+        $row = fetchSqlAssoc($result);
+        if (stripos($row['flags'], 'BUY_PERSONALISE') !== false)
+        {
+            append_log("Parse Error: $itemName is flagged BUY_PERSONALISE and can't be given on line $line_number");
+        }
+    }
 }
 
 function validate_category($categoryname)
