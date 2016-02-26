@@ -1531,20 +1531,47 @@ function validate_faction($factionName)
     }
 }
 
-function validate_magic($magic_name, $otherbuffs = false)
+// otherBuffs determines if we look for an actual magic, or just for any "buff".
+function validate_magic($magicName, $otherBuffs = false)
 {
     global $line_number;
-    $magic = trim($magic_name);
+    $magic = trim($magicName);
     $query = sprintf("SELECT id FROM spells WHERE name = '%s'", escapeSqlString($magic));
     $result = mysql_query2($query);
-    if (sqlNumRows($result) < 1 && !$otherbuffs)
+    if (sqlNumRows($result) < 1 && !$otherBuffs)
     {
-        append_log("Parse Error: could not find magic ($magic) in the database at line $line_number");
+        append_log("Parse Error: could not find magic '$magic' in the database at line $line_number");
     }
-    elseif (sqlNumRows($result) < 1 && $otherbuffs)
+    elseif (sqlNumRows($result) < 1 && $otherBuffs)
     {
-        append_log("Warning: could not find magic ($magic) in the magic database, please double check ". 
-            "the spelling against the script you want to use a buff from (this warning can show in valid cases too) at line $line_number");
+        $spellName = escapeSqlString($magic);
+        // this regex matches "<apply " followed by any non ">" character, followed by the text: name="$spellname" the escaping of double quotes is for PHP, not the regex engine.
+        $query = "SELECT name, event_script FROM progression_events WHERE event_script REGEXP '<apply [^>]*name=\"$spellName\"'";
+        $result = mysql_query2($query);
+        $found = false;
+        // multiple scripts could match our buff name.
+        while ($row = fetchSqlAssoc($result))
+        {
+            //echo htmlentities($row['event_script']);
+            $matches;
+            // difference with the SQL above is this matching the whole <apply > tag down to the last >
+            $pattern = '/<apply [^>]*name="'.$spellName.'"[^>]*>/';
+            // preg_match_all stores all results in an *array* in element 0 of the $matches array. So the first result is actually $matches[0][0].
+            preg_match_all($pattern, $row['event_script'], $matches);
+            // there might be multiple <apply> tags in <if> branches
+            foreach ($matches[0] as $match)
+            {
+                // we want to make sure that the <apply> we found is for a type="buff", in addition to just containing the right name.
+                if (stripos($match, 'type="buff"') !== false)
+                {
+                    $found = true;
+                }
+            }
+        }
+        if (!$found)
+        {
+            append_log("Parse Error: could not find magic '$magic' in the magic database, or in any progression event at line $line_number");
+        }
     }
 }
 
