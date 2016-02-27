@@ -44,7 +44,7 @@ function ka_detail(){
           $query = "UPDATE npc_triggers SET trigger_text='$trigger_text' WHERE id='$tid'";
         }else if ($_POST['commit'] == 'add action to script')
         {
-            $responseid = $_GET['responseid'];
+            $responseid = escapeSqlString($_GET['responseid']);
             $area = $_GET['area'];
             $scriptelem = $_POST['scriptelem'];
             $skillname = $_POST['skillname'];
@@ -54,7 +54,7 @@ function ka_detail(){
             $givemoney = $_POST['givemoney'];
 
             // get current script
-            $query = "select script from npc_responses where id=$responseid";
+            $query = "SELECT script FROM npc_responses WHERE id=$responseid";
             $result = mysql_query2($query);
             $line = fetchSqlRow($result);
             $script = $line[0];
