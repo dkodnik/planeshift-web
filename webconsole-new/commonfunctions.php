@@ -13,7 +13,8 @@ function mysql_query2($query, $log=true)
     $t2 = microtime(true);
     $t_fin = $t2 - $t1;
     $t_fin = sprintf("%01.4f", $t_fin);
-    if(isset($_SESSION['totalq'])) 
+    // don't log any entries that contain a password, not even for debugging.
+    if(isset($_SESSION['totalq']) && stripos($query, 'password') === false) 
     {
         $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($query) .' -- '.$t_fin.' Seconds.';
     }
