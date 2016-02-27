@@ -57,6 +57,7 @@ function listnpctypes()
     if (sqlNumRows($result) == 0)
     {
         echo '<p class="error">No NPC Types were found.</p>';
+        $options = '';
     }
     else 
     {
@@ -170,7 +171,7 @@ function listnpctypes()
         echo '<tr><td>In Bounds</td><td><input type="text" name="in_bounds"></td></tr>';
         echo '<tr><td>Falling</td><td><input type="text" name="falling"></td></tr>';
         echo '<tr><td>Script</td><td><textarea rows="15" cols="80" name="script"></textarea></td></tr>';
-	if (isset($_GET['template']) && $_GET['template']=='1')
+        if (isset($_GET['template']) && $_GET['template']=='1')
         {
             echo '<tr><td>Template</td><td><input type="checkbox" name="db_template" checked="checked" /> </td></tr>';
         }
@@ -242,7 +243,7 @@ function editnpctypes()
         echo '<tr><td>In Bounds</td><td><input type="text" name="in_bounds" value="'.$row['in_bounds'].'"></td>';
         echo '<td>Falling</td><td><input type="text" name="falling" value="'.$row['falling'].'"></td></tr>';
         echo '<tr><td>Script</td><td colspan="3"><textarea rows="35" cols="160" name="script">'.$row['script'].'</textarea></td></tr>';
-	if ($row['template'] == "1")
+        if ($row['template'] == "1")
         {
             echo '<tr><td>Template</td><td><input type="checkbox" name="db_template" checked="checked" /> </td><td></td><td></td></tr>';
         }
