@@ -11,17 +11,18 @@ function checknpctriggers(){
 
         $result = mysql_query2($query);
 
-        echo "  <TABLE BORDER=1>";
-        echo "  <TH> ID </TH> <TH> NAME</TH><TH> Sector</TH><TH> Position</TH><TH> Missing Triggers</TH><TH> Loaded in game?</TH>";
+        echo '<table border="1">';
+        echo '<tr><th> ID </th><th> Name</th><th> Sector</th><th> Position</th><th> Missing Triggers</th><th> Loaded in game?</th></tr>';
 
         // for each NPC
         while ($line = fetchSqlRow($result)) 
         {
-
             $fullname = $line[1] . " " . $line[2];
             $fullname = trim($fullname);
+            // full name gets used below as well, so we can't just escape that one.
+            $fullNameEscaped = escapeSqlString($fullname);
             // search his triggers
-            $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='greetings'";
+            $query2 = "select count(*) from npc_triggers where area='$fullNameEscaped' and trigger_text='greetings'";
             $result2 = mysql_query2($query2);
             $line2 = fetchSqlRow($result2);
             $found1 = $line2[0];
@@ -32,12 +33,12 @@ function checknpctriggers(){
                 $found1 = $line2[0];
             }
 
-            $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='about you'";
+            $query2 = "select count(*) from npc_triggers where area='$fullNameEscaped' and trigger_text='about you'";
             $result2 = mysql_query2($query2);
             $line2 = fetchSqlRow($result2);
             $found2 = $line2[0];
 
-            $query2 = "select count(*) from npc_triggers where area='$fullname' and trigger_text='how you'";
+            $query2 = "select count(*) from npc_triggers where area='$fullNameEscaped' and trigger_text='how you'";
             $result2 = mysql_query2($query2);
             $line2 = fetchSqlRow($result2);
             $found3 = $line2[0];
@@ -49,25 +50,23 @@ function checknpctriggers(){
             }
 
             if ($found1=="0" or $found2=="0" or $found3=="0") {
-                echo "<TR><TD>$line[0] </TD><TD><A href='index.php?do=npc_details&sub=main&npc_id=".$line[0]."'>".$fullname."</a></TD><TD>$line[3]</TD><TD>$line[4]/$line[5]/$line[6]</TD><TD>";
+                echo "<tr><td>$line[0] </td><td><a href=\"index.php?do=npc_details&amp;sub=main&amp;npc_id=".$line[0].'">'.$fullname."</a></td><td>$line[3]</td><td>$line[4]/$line[5]/$line[6]</td><td>";
                 if ($found1=="0")
                 {
-                    echo "greetings <br>";
+                    echo "greetings <br/>";
                 }
                 if ($found2=="0")
                 {
-                    echo "about you <br>";
+                    echo "about you <br/>";
                 }
                 if ($found3=="0")
                 {
-                    echo "how you <br>";
+                    echo "how you <br/>";
                 }
-                echo "</TD><TD>$loaded</TD></TR>";
+                echo "</td><td>$loaded</td></tr>";
             }
         }
-        echo '</TABLE><br><br>';
-
-        echo '<br><br>';
+        echo '</table><br/><br/>';
     }
     else
     {
