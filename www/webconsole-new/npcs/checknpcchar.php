@@ -17,46 +17,47 @@ function checknpcchar()
 
     $num = sqlNumRows($result);
   
-    echo "<p>Note that the NPCs without the basic triggers will not be displayed here. Use the report \"Check NPC Triggers\" first.<br /><br />";
+    echo '<p>Note that the NPCs without the basic triggers will not be displayed here. Use the report "Check NPC Triggers" first.<br /><br />';
     echo "Found $num NPCs</p>";
 
-    echo "  <TABLE BORDER=1>";
-    echo "  <TH> Sector </TH> <TH> ID</TH> <TH> NAME</TH><TH> Race </TH><TH> Gender </TH><TH> description </TH><TH> greetings </TH><TH> about you answers </TH><TH> how are you answers </TH>";
+    echo '<table border="1">';
+    echo "<tr><th> Sector </th><th> ID</th><th> NAME</th><th> Race </th><th> Gender </th><th> description </th><th> greetings </th><th> about you answers </th><th> how are you answers </th></tr>";
 
     // for each NPC
     while ($line = fetchSqlRow($result)) 
     {
 	    $fullname = $line[2] . " " . $line[3];
 	    $fullname = trim($fullname);
+        // full name gets used below as well, so we can't just escape that one.
+        $fullNameEscaped = escapeSqlString($fullname);
 	    // search his triggers
-	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='greetings'";
+	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullNameEscaped' and trigger_text='greetings'";
 	    $result2 = mysql_query2($query2);
 	    $line2 = fetchSqlRow($result2);
 	    $found1a = $line2[0];
 	    $found1b = $line2[1];
 	    $found1c = $line2[2];
 
-	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='about you'";
+	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullNameEscaped' and trigger_text='about you'";
 	    $result2 = mysql_query2($query2);
 	    $line2 = fetchSqlRow($result2);
 	    $found2a = $line2[0];
 	    $found2b = $line2[1];
 	    $found2c = $line2[2];
 
-	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullname' and trigger_text='how you'";
+	    $query2 = "select response1,response2,response3 from npc_triggers t , npc_responses r where t.id=r.trigger_id and area='$fullNameEscaped' and trigger_text='how you'";
 	    $result2 = mysql_query2($query2);
 	    $line2 = fetchSqlRow($result2);
 	    $found3a = $line2[0];
 	    $found3b = $line2[1];
 	    $found3c = $line2[2];
 
-        echo "<TR><TD>$line[0]</TD><TD>$line[1] </TD><TD><A href='index.php?do=npc_details&sub=kas&npc_id=".$line[1]."'>".$fullname."</a></TD><TD>$line[4]</TD><TD>$line[5]</TD>";
-        echo "<TD>$line[6]</TD><TD>$found1a / <br>$found1b / <br>$found1c</TD><TD>$found2a / <br>$found2b / <br>$found2c</TD>";
-	echo "<TD>$found3a / <br>$found3b / <br>$found3c</TD></TR>";
+        echo "<tr><td>$line[0]</td><td>$line[1] </td><td><a href=\"index.php?do=npc_details&amp;sub=kas&amp;npc_id=".$line[1].'">'.htmlentities($fullname)."</a></td><td>$line[4]</td><td>$line[5]</td>";
+        echo "<td>$line[6]</td><td>$found1a / <br/>$found1b / <br/>$found1c</td><td>$found2a / <br/>$found2b / <br/>$found2c</td>";
+	echo "<td>$found3a / <br/>$found3b / <br/>$found3c</td></tr>";
     }
-    echo '</TABLE><br><br>';
+    echo '</table><br/><br/>';
 
-    echo '<br><br>';
 }
 
 ?>
