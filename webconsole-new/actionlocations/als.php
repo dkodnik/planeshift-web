@@ -16,6 +16,7 @@ function alsector(){
 function listals(){
 
   if (checkaccess('als', 'read')){
+    $showgameboards = false;
     if (isset($_GET['sector'])){
       $sector = escapeSqlString($_GET['sector']);
       $query = "SELECT * FROM action_locations WHERE sectorname='$sector'";
@@ -43,24 +44,24 @@ function listals(){
         echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
         echo 'Trigger Type: <select name="triggertype">';
         if ($row['triggertype'] == "SELECT"){
-          echo '<option value="SELECT" selected="true">SELECT</option><option value="PROXIMITY">PROXIMITY</option>';
+          echo '<option value="SELECT" selected="selected">SELECT</option><option value="PROXIMITY">PROXIMITY</option>';
         }else{
-          echo '<option value="SELECT">SELECT</option><option value="PROXIMITY" selected="true">PROXIMITY</option>';}
+          echo '<option value="SELECT">SELECT</option><option value="PROXIMITY" selected="selected">PROXIMITY</option>';}
         echo '</select> -- Response Type: <select name="responsetype">';
         if ($row['responsetype'] == "EXAMINE"){
-          echo '<option value="EXAMINE" selected="true">EXAMINE</option><option value="SCRIPT">SCRIPT</option>';
+          echo '<option value="EXAMINE" selected="selected">EXAMINE</option><option value="SCRIPT">SCRIPT</option>';
         }else{
-          echo '<option value="EXAMINE">EXAMINE</option><option value="SCRIPT" selected="true">SCRIPT</option>';
+          echo '<option value="EXAMINE">EXAMINE</option><option value="SCRIPT" selected="selected">SCRIPT</option>';
         }
         echo '</select><br/>';
-        echo 'Script: <textarea name="response" rows="4" cols="50">'.htmlspecialchars($row['response']).'</textarea><br/>';
+        echo 'Script: <textarea name="response" rows="4" cols="50">'.htmlentities($row['response']).'</textarea><br/>';
         echo 'Active: '.$row['active_ind'] .' -- (Can Only be changed In-Game)<br/>';
         echo 'Instance: <input type="text" name="pos_instance" value="'.$row['pos_instance'] .'" /> -- (Indicates from which istance this AL will be accessible. Default: 4294967295 means "all instances".)<br/>';
         echo '<input type="submit" name="submit" value="Update" />';
+        echo '</form>';
         if (checkaccess('als', 'delete')){
-          echo '</form> -- <form action="./index.php?do=deleteal" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="delete" value="Delete AL" />';
+          echo ' -- <form action="./index.php?do=deleteal" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="submit" name="delete" value="Delete AL" /></form>';
         }
-        echo "</form>";
       }else{
         echo '<tr><td>id: '.$row['id'].'</td><td>';
         echo 'Master Id: '.$row['master_id'].' -- Name: '.$row['name'].'<br/>';
@@ -105,7 +106,7 @@ function edital(){
       $meshname = escapeSqlString($_POST['meshname']);
       $polygon = escapeSqlString($_POST['polygon']);
       $radius = escapeSqlString($_POST['radius']);
-      $triggertype = escapeSqlString($_POST['radius']);
+      $triggertype = escapeSqlString($_POST['triggertype']);
       $responsetype = escapeSqlString($_POST['responsetype']);
       $response = escapeSqlString($_POST['response']);
       $pos_instance = escapeSqlString($_POST['pos_instance']);
