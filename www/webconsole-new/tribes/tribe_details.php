@@ -12,11 +12,11 @@ function tribedetails(){
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">Tribe: '.$id.' - '.$row['name'].'</p>';
         if (checkaccess('npcs', 'delete'))
         {
-            echo '<form action="index.php?do=edittribes" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
-	    echo '<p><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Delete" /></p>';
+            echo '<form action="index.php?do=edittribes" method="post">';
+	    echo '<p style="margin: 0pt 5px 0pt 0pt;"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Delete" /></p>';
             echo '</form>';
         }
-        echo "\n";
+        echo "<br/>\n";
         $uri_string = $uri_string.'&amp;tribe_id='.$_GET['tribe_id'];
       }
     }
