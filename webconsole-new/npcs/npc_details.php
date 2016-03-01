@@ -1139,14 +1139,14 @@ function npcdetails(){
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         if (checkaccess('npcs', 'delete'))
         {
-            echo '<form action="index.php?do=deletenpc&amp;id='.$id.'" method="post" style="margin-bottom: 20px; margin-top: 20px;">';
+            echo '<form action="index.php?do=deletenpc&amp;id='.$id.'" method="post">';
             if ($row['character_type'] == 1 || $row['character_type'] == 3) 
             {
-                echo '<p><input type="submit" value="delete NPC" /></p>';
+                echo '<p style="margin: 0pt 5px 0pt 0pt;"><input type="submit" value="delete NPC" /></p>';
             }
             echo '</form>';
         }
-        echo "\n";
+        echo "<br/>\n";
         $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
       }
     }
