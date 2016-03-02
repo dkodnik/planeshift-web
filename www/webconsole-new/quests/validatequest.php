@@ -103,6 +103,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
     global $line_number;
     $line_number = 0;
     $GLOBALS['hideWarnings'] = $hideWarnings;
+    $variablesTracker = array('set' => array(), 'unset' => array()); // creates a 2d array to store all set and unset variable commands in.
     $ready_for_complete = false; // this var is used to see if there has been an "NPC: trigger before we use the "complete quest" command. without it, the server crashes on loadquest.
     $seen_npc_triggers = false; // this variable is used to see if there has been any "NPC:" trigger since the last P:
     $seen_menu_triggers = false; // this variable is used to determine if this script uses at least 1 menu: tag (if it does, they must match P: tags 1:1)
@@ -354,7 +355,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
                 }
                 if(trim($commands[$i]) != '') 
                 {
-                    parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name);  // using totalsteps now, since we can both require and close future steps now.
+                    parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name, $variablesTracker);  // using totalsteps now, since we can both require and close future steps now.
                 }
                 else 
                 {
@@ -363,9 +364,25 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
             }
         }
     }
+    // post parse validations
     if(!$assigned && $quest_id > 0) //ignore KA scripts which are -1
     {
         append_log('Parse Error: script never assigned any quest.');
+    }
+    // warnings only, since interquest communication could use this legitimately. Check got added to bust typos.
+    foreach ($variablesTracker['set'] as $myVar)
+    {
+        if (!in_array($myVar, $variablesTracker['unset'], true))
+        {
+            append_log("Warning: $myVar gets set in this quest, but never unset. Please verify this variable is supposed to be used in interquest communication.");
+        }
+    }
+    foreach ($variablesTracker['unset'] as $myVar)
+    {
+        if (!in_array($myVar, $variablesTracker['set'], true))
+        {
+            append_log("Warning: $myVar gets unset in this quest, but never set. Please verify this variable is supposed to be used in interquest communication.");
+        }
     }
 }
 
@@ -759,7 +776,7 @@ function handle_player_action($line)
  * Quest name got added for the prospect validator, in which case the quest is not in the database. ($quest_id = 0) Then in the case of "complete quest" and
  * "require completion of quest", we should check first if id==0 and name==name, before looking on the database.
  */
-function parse_command($command, &$assigned, $quest_id, $step, $quest_name)  
+function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$variablesTracker)  
 {
     global $line_number;
     if (strncasecmp($command, 'assign quest', 12) === 0)
@@ -942,15 +959,30 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
     elseif (strncasecmp($command, 'setvariable', 11) === 0)
     {
         $words = explode(' ', trim(substr($command, 11)));
-        if (count($words) < 2)
+        if (count($words) != 2)
+        {
             append_log("Parse Error: setvariable needs 2 arguments at line $line_number");
+            return;
+        }
+        if (strncmp($words[0], 'Quest_', 6) !== 0) // case sensitive check
+        {
+            append_log("Warning: Variables for quests should start with 'Quest_' at line $line_number");
+        }
+        $variablesTracker['set'][] = $words[0];
     }
     elseif (strncasecmp($command, 'unsetvariable', 13) === 0)
     {
-        $parameters = trim(substr($command, 13));
-        $words = explode(' ', $parameters);
-        if (trim($parameters) == '' || count($words) < 1)
+        $words = explode(' ', trim(substr($command, 13)));
+        if (trim($words[0]) == '' || count($words) > 1)
+        {
             append_log("Parse Error: unsetvariable needs 1 argument at line $line_number");
+            return;
+        }
+        if (strncmp($words[0], 'Quest_', 6) !== 0) // case sensitive check
+        {
+            append_log("Warning: Variables for quests should start with 'Quest_' at line $line_number");
+        }
+        $variablesTracker['unset'][] = $words[0];
     }
     elseif (strncasecmp($command, 'run script', 10) === 0)
     {
@@ -1238,7 +1270,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 $parameters = explode(' ', trim(substr($require, 8)));
                 if (count($parameters) > 3)
                 {
-                    append_log("Parse Error: Require variable too many arguments at line $line_number");
+                    append_log("Parse Error: Require variable has too many arguments at line $line_number");
                     return;
                 }
                 if (trim($parameters[0]) == "")
@@ -1248,7 +1280,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name)
                 }
                 if (strncmp($parameters[0], 'Quest_', 6) !== 0) // case sensitive check
                 {
-                    append_log("Warning: Variables for quests should start \"Quest_\" at line $line_number");
+                    append_log("Warning: Variables for quests should start with 'Quest_' at line $line_number");
                 }
                 if (count($parameters) == 1)
                 {
