@@ -154,6 +154,20 @@ td, th{
   text-align:center;
 }
 
+.center_element{
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.align_left {
+    text-align:left;
+}
+
+.align_right{
+    text-align:right;
+}
+
 .top{
   vertical-align:top;
 }

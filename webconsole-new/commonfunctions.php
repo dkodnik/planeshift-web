@@ -153,11 +153,12 @@ function DoLogin(){
 /*DisplayLogin displays the login dialog box*/
 function DisplayLogin(){
   echo '<form action="'.$_SERVER['REQUEST_URI'].'" method="post">'."\n";
-  echo '<p><input type="hidden" name="redir" value="'.$_SERVER['REQUEST_URI'].'"/>';
-  echo 'Username:<input type="text" name="username" /><br/>'."\n";
-  echo 'Password:<input type="password" name="password" /><br/>'."\n";
-  echo 'Remember me<input type="checkbox" name="remember" /><br/>'."\n";
-  echo '<input type="submit" name="login" value="Log In" /></p>'."\n";
+  echo '<table class="center_element"><tr><td class="align_right"><input type="hidden" name="redir" value="'.$_SERVER['REQUEST_URI'].'"/>';
+  echo 'Username:</td><td class="align_left"><input type="text" name="username" /></td></tr>'."\n";
+  echo '<tr><td class="align_right">Password:</td><td class="align_left"><input type="password" name="password" /></td></tr>'."\n";
+  echo '<tr><td class="align_right">Remember me:</td><td class="align_left"><input type="checkbox" name="remember" /></td></tr>'."\n";
+  echo '<tr><td colspan="2"><input type="submit" name="login" value="Log In" /></td></tr>'."\n";
+  echo '</table>';
   echo '</form>'."\n";
 }
 
