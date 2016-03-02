@@ -1014,6 +1014,10 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$va
                 {
                     append_log("Parse Error: you are not allowed to use double quotes in parameters for run script on line $line_number");
                 }
+                elseif (strpos($params[$i], ';') !== false)
+                {
+                    append_log("Parse Error: you are not allowed to use a semi-colon ';' in parameters for run script on line $line_number");
+                }
                 else
                 {
                     $quotecount = substr_count($params[$i], "'");
