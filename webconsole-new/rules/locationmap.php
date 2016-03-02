@@ -9,7 +9,7 @@ function location_map(){
   }
 
   // Get sector from session
-  $sector = $_SESSION['sector'];
+  $sector = (isset($_SESSION['sector']) ? $_SESSION['sector'] : '');
   // If sector changed in a post update the sector
   $sector = (isset($_POST['sector']) ? $_POST['sector'] : $sector );
   $_SESSION['sector'] = $sector;
@@ -150,7 +150,7 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=location\" >";
    }
 // get each line
 $tok = strtok($result, "\n");
-$peoples;
+$peoples = array();
 while ($tok !== false) {
    $peoples[]=$tok;
    $tok = strtok("\n");

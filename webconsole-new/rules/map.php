@@ -9,7 +9,7 @@ function rulesmap(){
   }
 
   // Get sector from session
-  $sector = $_SESSION['sector'];
+  $sector = (isset($_SESSION['sector']) ? $_SESSION['sector'] : '');
   // If sector changed in a post update the sector
   $sector = (isset($_POST['sector']) ? $_POST['sector'] : $sector );
   $_SESSION['sector'] = $sector;
