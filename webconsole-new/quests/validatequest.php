@@ -1228,7 +1228,7 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$va
                 }
                 else
                 { // $item hold an item name.
-                    validate_item(trim(substr($item, 4)));
+                    validate_item(trim(substr($item, 4)), true);
                 }
             }
             elseif (strncasecmp($require, 'skill', 5) === 0)
@@ -1497,7 +1497,7 @@ function validate_skill($skillname)
         append_log ("Parse Error: skill $skillname not valid at line $line_number");
 }
 
-function validate_item($itemName)
+function validate_item($itemName, $checkCase = false)
 {
     global $line_number;
     if (trim($itemName) == '')
@@ -1511,7 +1511,7 @@ function validate_item($itemName)
     {
         $row = fetchSqlRow($result);
         // notice that the "where" in sql is not case sensitive, but the result of the query is, and might differ from what we used to search.
-        if ($row[0] != $itemName) 
+        if ($checkCase && $row[0] != $itemName) 
         {
             append_log("Parse Error: item name is case sensitive, use '{$row[0]}' instead of '$itemName' in database on line $line_number");
         }
