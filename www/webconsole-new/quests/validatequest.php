@@ -735,6 +735,12 @@ function handle_player_action($line)
                     validate_item($itemName);
                     // check for invalid flags on the item.
                     validateItemFlags($itemName);
+                    // check all cases of "give money", they are not technically stackable, but the server will still allow giving multiple.
+                    $trias = strtolower($itemName); // check for tria case insensitive.
+                    if ($trias == 'tria' || $trias == 'hexa' || $trias == 'octa' || $trias == 'circle')
+                    {
+                        continue; // valid
+                    }
                     // check if an item is stackable, and how many items were given. (will not yield any result if itemname is not valid).
                     $query = sprintf("SELECT flags FROM item_stats WHERE name = '%s'", escapeSqlString($itemName));
                     $result = mysql_query2($query);
