@@ -1603,8 +1603,8 @@ function validate_magic($magicName, $otherBuffs = false)
             // there might be multiple <apply> tags in <if> branches
             foreach ($matches[0] as $match)
             {
-                // we want to make sure that the <apply> we found is for a type="buff", in addition to just containing the right name.
-                if (stripos($match, 'type="buff"') !== false)
+                // we want to make sure that the <apply> we found is for a type="buff" or type="debuff", in addition to just containing the right name.
+                if (stripos($match, 'type="buff"') !== false || stripos($match, 'type="debuff"') !== false)
                 {
                     $found = true;
                 }
