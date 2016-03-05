@@ -7,7 +7,6 @@ function listnpcscombat()
         $sql = "SELECT c.id, c.name, c.lastname, c.npc_spawn_rule, c.npc_addl_loot_category_id, c.kill_exp, c.npc_master_id, s.name AS sector, c.loc_x, ";
         $sql .= "c.loc_y, c.loc_z, c.loc_instance, sc_npc_d.region FROM characters as c LEFT JOIN sectors AS s ON c.loc_sector_id = s.id ";
         $sql .= "LEFT JOIN sc_npc_definitions AS sc_npc_d ON c.id = sc_npc_d.char_id WHERE c.character_type = 1 AND c.npc_impervious_ind='N'";
-        //$sql = 'SELECT c.id, c.name, c.lastname, c.npc_spawn_rule, c.npc_addl_loot_category_id, c.kill_exp, s.name AS sector, c.loc_x, c.loc_y, c.loc_z, c.loc_instance, b.region, i.location_in_parent AS weapon_location, i2.id AS weapon_id, i2.name AS weapon_name, cs.skill_id, sk.name AS skill_name, cs.skill_rank FROM characters as c LEFT JOIN sectors AS s ON c.loc_sector_id=s.id LEFT JOIN sc_npc_definitions AS b ON c.id=b.char_id LEFT JOIN item_instances AS i ON i.char_id_owner=c.id AND (i.location_in_parent = 0 OR i.location_in_parent = 1) LEFT JOIN item_stats AS i2 ON i.item_stats_id_standard = i2.id LEFT JOIN character_skills AS cs ON cs.character_id = c.id LEFT JOIN skills AS sk ON sk.skill_id = cs.skill_id WHERE c.character_type = 1';
         
         $sorting = array('id' => 'c.id', 'name' => 'c.name', 'sector' => 's.name, c.name', 'spawn' => 'c.npc_spawn_rule, c.name', 'loot' => 'c.npc_addl_loot_category_id, c.name');
         if (isset($_GET['sort']) && array_key_exists($_GET['sort'], $sorting))
@@ -33,10 +32,11 @@ function listnpcscombat()
             return;
         }
 
+        $url = './index.php?do=listnpcscombat&amp;'.(isset($_GET['page']) ? 'page='.$_GET['page'].'&amp;' : '');
+        $url .= (isset($_GET['items_per_page']) ? 'items_per_page='.$_GET['items_per_page'].'&amp;' : '');
         echo '<table border="1">';
-        echo '<tr><th><a href="./index.php?do=listnpcscombat&amp;sort=id">ID</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=name">Name</a></th><th><a href="./index.php?do=listnpcscombat&amp;sort=spawn">Spawn</a>/<a href="./index.php?do=listnpcscombat&amp;sort=loot">Loot</a></th><th>Loc X/Y/Z/Instance</th><th><a href="./index.php?do=listnpcscombat&amp;sort=sector">Sector</a></th><th>Region</th><th>Weapon Right Hand</th><th>Weapon Left Hand</th><th>Skills</th><th>Exp</th></tr>';
+        echo '<tr><th><a href="'.$url.'sort=id">ID</a></th><th><a href="'.$url.'sort=name">Name</a></th><th><a href="'.$url.'sort=spawn">Spawn</a>/<a href="'.$url.'sort=loot">Loot</a></th><th>Loc X/Y/Z/Instance</th><th><a href="'.$url.'sort=sector">Sector</a></th><th>Region</th><th>Weapon Right Hand</th><th>Weapon Left Hand</th><th>Skills</th><th>Exp</th></tr>';
 
-        // cs.skill_id, sk.name AS skill_name, cs.skill_rank FROM character_skills AS cs ON cs.character_id = c.id LEFT JOIN skills AS sk ON sk.skill_id = cs.skill_id
         while ($row = fetchSqlAssoc($query))
         {
             // get skills and weapons from master NPC if set, otherwise get own. if master is set to this npcs own ID (no master) this works too.
