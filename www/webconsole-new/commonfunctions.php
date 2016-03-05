@@ -808,7 +808,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
         unset($page_params['page']);
     }
     $page_params['items_per_page'] = $items_per_page;
-    $query = http_build_query($page_params);
+    $query = http_build_query($page_params, '', '&amp;');
     
     for($i = 0; $i< 2; $i++)
     {
@@ -822,7 +822,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
         }
         else
         {
-            $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+            $html .= '<a href="./index.php?'.$query.'&amp;page='.$i.'">'.($i+1).'</a>';
         }
         $html .= ($i == 1 || $i == ($page_count - 1) ? '' : ' | ');
     }
@@ -839,7 +839,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
             }
             else
             {
-                $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+                $html .= '<a href="./index.php?'.$query.'&amp;page='.$i.'">'.($i+1).'</a>';
             }
             $html .= ($i == ($end - 1) ? '' : ' | ');
         }
@@ -856,7 +856,7 @@ function RenderNav($page_params, $item_count, $items_per_page = 30)
                 }
                 else
                 {
-                    $html .= '<a href="./index.php?'.$query.'&page='.$i.'">'.($i+1).'</a>';
+                    $html .= '<a href="./index.php?'.$query.'&amp;page='.$i.'">'.($i+1).'</a>';
                 }
                 $html .= ($i == ($page_count - 1) ? '' : ' | ');
             }
