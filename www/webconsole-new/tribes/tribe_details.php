@@ -1,65 +1,75 @@
 <?php
 
-function tribedetails(){
-  if (checkaccess('npcs', 'read')){
+// Only call tribedetails directly, the others do not peform access checks for read, nor do they check IDs.
+function tribedetails()
+{
+    if (!checkaccess('npcs', 'read'))
+    {
+        echo '<p class="error">You are not authorized to view Tribe details</p>';
+        return;
+    }
     $uri_string = './index.php?do=tribe_details';
-    if (isset($_GET['tribe_id'])){
-      if (is_numeric($_GET['tribe_id'])){
-        $id = escapeSqlString($_GET['tribe_id']);
-        $query = "SELECT name FROM tribes WHERE id='$id'";
-        $result = mysql_query2($query);
-        $row = fetchSqlAssoc($result);
-        echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">Tribe: '.$id.' - '.$row['name'].'</p>';
-        if (checkaccess('npcs', 'delete'))
+    if (!isset($_GET['tribe_id']) || !is_numeric($_GET['tribe_id']))
+    {
+        echo '<p class="error">Invalid ID</p>';
+        return;
+    }
+    $uri_string = $uri_string.'&amp;tribe_id='.$_GET['tribe_id'];
+    
+    $id = escapeSqlString($_GET['tribe_id']);
+    $query = "SELECT name FROM tribes WHERE id='$id'";
+    $result = mysql_query2($query);
+    $row = fetchSqlAssoc($result);
+    echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">Tribe: '.$id.' - '.$row['name'].'</p>'."\n";
+    if (checkaccess('npcs', 'delete'))
+    {
+        // notice this form directs to listtribes.php -> edittribes
+        echo '<form action="index.php?do=edittribes" method="post">'."\n";
+        echo '<p style="margin: 0pt 5px 0pt 0pt;"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Delete" /></p>'."\n";
+        echo '</form>'."\n";
+    }
+    echo "<br/>\n";
+    echo '<div class="menu_npc">'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=main">Main</a><br/>'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=members">Members</a><br/>'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=assets">Assets</a><br/>'."\n";
+    echo '</div><div class="main_npc">'."\n";
+    if (isset($_GET['sub']))
+    {
+        switch ($_GET['sub'])
         {
-            echo '<form action="index.php?do=edittribes" method="post">';
-	    echo '<p style="margin: 0pt 5px 0pt 0pt;"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Delete" /></p>';
-            echo '</form>';
+            case 'main':
+                tribeDetailsMain();
+                break;
+            case 'members':
+                tribeMembers();
+                break;
+            case 'assets':
+                tribeAssets();
+                break;
+            default:
+                echo '<p class="error">Please Select an Action</p>';
         }
-        echo "<br/>\n";
-        $uri_string = $uri_string.'&amp;tribe_id='.$_GET['tribe_id'];
-      }
     }
-    echo '<div class="menu_npc">';
-    echo '<a href="'.$uri_string.'&amp;sub=main">Main</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=members">Members</a><br/>';
-    echo '<a href="'.$uri_string.'&amp;sub=assets">Assets</a><br/>';
-    echo '</div><div class="main_npc">';
-    if (isset($_GET['sub'])){
-      switch ($_GET['sub']){
-        case 'main':
-          tribe_main();
-          break;
-        case 'members':
-          tribe_members();
-          break;
-        case 'assets':
-          tribe_assets();
-          break;
-        default:
-          echo '<p class="error">Please Select an Action</p>';
-      }
-    }else{
-      echo '<p class="error">Please Select an Action</p>';
+    else
+    {
+        echo '<p class="error">Please Select an Action</p>';
     }
-    echo '</div>';
-  }else{
-    echo '<p class="error">You are not authorized to view Tribe details</p>';
-  }
+    echo '</div>'."\n";
 }
 
-function tribe_main(){
-  if (checkaccess('npcs', 'read')){
-    if (isset($_GET['tribe_id'])){
-
-      // block unauthorized access
-      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
-          echo '<p class="error">You are not authorized to edit Tribes</p>';
-          return;
-      }
-      if (!isset($_POST['commit'])){
+function tribeDetailsMain()
+{
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
+        echo '<p class="error">You are not authorized to edit Tribes</p>';
+        return;
+    }
+    if (!isset($_POST['commit']))
+    {
         $id = escapeSqlString($_GET['tribe_id']);
-        $query = 'SELECT * FROM tribes WHERE id='.$id;
+        $query = "SELECT * FROM tribes WHERE id='$id'";
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=tribe_details&amp;sub=main&amp;tribe_id='.$id.'" method="post" id="tribe_details_form"><table>';
@@ -71,7 +81,7 @@ function tribe_main(){
         echo '<tr><td>'.DrawSelectBox('sectorid', $Sectors, 'home_sector_id', $row['home_sector_id']).'</td><td><input type="text" name="home_x" value="'.$row['home_x'].'" size="5"/></td>';
         echo '<td><input type="text" name="home_y" value="'.$row['home_y'].'" size="5"/></td>';
         echo '<td><input type="text" name="home_z" value="'.$row['home_z'].'" size="5"/></td>';
-        echo '<td><input type="text" name="home_radius" value="'.$row['home_radius'].'" size="5"/></td></table></td></tr>';
+        echo '<td><input type="text" name="home_radius" value="'.$row['home_radius'].'" size="5"/></td></tr></table></td></tr>';
         echo '<tr><td>Max Size</td><td><input type="text" name="max_size" value="'.$row['max_size'].'" /></td></tr>';
         echo '<tr><td>Wealth reource name:</td><td><input type="text" name="wealth_resource_name" value="'.$row['wealth_resource_name'].'" /></td></tr>';
         echo '<tr><td>Wealth Resource Nick</td><td><input type="text" name="wealth_resource_nick" value="'.$row['wealth_resource_nick'].'" /></td></tr>';
@@ -86,9 +96,9 @@ function tribe_main(){
         echo '<tr><td>Tribal Recipe</td><td>'.DrawSelectBox('tribe_recipe', $tribe_recipe, 'tribal_recipe', $row['tribal_recipe']).'</td></tr>';
         echo '<tr><td colspan="2"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Update" /></td></tr>';
         echo '</table></form>';
-      }
-      else
-      {
+    }
+    else
+    {
         $id = escapeSqlString($_POST['id']);
         $name = escapeSqlString($_POST['name']);
         $home_sector_id = escapeSqlString($_POST['home_sector_id']);
@@ -112,54 +122,18 @@ function tribe_main(){
         echo '<p class="error">Tribe Successfully Updated</p>';
         unset($_POST);
         tribe_main();
-      }
-    }else{
-      echo '<p class="error">Error: No NPC Selected</p>';
     }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
 }
 
-function tribe_members()
+function tribeMembers()
 {
-    if (!checkaccess('npcs', 'read'))
-    {
-        echo '<p class="error">You are not authorized to use these functions</p>';
-        return;
-    }
-    
-    $query = 'SELECT tm.tribe_id, t.name AS tribe_name, tm.member_id, tm.member_type, c.name, tm.flags FROM tribe_members AS tm LEFT JOIN characters AS c ON c.id=tm.member_id LEFT JOIN tribes AS t ON t.id=tm.tribe_id';
+    include "listtribemembers.php";
+    listtribemembers();
+}
 
-    if (isset($_GET['tribe_id']) && is_numeric($_GET['tribe_id'])) 
-    {
-        $tribe_id = escapeSqlString($_GET['tribe_id']);
-        $query .= " WHERE tm.tribe_id='$tribe_id'";
-    }
-    
-    $query .= ' ORDER BY t.name, c.name';
-    
-    $result = mysql_query2($query);
-    if (sqlNumRows($result) > 0)
-    {
-        echo '<table border="1">';
-        echo '<tr><th>Tribe</th><th>Member Name</th><th>Member Type</th><th>Flags</th></tr>';
-        
-        while ($row = fetchSqlAssoc($result))
-        {
-            echo '<tr>';
-            echo '<td>'.$row['tribe_name'].'</td>';
-            echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['member_id'].'">'.$row['name'].'</a></td>';
-            echo '<td>'.$row['member_type'].'</td>';
-            echo '<td>'.$row['flags'].'</td>';
-            echo '</tr>';
-        }
-        echo '</table>';
-    }
-    else
-    {
-        echo '<p class="error">No Tribe Members Found</p>';
-    }
+function tribeAssets()
+{
+
 }
 
 ?>
