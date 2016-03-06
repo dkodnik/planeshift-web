@@ -23,12 +23,13 @@ function listtribes()
     $result = mysql_query2($query);
     if (sqlNumRows($result) > 0)
     {
-        echo '<table border="1">';
+        echo '<table>';
         echo '<tr><th><a href="./index.php?do=listtribes&amp;sort=id">ID</a></th><th><a href="./index.php?do=listtribes&amp;sort=name">Name</a></th><th>Home Position</th><th>Home Radius</th><th><a href="./index.php?do=listtribes&amp;sort=sector">Home Sector</a></th><th>Max size</th><th>Wealth Resource Name</th><th>Wealth Resource Nick</th><th>Wealth Resource Area</th><th>Wealth Gather Need</th><th>Wealth Resource Growth</th><th>Wealth Resource Growth Active</th><th>Wealth Resource Growth Active Limit</th><th>Reproduction Cost</th><th>NPC idle behavior</th><th>Tribal Recipe</th></tr>';
 
+        $alt = false;
         while ($row = fetchSqlAssoc($result))
         {
-            echo '<tr>';
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
             echo '<td>'.$row['id'].'</td>';
             echo '<td><a href="./index.php?do=tribe_details&amp;sub=main&amp;tribe_id='.$row['id'].'">'.$row['name'].'</a></td>';
             echo '<td>'.$row['home_x'].' / '.$row['home_y'].' / '.$row['home_z'].'</td>';

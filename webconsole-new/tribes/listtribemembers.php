@@ -21,12 +21,13 @@ function listtribemembers()
     $result = mysql_query2($query);
     if (sqlNumRows($result) > 0)
     {
-        echo '<table border="1">';
+        echo '<table>';
         echo '<tr><th>Tribe</th><th>Member Name</th><th>Member Type</th><th>Flags</th></tr>';
         
+        $alt = false;
         while ($row = fetchSqlAssoc($result))
         {
-            echo '<tr>';
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
             echo '<td>'.$row['tribe_name'].'</td>';
             echo '<td><a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['member_id'].'">'.$row['name'].'</a></td>';
             echo '<td>'.$row['member_type'].'</td>';
