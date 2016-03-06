@@ -1586,7 +1586,10 @@ function validate_magic($magicName, $otherBuffs = false)
     }
     elseif (sqlNumRows($result) < 1 && $otherBuffs)
     {
-        $spellName = escapeSqlString($magic);
+        $spellName = str_replace('&', '&amp;', $magic);
+        $spellName = str_replace("'", "('|&apos;)", $spellName);
+        $spellName = escapeSqlString($spellName);
+        
         // this regex matches "<apply " followed by any non ">" character, followed by the text: name="$spellname" the escaping of double quotes is for PHP, not the regex engine.
         $query = "SELECT name, event_script FROM progression_events WHERE event_script REGEXP '<apply [^>]*name=\"$spellName\"'";
         $result = mysql_query2($query);
