@@ -33,6 +33,7 @@ function tribedetails()
     echo '<a href="'.$uri_string.'&amp;sub=main">Main</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=members">Members</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=assets">Assets</a><br/>'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=knowledge">Knowledge</a><br/>'."\n";
     echo '</div><div class="main_npc">'."\n";
     if (isset($_GET['sub']))
     {
@@ -46,6 +47,9 @@ function tribedetails()
                 break;
             case 'assets':
                 tribeAssets();
+                break;
+            case 'knowledge':
+                tribeKnowledge();
                 break;
             default:
                 echo '<p class="error">Please Select an Action</p>';
@@ -349,6 +353,118 @@ function tribeAssets()
         echo '<tr><td>Quantity</td><td><input type="text" name="quantity" /></td></tr>';
         echo '<tr><td>Status</td><td>'.$makeEnumDropdown('status', $enumStatus).'</td></tr>';
         echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Asset" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+    }
+}
+
+function tribeKnowledge()
+{
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
+        echo '<p class="error">You are not authorized to edit Tribes</p>';
+        return;
+    }
+    // this already got validated in the main method above.
+    $tribeId = escapeSqlString($_GET['tribe_id']);  
+    
+    // after the handling of commit, the script will resume with the listing of all knowledge for this tribe.
+    if (isset($_POST['commit']) && $_POST['commit'] == 'Create Knowledge')
+    {
+        $knowledge = escapeSqlString($_POST['knowledge']);
+        $sql = "INSERT INTO sc_tribe_knowledge (tribe_id, knowledge) VALUES ('$tribeId', '$knowledge')";
+        mysql_query2($sql);
+        echo '<p class="error">Knowledge added.</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $knowledgeId = escapeSqlString($_GET['knowledge_id']);
+        $sql = "DELETE FROM sc_tribe_knowledge WHERE id='$knowledgeId'";
+        mysql_query2($sql);
+        echo '<p class="error">Delete succesfull</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
+    {
+        $knowledgeId = escapeSqlString($_GET['knowledge_id']);
+        $knowledge = escapeSqlString($_POST['knowledge']);
+        $sql = "UPDATE sc_tribe_knowledge SET knowledge='$knowledge' WHERE id = '$knowledgeId'";
+        mysql_query2($sql);
+        echo '<p class="error">Update succesfull</p>';
+    }
+    
+    // if we print something for any of these actions, nothing else gets printed (no knowledge list).
+    if (isset($_GET['action']) && $_GET['action'] == 'edit')
+    {
+        // edit form
+        $knowledgeId = escapeSqlString($_GET['knowledge_id']);
+        $sql = "SELECT id, knowledge FROM sc_tribe_knowledge WHERE id = '$knowledgeId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+    
+        $sectors = prepselect('sectorid');
+        echo '<p>Editing Asset: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=knowledge&amp;tribe_id='.$tribeId.'&amp;knowledge_id='.$knowledgeId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>ID</td><td>'.$row['id'].'</td></tr>';
+        echo '<tr><td>Knowledge</td><td><input type="text" name="knowledge" value="'.htmlentities($row['knowledge']).'" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+        return;
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        // confirm delete
+        $knowledgeId = escapeSqlString($_GET['knowledge_id']);
+        echo '<p class="error">You are about to delete tribe Knowledge id "'.$knowledgeId.'" </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=knowledge&amp;tribe_id='.$tribeId.'&amp;knowledge_id='.$knowledgeId.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+        return;
+    }
+    
+    // Display the main list
+    $sql = "SELECT id, knowledge FROM sc_tribe_knowledge WHERE tribe_id='$tribeId'";
+    $result = mysql_query2($sql);
+    
+    if (sqlNumRows($result) == 0)
+    {
+        echo '<p class="error">No Knowledge found for this tribe.</p>';
+    }
+    else
+    {
+        // main list
+        echo '<table>'."\n";
+        echo '<tr><th>ID</th><th>Knowledge</th><th>Actions</th></tr>'."\n";
+        
+        $alt = false;
+        while ($row = fetchSqlAssoc($result))
+        {
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.htmlentities($row['knowledge']).'</td>';
+            echo '<td>';
+            if (checkAccess('npcs', 'edit'))
+            {
+                $url = './index.php?do=tribe_details&amp;sub=knowledge&amp;tribe_id='.$tribeId.'&amp;knowledge_id='.$row['id'];
+                echo '<a href="'.$url.'&amp;action=edit">Edit</a> - <a href="'.$url.'&amp;action=delete">Delete</a>';
+            }
+            echo '</td>';
+            echo '</tr>'."\n";
+        }
+        echo '</table>'."\n";
+    }
+    if (checkAccess('npcs', 'edit'))
+    {
+        // create form
+        echo '<hr/><p>Create new Knowledge: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=knowledge&amp;tribe_id='.$tribeId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>Knowledge</td><td><input type="text" name="knowledge" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Knowledge" /></td></tr>';
         echo '</table>';
         echo '</form>';
     }
