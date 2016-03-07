@@ -72,7 +72,7 @@ function tribeDetailsMain()
         $query = "SELECT * FROM tribes WHERE id='$id'";
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
-        echo '<form action="./index.php?do=tribe_details&amp;sub=main&amp;tribe_id='.$id.'" method="post" id="tribe_details_form"><table>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=main&amp;tribe_id='.$id.'" method="post"><table>';
         echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>';
         $Sectors = PrepSelect('sectorid');
         echo '<tr><td>Home:</td>';
@@ -127,13 +127,231 @@ function tribeDetailsMain()
 
 function tribeMembers()
 {
+    // delegate this functionality. the $_GET['tribe_id'] will make this list the right items.
     include "listtribemembers.php";
     listtribemembers();
 }
 
 function tribeAssets()
 {
-
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
+        echo '<p class="error">You are not authorized to edit Tribes</p>';
+        return;
+    }
+    // this already got validated in the main method above.
+    $tribeId = escapeSqlString($_GET['tribe_id']);    
+    
+    $enumStatus = array('ASSET_STATUS_NOT_APPLICABLE', 'ASSET_STATUS_NOT_USED', 'ASSET_STATUS_INCONSTRUCTION', 'ASSET_STATUS_CONSTRUCTED');
+    $enumTypes = array('ASSET_TYPE_ITEM', 'ASSET_TYPE_BUILDING', 'ASSET_TYPE_BUILDINGSPOT');
+    $makeEnumDropdown = function ($name, $enumArray, $selected = -1) 
+    {
+        $output = '';
+        $output .= '<select name="'.$name.'">';
+        foreach ($enumArray as $key => $value)
+        {
+            $output .= '<option value="'.$key.'" '.($key == $selected ? 'selected="selected"' : '').'>'.$value.'</option>';
+        }
+        $output .= '</select>';
+        return $output;
+    };
+    
+    // after the handling of commit, the script will resume with the listing of all assets for this tribe.
+    if (isset($_POST['commit']) && $_POST['commit'] == 'Create Asset')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $type = escapeSqlString($_POST['type']);
+        $coordX = escapeSqlString($_POST['coordx']);
+        $coordY = escapeSqlString($_POST['coordy']);
+        $coordZ = escapeSqlString($_POST['coordz']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $itemStatsId = escapeSqlString(($_POST['itemid'] == '' ? '0' : $_POST['itemid']));
+        $quantity = escapeSqlString($_POST['quantity']);
+        $status = escapeSqlString($_POST['status']);
+        $itemID = 0;
+        if ($itemStatsId != 0)
+        {
+            $sql = "INSERT INTO item_instances (item_stats_id_standard, flags) VALUES ('$itemStatsId', 'NOPICKUP')";
+            mysql_query2($sql);
+            $itemID = sqlInsertId();
+        }
+        $sql = "INSERT INTO sc_tribe_assets (tribe_id, name, type, coordX, coordY, coordZ, sector_id, itemID, quantity, status) VALUES ('$tribeId', '$name', '$type', '$coordX', '$coordY', '$coordZ', '$sector_id', '$itemID', '$quantity', '$status')";
+        mysql_query2($sql);
+        echo '<p class="error">Asset added.</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $assetId = escapeSqlString($_GET['asset_id']);
+        $sql = "SELECT ii.char_id_owner, ta.itemID FROM sc_tribe_assets AS ta LEFT JOIN item_instances AS ii ON ii.id = ta.itemID WHERE ta.id='$assetId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+        $itemId = $row['itemID'];
+        // only delete the item instance if it has no owner.
+        if ($row['char_id_owner'] == '' || $row['char_id_owner'] == 0)
+        {
+            $sql = "DELETE FROM item_instances WHERE id='$itemId'";
+            mysql_query2($sql);
+        }
+        $sql = "DELETE FROM sc_tribe_assets WHERE id='$assetId'";
+        mysql_query2($sql);
+        echo '<p class="error">Delete succesfull</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
+    {
+        $assetId = escapeSqlString($_GET['asset_id']);
+        $name = escapeSqlString($_POST['name']);
+        $type = escapeSqlString($_POST['type']);
+        $coordX = escapeSqlString($_POST['coordx']);
+        $coordY = escapeSqlString($_POST['coordy']);
+        $coordZ = escapeSqlString($_POST['coordz']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $itemStatsId = escapeSqlString(($_POST['itemid'] == '' ? '0' : $_POST['itemid']));
+        $oldId = escapeSqlString($_POST['item_id_old']);
+        $quantity = escapeSqlString($_POST['quantity']);
+        $status = escapeSqlString($_POST['status']);
+        $itemIdStatement = '';
+        if ($oldId != $itemStatsId)
+        {
+            // delete the old item_instance if no one owns it, we don't want to polute the database.
+            $sql = "SELECT ii.char_id_owner, ta.itemID FROM sc_tribe_assets AS ta LEFT JOIN item_instances AS ii ON ii.id = ta.itemID WHERE ta.id='$assetId'";
+            $result = mysql_query2($sql);
+            $row = fetchSqlAssoc($result);
+            $itemId = $row['itemID'];
+            // only delete the item instance if it has no owner.
+            if ($row['char_id_owner'] == '' || $row['char_id_owner'] == 0)
+            {
+                $sql = "DELETE FROM item_instances WHERE id='$itemId'";
+                mysql_query2($sql);
+            }
+            // make the new instance
+            $sql = "INSERT INTO item_instances (item_stats_id_standard, flags) VALUES ('$itemStatsId', 'NOPICKUP')";
+            mysql_query2($sql);
+            $itemID = sqlInsertId();
+            $itemIdStatement = "itemID='$itemID',";
+        }
+        // update the asset values
+        $sql = "UPDATE sc_tribe_assets SET name='$name', type='$type', coordX='$coordX', coordY='$coordY', coordZ='$coordZ', sector_id='$sector_id', $itemIdStatement quantity='$quantity', status='$status' WHERE id = '$assetId'";
+        mysql_query2($sql);
+        echo '<p class="error">Update succesfull</p>';
+    }
+    
+    // if we print something for any of these actions, nothing else gets printed (no assets list).
+    if (isset($_GET['action']) && $_GET['action'] == 'edit')
+    {
+        $assetId = escapeSqlString($_GET['asset_id']);
+        $sql = "SELECT ta.id, ta.name, ta.type, ta.coordX, ta.coordY, ta.coordZ, ta.sector_id, ii.item_stats_id_standard, ta.quantity, ";
+        $sql .= "ta.status FROM sc_tribe_assets AS ta LEFT JOIN item_instances AS ii ON ta.itemID = ii.id WHERE ta.id = '$assetId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+    
+        $sectors = prepselect('sectorid');
+        echo '<p>Editing Asset: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=assets&amp;tribe_id='.$tribeId.'&amp;asset_id='.$assetId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>ID</td><td>'.$row['id'].'</td></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>';
+        echo '<tr><td>Type</td><td>'.$makeEnumDropdown('type', $enumTypes, $row['type']).'</td></tr>';
+        echo '<tr><td>X</td><td><input type="text" name="coordx" value="'.$row['coordX'].'" /></td></tr>';
+        echo '<tr><td>Y</td><td><input type="text" name="coordy" value="'.$row['coordY'].'" /></td></tr>';
+        echo '<tr><td>Z</td><td><input type="text" name="coordz" value="'.$row['coordZ'].'" /></td></tr>';
+        echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $sectors, 'sector_id', $row['sector_id']).'</td></tr>';
+        echo '<tr><td>Item</td><td><input type="hidden" name="item_id_old" value="'.$row['item_stats_id_standard'].'" />'.DrawItemSelectBox('itemid', $row['item_stats_id_standard'], true, true).'</td></tr>';
+        echo '<tr><td>Quantity</td><td><input type="text" name="quantity" value="'.$row['quantity'].'" /></td></tr>';
+        echo '<tr><td>Status</td><td>'.$makeEnumDropdown('status', $enumStatus, $row['type']).'</td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+        return;
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        $assetId = escapeSqlString($_GET['asset_id']);
+        $sql = "SELECT ta.name, ii.char_id_owner, ta.itemID FROM sc_tribe_assets AS ta LEFT JOIN item_instances AS ii ON ii.id = ta.itemID WHERE ta.id='$assetId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+        echo '<p class="error">You are about to delete tribe asset "'.htmlentities($row['name']).'" ';
+        if ($row['char_id_owner'] == '' || $row['char_id_owner'] == 0)
+        {
+            echo 'and its associate item instance.';
+        }
+        else
+        {
+            echo 'its associate item instance was picked up by a (<a href="./index.php?do=npc_details&amp;sub=main&amp;npc_id='.$row['char_id_owner'].'">player</a>) and will not be deleted.';
+        }
+        echo '</p><form action="./index.php?do=tribe_details&amp;sub=assets&amp;tribe_id='.$tribeId.'&amp;asset_id='.$assetId.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+        return;
+    }
+    
+    // notice itemID may refer to a deleted instance, resulting in null values for item name.
+    $sql = "SELECT ta.id, ta.name, ta.type, ta.coordX, ta.coordY, ta.coordZ, s.name AS sector_name, ta.itemID, ist.name AS item_name, ta.quantity, ";
+    $sql .= "ta.status FROM sc_tribe_assets AS ta LEFT JOIN sectors AS s ON ta.sector_id = s.id LEFT JOIN item_instances AS ii ON ta.itemID = ii.id ";
+    $sql .= "LEFT JOIN item_stats AS ist ON ii.item_stats_id_standard = ist.id WHERE tribe_id = '$tribeId' ORDER BY ta.name";
+    
+    $sql2 = "SELECT COUNT(*) FROM sc_tribe_assets WHERE tribe_id = '$tribeId'";
+    $item_count = fetchSqlRow(mysql_query2($sql2));
+    $nav = RenderNav('do=tribe_details&sub=assets&tribe_id='.$tribeId, $item_count[0]);
+    $sql .= $nav['sql'];
+    echo $nav['html'];
+    unset($nav);
+    
+    $result = mysql_query2($sql);
+    
+    if (sqlNumRows($result) == 0)
+    {
+        echo '<p class="error">No assets found for this tribe.</p>';
+    }
+    else
+    {   
+        echo '<table>'."\n";
+        echo '<tr><th>ID</th><th>Name</th><th>Type</th><th>Coords</th><th>Sector</th><th>Item</th><th>Quantity</th><th>Status</th><th>Actions</th></tr>'."\n";
+        
+        $alt = false;
+        while ($row = fetchSqlAssoc($result))
+        {
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.htmlentities($row['name']).'</td>';
+            echo '<td>'.$enumTypes[$row['type']].'</td>';
+            echo '<td>'.$row['coordX'].'/'.$row['coordY'].'/'.$row['coordZ'].'</td>';
+            echo '<td>'.$row['sector_name'].'</td>';
+            echo '<td>'.htmlentities(($row['item_name'] != '' ? $row['item_name'] : ($row['itemID'] == 0 ? '0' : $row['itemID'].' (deleted)'))).'</td>';
+            echo '<td>'.$row['quantity'].'</td>';
+            echo '<td>'.$enumStatus[$row['status']].'</td>';
+            echo '<td>';
+            if (checkAccess('npcs', 'edit'))
+            {
+                $url = './index.php?do=tribe_details&amp;sub=assets&amp;tribe_id='.$tribeId.'&amp;asset_id='.$row['id'];
+                echo '<a href="'.$url.'&amp;action=edit">Edit</a> - <a href="'.$url.'&amp;action=delete">Delete</a>';
+            }
+            echo '</td>';
+            echo '</tr>'."\n";
+        }
+        echo '</table>'."\n";
+    }
+    if (checkAccess('npcs', 'edit'))
+    {
+        $sectors = prepselect('sectorid');
+        echo '<hr/><p>Create new Asset: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=assets&amp;tribe_id='.$tribeId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
+        echo '<tr><td>Type</td><td>'.$makeEnumDropdown('type', $enumTypes).'</td></tr>';
+        echo '<tr><td>X</td><td><input type="text" name="coordx" /></td></tr>';
+        echo '<tr><td>Y</td><td><input type="text" name="coordy" /></td></tr>';
+        echo '<tr><td>Z</td><td><input type="text" name="coordz" /></td></tr>';
+        echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $sectors, 'sector_id', '').'</td></tr>';
+        echo '<tr><td>Item</td><td>'.DrawItemSelectBox('itemid', false, true, true).'</td></tr>';
+        echo '<tr><td>Quantity</td><td><input type="text" name="quantity" /></td></tr>';
+        echo '<tr><td>Status</td><td>'.$makeEnumDropdown('status', $enumStatus).'</td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Asset" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+    }
 }
 
 ?>
