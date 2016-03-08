@@ -7,13 +7,13 @@ function listrecipes()
         return;
     }
     
-    $query = 'SELECT * FROM tribe_recipes';
+    $sql = 'SELECT * FROM tribe_recipes';
 
     $id_url = '';
     if (isset($_GET['id']) && is_numeric($_GET['id'])) 
     {
         $id = escapeSqlString($_GET['id']);
-        $query .= " WHERE id='$id'";
+        $sql .= " WHERE id='$id'";
         $id_url = '&amp;id='.$id;
     }
     
@@ -21,33 +21,41 @@ function listrecipes()
     {
         if ($_GET['sort'] == 'id')
         {
-            $query .= ' ORDER BY id';
+            $sql .= ' ORDER BY id';
         }
         else if ($_GET['sort'] == 'name')
         {
-            $query .= ' ORDER BY name';
+            $sql .= ' ORDER BY name';
         }
     }
     
-    $result = mysql_query2($query);
+    $sql2 = "SELECT COUNT(*) FROM tribe_recipes".(isset($id) ? " WHERE id='$id'" : '');
+    $item_count = fetchSqlRow(mysql_query2($sql2));
+    $nav = RenderNav('do=listrecipes'.(isset($id) ? '&id='.$id : '').(isset($_GET['sort']) ? '&sort='.$_GET['sort'] : ''), $item_count[0]);
+    $sql .= $nav['sql'];
+    echo $nav['html'];
+    unset($nav);
+    
+    $result = mysql_query2($sql);
     if (sqlNumRows($result) > 0)
     {
-        echo '<table border="1">';
+        echo '<table>'."\n";
         echo '<tr><th><a href="./index.php?do=listrecipes&amp;sort=id'.$id_url.'">ID</a></th><th><a href="./index.php?do=listrecipes&amp;sort=name'.$id_url.'">Name</a></th><th>Requirements</th><th>Algorithm</th><th>Persistent</th><th>Uniqueness</th>';
         if (checkaccess('npcs', 'edit'))
         {
             echo '<th>Actions</th>';
         }
-        echo '</tr>';
+        echo '</tr>'."\n";
 
+        $alt = false;
         while ($row = fetchSqlAssoc($result))
         {
-            echo '<tr>';
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
             echo '<td>'.$row['id'].'</td>';
             echo '<td>'.$row['name'].'</td>';
             // this replace allows html to display things properly. (It is only replaced in display.)
-            echo '<td>'.str_replace(';', '; ', $row['requirements']).'</td>';
-            echo '<td>'.str_replace(';', '; ', $row['algorithm']).'</td>';
+            echo '<td>'.htmlentities(str_replace(';', '; ', $row['requirements'])).'</td>';
+            echo '<td>'.htmlentities(str_replace(';', '; ', $row['algorithm'])).'</td>';
             echo '<td>'.$row['persistent'].'</td>';
             echo '<td>'.$row['uniqueness'].'</td>';
             if (checkaccess('npcs', 'edit'))
@@ -66,24 +74,24 @@ function listrecipes()
                 }
                 echo '</td>';
             }
-            echo '</tr>';
+            echo '</tr>'."\n";
         }
-        echo '</table>';
+        echo '</table>'."\n";
         if (checkaccess('npcs', 'create')) 
         {
-            echo '<hr />';
-            echo '<p>Create New Tribe Recipe: </p>';
-            echo '<form action="./index.php?do=editrecipes" method="post">';
-            echo '<table border="1">';
-            echo '<tr><th>Field</th><th>Value</th></tr>';
-            echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
-            echo '<tr><td>Requirements</td><td><input type="text" name="requirements" /></td></tr>';
-            echo '<tr><td>Algorithm</td><td><input type="text" name="algorithm" /></td></tr>';
-            echo '<tr><td>Persistent</td><td><input type="checkbox" name="persistent" /></td></tr>';
-            echo '<tr><td>Uniqueness</td><td><input type="checkbox" name="uniqueness" /></td></tr>';
-            echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Tribe Recipe" /></td></tr>';
-            echo '</table>';
-            echo '</form>';
+            echo '<hr />'."\n";
+            echo '<p>Create New Tribe Recipe: </p>'."\n";
+            echo '<form action="./index.php?do=editrecipes" method="post">'."\n";
+            echo '<table border="1">'."\n";
+            echo '<tr><th>Field</th><th>Value</th></tr>'."\n";
+            echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
+            echo '<tr><td>Requirements</td><td><textarea name="requirements" rows="6" cols="55"></textarea></td></tr>'."\n";
+            echo '<tr><td>Algorithm</td><td><textarea name="algorithm" rows="6" cols="55"></textarea></td></tr>'."\n";
+            echo '<tr><td>Persistent</td><td><input type="checkbox" name="persistent" /></td></tr>'."\n";
+            echo '<tr><td>Uniqueness</td><td><input type="checkbox" name="uniqueness" /></td></tr>'."\n";
+            echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Tribe Recipe" /></td></tr>'."\n";
+            echo '</table>'."\n";
+            echo '</form>'."\n";
         }
     }
     else
@@ -165,12 +173,12 @@ function editrecipes()
         echo '<table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Name</td><td><input type="text" name="name" value="'.$row['name'].'" /></td></tr>';
-        echo '<tr><td>Requirements</td><td><input type="text" name="requirements" value="'.$row['requirements'].'" /></td></tr>';
-        echo '<tr><td>Algorithm</td><td><input type="text" name="algorithm" value="'.$row['algorithm'].'" /></td></tr>';
+        echo '<tr><td>Requirements</td><td><textarea name="requirements" rows="6" cols="55">'.htmlentities($row['requirements']).'</textarea></td></tr>';
+        echo '<tr><td>Algorithm</td><td><textarea name="algorithm" rows="6" cols="55">'.htmlentities($row['algorithm']).'</textarea></td></tr>';
         $persistent = ($row['persistent'] == 1 ? 'checked="checked"' : '');
-        echo '<tr><td>Persistent</td><td><input type="checkbox" name="persistent" '.$persistent.'" /></td></tr>';
+        echo '<tr><td>Persistent</td><td><input type="checkbox" name="persistent" '.$persistent.' /></td></tr>';
         $uniqueness = ($row['uniqueness'] == 1 ? 'checked="checked"' : '');
-        echo '<tr><td>Uniqueness</td><td><input type="checkbox" name="uniqueness" '.$uniqueness.'" /></td></tr>';
+        echo '<tr><td>Uniqueness</td><td><input type="checkbox" name="uniqueness" '.$uniqueness.' /></td></tr>';
         echo '<tr><td colspan="2"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Update" /></td></tr>';
         echo '</table>';
         echo '</form>';
