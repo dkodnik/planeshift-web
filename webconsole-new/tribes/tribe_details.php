@@ -547,6 +547,14 @@ function tribeMemories()
     
     // Display the main list
     $sql = "SELECT tm.id, tm.name, tm.loc_x, tm.loc_y, tm.loc_z, s.name AS sector_name, tm.radius FROM sc_tribe_memories AS tm LEFT JOIN sectors AS s ON s.id = tm.sector_id WHERE tribe_id='$tribeId' ORDER BY tm.name";
+    
+    $sql2 = "SELECT COUNT(*) FROM sc_tribe_memories WHERE tribe_id = '$tribeId'";
+    $item_count = fetchSqlRow(mysql_query2($sql2));
+    $nav = RenderNav('do=tribe_details&sub=memories&tribe_id='.$tribeId, $item_count[0]);
+    $sql .= $nav['sql'];
+    echo $nav['html'];
+    unset($nav);
+    
     $result = mysql_query2($sql);
     
     if (sqlNumRows($result) == 0)
