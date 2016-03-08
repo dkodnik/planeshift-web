@@ -1587,6 +1587,7 @@ function validate_magic($magicName, $otherBuffs = false)
     elseif (sqlNumRows($result) < 1 && $otherBuffs)
     {
         $spellName = str_replace('&', '&amp;', $magic);
+        // technically single quotes are not allowed unescaped in values in XML, but it does work if you use double quotes for the values, so some old scripts still have these. The regex finds both.
         $spellName = str_replace("'", "('|&apos;)", $spellName);
         $spellName = escapeSqlString($spellName);
         
