@@ -35,6 +35,7 @@ function tribedetails()
     echo '<a href="'.$uri_string.'&amp;sub=assets">Assets</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=knowledge">Knowledge</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=memories">Memories</a><br/>'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=resources">Resources</a><br/>'."\n";
     echo '</div><div class="main_npc">'."\n";
     if (isset($_GET['sub']))
     {
@@ -54,6 +55,9 @@ function tribedetails()
                 break;
             case 'memories':
                 tribeMemories();
+                break;
+            case 'resources':
+                tribeResources();
                 break;
             default:
                 echo '<p class="error">Please Select an Action</p>';
@@ -602,6 +606,127 @@ function tribeMemories()
         echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $sectors, 'sector_id', '').'</td></tr>';
         echo '<tr><td>Radius</td><td><input type="text" name="radius" /></td></tr>';
         echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Memory" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+    }
+}
+
+function tribeResources()
+{
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
+        echo '<p class="error">You are not authorized to edit Tribes</p>';
+        return;
+    }
+    // this already got validated in the main method above.
+    $tribeId = escapeSqlString($_GET['tribe_id']);  
+    
+    // after the handling of commit, the script will resume with the listing of all resources for this tribe.
+    if (isset($_POST['commit']) && $_POST['commit'] == 'Create Resource')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $nick = escapeSqlString($_POST['nick']);
+        $amount = escapeSqlString($_POST['amount']);
+        $sql = "INSERT INTO sc_tribe_resources (tribe_id, name, nick, amount) VALUES ('$tribeId', '$name', '$nick', '$amount')";
+        mysql_query2($sql);
+        echo '<p class="error">Resource added.</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $resourceId = escapeSqlString($_GET['resource_id']);
+        $sql = "DELETE FROM sc_tribe_resources WHERE id='$resourceId'";
+        mysql_query2($sql);
+        echo '<p class="error">Delete succesfull</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
+    {
+        $resourceId = escapeSqlString($_GET['resource_id']);
+        $name = escapeSqlString($_POST['name']);
+        $nick = escapeSqlString($_POST['nick']);
+        $amount = escapeSqlString($_POST['amount']);
+        $sql = "UPDATE sc_tribe_resources SET name='$name', nick='$nick', amount='$amount' WHERE id = '$resourceId'";
+        mysql_query2($sql);
+        echo '<p class="error">Update succesfull</p>';
+    }
+    
+    // if we print something for any of these actions, nothing else gets printed (no resources list).
+    if (isset($_GET['action']) && $_GET['action'] == 'edit')
+    {
+        // edit form
+        $resourceId = escapeSqlString($_GET['resource_id']);
+        $sql = "SELECT id, name, nick, amount FROM sc_tribe_resources WHERE id = '$resourceId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+    
+        echo '<p>Editing Resource: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=resources&amp;tribe_id='.$tribeId.'&amp;resource_id='.$resourceId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>ID</td><td>'.$row['id'].'</td></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>';
+        echo '<tr><td>Nick</td><td><input type="text" name="nick" value="'.htmlentities($row['nick']).'" /></td></tr>';
+        echo '<tr><td>Amount</td><td><input type="text" name="amount" value="'.$row['amount'].'" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+        return;
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        // confirm delete
+        $resourceId = escapeSqlString($_GET['resource_id']);
+        echo '<p class="error">You are about to delete tribe Resource id "'.$resourceId.'" </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=resources&amp;tribe_id='.$tribeId.'&amp;resource_id='.$resourceId.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+        return;
+    }
+    
+    // Display the main list
+    $sql = "SELECT id, name, nick, amount FROM sc_tribe_resources WHERE tribe_id='$tribeId' ORDER BY name";
+    $result = mysql_query2($sql);
+    
+    if (sqlNumRows($result) == 0)
+    {
+        echo '<p class="error">No Resources found for this tribe.</p>';
+    }
+    else
+    {
+        // main list
+        echo '<table>'."\n";
+        echo '<tr><th>ID</th><th>Name</th><th>Nick</th><th>Amount</th><th>Actions</th></tr>'."\n";
+        
+        $alt = false;
+        while ($row = fetchSqlAssoc($result))
+        {
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.htmlentities($row['name']).'</td>';
+            echo '<td>'.htmlentities($row['nick']).'</td>';
+            echo '<td>'.$row['amount'].'</td>';
+            echo '<td>';
+            if (checkAccess('npcs', 'edit'))
+            {
+                $url = './index.php?do=tribe_details&amp;sub=resources&amp;tribe_id='.$tribeId.'&amp;resource_id='.$row['id'];
+                echo '<a href="'.$url.'&amp;action=edit">Edit</a> - <a href="'.$url.'&amp;action=delete">Delete</a>';
+            }
+            echo '</td>';
+            echo '</tr>'."\n";
+        }
+        echo '</table>'."\n";
+    }
+    if (checkAccess('npcs', 'edit'))
+    {
+        // create form
+        echo '<hr/><p>Create new Resource: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=resources&amp;tribe_id='.$tribeId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
+        echo '<tr><td>Nick</td><td><input type="text" name="nick" /></td></tr>';
+        echo '<tr><td>Amount</td><td><input type="text" name="amount" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Resource" /></td></tr>';
         echo '</table>';
         echo '</form>';
     }
