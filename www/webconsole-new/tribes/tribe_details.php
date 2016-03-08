@@ -34,6 +34,7 @@ function tribedetails()
     echo '<a href="'.$uri_string.'&amp;sub=members">Members</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=assets">Assets</a><br/>'."\n";
     echo '<a href="'.$uri_string.'&amp;sub=knowledge">Knowledge</a><br/>'."\n";
+    echo '<a href="'.$uri_string.'&amp;sub=memories">Memories</a><br/>'."\n";
     echo '</div><div class="main_npc">'."\n";
     if (isset($_GET['sub']))
     {
@@ -50,6 +51,9 @@ function tribedetails()
                 break;
             case 'knowledge':
                 tribeKnowledge();
+                break;
+            case 'memories':
+                tribeMemories();
                 break;
             default:
                 echo '<p class="error">Please Select an Action</p>';
@@ -402,8 +406,7 @@ function tribeKnowledge()
         $result = mysql_query2($sql);
         $row = fetchSqlAssoc($result);
     
-        $sectors = prepselect('sectorid');
-        echo '<p>Editing Asset: </p>';
+        echo '<p>Editing Knowledge: </p>';
         echo '<form action="./index.php?do=tribe_details&amp;sub=knowledge&amp;tribe_id='.$tribeId.'&amp;knowledge_id='.$knowledgeId.'" method="post">';
         echo '<table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
@@ -426,7 +429,7 @@ function tribeKnowledge()
     }
     
     // Display the main list
-    $sql = "SELECT id, knowledge FROM sc_tribe_knowledge WHERE tribe_id='$tribeId'";
+    $sql = "SELECT id, knowledge FROM sc_tribe_knowledge WHERE tribe_id='$tribeId' ORDER BY id";
     $result = mysql_query2($sql);
     
     if (sqlNumRows($result) == 0)
@@ -465,6 +468,132 @@ function tribeKnowledge()
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Knowledge</td><td><input type="text" name="knowledge" /></td></tr>';
         echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Knowledge" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+    }
+}
+
+function tribeMemories()
+{
+    // block unauthorized access
+    if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+    {
+        echo '<p class="error">You are not authorized to edit Tribes</p>';
+        return;
+    }
+    // this already got validated in the main method above.
+    $tribeId = escapeSqlString($_GET['tribe_id']);  
+    
+    // after the handling of commit, the script will resume with the listing of all memories for this tribe.
+    if (isset($_POST['commit']) && $_POST['commit'] == 'Create Memory')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $loc_x = escapeSqlString($_POST['loc_x']);
+        $loc_y = escapeSqlString($_POST['loc_y']);
+        $loc_z = escapeSqlString($_POST['loc_z']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $radius = escapeSqlString($_POST['radius']);
+        $sql = "INSERT INTO sc_tribe_memories (tribe_id, name, loc_x, loc_y, loc_z, sector_id, radius) VALUES ('$tribeId', '$name', '$loc_x', '$loc_y', '$loc_z', '$sector_id', '$radius')";
+        mysql_query2($sql);
+        echo '<p class="error">Memory added.</p>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Save Changes')
+    {
+        $memoryId = escapeSqlString($_GET['memory_id']);
+        $name = escapeSqlString($_POST['name']);
+        $loc_x = escapeSqlString($_POST['loc_x']);
+        $loc_y = escapeSqlString($_POST['loc_y']);
+        $loc_z = escapeSqlString($_POST['loc_z']);
+        $sector_id = escapeSqlString($_POST['sector_id']);
+        $radius = escapeSqlString($_POST['radius']);
+        $sql = "UPDATE sc_tribe_memories SET name='$name', loc_x='$loc_x', loc_y='$loc_y', loc_z='$loc_z', sector_id='$sector_id', radius='$radius' WHERE id = '$memoryId'";
+        mysql_query2($sql);
+        echo '<p class="error">Update succesfull</p>';
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    { // this one is a little different, since we do not ask for delete confirmation with memories.
+        $memoryId = escapeSqlString($_GET['memory_id']);
+        $sql = "DELETE FROM sc_tribe_memories WHERE id='$memoryId'";
+        mysql_query2($sql);
+        echo '<p class="error">Delete succesfull</p>';
+    }
+    
+    // if we print something for any of these actions, nothing else gets printed (no memories list).
+    if (isset($_GET['action']) && $_GET['action'] == 'edit')
+    {
+        // edit form
+        $memoryId = escapeSqlString($_GET['memory_id']);
+        $sql = "SELECT id, name, loc_x, loc_y, loc_z, sector_id, radius FROM sc_tribe_memories WHERE id = '$memoryId'";
+        $result = mysql_query2($sql);
+        $row = fetchSqlAssoc($result);
+    
+        $sectors = prepselect('sectorid');
+        echo '<p>Editing Memory: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=memories&amp;tribe_id='.$tribeId.'&amp;memory_id='.$memoryId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>ID</td><td>'.$row['id'].'</td></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>';
+        echo '<tr><td>Loc x</td><td><input type="text" name="loc_x" value="'.htmlentities($row['loc_x']).'" /></td></tr>';
+        echo '<tr><td>Loc y</td><td><input type="text" name="loc_y" value="'.htmlentities($row['loc_y']).'" /></td></tr>';
+        echo '<tr><td>loc z</td><td><input type="text" name="loc_z" value="'.htmlentities($row['loc_z']).'" /></td></tr>';
+        echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $sectors, 'sector_id', $row['sector_id']).'</td></tr>';
+        echo '<tr><td>Radius</td><td><input type="text" name="radius" value="'.htmlentities($row['radius']).'" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Save Changes" /></td></tr>';
+        echo '</table>';
+        echo '</form>';
+        return;
+    }
+    
+    // Display the main list
+    $sql = "SELECT tm.id, tm.name, tm.loc_x, tm.loc_y, tm.loc_z, s.name AS sector_name, tm.radius FROM sc_tribe_memories AS tm LEFT JOIN sectors AS s ON s.id = tm.sector_id WHERE tribe_id='$tribeId' ORDER BY tm.name";
+    $result = mysql_query2($sql);
+    
+    if (sqlNumRows($result) == 0)
+    {
+        echo '<p class="error">No Memories found for this tribe.</p>';
+    }
+    else
+    {
+        // main list
+        echo '<table>'."\n";
+        echo '<tr><th>ID</th><th>Name</th><th>Loc x/y/z</th><th>Sector</th><th>Radius</th><th>Actions</th></tr>'."\n";
+        
+        $alt = false;
+        while ($row = fetchSqlAssoc($result))
+        {
+            echo '<tr class="color_'.(($alt = !$alt) ? 'a' : 'b').'">';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.htmlentities($row['name']).'</td>';
+            echo '<td>'.$row['loc_z'].'/'.$row['loc_y'].'/'.$row['loc_z'].'</td>';
+            echo '<td>'.$row['sector_name'].'</td>';
+            echo '<td>'.$row['radius'].'</td>';
+            echo '<td>';
+            if (checkAccess('npcs', 'edit'))
+            {
+                $url = './index.php?do=tribe_details&amp;sub=memories&amp;tribe_id='.$tribeId.'&amp;memory_id='.$row['id'];
+                echo '<a href="'.$url.'&amp;action=edit">Edit</a> - <a href="'.$url.'&amp;action=delete">Delete</a>';
+            }
+            echo '</td>';
+            echo '</tr>'."\n";
+        }
+        echo '</table>'."\n";
+    }
+    if (checkAccess('npcs', 'edit'))
+    {
+        // create form
+        $sectors = prepselect('sectorid');
+        echo '<hr/><p>Create new Memory: </p>';
+        echo '<form action="./index.php?do=tribe_details&amp;sub=memories&amp;tribe_id='.$tribeId.'" method="post">';
+        echo '<table border="1">';
+        echo '<tr><th>Field</th><th>Value</th></tr>';
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
+        echo '<tr><td>Loc x</td><td><input type="text" name="loc_x" /></td></tr>';
+        echo '<tr><td>Loc y</td><td><input type="text" name="loc_y" /></td></tr>';
+        echo '<tr><td>loc z</td><td><input type="text" name="loc_z" /></td></tr>';
+        echo '<tr><td>Sector</td><td>'.DrawSelectBox('sectorid', $sectors, 'sector_id', '').'</td></tr>';
+        echo '<tr><td>Radius</td><td><input type="text" name="radius" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Create Memory" /></td></tr>';
         echo '</table>';
         echo '</form>';
     }
