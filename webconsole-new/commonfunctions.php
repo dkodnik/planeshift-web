@@ -20,7 +20,7 @@ function mysql_query2($query, $log=true)
     }
     if ($log === true){
         $foo = explode(' ', $query, 2);
-        if (strcasecmp($foo[0], 'SELECT') != 0) // we don't log select statements
+        if (strcasecmp($foo[0], 'SELECT') != 0 && strcasecmp($foo[0], '(SELECT') != 0) // we don't log select statements
         {
             $lastInsertId = $mysqli->insert_id; // need to store that here or it will be overwritten by our command log.
             $foo = escapeSqlString($query);
