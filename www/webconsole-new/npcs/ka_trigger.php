@@ -277,6 +277,8 @@ function ka_detail()
                     echo '</select>';
                     // this is the only way we can make the item select box appear atm, so we hide it, and let the javascript copy it when needed.
                     echo ' <span id="actionSubMenu"></span><span id="itemBox" style="display:none;">'.DrawItemSelectBox('action_sub').'</span>';
+                    $skillNames = PrepSelect('skillnames');
+                    echo '<span id="skillBox" style="display:none;">'.DrawSelectBox('skillnames', $skillNames, 'action_sub', '').'</span>';
                     echo '<input type="button" onclick="addToScript()" value="add action to script" />';
                     
                 }
@@ -320,7 +322,6 @@ function ka_detail()
             echo '</tr>'."\n";
         }
         echo '</table>';
-        $skillNames = PrepSelect('skillnames');
         // the following javascript is outside the PHP file for easier maintenance, but it is still printed only conditionally to PHP being in this part of the code.
 ?>
 <script type="text/javascript">//<![CDATA[
@@ -479,8 +480,7 @@ function ka_detail()
     
     function train(position)
     {
-        // draw select box outputs multiple lines, javascript requires one to use ` instead of ' in that case.
-        var skillDropDown = `<?php echo DrawSelectBox('skillnames', $skillNames, 'action_sub', '');?>`;
+        var skillDropDown = document.getElementById("skillBox").innerHTML;
         if (position == -1)
         {
             document.getElementById("actionSubMenu").innerHTML = "select a skill: " + skillDropDown;
