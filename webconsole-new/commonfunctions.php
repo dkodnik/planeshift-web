@@ -299,14 +299,14 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
     $string = $string.'<option value='.$nullval.'>NONE</option>'."\n";
   }
   while ($internal_row = fetchSqlRow($result)){
-    $string = $string . '<option value="'.$internal_row[0].'"';
+    $string = $string . '<option value="'.htmlentities($internal_row[0]).'"';
     if ($value == $internal_row[0]){
       $string = $string . ' selected="selected" ';
     }
     if ($internal_row[1] == ""){
-      $string = $string . '>'.htmlspecialchars('NULL').'</option>'."\n";
+      $string = $string . '>'.htmlentities('NULL').'</option>'."\n";
     }else{
-      $string = $string . '>'.htmlspecialchars($internal_row[1]).'</option>'."\n";
+      $string = $string . '>'.htmlentities($internal_row[1]).'</option>'."\n";
     }
   }
   $string = $string . '</select>'."\n";
