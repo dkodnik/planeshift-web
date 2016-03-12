@@ -976,154 +976,11 @@ function npc_merchant(){
   }
 }
 
-function npc_specific(){
-  if (checkaccess('npcs', 'read')){
-    if (isset($_GET['npc_id'])){
-      $id = escapeSqlString($_GET['npc_id']);
-      // block unauthorized access
-      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
-          echo '<p class="error">You are not authorized to edit NPCs</p>';
-          return;
-      }
-      if (isset($_POST['commit'])){
-        if ($_POST['commit'] == "Update Trigger"){
-          $tid = escapeSqlString($_POST['trigger_id']);
-          $trigger_text = escapeSqlString($_POST['trigger_text']);
-          $query = "UPDATE npc_triggers SET trigger_text='$trigger_text' WHERE id='$tid'";
-        }else if ($_POST['commit'] == "Update Responses"){
-          $tid = escapeSqlString($_POST['trigger_id']);
-          $response1 = escapeSqlString($_POST['response1']);
-          $response2 = escapeSqlString($_POST['response2']);
-          $response3 = escapeSqlString($_POST['response3']);
-          $response4 = escapeSqlString($_POST['response4']);
-          $response5 = escapeSqlString($_POST['response5']);
-          $script = escapeSqlString($_POST['script']);
-          $prerequisite = escapeSqlString($_POST['prerequisite']);
-          if (isset($_POST['c'])){
-            $query = "INSERT INTO npc_responses SET trigger_id='$tid', response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite'";
-          }else{
-            $query = "UPDATE npc_responses SET response1='$response1', response2='$response2', response3='$response3', response4='$response4', response5='$response5', script='$script', prerequisite='$prerequisite' WHERE trigger_id='$tid'";
-          }
-        }else if ($_POST['commit'] == "Create Sub-Trigger"){
-          $tid_o = escapeSqlString($_POST['trigger_id']);
-          $trigger_text = escapeSqlString($_POST['trigger_text']);
-          $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-          $result = mysql_query2($query);
-          $row = fetchSqlAssoc($result);
-          $npcname = $row['name'];
-          if ($row['lastname'] != ''){
-            $npcname = $npcname . ' ' .$row['lastname'];
-          }
-          $tid = GetNextId('npc_triggers');
-          $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '$tid_o', '$npcname')";
-          $result = mysql_query2($query);
-          $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
-        }else if ($_POST['commit'] == "Remove"){
-          $tid = escapeSqlString($_POST['trigger_id']);
-          $query = "DELETE FROM npc_triggers WHERE id='$tid'";
-          $result = mysql_query2($query);
-          $query = "DELETE FROM npc_responses WHERE trigger_id='$tid'";
-        }else if ($_POST['commit'] == "Create New Trigger"){
-          $trigger_text = escapeSqlString($_POST['trigger_text']);
-          $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-          $result = mysql_query2($query);
-          $row = fetchSqlAssoc($result);
-          $npcname = $row['name'];
-          if ($row['lastname'] != ''){
-            $npcname = $npcname . ' ' .$row['lastname'];
-          }
-          $tid = GetNextId('npc_triggers');
-          $query = "INSERT INTO npc_triggers (id, trigger_text, prior_response_required, area) VALUES ('$tid', '$trigger_text', '0', '$npcname')";
-          $result = mysql_query2($query);
-          $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$tid')";
-        }
-        $result = mysql_query2($query);
-        echo '<p class="error">Update Successful</p>';
-        unset($_POST);
-        npc_specific();
-      }else{
-        $query = "SELECT name, lastname FROM characters WHERE id='$id'";
-        $result = mysql_query2($query);
-        $row = fetchSqlAssoc($result);
-        $npcname = $row['name'];
-        if ($row['lastname'] != ""){
-          $npcname = $npcname . ' ' . $row['lastname'];
-        }
-        $query = "SELECT t.id, t.trigger_text, t.prior_response_required, r.response1, r.response2, r.response3, r.response4, r.response5, r.script, r.prerequisite, o.trigger_text AS prior, o.area as prior_area, r.trigger_id FROM npc_triggers AS t LEFT JOIN npc_responses AS r ON t.id=r.trigger_id LEFT JOIN npc_triggers AS o ON t.prior_response_required=o.id WHERE t.area='$npcname'";
-        if (isset($_GET['trigger'])){
-          $t = escapeSqlString($_GET['trigger']);
-          $query = $query . " ORDER BY t.id IN ('$t') DESC";
-        }else{
-          $query = $query . " ORDER BY t.id";
-        }
-        $result = mysql_query2($query);
-        if (sqlNumRows($result) == 0){
-          echo '<p class="error">NPC has no Specific KAs</p>';
-        }else{
-          echo '<table border="1"><tr><th>Trigger</th><th>Response</th><th>Action</th></tr>';
-          while ($row = fetchSqlAssoc($result)){
-            $t_id = $row['id'];
-            echo '<tr>';
-            echo '<td>';
-            if (isset($t) && ($t == $t_id)){
-              echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">';
-              echo '<input type="hidden" name="trigger_id" value="'.$row['id'].'" />';
-              if ($row['prior'] != ''){
-                echo 'Prior Response: '.$row['prior'].'<br/>';
-                if ($row['prior_area'] != $npcname){
-                  echo 'From KA: '.$row['prior_area'].'<br/>';
-                }
-              }
-              echo '<input type="text" name="trigger_text" value="'.htmlspecialchars($row['trigger_text']).'"/><br/>';
-              echo '<input type="submit" name="commit" value="Update Trigger" /></form></td>';
-            }else{
-              echo '<a href="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific&amp;trigger='.$t_id;
-              if ($row['trigger_id'] == ''){
-                echo '&amp;c=true';
-              }
-              echo '">'.htmlspecialchars($row['trigger_text']).'</a></td>';
-            }
-            echo '<td>';
-            if (isset($t) && ($t == $t_id)){
-              echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">';
-              echo '<input type="hidden" name="trigger_id" value="'.$row['id'].'" />';
-              echo 'Response 1: <textarea name="response1" rows="3" cols="30">'.$row['response1'].'</textarea><br/>';
-              echo 'Response 2: <textarea name="response2" rows="3" cols="30">'.$row['response2'].'</textarea><br/>';
-              echo 'Response 3: <textarea name="response3" rows="3" cols="30">'.$row['response3'].'</textarea><br/>';
-              echo 'Response 4: <textarea name="response4" rows="3" cols="30">'.$row['response4'].'</textarea><br/>';
-              echo 'Response 5: <textarea name="response5" rows="3" cols="30">'.$row['response5'].'</textarea><br/>';
-              echo '<hr/>';
-              echo 'Script: <textarea name="script">'.$row['script'].'</textarea><br/>';
-              echo 'Prerequisite: <textarea name="prerequisite">'.$row['prerequisite'].'</textarea><br/>';
-              if (isset($_GET['c'])){
-                echo '<input type="hidden" name="c" value="true">';
-              }
-              echo '<input type="submit" name="commit" value="Update Responses" /><hr/>';
-              echo 'New Trigger:<input type="text" name="trigger_text" size="25" /><input type="submit" name="commit" value="Create Sub-Trigger" />';
-              echo '</form>';
-            }else{
-              if ($row['trigger_id'] == ''){
-                echo '&nbsp;';
-              }else{
-                echo '<a href="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific&amp;trigger='.$t_id.'">+</a>';
-              }
-            }
-            echo '</td><td>';
-            echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">';
-            echo '<input type="hidden" name="trigger_id" value="'.$row['id'].'" />';
-            echo '<input type="submit" name="commit" value="Remove" />';
-            echo '</form></td></tr>'."\n";
-          }
-          echo '</table>';
-        }
-        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=specific" method="post">Create New Trigger:<br/><input type="text" name="trigger_text" /><br/><input type="submit" name="commit" value="Create New Trigger" /></form>';
-      }
-    }else{
-      echo '<p class="error">Error: No npc id</p>';
-    }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
+function npc_specific()
+{
+    // use functionality from ka_detail, which has it all already, the npc-submenu has already set the required area=fullname GET var.
+    include "ka_trigger.php";
+    ka_detail();
 }
 
 function npcdetails(){
@@ -1137,6 +994,7 @@ function npcdetails(){
         $row = fetchSqlAssoc($result);
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
         echo '<p class="bold" style="float: left; margin: 0pt 5px 0pt 0pt;">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
+        $fullname = trim($row['name'].' '.$row['lastname']);
         if (checkaccess('npcs', 'delete'))
         {
             echo '<form action="index.php?do=deletenpc&amp;id='.$id.'" method="post">';
@@ -1166,7 +1024,8 @@ function npcdetails(){
     {
         echo '<a href="'.$uri_string.'&amp;sub=training">training</a><br/>';
         echo '<a href="'.$uri_string.'&amp;sub=merchant">merchant</a><br/>';
-        echo '<a href="'.$uri_string.'&amp;sub=specific">Specific KA\'s</a><br/>';
+        // set area so the function called can use ka_trigger.php->ka_detail().
+        echo '<a href="'.$uri_string.'&amp;sub=specific&amp;area='.$fullname.'">Specific KA\'s</a><br/>';
     }
     echo '</div><div class="main_npc">';
     if (isset($_GET['sub'])){
