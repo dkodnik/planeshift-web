@@ -75,6 +75,12 @@ div.main{
     padding:1px 1px 1px 1px;
 }
 
+.table_no_border{
+    display:table;
+    border-spacing:1px;
+    padding:1px 1px 1px 1px;
+}
+
 .tr{
     display:table-row;
 }
@@ -82,6 +88,12 @@ div.main{
 .td{
     display:table-cell;
     border:1px solid;
+    padding:6px 6px 6px 6px;
+    vertical-align: middle;
+}
+
+.td_no_border{
+    display:table-cell;
     padding:6px 6px 6px 6px;
     vertical-align: middle;
 }
