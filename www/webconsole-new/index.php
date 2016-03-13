@@ -875,6 +875,12 @@
         othermain();
         characterlifeevents();
         break;
+      case 'lifeeventrelations':
+        include('./other/othermain.php');
+        include('./other/character_life_event_relations.php');
+        othermain();
+        lifeeventrelations();
+        break;
       case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
