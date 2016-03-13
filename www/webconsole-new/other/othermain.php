@@ -11,6 +11,7 @@ function othermain()
         echo '<a href="./index.php?do=listtraits">List traits</a> <br/>'; 
         echo '<a href="./index.php?do=showraces">Traits per race</a> <br/>'; 
         echo '<a href="./index.php?do=charactercreationevents">Character creation events</a> <br/>'; 
+        echo '<a href="./index.php?do=characterlifeevents">Character life events</a> <br/>'; 
         echo '<a href="./index.php?do=events">List GM Events</a><br/>';
         //echo '<a href="./index.php?do=listcommonstrings">List Common Strings</a> <br/>'; commented pending a decision on what to do with this since there is no more such table, but the information is still out there.
         
