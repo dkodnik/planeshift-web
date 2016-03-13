@@ -1,5 +1,6 @@
 <?php
-function locateitem(){
+function locateitem()
+{
     if (checkaccess('items', 'read'))
     {
         $display_item = false;
@@ -34,12 +35,14 @@ function locateitem(){
             }
             else if ($_POST['search'] == "Find Instance")
             {
+                echo 'Locate Instance';
                 $iid = escapeSqlString($_POST['iid']);
                 $query .= "i.id='$iid'"; // "private" is not relevant when finding a specific instance.
                 $display_item = true;
             }
             else if ($_POST['search'] == "Find Merchants") // This one is different, so it gets it's own print.
             {
+                echo 'Find Merchant';
                 $itemid = escapeSqlString($_POST['vendoritemid']); // Don't make "iss" "is" (like it should logically be) since "is" is a reserved keyword in mysql.
                 $query = "SELECT DISTINCT c.id, c.name, c.lastname, iss.name AS item_name FROM merchant_item_categories AS m LEFT JOIN characters AS c ON c.id=m.player_id LEFT JOIN item_instances AS i ON i.char_id_owner=m.player_id LEFT JOIN item_stats AS iss ON iss.id=i.item_stats_id_standard WHERE i.location_in_parent > '15' AND i.item_stats_id_standard='$itemid' AND iss.category_id=m.category_id ORDER BY iss.name";
                 $result = mysql_query2($query);
@@ -59,15 +62,33 @@ function locateitem(){
         }
         else  // if there was no search, print the form
         {
-            echo '<form action="./index.php?do=finditem" method="post"><table>';
-            echo '<tr><td colspan="3"><input type="checkbox" name="private"> Exclude private zones (guild houses/NPC room) from the search?</td></tr>';
-            echo '<tr><td>Find all instances of item: </td><td>';
-            echo DrawItemSelectBox('itemid', false, false). '</td><td><input type="submit" name="search" value="Find Items"/></td></tr>';
-            echo '<tr><td>Locate Instance ID: </td><td><input type="text" name="iid" /></td><td><input type="submit" name="search" value="Find Instance" /></td></tr>';
+            echo '<input type="checkbox" name="private_master" id="private" onchange="privateChanged()" /> Exclude private zones (guild houses/NPC room) from the search?';
+            echo '<div class="table_no_border">';
+            echo '<form action="./index.php?do=finditem" method="post" class="tr"><div class="td_no_border">Find all instances of item: </div><div class="td_no_border">';
+            echo DrawItemSelectBox('itemid', false, false). '<input type="checkbox" name="private" style="display:none;" /></div><div class="td_no_border"><input type="submit" name="search" value="Find Items"/></div></form>';
+            echo '<form action="./index.php?do=finditem" method="post" class="tr"><div class="td_no_border">Locate Instance ID: </div><div class="td_no_border"><input type="text" name="iid" />';
+            echo '</div><div class="td_no_border"><input type="submit" name="search" value="Find Instance" /></div></form>';
             $Sectors = PrepSelect('sectorid');
-            echo '<tr><td>Locate All Items on floor (Limit to Sector: </td><td>'.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') </td><td><input type="submit" name="search" value="Dropped Items" /></td></tr>';
-            echo '<tr><td>Find all vendors of item: </td><td>'.DrawItemSelectBox('vendoritemid', false, true). '</td><td><input type="submit" name="search" value="Find Merchants"/></td></tr>';
-            echo '</table></form>';
+            echo '<form action="./index.php?do=finditem" method="post" class="tr"><div class="td_no_border">Locate All Items on floor (Limit to Sector: </div>';
+            echo '<div class="td_no_border">'.DrawSelectBox('sectorid', $Sectors, 'sectorid', '', true).') <input type="checkbox" name="private" style="display:none;" /></div><div class="td_no_border"><input type="submit" name="search" value="Dropped Items" /></div></form>';
+            echo '<form action="./index.php?do=finditem" method="post" class="tr"><div class="td_no_border">Find all vendors of item: </div>';
+            echo '<div class="td_no_border">'.DrawItemSelectBox('vendoritemid', false, true). '</div><div class="td_no_border"><input type="submit" name="search" value="Find Merchants"/></div></form>';
+            echo '</div>';
+            echo '<script type="text/javascript">//<![CDATA[
+    function privateChanged()
+    {
+        if (document.getElementById("private").checked)
+        {
+            document.getElementsByName("private")[0].checked = true;
+            document.getElementsByName("private")[1].checked = true;
+        }
+        else
+        {
+            document.getElementsByName("private")[0].checked = false;
+            document.getElementsByName("private")[1].checked = false;
+        }
+    }
+//]]></script>';
         }
         if ($display_item)  // if there was an item search, print it here.
         {
