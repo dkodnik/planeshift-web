@@ -863,6 +863,18 @@
         assetsmain();
         assetsitem();
         break;
+      case 'charactercreationevents':
+        include('./other/othermain.php');
+        include('./other/character_creation_events.php');
+        othermain();
+        charactercreationevents();
+        break;  
+      case 'characterlifeevents':
+        include('./other/othermain.php');
+        include('./other/character_life_events.php');
+        othermain();
+        characterlifeevents();
+        break;
       case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
