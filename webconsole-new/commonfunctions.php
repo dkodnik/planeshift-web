@@ -250,6 +250,7 @@ function PrepSelect($a){
   $typevals["tribe_recipe"] = "SELECT id, name FROM tribe_recipes";
   $typevals["math_script"] = "SELECT name, name FROM math_scripts";
   $typevals["attacktypes"] = "SELECT id, name FROM attack_types";
+  $typevals["liferelations"] = "SELECT id, name FROM char_create_life";
   
   $query = $typevals[$type];
 
@@ -289,6 +290,7 @@ function DrawSelectBox($type, $result, $name, $value, $includenull=false){
   $typevals["tribe_recipe"] = '"0"';
   $typevals["math_script"] = '""'; // not nullable actually.
   $typevals["attacktypes"] = '"0"'; 
+  $typevals["liferelations"] = '""';
   
   $nullval = $typevals[$type];
 
