@@ -57,11 +57,37 @@ function listattacktypes()
         echo '<td>'.htmlentities($row['stat']).'</td>';
         if (checkaccess('natres', 'edit'))
         {
-            echo '<td><a href="./index.php?do=editattacktypes&amp;id='.$row['id'].'">Edit</a></td>';
+            echo '<td><a href="./index.php?do=editattacktypes&amp;id='.$row['id'].'">Edit</a>';
+            echo '<a href="./index.php?do=editattacktypes&amp;id='.$row['id'].'&amp;action=delete"> -- Delete</a></td>';
         }
         echo "</tr>\n";
     }
     echo "</table>\n";
+    // show "Create" table for all allowed to edit this.
+    if (checkaccess('natres', 'edit'))
+    {
+        $wtype_query = 'SELECT id, name FROM weapon_types';
+        $wtype_result = mysql_query2($wtype_query);
+        $weapontypes = explode(' ', $row['weaponType']);
+        $skills = PrepSelect('skill');
+        echo '<p class="header">Create Attack Type</p>';
+        echo '<form action="./index.php?do=editattacktypes" method="post">';
+        echo "<table>\n";
+        echo "<tr><td>Field</td><td>Value</td></tr>\n";
+        echo "<tr><td>ID</td><td></td></tr>\n";
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
+        echo '<tr><td>WeaponID</td><td>'.DrawItemSelectBox('weaponID', '', true, true).'</td></tr>'."\n";
+        echo '<tr><td>WeaponType</td><td>';
+        while ($wtype_row = fetchSqlAssoc($wtype_result))
+        {
+            echo '<input type="checkbox" name="weaponType[]" value="'.$wtype_row['id'].'" />'.$wtype_row['name'].'<br />'."\n";
+        }
+        echo '</td></tr>'."\n";
+        echo '<tr><td>Onehand</td><td><input type="checkbox" name="onehand" value="onehand" /> Check if the attack type is one handed</td></tr>'."\n";
+        echo '<tr><td>Stat</td><td>'.DrawSelectBox('skill', $skills, 'stat', '').'</td></tr>'."\n";
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Attack Type"/></td></tr>'."\n";
+        echo "</table></form>\n";
+    }
 }
 
 function editattacktypes()
@@ -79,6 +105,39 @@ function editattacktypes()
     elseif (isset($_POST['id']))
     {
         $id = escapeSqlString($_POST['id']);
+    }
+    // this one doesn't use ID, so we need to put it here.
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Create Attack Type')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $weaponID = ($_POST['weaponID'] === '' ? '0' : escapeSqlString($_POST['weaponID']));
+        $weaponType = '';
+        if (!isset($_POST['weaponType']))
+        {
+            $weaponType = 'NULL';
+        }
+        else
+        {
+            foreach ($_POST['weaponType'] as $wtype)
+            {
+                $weaponType .= (is_numeric($wtype) ? escapeSqlString($wtype).' ' : '');
+            }
+            $weaponType = trim($weaponType); // remove the last space.
+        }
+        $onehand = (isset($_POST['onehand']) ? '1' : '0');
+        $stat = escapeSqlString($_POST['stat']);
+        // sanity check on the data
+        if (($weaponType == 'NULL' && $weaponID == '0') || ($weaponType != 'NULL' && $weaponID != '0'))
+        {
+            echo '<p class="error">You must select EITHER a weaponType OR a weaponID (exclusive OR).</p>';
+            return;
+        }
+        $query = "INSERT INTO attack_types (name, weaponID, weaponType, onehand, stat) VALUES ('$name', '$weaponID', ".($weaponType == 'NULL' ? 'NULL' : "'$weaponType'").", '$onehand', '$stat')";
+        $result = mysql_query2($query);
+        echo '<p class="error">Creation Successful</p>';
+        unset($_POST);
+        listattacktypes();
+        return;
     }
     else
     {
@@ -115,11 +174,27 @@ function editattacktypes()
             echo '<p class="error">You must select EITHER a weaponType OR a weaponID (exclusive OR).</p>';
             return;
         }
-        $query = "UPDATE attack_types SET name='$name', weaponID='$weaponID', weaponType='$weaponType', onehand='$onehand', stat='$stat' WHERE id='$id'";
+        $query = "UPDATE attack_types SET name='$name', weaponID='$weaponID', weaponType=".($weaponType == 'NULL' ? 'NULL' : "'$weaponType'").", onehand='$onehand', stat='$stat' WHERE id='$id'";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         editattacktypes();
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        // confirm delete
+        echo '<p class="error">You are about to delete Attack Type id "'.$id.'" </p>';
+        echo '<form action="./index.php?do=editattacktypes&amp;id='.$id.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $query = "DELETE FROM attack_types WHERE id='$id'";
+        mysql_query2($query);
+        echo '<p class="error">Delete succesfull</p>';
+        unset($_POST);
+        listattacktypes();
     }
     else
     {
