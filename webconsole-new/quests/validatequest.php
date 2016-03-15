@@ -125,6 +125,10 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
         {
             echo "$line_number: ".htmlentities($line)." <br />\n"; // debug line, shows you all the lines of the script.
         }
+        if(iconv('utf-8', 'ISO-8859-1//IGNORE', $line) != $line || iconv('utf-8', 'ISO-8859-1//IGNORE', $line) === false)
+        {
+            append_log("Warning: illegal character (like smart quotes and the like) found on line $line_number");
+        }
         if(strncasecmp($line, '#', 1) === 0) //comment line
         {
             continue; //ignore comment lines
