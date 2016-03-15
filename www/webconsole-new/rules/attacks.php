@@ -51,11 +51,39 @@ function listattacks()
         echo '<td>'.htmlentities($row['outcome']).'</td>';
         if (checkaccess('natres', 'edit'))
         {
-            echo '<td><a href="./index.php?do=editattacks&amp;id='.$row['id'].'">Edit</a></td>';
+            echo '<td><a href="./index.php?do=editattacks&amp;id='.$row['id'].'">Edit</a>';
+            echo '<a href="./index.php?do=editattacks&amp;id='.$row['id'].'&amp;action=delete"> -- Delete</a></td>';
         }
         echo "</tr>\n";
     }
     echo "</table>\n";
+    // show "Create" table for all allowed to edit this.
+    if (checkaccess('natres', 'edit'))
+    {
+        $attacktypes = PrepSelect('attacktypes');
+        $mathscripts = PrepSelect('math_script');
+        $scripts = PrepSelect('scripts');
+        echo '<p class="header">Create Attack Type</p>';
+        echo '<form action="./index.php?do=editattacks" method="post">';
+        echo "<table>\n";
+        echo "<tr><td>Field</td><td>Value</td></tr>\n";
+        echo '<tr><td>ID</td><td>'.$row['id']."</td></tr>\n";
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
+        echo '<tr><td>Image Name</td><td><input type="text" name="image_name" /></td></tr>'."\n";
+        echo '<tr><td>Attack Animation</td><td><input type="text" name="attack_anim" /></td></tr>'."\n";
+        echo '<tr><td>Attack Description</td><td><textarea name="attack_description" rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td>Damage</td><td>'.DrawSelectBox('math_script', $mathscripts, 'damage', '').'</td></tr>'."\n";
+        echo '<tr><td>Attack Type</td><td>'.DrawSelectBox('attacktypes', $attacktypes, 'attackType', '', true).'</td></tr>'."\n";
+        echo '<tr><td>Outcome</td><td>'.DrawSelectBox('scripts', $scripts, 'outcome', '', true).'</td></tr>'."\n";
+        echo '<tr><td>Delay</td><td><textarea name="delay" rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td>Range</td><td><textarea name="range" rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td>AOE Radius</td><td><textarea name="aoe_radius" rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td>AOE Angle Description</td><td><textarea name="aoe_angle" rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td>Requirements</td><td><textarea name="requirements"  rows="4" cols="60"></textarea></td></tr>'."\n";
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Attack" /></td></tr>'."\n";
+        echo "</table></form>\n";
+
+    }
 }
 
 function editattacks()
@@ -73,6 +101,27 @@ function editattacks()
     elseif (isset($_POST['id']))
     {
         $id = escapeSqlString($_POST['id']);
+    }
+    // this one doesn't use ID, so we need to put it here.
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Create Attack')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $image_name = escapeSqlString($_POST['image_name']);
+        $attack_anim = escapeSqlString($_POST['attack_anim']);
+        $attack_description = escapeSqlString($_POST['attack_description']);
+        $damage = escapeSqlString($_POST['damage']);
+        $attackType = escapeSqlString($_POST['attackType']);
+        $delay = escapeSqlString($_POST['delay']);
+        $range = escapeSqlString($_POST['range']);
+        $aoe_radius = escapeSqlString($_POST['aoe_radius']);
+        $aoe_angle = escapeSqlString($_POST['aoe_angle']);
+        $outcome = escapeSqlString($_POST['outcome']);
+        $requirements = escapeSqlString($_POST['requirements']);
+        $query = "INSERT INTO attacks (name, image_name, attack_anim, attack_description, damage, attackType, delay, `range`, aoe_radius, aoe_angle, outcome, requirements) VALUES ('$name', '$image_name', '$attack_anim', '$attack_description', '$damage', '$attackType', '$delay', '$range', '$aoe_radius', '$aoe_angle', '$outcome', '$requirements')";
+        $result = mysql_query2($query);
+        echo '<p class="error">Creation Successful</p>';
+        unset($_POST);
+        listattacks();
     }
     else
     {
@@ -103,6 +152,22 @@ function editattacks()
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         editattacks();
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        // confirm delete
+        echo '<p class="error">You are about to delete Attack id "'.$id.'" </p>';
+        echo '<form action="./index.php?do=editattacks&amp;id='.$id.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $query = "DELETE FROM attacks WHERE id='$id'";
+        mysql_query2($query);
+        echo '<p class="error">Delete succesfull</p>';
+        unset($_POST);
+        listattacks();
     }
     else
     {
