@@ -122,6 +122,7 @@ function editattacks()
         echo '<p class="error">Creation Successful</p>';
         unset($_POST);
         listattacks();
+        return;
     }
     else
     {
