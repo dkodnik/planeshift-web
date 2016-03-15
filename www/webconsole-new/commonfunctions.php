@@ -18,6 +18,10 @@ function mysql_query2($query, $log=true)
     {
         $_SESSION['totalq'] = $_SESSION['totalq'] . "<br/>\n" . htmlspecialchars($query) .' -- '.$t_fin.' Seconds.';
     }
+    if(iconv('utf-8', 'ISO-8859-1//IGNORE', $query) != $query || iconv('utf-8', 'ISO-8859-1//IGNORE', $query) === false)
+    { // due to logging, this warning always appears twice, deal with it. (And don't add illegal chars.)
+        echo '<p class="warning">Warning, the data you just committed contains illegal characters (like smart quotes and the lot), these display as black squares (”) ingame</p>';
+    }
     if ($log === true){
         $foo = explode(' ', $query, 2);
         if (strcasecmp($foo[0], 'SELECT') != 0 && strcasecmp($foo[0], '(SELECT') != 0) // we don't log select statements
