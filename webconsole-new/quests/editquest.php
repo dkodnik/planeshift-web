@@ -42,16 +42,6 @@ function editquest()
         }
         else
         {
-            $return_url = '';
-            if (isset($_GET['sort']) && isset($_GET['direction']))
-            {
-                // no &amp; in javascript, it's gonna be directly into the url bar like that.
-                $return_url = '&sort='.htmlentities($_GET['sort']).'&direction='.htmlentities($_GET['direction']);
-            }
-            if (isset($_GET['matchType']) && isset($_GET['searchText']))
-            {
-                $return_url .= '&matchType='.htmlentities($_GET['matchType']).'&searchText='.htmlentities($_GET['searchText']);
-            }
             $id = escapeSqlString($_GET['id']);
             $name = escapeSqlString($_POST['name']);
             $category = escapeSqlString($_POST['category']);
@@ -66,11 +56,13 @@ function editquest()
             $result = mysql_query2($query);
             if (isset($_POST['submit2']))
             {
-                echo '<SCRIPT language="javascript"> document.location = "index.php?do=editquest&id='.$id.$return_url.'"; </script>';
+                unset($_GET['commit']);
+                editquest();
             }
             else
             {
-                echo '<SCRIPT language="javascript"> document.location = "index.php?do=listquests'.$return_url.'"; </script>';
+                include "listquests.php";
+                listquests();
             }
         }
     }
