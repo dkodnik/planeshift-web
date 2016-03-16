@@ -691,6 +691,12 @@
         rulesmain();
         editLootModifiers();
         break;
+      case 'xmlscriptvalidator':
+        include('./rules/rulesmain.php');
+        include('./rules/XMLScriptValidator.php');
+        rulesmain();
+        XMLScriptValidator();
+        break;
       case 'crafting':
         include('./crafting/craftingmain.php');
         craftingmain();

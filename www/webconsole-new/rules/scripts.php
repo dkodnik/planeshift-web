@@ -1,8 +1,8 @@
 <?php
 function rule_scripts(){
-  if (checkaccess('crafting', 'read')){
+  if (checkaccess('natres', 'read')){
     if (isset($_POST['commit'])){
-      if (($_POST['commit']=='Change Name') && (checkaccess('crafting', 'edit'))){
+      if (($_POST['commit']=='Change Name') && (checkaccess('natres', 'edit'))){
         $name = escapeSqlString($_POST['name']);
         $orig_name = escapeSqlString($_POST['orig_name']);
         $query = "UPDATE progression_events SET name='$name' WHERE name='$orig_name'";
@@ -12,7 +12,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Update Script') && (checkaccess('crafting', 'edit'))){
+      }else if (($_POST['commit']=='Update Script') && (checkaccess('natres', 'edit'))){
         $name = escapeSqlString($_POST['name']);
         $event_script = escapeSqlString($_POST['event_script']);
         $query = "UPDATE progression_events SET event_script='$event_script' WHERE name='$name'";
@@ -22,7 +22,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Delete') && (checkaccess('crafting', 'delete'))){
+      }else if (($_POST['commit']=='Delete') && (checkaccess('natres', 'delete'))){
         $name = escapeSqlString($_POST['name']);
         $query = "DELETE FROM progression_events WHERE name='$name'";
         $result = mysql_query2($query);
@@ -31,7 +31,7 @@ function rule_scripts(){
         unset($_POST);
         rule_scripts();
         return;
-      }else if (($_POST['commit']=='Create Script') && (checkaccess('crafting', 'create'))){
+      }else if (($_POST['commit']=='Create Script') && (checkaccess('natres', 'create'))){
         $name = escapeSqlString($_POST['name']);
         $event_script = escapeSqlString($_POST['event_script']);
         $query = "INSERT INTO progression_events (name, event_script) VALUES ('$name', '$event_script')";
@@ -82,7 +82,7 @@ function rule_scripts(){
       {
         echo '<table border="1">';
         echo '<tr><th>Name</th><th>Script</th>';
-        if (checkaccess('crafting', 'delete'))
+        if (checkaccess('natres', 'delete'))
         {
             echo '<th>Actions</th></tr>';
         }
@@ -93,29 +93,31 @@ function rule_scripts(){
         while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
-            if (checkaccess('crafting', 'edit'))
+            if (checkaccess('natres', 'edit'))
             {
-                echo '<td><form action="index.php?do=scripts" method="post">';
+                echo '<td><form action="index.php?do=scripts" method="post"><div>';
                 if (isset($_GET['type']))
                 {
                     echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                 }
-                echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></form></td>';
-                echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+                echo '<input type="hidden" name="orig_name" value="'.$row['name'].'"/><input type="text" name="name" value="'.$row['name'].'"/><br/><input type="submit" name="commit" value="Change Name"/></div></form></td>';
+                echo '<td><form action="index.php?do=scripts" method="post"><div><input type="hidden" name="name" value="'.$row['name'].'"/>';
                 if (isset($_GET['type']))
                 {
                     echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                 }
-                echo '<textarea name="event_script" rows="6" cols="55">'.htmlspecialchars($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></form></td>';
-                if (checkaccess('crafting', 'delete'))
+                echo '<textarea name="event_script" rows="6" cols="55">'.htmlentities($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></div></form></td>';
+                if (checkaccess('natres', 'delete'))
                 {
-                    echo '<td><form action="index.php?do=scripts" method="post"><input type="hidden" name="name" value="'.$row['name'].'"/>';
+                    echo '<td>';
+                    echo '<p><a href="./index.php?do=xmlscriptvalidator&amp;type=progression_events&amp;name='.$row['name'].'">Validate</a></p>';
+                    echo '<form action="index.php?do=scripts" method="post"><div><input type="hidden" name="name" value="'.$row['name'].'"/>';
                     if (isset($_GET['type']))
                     {
                         echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                     }
-                echo '<input type="submit" name="commit" value="Delete"/>';
-                echo '</form></td>';
+                    echo '<input type="submit" name="commit" value="Delete"/>';
+                    echo '</div></form></td>';
                 }
             }
             else
@@ -130,10 +132,11 @@ function rule_scripts(){
       {
         echo '<p class="error">No Scripts Found</p>';
       }
-      if (checkaccess('crafting', 'create'))
+      if (checkaccess('natres', 'create'))
       {
         echo '<hr/><p>Create new progression script</p>';
         $prefix='Script names of this type should start with: ';
+        echo '<form action="index.php?do=scripts" method="post"><div>';
         if (isset($_GET['type']))
         {
             echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
@@ -156,13 +159,13 @@ function rule_scripts(){
                     break;
             }
         }
-        echo '<form action="index.php?do=scripts" method="post">Name: <input type="text" name="name" />  '.$prefix.' <br/>';
+        echo 'Name: <input type="text" name="name" />  '.$prefix.' <br/>';
         echo 'Script: <textarea name="event_script" rows="6" cols="55"></textarea><br/>';
         if (isset($_GET['type']))
         {
             echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
         }
-        echo '<input type="submit" name="commit" value="Create Script" /></form>';
+        echo '<input type="submit" name="commit" value="Create Script" /></div></form>';
       }
     }
   }else{
