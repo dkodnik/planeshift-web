@@ -3,6 +3,11 @@
 function charactercreationevents() 
 {
     // block unauthorized access
+    if (!checkaccess('other', 'read')) 
+    {
+        echo '<p class="error">You are not authorized to view Creation Events</p>';
+        return;
+    }
     if (isset($_POST['commit']) && !checkaccess('other', 'edit')) 
     {
         echo '<p class="error">You are not authorized to edit Creation Events</p>';
