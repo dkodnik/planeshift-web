@@ -10,6 +10,7 @@ function othermain()
         echo '<a href="./index.php?do=listcharacters">List characters</a> <br/>';
         echo '<a href="./index.php?do=listtraits">List traits</a> <br/>'; 
         echo '<a href="./index.php?do=showraces">Traits per race</a> <br/>'; 
+        echo '<a href="./index.php?do=characteraffinity">Character affinity</a> <br/>'; 
         echo '<a href="./index.php?do=charactercreationevents">Character creation events</a> <br/>'; 
         echo '<a href="./index.php?do=characterlifeevents">Character life events</a> <br/>'; 
         echo '<a href="./index.php?do=lifeeventrelations">Life event relations</a> <br/>'; 
