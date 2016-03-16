@@ -869,6 +869,12 @@
         assetsmain();
         assetsitem();
         break;
+      case 'characteraffinity':
+        include('./other/othermain.php');
+        include('./other/character_affinity.php');
+        othermain();
+        characteraffinity();
+        break;  
       case 'charactercreationevents':
         include('./other/othermain.php');
         include('./other/character_creation_events.php');
