@@ -685,6 +685,12 @@
         rulesmain();
         listLootModifiers();
         break;
+      case 'lootmodifierrestraints':
+        include('./rules/rulesmain.php');
+        include('./rules/lootmodifierrestraints.php');
+        rulesmain();
+        lootmodifierrestraints();
+        break;
       case 'editlootmodifiers':
         include('./rules/rulesmain.php');
         include('./rules/lootmodifiers.php');

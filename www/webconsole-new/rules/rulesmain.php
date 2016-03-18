@@ -39,6 +39,7 @@ function rulesmain()
         echo '<a href="./index.php?do=listarmorvsweapon">Armor vs Weapon</a><br/>'."\n";
         echo '<hr/>'."\n";
         echo '<a href="./index.php?do=listlootmodifiers">List Loot Modifiers</a><br/>'."\n";
+        echo '<a href="./index.php?do=lootmodifierrestraints">List Loot Modifier Restraints</a><br/>'."\n";
         echo '<hr/>'."\n";
         echo '<a href="./index.php">Return to main page.</a>'."\n";
         echo '</div><div class="main">'."\n";
