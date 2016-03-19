@@ -98,7 +98,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
     $m_count = 0;
     $npc_name = '';
     $step = 1;
-    $total_steps = count(explode('...', $script));
+    $total_steps = count(explode("\n...", $script)); // notice we count the number of chuncks the script gets split into, not the number of ... lines.
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
