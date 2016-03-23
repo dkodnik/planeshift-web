@@ -74,7 +74,7 @@ function characterlifeevents()
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>ID</td><td><input type="hidden" name="id" value="'.$id.'" />'.$id.'</td></tr>';
         echo '<tr><td>Name</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>';
-        echo '<tr><td>Description</td><td><input type="text" name="description" value="'.htmlentities($row['description']).'" /></td></tr>';
+        echo '<tr><td>Description</td><td><textarea name="description" rows="6" cols="55" >'.htmlentities($row['description']).'</textarea></td></tr>';
         echo '<tr><td>CP Cost</td><td><input type="text" name="cp_cost" value="'.htmlentities($row['cp_cost']).'" /></td></tr>';
         $scripts = PrepSelect('scripts');
         echo '<tr><td>Script Name</td><td>'.DrawSelectBox('scripts', $scripts, 'scriptname', $row['scriptname']).'</td></tr>';
@@ -137,7 +137,7 @@ function characterlifeevents()
         echo '<table border="1">';
         echo '<tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>';
-        echo '<tr><td>Description</td><td><input type="text" name="description" /></td></tr>';
+        echo '<tr><td>Description</td><td><textarea name="description" rows="6" cols="55"></textarea></td></tr>';
         echo '<tr><td>CP Cost</td><td><input type="text" name="cp_cost" /></td></tr>';
         $scripts = PrepSelect('scripts');
         echo '<tr><td>Script Name</td><td>'.DrawSelectBox('scripts', $scripts, 'scriptname', '').'</td></tr>';
