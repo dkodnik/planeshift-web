@@ -81,15 +81,8 @@ function rule_scripts(){
       if (sqlNumRows($result) > 0)
       {
         echo '<table border="1">';
-        echo '<tr><th>Name</th><th>Script</th>';
-        if (checkaccess('natres', 'delete'))
-        {
-            echo '<th>Actions</th></tr>';
-        }
-        else
-        {
-            echo '</tr>';
-        }
+        echo '<tr><th>Name</th><th>Script</th><th>Actions</th></tr>';
+
         while ($row = fetchSqlAssoc($result))
         {
             echo '<tr>';
@@ -107,18 +100,20 @@ function rule_scripts(){
                     echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                 }
                 echo '<textarea name="event_script" rows="6" cols="55">'.htmlentities($row['event_script']).'</textarea><br/><input type="submit" name="commit" value="Update Script"/></div></form></td>';
+
+                echo '<td>';
+                echo '<p><a href="./index.php?do=xmlscriptvalidator&amp;type=progression_events&amp;name='.$row['name'].'">Validate</a></p>';
                 if (checkaccess('natres', 'delete'))
                 {
-                    echo '<td>';
-                    echo '<p><a href="./index.php?do=xmlscriptvalidator&amp;type=progression_events&amp;name='.$row['name'].'">Validate</a></p>';
                     echo '<form action="index.php?do=scripts" method="post"><div><input type="hidden" name="name" value="'.$row['name'].'"/>';
                     if (isset($_GET['type']))
                     {
                         echo '<input type="hidden" name="type" value="'.$_GET['type'].'"/>';
                     }
                     echo '<input type="submit" name="commit" value="Delete"/>';
-                    echo '</div></form></td>';
+                    echo '</div></form>';
                 }
+                echo '</td>';
             }
             else
             {
