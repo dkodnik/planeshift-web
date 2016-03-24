@@ -25,11 +25,26 @@ function listweapontypes()
         echo '<td>'.htmlentities($row['skill']).'</td>';
         if (checkaccess('natres', 'edit'))
         {
-            echo '<td><a href="./index.php?do=editweapontypes&amp;id='.$row['id'].'">Edit</a></td>';
+            echo '<td><a href="./index.php?do=editweapontypes&amp;id='.$row['id'].'">Edit</a>';
+            echo '<a href="./index.php?do=editweapontypes&amp;id='.$row['id'].'&amp;action=delete"> -- Delete</a></td>';
         }
         echo "</tr>\n";
     }
     echo "</table>\n";
+    // show "Create" table for all allowed to edit this.
+    if (checkaccess('natres', 'edit'))
+    {
+        $skills = PrepSelect('skill');
+        echo '<p class="header">Create Weapon Type</p>';
+        echo '<form action="./index.php?do=editweapontypes" method="post">';
+        echo "<table>\n";
+        echo "<tr><td>Field</td><td>Value</td></tr>\n";
+        echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
+        echo '<tr><td>Damage</td><td>'.DrawSelectBox('skill', $skills, 'skill', '').'</td></tr>'."\n";
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Weapon Type" /></td></tr>'."\n";
+        echo "</table></form>\n";
+
+    }
 }
 
 function editweapontypes()
@@ -47,6 +62,18 @@ function editweapontypes()
     elseif (isset($_POST['id']))
     {
         $id = escapeSqlString($_POST['id']);
+    }
+    // this one doesn't use ID, so we need to put it here.
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Create Weapon Type')
+    {
+        $name = escapeSqlString($_POST['name']);
+        $skill = escapeSqlString($_POST['skill']);
+        $query = "INSERT INTO weapon_types (name, skill) VALUES ('$name', '$skill')";
+        $result = mysql_query2($query);
+        echo '<p class="error">Creation Successful</p>';
+        unset($_POST);
+        listweapontypes();
+        return;
     }
     else
     {
@@ -67,6 +94,22 @@ function editweapontypes()
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
         editweapontypes();
+    }
+    elseif (isset($_GET['action']) && $_GET['action'] == 'delete')
+    {
+        // confirm delete
+        echo '<p class="error">You are about to delete Weapon Type id "'.$id.'" </p>';
+        echo '<form action="./index.php?do=editweapontypes&amp;id='.$id.'" method="post">';
+        echo '<div><input type="submit" name="commit" value="Confirm Delete" /></div>';
+        echo '</form>';
+    }
+    elseif (isset($_POST['commit']) && $_POST['commit'] == 'Confirm Delete')
+    {
+        $query = "DELETE FROM weapon_types WHERE id='$id'";
+        mysql_query2($query);
+        echo '<p class="error">Delete succesfull</p>';
+        unset($_POST);
+        listweapontypes();
     }
     else
     {
