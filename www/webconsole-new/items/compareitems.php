@@ -9,7 +9,7 @@ function compareitems(){
     $sort_col = (isset($_GET['sort_col']) ? $_GET['sort_col'] : 'name');
     $sort_dir = (isset($_GET['sort_dir']) ? $_GET['sort_dir'] : 'asc');
     
-    $makeSortUrl = function($colName) use (&$sort_col, &$sort_dir, &$category_id, &$compare_type)
+    $makeSortUrl = function($colName) use (&$sort_col, &$sort_dir, &$category_id)
     {
         // we use htmlentities on the whole string, so not using &amp; here.
         $base = 'index.php?do=compareitems&category_id='.$category_id;
