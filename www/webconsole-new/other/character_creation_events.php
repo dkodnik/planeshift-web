@@ -82,8 +82,25 @@ function charactercreationevents()
         return;
     }
     
+    $sort_col = (isset($_GET['sort_col']) ? $_GET['sort_col'] : 'choice_area');
+    $sort_dir = (isset($_GET['sort_dir']) ? $_GET['sort_dir'] : 'asc');
+    
+    $makeSortUrl = function($colName) use (&$sort_col, &$sort_dir)
+    {
+        // we use htmlentities on the whole string, so not using &amp; here.
+        $base = 'index.php?do=charactercreationevents';
+        if ($colName == $sort_col && $sort_dir == 'asc')
+        {
+            return htmlentities($base.'&sort_col='.$colName.'&sort_dir=desc');
+        }// basically, else.
+        return htmlentities($base.'&sort_col='.$colName.'&sort_dir=asc');
+    };
+    
+    $sort_col = escapeSqlString($sort_col);
+    $sort_dir = escapeSqlString($sort_dir);
+    
     // Display the main list
-    $sql = "SELECT id, name, description, cp_cost, scriptname, choice_area FROM character_creation ORDER BY choice_area, name";
+    $sql = "SELECT id, name, description, cp_cost, scriptname, choice_area FROM character_creation ORDER BY $sort_col $sort_dir, name";
     $result = mysql_query2($sql);
     
     if (sqlNumRows($result) == 0)
@@ -94,7 +111,8 @@ function charactercreationevents()
     {
         // main list
         echo '<table border="1">'."\n";
-        echo '<tr><th>ID</th><th>Name</th><th>Description</th><th>CP Cost</th><th>Script Name</th><th>Choice Area</th><th>Actions</th></tr>'."\n";
+        echo '<tr><th><a href="'.$makeSortUrl('id').'">ID</a></th><th><a href="'.$makeSortUrl('name').'">Name</a></th><th>Description</th>';
+        echo '<th>CP Cost</th><th>Script Name</th><th><a href="'.$makeSortUrl('choice_area').'">Choice Area</a></th><th>Actions</th></tr>'."\n";
         
         while ($row = fetchSqlAssoc($result))
         {
