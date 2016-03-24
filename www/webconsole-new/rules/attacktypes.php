@@ -74,7 +74,6 @@ function listattacktypes()
         echo '<form action="./index.php?do=editattacktypes" method="post">';
         echo "<table>\n";
         echo "<tr><td>Field</td><td>Value</td></tr>\n";
-        echo "<tr><td>ID</td><td></td></tr>\n";
         echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
         echo '<tr><td>WeaponID</td><td>'.DrawItemSelectBox('weaponID', '', true, true).'</td></tr>'."\n";
         echo '<tr><td>WeaponType</td><td>';

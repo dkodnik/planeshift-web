@@ -67,7 +67,6 @@ function listattacks()
         echo '<form action="./index.php?do=editattacks" method="post">';
         echo "<table>\n";
         echo "<tr><td>Field</td><td>Value</td></tr>\n";
-        echo '<tr><td>ID</td><td>'.$row['id']."</td></tr>\n";
         echo '<tr><td>Name</td><td><input type="text" name="name" /></td></tr>'."\n";
         echo '<tr><td>Image Name</td><td><input type="text" name="image_name" /></td></tr>'."\n";
         echo '<tr><td>Attack Animation</td><td><input type="text" name="attack_anim" /></td></tr>'."\n";
