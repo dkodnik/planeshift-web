@@ -75,11 +75,10 @@ function createnpc()
                 $line = fetchSqlAssoc($query);
                 $skill = $line['item_skill_id_1'];
                 
-                $newnpcid = getNextId('characters', 'id');
-                
-                $sql = "INSERT INTO characters (id, npc_master_id, name, lastname, racegender_id, character_type, base_strength, base_agility, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, mod_hitpoints, stamina_physical, stamina_mental, loc_sector_id, loc_x, loc_y, loc_z, loc_yrot, npc_spawn_rule, npc_impervious_ind, account_id, description, kill_exp) VALUES ($newnpcid, $npc_master_id, '".escapeSqlString($npcname)."', '".escapeSqlString($lastname)."', $race, 1, $stat_str, $stat_agi, $stat_end, $stat_int, $stat_wil, $stat_cha, $hp, $hp, 100, 100, $sector, $locx, $locy, $locz, $locrot, $spawnrule, 'N', 9,'".escapeSqlString($description)."', $exp)";
+                $sql = "INSERT INTO characters (npc_master_id, name, lastname, racegender_id, character_type, base_strength, base_agility, base_endurance, base_intelligence, base_will, base_charisma, base_hitpoints_max, mod_hitpoints, stamina_physical, stamina_mental, loc_sector_id, loc_x, loc_y, loc_z, loc_yrot, npc_spawn_rule, npc_impervious_ind, account_id, description, kill_exp) VALUES ($npc_master_id, '".escapeSqlString($npcname)."', '".escapeSqlString($lastname)."', $race, 1, $stat_str, $stat_agi, $stat_end, $stat_int, $stat_wil, $stat_cha, $hp, $hp, 100, 100, $sector, $locx, $locy, $locz, $locrot, $spawnrule, 'N', 9,'".escapeSqlString($description)."', $exp)";
                 mysql_query2($sql);
-                
+                $newnpcid = sqlInsertId();
+
                 if ($skill != '')
                 {
                     $sql = "INSERT INTO character_skills VALUES ($newnpcid, $skill, 0, 0, $skill_value)";
