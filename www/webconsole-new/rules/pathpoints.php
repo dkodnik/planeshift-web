@@ -80,7 +80,7 @@ function listpathpoints()
             echo '&amp;limit='.$next_lim.'&amp;sector='.$sid.'">Next Page</a>';
         }
         $sectors = PrepSelect('sectorid');
-        echo '<form action="./index.php" method="get"><input type="hidden" name="do" value="listpathpoints"/>';
+        echo '<form action="./index.php" method="get"><div><input type="hidden" name="do" value="listpathpoints"/>';
         $sid = 0;
         if (isset($_GET['sector']))
         {
@@ -95,17 +95,17 @@ function listpathpoints()
             echo '<input type="hidden" name="limit" value="'.$_GET['limit'].'"/>';
         }
         echo DrawSelectBox('sectorid', $sectors, 'sector' ,$sid, true);
-        echo '<input type="submit" name="submit" value="Limit By Sector" /></form>';
+        echo '<input type="submit" name="submit" value="Limit By Sector" /></div></form>';
         if (sqlNumRows($result) == 0){
             echo '<p class="error">No Paths Found</p>';
             return;
         }
         
         echo '<table border="1">';
-        echo '<tr><th><a href="./index.php?do=listpathpoints&amp;sort=path_id&limit='.$limit.'&sector='.$sid.'">Path ID</a></th>';
-        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=sector&limit='.$limit.'&sector='.$sid.'">Starting Sector</a></th>';
-        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp1&limit='.$limit.'&sector='.$sid.'">wp1</a></th>';
-        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp2&limit='.$limit.'&sector='.$sid.'">wp2</a></th>';
+        echo '<tr><th><a href="./index.php?do=listpathpoints&amp;sort=path_id&amp;limit='.$limit.'&amp;sector='.$sid.'">Path ID</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=sector&amp;limit='.$limit.'&amp;sector='.$sid.'">Starting Sector</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp1&amp;limit='.$limit.'&amp;sector='.$sid.'">wp1</a></th>';
+        echo '<th><a href="./index.php?do=listpathpoints&amp;sort=wp2&amp;limit='.$limit.'&amp;sector='.$sid.'">wp2</a></th>';
         if (checkaccess('npcs','edit'))
         {
             echo '<th>Actions</th>';
@@ -121,10 +121,10 @@ function listpathpoints()
             if (checkaccess('npcs', 'edit'))
             {
                 $navurl = (isset($_GET['sector']) ? '&amp;sector='.$_GET['sector'] : '' ).(isset($_GET['sort']) ? '&amp;sort='.$_GET['sort'] : '' ).(isset($_GET['limit']) ? '&amp;limit='.$_GET['limit'] : '' );
-                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$row['path_id'].$navurl.'">Edit</a>';
+                echo '<td><a href="./index.php?do=editpathpoint&amp;path_id='.$row['path_id'].$navurl.'">Edit</a>';
                 if (checkaccess('npcs', 'delete'))
                 {
-                    echo '<br/><a href="./index.php?do=deletepathpoint&path_id='.$row['path_id'].'">Delete</a>';
+                    echo '<br/><a href="./index.php?do=deletepathpoint&amp;path_id='.$row['path_id'].'">Delete</a>';
                 }
                 echo '</td>';
             }
@@ -180,10 +180,7 @@ function editpathpoint()
                 {
                     $query = "INSERT INTO sc_path_points (path_id, prev_point, x, y, z, loc_sector_id) VALUES ('$path_id', '$prev_id', '$x', '$y', '$z', '$loc_sector_id')";
                     mysql_query2($query);
-                    $query = "SELECT id FROM sc_path_points WHERE path_id='$path_id' AND prev_point='$prev_id' AND x='$x' AND y='$y' AND z='$z' AND loc_sector_id='$loc_sector_id'";
-                    $result = mysql_query2($query);  // We assume here, that there are no identical entries. (there should not be)
-                    $row = fetchSqlAssoc($result); 
-                    $prev_id = $row['id']; // We could also have used mysql_insert_id here, but that is not guaranteed to be correct if multiple users are inserting at the same time.
+                    $prev_id = sqlInsertId();
                 }
                 else
                 {
@@ -230,7 +227,7 @@ function editpathpoint()
         $query2 = "SELECT wl.name, wp1.name AS wp1_name, wp2.name AS wp2_name, wp1.x AS wp1_x, wp1.y AS wp1_y, wp1.z AS wp1_z, s1.name AS wp1_sector_name, wp2.x AS wp2_x, wp2.y AS wp2_y, wp2.z AS wp2_z, s2.name AS wp2_sector_name FROM sc_waypoint_links AS wl LEFT JOIN sc_waypoints AS wp1 ON wl.wp1=wp1.id LEFT JOIN sc_waypoints AS wp2 ON wl.wp2=wp2.id LEFT JOIN sectors AS s1 ON s1.id=wp1.loc_sector_id LEFT JOIN sectors AS s2 ON s2.id=wp2.loc_sector_id WHERE wl.id='$path_id'";
         $result2 = mysql_query2($query2);
         $row2 = fetchSqlAssoc($result2);
-        echo '<form action="./index.php?do=editpathpoint&path_id='.$path_id.$navurl.'" method="post"><input type="hidden" name="path_id" value="'.$path_id.'" />';
+        echo '<form action="./index.php?do=editpathpoint&amp;path_id='.$path_id.$navurl.'" method="post"><div><input type="hidden" name="path_id" value="'.$path_id.'" /></div>';
         echo '<h3 class="bold">Path Points listing for waypoint link: '.$row2['name'].' ('.$path_id.') from "'.$row2['wp1_name'].'" to "'.$row2['wp2_name'].'"</h3>';
         echo '<p>Please note that both insert and delete ignore any other changes you make, so hit "Save Changes" first. (You can however edit multiple lines at once, and you do not need to save "delete" iteself.)</p>';
         echo '<table border="1">';
@@ -240,7 +237,7 @@ function editpathpoint()
         echo '<td>'.$row2['wp1_x'].'</td>';
         echo '<td>'.$row2['wp1_y'].'</td>';
         echo '<td>'.$row2['wp1_z'].'</td>';
-        echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert=0'.$navurl.'">Insert</a></td></tr>';
+        echo '<td>'.$row2['wp1_sector_name'].'</td><td><a href="./index.php?do=editpathpoint&amp;path_id='.$path_id.'&amp;insert=0'.$navurl.'">Insert</a></td></tr>';
         $prev = 0;
         $sectors = PrepSelect('sectorid');
         while ($row = fetchSqlAssoc($result)) // This slightly more complex loop serves to get the entries in proper order.
@@ -261,7 +258,7 @@ function editpathpoint()
                 echo '<td><input type="text" name="y[]" value="'.$row['y'].'" /></td>';
                 echo '<td><input type="text" name="z[]" value="'.$row['z'].'" /></td>';
                 echo '<td>'.DrawSelectBox('sectorid', $sectors, 'loc_sector_id[]', $row['loc_sector_id']).'</td>';
-                echo '<td><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&insert='.$row['id'].$navurl.'">Insert</a><br><br><a href="./index.php?do=editpathpoint&path_id='.$path_id.'&delete='.$row['id'].$navurl.'">Delete</a></td></tr>';
+                echo '<td><a href="./index.php?do=editpathpoint&amp;path_id='.$path_id.'&amp;insert='.$row['id'].$navurl.'">Insert</a><br/><br/><a href="./index.php?do=editpathpoint&amp;path_id='.$path_id.'&amp;delete='.$row['id'].$navurl.'">Delete</a></td></tr>';
                 $prev = $row['id'];
                 sqlSeek($result, 0);
             } // No else, we want the loop to continue, so else { continue; } could be done, but just a waste of space. :)
@@ -306,10 +303,7 @@ function createpathpoint()
             {
                 $query = "INSERT INTO sc_path_points (path_id, prev_point, x, y, z, loc_sector_id) VALUES ('$path_id', '$prev_id', '$x', '$y', '$z', '$loc_sector_id')";
                 mysql_query2($query);
-                $query = "SELECT id FROM sc_path_points WHERE path_id='$path_id' AND prev_point='$prev_id' AND x='$x' AND y='$y' AND z='$z' AND loc_sector_id='$loc_sector_id'";
-                $result = mysql_query2($query);  // We assume here, that there are no identical entries. (there should not be)
-                $row = fetchSqlAssoc($result); 
-                $prev_id = $row['id']; // We could also have used mysql_insert_id here, but that is not guaranteed to be correct if multiple users are inserting at the same time.
+                $prev_id = sqlInsertId();
             }
             else
             {
@@ -370,8 +364,8 @@ function createpathpoint()
         echo '</table></form>'."\n";
 
 
-        }
-    elseif (checkaccess('natres', 'create'))
+    }
+    elseif (checkaccess('npcs', 'create'))
     {
         if (isset($_GET['path_id']) && is_numeric($_GET['path_id']))
         {
