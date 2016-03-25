@@ -6,6 +6,7 @@ function editquest()
         if(!isset($_GET['id']))
         {
             echo '<p class="error">Error: No quest ID specified - Reverting to list quests</p>';
+            include("listquests.php");
             listquests();
         }   
         else if(!isset($_GET['commit']))
