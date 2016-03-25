@@ -214,14 +214,6 @@ function CheckAccess($type, $access){
   return 0;
 }
 
-/*GetNextID() returns the next valid id in the table that is specified*/
-function GetNextID($a){
-  $query = 'SELECT MAX(id) FROM '.$a;
-  $result = mysql_query2($query);
-  $row = fetchSqlRow($result);
-  $id = $row[0]+1;
-  return $id;
-}
 
 /*PrepSelect() Returns the result link appropriate for the table requested*/
 function PrepSelect($a){
