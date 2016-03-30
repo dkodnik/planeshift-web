@@ -135,8 +135,8 @@ function ka_detail()
         $area = escapeSqlString($_GET['area']);
         $trigger_text = escapeSqlString($_POST['trigger_text']);
         $query = "INSERT INTO npc_triggers (trigger_text, prior_response_required, area) VALUES ('$trigger_text', '0', '$area')";
-        $triggerId = sqlInsertId();
         $result = mysql_query2($query);
+        $triggerId = sqlInsertId();
         $query = "INSERT INTO npc_responses (trigger_id) VALUES ('$triggerId')";
         mysql_query2($query);
         echo '<p class="error">Trigger created.</p>';
