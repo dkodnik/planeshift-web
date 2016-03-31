@@ -75,18 +75,19 @@ to what line in your browser).</p>
 function parseScripts($questId, $scriptId, $showLines, $hideWarnings, $hideQNWarnings) 
 {
     $condition = ($questId == -1 && is_numeric($scriptId) ? "id = '$scriptId'" : "quest_id = '$questId'");
-    $result = mysql_query2("SELECT script FROM quest_scripts WHERE $condition"); 
+    $result = mysql_query2("SELECT id, script FROM quest_scripts WHERE $condition"); 
     if (sqlNumRows($result) < 1)
     {
         echo '<p class="error">Error: no quest found with ID '.$questId.($questId != -1 ? '' : ' and script ID '.$scriptId).'</p>';
         return;
     }
-    for($i = 1; $row = fetchSqlRow($result); $i++)
+    while ($row = fetchSqlAssoc($result))
     {
+        $id = $row['id'];
         append_log('<p class="error">');
-        append_log("parsing script # $i with ID $questId"); 
-        parseScript($questId, $row[0], $showLines, $hideWarnings, $hideQNWarnings);
-        append_log("parsing script # $i with ID $questId completed");
+        append_log("parsing script # $id with Quest ID $questId"); 
+        parseScript($questId, $row['script'], $showLines, $hideWarnings, $hideQNWarnings);
+        append_log("parsing script # $id with Quest ID $questId completed");
         append_log('</p>');
     }
 }
