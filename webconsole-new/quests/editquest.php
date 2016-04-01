@@ -3,7 +3,7 @@ function editquest()
 {
     if(checkaccess('quests', 'edit'))
     {
-        if(!isset($_GET['id']))
+        if(!isset($_GET['id']) || $_GET['id'] < 0)
         {
             echo '<p class="error">Error: No quest ID specified - Reverting to list quests</p>';
             include("listquests.php");
