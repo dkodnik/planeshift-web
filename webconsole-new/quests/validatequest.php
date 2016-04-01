@@ -320,7 +320,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
                 }
             }
             // check for quest notes
-            if (!$quest_note_found && $step > 1 && !$hideQNWarnings) 
+            if (!$quest_note_found && $step > 1 && !$hideQNWarnings && $quest_id != -1) 
             {
                 append_log("Warning: step $step has no QuestNote before line $line_number");
             }
