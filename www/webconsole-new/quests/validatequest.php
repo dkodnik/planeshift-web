@@ -57,8 +57,6 @@ to what line in your browser).</p>
             {
                 parseScripts($id, $scriptId, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']));
             }
-            append_log('<a href="./index.php?do=editquest&amp;id='.$id.'">Edit this script</a>');
-            append_log('');
         }
         echo $parse_log;
     }
@@ -88,6 +86,16 @@ function parseScripts($questId, $scriptId, $showLines, $hideWarnings, $hideQNWar
         append_log("parsing script # $id with Quest ID $questId"); 
         parseScript($questId, $row['script'], $showLines, $hideWarnings, $hideQNWarnings, $id);
         append_log("parsing script # $id with Quest ID $questId completed");
+        append_log('');
+        // KA scripts (quest id -1) have a different edit page.
+        if ($questId == -1)
+        {   // notice that $id is obtained for this sql query, and contains the script_id, while scriptId was submitted by the user and may be blank to parse all KA scripts.
+            append_log('<a href="./index.php?do=ka_scripts&amp;sub=Edit&amp;areaid='.$id.'">Edit this script</a>');
+        }
+        else
+        {
+            append_log('<a href="./index.php?do=editquest&amp;id='.$questId.'">Edit this script</a>');
+        }
         append_log('</p>');
     }
 }
