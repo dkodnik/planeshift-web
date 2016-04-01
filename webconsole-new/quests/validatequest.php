@@ -86,13 +86,13 @@ function parseScripts($questId, $scriptId, $showLines, $hideWarnings, $hideQNWar
         $id = $row['id'];
         append_log('<p class="error">');
         append_log("parsing script # $id with Quest ID $questId"); 
-        parseScript($questId, $row['script'], $showLines, $hideWarnings, $hideQNWarnings);
+        parseScript($questId, $row['script'], $showLines, $hideWarnings, $hideQNWarnings, $id);
         append_log("parsing script # $id with Quest ID $questId completed");
         append_log('</p>');
     }
 }
 
-function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarnings, $quest_name='') 
+function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarnings, $scriptId, $quest_name='') 
 {
     $line = '';
     $p_count = 0;
@@ -117,7 +117,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
     {
         echo "<br />\n";
         echo "<br />\n";
-        echo "Quest ID: $quest_id <br />\n";
+        echo "Quest ID: $quest_id ".($quest_id == -1 ? "and Script ID: $scriptId " : '')."<br />\n";
     }
     
     while(getNextLine($line, $script)) 

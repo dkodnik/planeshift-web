@@ -45,7 +45,7 @@ if ($script != '')
     append_log('<p class="error">');
     append_log("parsing script");
     // using 0 as ID is a bit "hackish" to signify the script is not in the database (script 0 does not exist).
-    parseScript(0, $script, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']), $quest_name); 
+    parseScript(0, $script, isset($_POST['showLines']), isset($_POST['noWarnings']), isset($_POST['noQNWarnings']), 0, $quest_name); 
     append_log("parsing script completed");
     append_log('</p>');
     echo $parse_log;
