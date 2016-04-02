@@ -510,7 +510,7 @@ function getTriggerCount($line, $trigger, &$count)
 function checkVariables($line, $type)
 {
     global $line_number;
-    $words = preg_split("/[\s,.?!]+/", $line); // splits a line by any space characters (\n \t \r \f) as well as any comma or dot. + means greedy (tries to make as many matches as possible).
+    $words = preg_split("/[^a-zA-Z0-9$]+/", $line); // splits a line by any characters that are not alphanumerical or the dollar sign itself. + means greedy meaning 3 spaces in a row are considered only 1 split.).
     foreach($words as $word)
     {
         if (strpos(trim($word), '$') !== false)  // A $variable was found in this word
