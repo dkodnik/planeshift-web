@@ -157,15 +157,21 @@ function DoLogin(){
 }
 
 /*DisplayLogin displays the login dialog box*/
-function DisplayLogin(){
-  echo '<form action="'.$_SERVER['REQUEST_URI'].'" method="post">'."\n";
-  echo '<table class="center_element"><tr><td class="align_right"><input type="hidden" name="redir" value="'.$_SERVER['REQUEST_URI'].'"/>';
-  echo 'Username:</td><td class="align_left"><input type="text" name="username" /></td></tr>'."\n";
-  echo '<tr><td class="align_right">Password:</td><td class="align_left"><input type="password" name="password" /></td></tr>'."\n";
-  echo '<tr><td class="align_right">Remember me:</td><td class="align_left"><input type="checkbox" name="remember" /></td></tr>'."\n";
-  echo '<tr><td colspan="2"><input type="submit" name="login" value="Log In" /></td></tr>'."\n";
-  echo '</table>';
-  echo '</form>'."\n";
+function DisplayLogin()
+{
+    echo '<form action="'.$_SERVER['REQUEST_URI'].'" method="post">'."\n";
+    echo '<table class="center_element"><tr><td class="align_right"><input type="hidden" name="redir" value="'.$_SERVER['REQUEST_URI'].'"/>';
+    echo 'Username:</td><td class="align_left"><input type="text" name="username" /></td></tr>'."\n";
+    echo '<tr><td class="align_right">Password:</td><td class="align_left"><input type="password" name="password" /></td></tr>'."\n";
+    echo '<tr><td class="align_right">Remember me:</td><td class="align_left"><input type="checkbox" name="remember" /></td></tr>'."\n";
+    echo '<tr><td colspan="2"><input type="submit" name="login" value="Log In" /></td></tr>'."\n";
+    echo '</table>';
+    echo '</form>'."\n";
+    echo '<script type="text/javascript"> 
+        //<![CDATA[
+        document.getElementsByName("username")[0].focus();
+        //]]>
+        </script>'."\n";
 }
 
 /*CacheAccess() reads the database, and caches the appropriate rights*/
