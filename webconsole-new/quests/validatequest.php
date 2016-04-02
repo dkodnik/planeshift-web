@@ -1074,18 +1074,67 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$va
     }
     elseif (strncasecmp($command, 'doadmincmd', 10) === 0)
     {
-        $cmd = substr($command, 10);
-        if (trim($cmd) == '') 
+        $cmd = trim(substr($command, 10));
+        if ($cmd == '') 
         {
             append_log("Parse Error: no admin command found on line $line_number");
             return;
         }
-        $query = sprintf("SELECT group_member FROM command_group_assignment WHERE command_name = '%s'", escapeSqlString($cmd));
+        // This assumes all commands are of the /command type, there are more admin commands, but they are not available in quests.
+        $words = explode(' ', $cmd);
+        $query = sprintf("SELECT group_member FROM command_group_assignment WHERE command_name = '%s'", escapeSqlString($words[0]));
         $result = mysql_query2($query);
         if (sqlNumRows($result) < 1)
         {
-            append_log("Parse Error: could not find admin command ($cmd) in the database");
-        } // else it's found, do nothing.
+            append_log("Parse Error: could not find admin command ({$words[0]}) in the database on line $line_number");
+            return;
+        } 
+        // do parameter validating of commands.
+        if ($words[0] == '/teleport')
+        {
+            // check param count
+            if (count($words) != 8)
+            {
+                append_log("Parse Error: /teleport needs exactly 7 parameters (ex: /teleport targetchar map npcroom1 0 -2 7 1). Check for spaces in the edit screen if you count 7 params on line $line_number");
+            }
+            // check for second and third fixed keyword
+            elseif ($words[1] != 'targetchar' || $words[2] != 'map')
+            {
+                append_log("Parse Error: /teleport always has 'targetchar' and 'map' as first and second parameter ('/teleport targetchar map') on line $line_number");
+            }
+            // check if X is valid.
+            elseif (!is_numeric($words[4]))
+            {
+                append_log("Parse Error: X coordinate in teleport is not a number on line $line_number");
+            }
+            // check if Y is valid.
+            elseif (!is_numeric($words[5]))
+            {
+                append_log("Parse Error: Y coordinate in teleport is not a number on line $line_number");
+            }
+            // check if Z is valid.
+            elseif (!is_numeric($words[6]))
+            {
+                append_log("Parse Error: Z coordinate in teleport is not a number on line $line_number");
+            }
+            // check if I is valid.
+            elseif (!is_numeric($words[7]))
+            {
+                append_log("Parse Error: sector istance in teleport is not a number on line $line_number");
+            }
+            // check if sector is valid
+            else
+            {
+                $query = sprintf("SELECT id FROM sectors WHERE name = '%s'", escapeSqlString($words[3]));
+                $result = mysql_query2($query);
+                if (sqlNumRows($result) < 1)
+                {
+                    append_log("Parse Error: invalid sector name in teleport, sector does not exist in database on line $line_number");
+                }
+            }
+            
+            
+        }
     }
     elseif (strncasecmp($command, 'require', 7) === 0) 
     {
