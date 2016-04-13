@@ -5,7 +5,7 @@ function editcategory()
     {
         echo '<p class="error">You are not authorized to use these functions</p>';
     }
-    if (isset($_GET['commit']))
+    if (isset($_GET['commit']) && isset($_POST['name']))
     {
         $id = escapeSqlString($_GET['id']);
         $name = escapeSqlString($_POST['name']);

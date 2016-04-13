@@ -1,7 +1,7 @@
 <?php
 function edititem(){
   if (checkaccess('items','edit')){
-    if (!isset($_GET['commit'])){
+    if (!isset($_GET['commit']) && !isset($_POST['name'])){
       if (isset($_GET['item'])){
         $id = escapeSqlString($_GET['item']);
         $query = 'SELECT * FROM item_stats WHERE id='.$id;
