@@ -9,7 +9,7 @@ function editquest()
             include("listquests.php");
             listquests();
         }   
-        else if(!isset($_GET['commit']))
+        else if(!isset($_POST['submit']) && !isset($_POST['submit2']))
         {
             $id = escapeSqlString($_GET['id']);
             $query = 'SELECT name, category, player_lockout_time, quest_lockout_time, prerequisite, task FROM quests WHERE id='.$id;
@@ -28,7 +28,7 @@ function editquest()
             {
                 $return_url .= '&amp;matchType='.htmlentities($_GET['matchType']).'&amp;searchText='.htmlentities($_GET['searchText']);
             }
-            echo '<form action="./index.php?do=editquest&amp;id='.$id.'&amp;commit'.$return_url.'" method="post"><div><table border="0">';
+            echo '<form action="./index.php?do=editquest&amp;id='.$id.$return_url.'" method="post"><div><table border="0">';
             echo '<tr><td>Quest ID:</td><td> '.$id."</td></tr>\n";
             echo '<tr><td>Quest Name:</td><td> <input type="text" name="name" value="'.$row['name'].'" />'."</td></tr>\n";
             echo '<tr><td>Quest Category:</td><td> <input type="text" name="category" value="'.$row['category'].'" />'."</td></tr>\n";
@@ -58,6 +58,7 @@ function editquest()
             if (isset($_POST['submit2']))
             {
                 unset($_GET['commit']);
+                unset($_POST);
                 editquest();
             }
             else
