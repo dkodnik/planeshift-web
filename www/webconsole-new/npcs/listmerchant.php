@@ -11,7 +11,7 @@ function listmerchant(){
     unset($row);
     $query = "SELECT DISTINCT m.player_id, m.category_id, CONCAT_WS(' ', c.name, c.lastname) AS name, s.name AS sector FROM merchant_item_categories AS m LEFT JOIN characters AS c ON m.player_id=c.id LEFT JOIN sectors AS s ON c.loc_sector_id=s.id ORDER BY sector, name, category_id";
     $result = mysql_query2($query);
-    while (list($player_id, $category_id, $name, $sector) = fetchSqlAssoc($result)){
+    while (list($player_id, $category_id, $name, $sector) = fetchSqlRow($result)){ // list expects a row.
       $Merchant["$player_id"]['id'] = $player_id;
       $Merchant["$player_id"]['name'] = $name;
       $Merchant["$player_id"]['sector'] = $sector;
