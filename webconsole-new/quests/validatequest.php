@@ -1188,6 +1188,10 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$va
             {
                 validate_gender(substr($require, 6));
             }
+            elseif (strncasecmp($require, 'trait', 5) === 0)
+            {
+                validate_trait(substr($require, 5));
+            }
             elseif (strncasecmp($require, 'married', 7) === 0)
             {
                 // valid, nothing to check  
@@ -1704,6 +1708,27 @@ function validate_scriptname($scriptname)
     if (sqlNumRows($result) < 1)
     {
         append_log("Parse Error: could not find script name ($script) in the database at line $line_number");
+    }
+}
+
+function validate_trait($tra)
+{
+    global $line_number;
+    $trait = explode(' in', trim($tra), 2);
+    if (count($trait) != 2)
+    {
+        append_log("Parse Error: no ' in' found in trait requirement ($tra) at line $line_number");
+        return;
+    }
+    $name = trim($trait[0]);
+    $location = trim($trait[1]);
+    
+    $query = sprintf("SELECT id FROM traits WHERE name = '%s' AND location = '%s'", escapeSqlString($name), escapeSqlString($location));
+    $result = mysql_query2($query);
+    if (sqlNumRows($result) < 1)
+    {
+        append_log("Parse Error: could not find trait name ($name) for location ($location) in the database at line $line_number");
+        return;
     }
 }
 
