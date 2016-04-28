@@ -38,8 +38,14 @@ function editquest()
             echo '<tr><td>Prerequisites:</td><td> <textarea name="prerequisite" rows="2" cols="50">'.htmlentities($row['prerequisite'])."</textarea></td></tr>\n";
             echo '</table></div><hr/>';
             echo '<p>Quest Script:<br/><textarea name="script" rows="25" cols="80">'.htmlentities($script)."</textarea><br />\n";
-            echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" />';
+            echo '<input type="submit" name="submit" value="Update Quest" /><input type="submit" name="submit2" value="save and continue editing" /> <a href="./index.php?do=validatequest&amp;id='.$id.'">Validate</a>'."\n";
             echo '</p></form>';
+            echo '<hr/>';
+            echo '<p> Below are the validator\'s parsing results for this quest, they will update automatically if you click "save and continue editing".</p>'."\n";
+            include "validatequest.php";
+            parseScripts($id, '', false, false, false);
+            global $parse_log; // this global variable is defined in validatequests.php
+            echo $parse_log; 
         }
         else
         {
