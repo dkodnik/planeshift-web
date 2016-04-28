@@ -38,7 +38,7 @@ function listals(){
         echo 'id: '.$row['id'];
         if ($showgameboards)
           echo "<br/>".$row['sectorname'];
-        echo '</td><td><form action="./index.php?do=edital" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="hidden" name="sector" value="'.$_GET['sector'].'" />';
+        echo '</td><td><form action="./index.php?do=edital" method="post"><input type="hidden" name="id" value="'.$row['id'].'" /><input type="hidden" name="sector" value="'.($showgameboards ? $row['sectorname'] : $_GET['sector']).'" />';
         echo 'Master Id: <input type="text" name="master_id" value="'.$row['master_id'].'" size="2"/> -- Name: <input type="text" name="name" value="'.$row['name'].'" size="40" /><br/>';
         echo 'Mesh Name: <input type="text" name="meshname" value="'.$row['meshname'].'" size="40" /> -- Polygon: <input type="text" name="polygon" value="'.$row['polygon'].'" size="2" /> -- Radius: <input type="text" name="radius" value="'.$row['radius'].'" size="4" /><br/>';
         echo 'Position: '.$row['pos_x'].'/'.$row['pos_y'].'/'.$row['pos_z'].'<br/>';
