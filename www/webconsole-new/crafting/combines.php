@@ -4,7 +4,7 @@ function editcombine()
 {
     if (checkaccess('crafting','edit') && isset($_POST['commit']) && $_POST['commit'] == "Edit Combine")
     {
-        if ($_POST['item_id'][0] == '')
+        if ($_POST['item_id0'] == '')
         {
             echo '<p class="error">A combination must have at least 1 source item, this should be the top item on your list.</p>';
             return;
@@ -15,12 +15,12 @@ function editcombine()
             $pattern_id = escapeSqlString($_POST['pattern_id']);
             $result_id = escapeSqlString($_POST['result_id']);
             $result_qty = escapeSqlString($_POST['result_qty']);
-            $item_id = escapeSqlString($_POST['item_id'][$i]);
+            $item_id = escapeSqlString($_POST['item_id'.$i]);
             $min_qty = escapeSqlString($_POST['min_qty'][$i]);
             $max_qty = escapeSqlString($_POST['max_qty'][$i]);
             $description = escapeSqlString($_POST['description'][$i]);
             
-            if ($item_id != '0')
+            if ($item_id != '')
             {
                 if ($id != 0)
                 {
@@ -66,41 +66,34 @@ function editcombine()
             return;
         }
         
-        $items_results = PrepSelect('items');
-        $pattern_name = "";
-        while ($row = fetchSqlRow($items_results))
-        {
-            if ($row[0] == $_GET['id'])
-            {
-                $result_item = $row[1];
-            }
-        }
         $patterns = PrepSelect('patterns');
         $delete_text = (checkaccess('crafting','delete') ? '<a href="./index.php?do=deletecombine&amp;pattern_id='.$pattern_id.'&amp;result_id='.$id.'">Delete Combination</a>' : "");
         $row = fetchSqlAssoc($result);
         echo '<p class="bold">Edit Combine</p>'."\n"; 
         echo 'If you set any item to "NONE", it will be removed from the combination.';
-        echo '<form action="./index.php?do=editcombine&amp;id='.$pattern_id.'" method="post" /><table>'; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
-        echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>';
-        echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>';
-        echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', $id, true).'</td></tr>';
-        echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" /></td></tr>';
+        echo '<form action="./index.php?do=editcombine&amp;id='.$pattern_id.'" method="post" ><table>'."\n"; // we set pattern_id here instead of combination ID, so we can redirect people back to where they came from.
+        echo '<tr><td colspan="2">If you change this dropdown, you will move this transformation to another pattern, moving it to "NONE" will make it "patternless".</td></tr>'."\n";
+        echo '<tr><td>Pattern</td><td>'.DrawSelectBox('patterns', $patterns, 'pattern_id', $row['pattern_id'], true).'</td></tr>'."\n";
+        echo '<tr><td>Result Item</td><td>'.DrawItemSelectBox('result_id', $id, false, true).'</td></tr>'."\n";
+        echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="'.$row['result_qty'].'" /></td></tr>'."\n";
+        $inputCount = 0;
         do 
         {
-            echo '<tr><input type="hidden" name="id[]" value="'.$row['id'].'" /><td></td><td></td></tr>';
-            echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', $row['item_id'], true).'</td></tr>';
-            echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="'.$row['min_qty'].'" /></td></tr>';
-            echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="'.$row['max_qty'].'" /></td></tr>';
-            echo '<tr><td>Description</td><td><input type="text" name="description[]" value="'.$row['description'].'" /></td></tr>';
+            echo '<tr><td><input type="hidden" name="id[]" value="'.$row['id'].'" /></td><td></td></tr>'."\n";
+            echo '<tr><td>Input Item</td><td>'.DrawItemSelectBox('item_id'.$inputCount, $row['item_id'], false, true).'</td></tr>'."\n";
+            echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="'.$row['min_qty'].'" /></td></tr>'."\n";
+            echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="'.$row['max_qty'].'" /></td></tr>'."\n";
+            echo '<tr><td>Description</td><td><input type="text" name="description[]" value="'.$row['description'].'" /></td></tr>'."\n";
             echo '<tr><td></td><td></td></tr>';
+            $inputCount++;
         } while ($row = fetchSqlAssoc($result));
-        echo '<tr><td colspan="2">If you fill in the item below, it will be added to the combination.<input type="hidden" name="id[]" value="0" /></td></tr>';
-        echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', '', true).'</td></tr>'; // add 1 more row so we can add new lines.
-        echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="0" /></td></tr>';
-        echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="0" /></td></tr>';
-        echo '<tr><td>Description</td><td><input type="text" name="description[]" value="" /></td></tr>';
+        echo '<tr><td colspan="2">If you fill in the item below, it will be added to the combination.<input type="hidden" name="id[]" value="0" /></td></tr>'."\n";
+        echo '<tr><td>Input Item</td><td>'.DrawItemSelectBox('item_id'.$inputCount, false, true, true).'</td></tr>'."\n"; // add 1 more row so we can add new lines.
+        echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="0" /></td></tr>'."\n";
+        echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="0" /></td></tr>'."\n";
+        echo '<tr><td>Description</td><td><input type="text" name="description[]" value="" /> </td></tr>'."\n";
         
-        echo '<tr><td>'.$delete_text.'</td><td><input type=submit name="commit" value="Edit Combine"/></td></tr>';
+        echo '<tr><td>'.$delete_text.'</td><td><input type="submit" name="commit" value="Edit Combine"/></td></tr>'."\n";
         echo '</table></form>'."\n";
     }
     else
@@ -113,22 +106,22 @@ function createcombine()
 {
     if (checkaccess('crafting','create') && isset($_POST['commit']) && $_POST['commit'] == "Create Combine")
     { // The user wants to submit data.
-        if ($_POST['item_id'][0] == '')
+        if ($_POST['item_id0'] == '')
         {
             echo '<p class="error">A combination must have at least 1 source item, this should be the top item on your list.</p>';
             return;
         }
-        for ($i = 0; $i < count($_POST['item_id']); $i++)
+        for ($i = 0; $i < count($_POST['min_qty']); $i++)
         {
             $pattern_id = escapeSqlString($_POST['pattern_id']);
             $result_id = escapeSqlString($_POST['result_id']);
             $result_qty = escapeSqlString($_POST['result_qty']);
-            $item_id = escapeSqlString($_POST['item_id'][$i]);
+            $item_id = escapeSqlString($_POST['item_id'.$i]);
             $min_qty = escapeSqlString($_POST['min_qty'][$i]);
             $max_qty = escapeSqlString($_POST['max_qty'][$i]);
             $description = escapeSqlString($_POST['description'][$i]);
             
-            if ($item_id != '0') // if this is '0', the user has left this line empty because they didn't need it.
+            if ($item_id != '') // if this is empty, the user has left this line empty because they didn't need it.
             {
                 $query = "INSERT INTO trade_combinations (pattern_id, result_id, result_qty, item_id, min_qty, max_qty, description) VALUES ('$pattern_id', '$result_id', '$result_qty', '$item_id', '$min_qty', '$max_qty', '$description')";
                 mysql_query2($query);
@@ -144,54 +137,57 @@ function createcombine()
     }
     elseif (checkaccess('crafting','create') && isset($_POST['add'])) // The user wants more input fields.
     {
+        $inputCount = 0;
         echo '<p class="bold">Create Combine</p>'."\n"; // new pattern
         echo 'If you set any item to "NONE", it will not be added to the combination.';
-        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
-        $items_results = PrepSelect('items');
+        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['id'].'" method="post" ><table>'; // we set pattern_id here so we can redirect people back to where they came from.
         echo '<tr><td>Pattern id</td><td><input type="hidden" name="pattern_id" value="'.$_POST['pattern_id'].'" />'.$_POST['pattern_id'].'</td></tr>';
-        echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', $_POST['result_id'], false).'</</td></tr>';
+        echo '<tr><td>Result Item</td><td>'.DrawItemSelectBox('result_id', $_POST['result_id'], false, false).'</td></tr>';
         echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="'.$_POST['result_qty'].'" /></td></tr>';
         echo '<tr><td></td><td></td></tr>';
-        for ($i = 0; $i < count($_POST['item_id']); $i++)  // Show all previously entered values (if someone posted this form to increase the size.
+        for ($i = 0; $i < count($_POST['min_qty']); $i++)  // Show all previously entered values (if someone posted this form to increase the size.
         {
-            echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', $_POST['item_id'][$i], true).'</td></tr>';
+            echo '<tr><td>Input Item</td><td>'.DrawItemSelectBox('item_id'.$inputCount, $_POST['item_id'.$inputCount], false, true).'</td></tr>';
             echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="'.$_POST['min_qty'][$i].'" /></td></tr>';
             echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="'.$_POST['max_qty'][$i].'" /></td></tr>';
             echo '<tr><td>Description</td><td><input type="text" name="description[]" value="'.$_POST['description'][$i].'" /></td></tr>';
             echo '<tr><td></td><td></td></tr>';
+            $inputCount++;
         }
         for ($i = 0; $i < $_POST['more_fields']; $i++)  // add the additional fields.
         { 
-            echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', '', true).'</td></tr>';
+            echo '<tr><td>Input Item</td><td>'.DrawItemSelectBox('item_id'.$inputCount, false, ($i+1 < $_POST['more_fields'] ? false : true), true).'</td></tr>';
             echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="0" /></td></tr>';
             echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="0" /></td></tr>';
             echo '<tr><td>Description</td><td><input type="text" name="description[]" value="" /></td></tr>';
             echo '<tr><td></td><td></td></tr>';
+            $inputCount++;
         }
-        echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0"> more fields to this form <input type=submit name="add" value="add"/></td></tr>';
-        echo '<tr><td></td><td><input type=submit name="commit" value="Create Combine"/></td></tr>'; 
+        echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0" /> more fields to this form <input type="submit" name="add" value="add"/></td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Combine"/></td></tr>'; 
         echo '</table></form>'."\n";
     }
     elseif (checkaccess('crafting','create') && isset($_GET['pattern_id']))
     {
+        $inputCount = 0;
         echo '<p class="bold">Create Combine</p>'."\n"; // new pattern
         echo 'If you set any item to "NONE", it will not be added to the combination.';
-        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['pattern_id'].'" method="post" /><table>'; // we set pattern_id here so we can redirect people back to where they came from.
-        $items_results = PrepSelect('items');
+        echo '<form action="./index.php?do=createcombine&amp;id='.$_GET['pattern_id'].'" method="post" ><table>'; // we set pattern_id here so we can redirect people back to where they came from.
         echo '<tr><td>Pattern id</td><td><input type="hidden" name="pattern_id" value="'.$_GET['pattern_id'].'" />'.$_GET['pattern_id'].'</td></tr>';
-        echo '<tr><td>Result Item</td><td>'.DrawSelectBox('items', $items_results, 'result_id', '', false).'</</td></tr>';
+        echo '<tr><td>Result Item</td><td>'.DrawItemSelectBox('result_id', false, false, false).'</td></tr>';
         echo '<tr><td>Result Quantity</td><td><input type="text" name="result_qty" value="0" /></td></tr>';
         echo '<tr><td></td><td></td></tr>';
         for ($i = 0; $i < 2; $i++) // form wasn't used before, show 2 fields (can't make a combine with less).
         { 
-            echo '<tr><td>Input Item</td><td>'.DrawSelectBox('items', $items_results, 'item_id[]', '', true).'</td></tr>';
+            echo '<tr><td>Input Item</td><td>'.DrawItemSelectBox('item_id'.$inputCount, false, ($i+1 < 2 ? false : true), true).'</td></tr>';
             echo '<tr><td>Minimum Quantity</td><td><input type="text" name="min_qty[]" value="0" /></td></tr>';
             echo '<tr><td>Maximum Quantity</td><td><input type="text" name="max_qty[]" value="0" /></td></tr>';
             echo '<tr><td>Description</td><td><input type="text" name="description[]" value="" /></td></tr>';
             echo '<tr><td></td><td></td></tr>';
+            $inputCount++;
         }
-        echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0"> more fields to this form <input type=submit name="add" value="add"/></td></tr>';
-        echo '<tr><td></td><td><input type=submit name="commit" value="Create Combine"/></td></tr>'; 
+        echo '<tr><td colspan="2">Add <input type="text" name="more_fields" value="0" /> more fields to this form <input type="submit" name="add" value="add"/></td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Combine"/></td></tr>'; 
         echo '</table></form>'."\n";
         
     }
