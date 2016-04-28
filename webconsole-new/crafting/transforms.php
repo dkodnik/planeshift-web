@@ -99,7 +99,7 @@ function createtransform()
         echo '<p class="bold">Create Transformation</p>'."\n"; // new transformation
         
         $redir = (isset($_GET['id']) ? "&amp;id={$_GET['id']}" : "");  // set this value if the script was called from a certain pattern, and if it was, return to there after inserting the data.
-        echo '<form action="./index.php?do=createtransform'.$redir.'" method="post" /><table>';
+        echo '<form action="./index.php?do=createtransform'.$redir.'" method="post" ><table>';
         
         if(isset ($_GET['id']))
         {
@@ -120,7 +120,7 @@ function createtransform()
         echo DrawSelectBox('items', $items_results, 'result_id', '', true).'</td></tr>';
         echo '<tr><td>Resultant Quality factor(0-1)</td><td><input type="text" name="penalty_pct" /></td></tr>';
         echo '<tr><td>Description</td><td><textarea name="description" rows="4" cols="40"></textarea></td></tr>';
-        echo '<tr><td></td><td><input type=submit name="commit" value="Create Transformation"/></td></tr>';
+        echo '<tr><td></td><td><input type="submit" name="commit" value="Create Transformation"/></td></tr>';
         echo '</table></form>'."\n";
     }
     else
