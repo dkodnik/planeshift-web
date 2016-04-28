@@ -328,10 +328,10 @@ function createprocess()
         echo '<tr><td>Description:</td><td><input type="text" name="description" /></td></tr>';
         echo '<tr><td>Animation:</td><td><input type="text" name="animation" /></td></tr>';
         $items = PrepSelect('items');
-        echo '<tr><td>Work Item:</td><td>'.DrawSelectBox('items', $items, 'workitem_id', '', true).'</td></tr>';
-        echo '<tr><td>Equipment:</td><td>'.DrawSelectBox('items', $items, 'equipment_id', '', true).'</td></tr>';
+        echo '<tr><td>Work Item:</td><td>'.DrawItemSelectBox('workitem_id', false, false, true).'</td></tr>';
+        echo '<tr><td>Equipment:</td><td>'.DrawItemSelectBox('equipment_id', false, false, true).'</td></tr>';
         echo '<tr><td>Constraints:</td><td><textarea rows="6" cols="55" name="constraints"></textarea></td></tr>';
-        echo '<tr><td>Garbage Item:</td><td>'.DrawSelectBox('items', $items, 'garbage_id', '', true).'</td></tr>';
+        echo '<tr><td>Garbage Item:</td><td>'.DrawItemSelectBox('garbage_id', false, true, true).'</td></tr>';
         echo '<tr><td>Garbage Quantity:</td><td><input type="text" name="garbage_qty" value="0"/></td></tr>';
         $skills = PrepSelect('skill');
         echo '<tr><td>Primary Skill:</td><td>'.DrawSelectBox('skill', $skills, 'primary_skill_id', '', true).'</td></tr>';
