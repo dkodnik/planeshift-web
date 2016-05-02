@@ -225,7 +225,7 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
             {
                 if (stripos($npc_name, $temp_name) !== false) // single letter, or shorthand in the wrong case.
                 {
-                    append_log("Parse Error: You used the wrong case for $temp_name check $npc_name for correct case at line $line_number");
+                    // no error, we don't care, just need to avoid it going into the else code. :)
                 }
                 else
                 {
