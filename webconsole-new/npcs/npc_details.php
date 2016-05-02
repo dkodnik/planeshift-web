@@ -29,13 +29,22 @@ function npc_main()
         echo '<tr><td>Life Description:</td><td><textarea name="description_life" rows="4" cols="50">'.$row['description_life'].'</textarea></td></tr>';
         if ($row['character_type'] > 0) // don't show for players
         {
+            $masterText = "Setting a master ID means the following data are loaded from the master instead: \n";
+            $masterText .= "* Optionally base HP/mana \n";
+            $masterText .= "* Skills \n";
+            $masterText .= "* Traits \n";
+            $masterText .= "* Inventory \n";
+            $masterText .= "* Variables \n";
+            $masterText .= "* Merchant status \n";
+            $masterText .= "* Trainer status \n";
+            $masterText .= "* Spells \n";
             if ($row['npc_master_id'] == $id)
             {
-                echo '<tr><td>This NPC is not using a Template<br/>You can set the master NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+                echo '<tr><td>This NPC is not using a Template<br/>You can set the <span title="'.$masterText.'" style="text-decoration: underline;">master</span> NPC id to</td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
             }
             else
             {
-                echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the master NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
+                echo '<tr><td>This NPC is using NPC <a href="./index.php?do=npc_details&amp;npc_id='.$row['npc_master_id'].'&amp;sub=main">'.$row['npc_master_id'].'</a> as a template<br/>You can set the <span title="'.$masterText.'" style="text-decoration: underline;">master</span> NPC id to </td><td><input type="text" name="npc_master_id" value="'.$row['npc_master_id'].'" /></td></tr>';
             }
         }
         else // show only for players (npcs are 0000-00-00 00:00:00
