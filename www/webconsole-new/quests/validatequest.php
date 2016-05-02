@@ -8,6 +8,7 @@
 $parse_log = '';
 $line_number = 0;
 $hideWarnings = false;
+$currentScript = '';
 
 function validatequest()
 {
@@ -111,6 +112,8 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
     $assigned = false; // to check if the quest is already assigned.
     global $line_number;
     $line_number = 0;
+    global $currentScript;
+    $currentScript = $script;
     $GLOBALS['hideWarnings'] = $hideWarnings;
     $variablesTracker = array('set' => array(), 'unset' => array()); // creates a 2d array to store all set and unset variable commands in.
     $ready_for_complete = false; // this var is used to see if there has been an "NPC: trigger before we use the "complete quest" command. without it, the server crashes on loadquest.
@@ -1665,45 +1668,135 @@ function validate_magic($magicName, $otherBuffs = false)
     $magic = trim($magicName);
     $query = sprintf("SELECT id FROM spells WHERE name = '%s'", escapeSqlString($magic));
     $result = mysql_query2($query);
+    if (sqlNumRows($result) > 0)
+    {
+        return; // valid case
+    }
     if (sqlNumRows($result) < 1 && !$otherBuffs)
     {
         append_log("Parse Error: could not find magic '$magic' in the database at line $line_number");
+        return;
     }
-    elseif (sqlNumRows($result) < 1 && $otherBuffs)
+    
+    // Other places we can find magic buffs are in <apply> tags of progression events, they could be given as variable from a quest too. 
+    // First we try if this quest script calls any progression events using the spell name as parameter (a lot of them are, "quest_timer" and whatever).
+    global $currentScript;
+    if(validateMagicNameInProgressionScriptParam($currentScript, $magic))
     {
-        $spellName = str_replace('&', '&amp;', $magic);
-        // technically single quotes are not allowed unescaped in values in XML, but it does work if you use double quotes for the values, so some old scripts still have these. The regex finds both.
-        $spellName = str_replace("'", "('|&apos;)", $spellName);
-        $spellName = escapeSqlString($spellName);
-        
-        // this regex matches "<apply " followed by any non ">" character, followed by the text: name="$spellname" the escaping of double quotes is for PHP, not the regex engine.
-        $query = "SELECT name, event_script FROM progression_events WHERE event_script REGEXP '<apply [^>]*name=\"$spellName\"'";
-        $result = mysql_query2($query);
-        $found = false;
-        // multiple scripts could match our buff name.
-        while ($row = fetchSqlAssoc($result))
+        return; // found something, we're good.
+    }
+    
+    // Try to find the spell name in a progression event.
+    $spellName = str_replace('&', '&amp;', $magic);
+    // technically single quotes are not allowed unescaped in values in XML, but it does work if you use double quotes for the values, so some old scripts still have these. The regex finds both.
+    $spellName = str_replace("'", "('|&apos;)", $spellName);
+    $spellName = escapeSqlString($spellName);
+    
+    // this regex matches "<apply " followed by any non ">" character, followed by the text: name="$spellname" the escaping of double quotes is for PHP, not the regex engine.
+    $query = "SELECT name, event_script FROM progression_events WHERE event_script REGEXP '<apply [^>]*name=\"$spellName\"'";
+    $result = mysql_query2($query);
+    // multiple scripts could match our buff name.
+    while ($row = fetchSqlAssoc($result))
+    {
+        $matches;
+        // difference with the SQL above is this matching the whole <apply > tag down to the last >
+        $pattern = '/<apply [^>]*name="'.$spellName.'"[^>]*>/';
+        // preg_match_all stores all results in an *array* in element 0 of the $matches array. So the first result is actually $matches[0][0].
+        preg_match_all($pattern, $row['event_script'], $matches);
+        // there might be multiple <apply> tags in <if> branches
+        foreach ($matches[0] as $match)
         {
-            //echo htmlentities($row['event_script']);
-            $matches;
-            // difference with the SQL above is this matching the whole <apply > tag down to the last >
-            $pattern = '/<apply [^>]*name="'.$spellName.'"[^>]*>/';
-            // preg_match_all stores all results in an *array* in element 0 of the $matches array. So the first result is actually $matches[0][0].
-            preg_match_all($pattern, $row['event_script'], $matches);
-            // there might be multiple <apply> tags in <if> branches
-            foreach ($matches[0] as $match)
+            // we want to make sure that the <apply> we found is for a type="buff" or type="debuff", in addition to just containing the right name.
+            if (stripos($match, 'type="buff"') !== false || stripos($match, 'type="debuff"') !== false)
             {
-                // we want to make sure that the <apply> we found is for a type="buff" or type="debuff", in addition to just containing the right name.
-                if (stripos($match, 'type="buff"') !== false || stripos($match, 'type="debuff"') !== false)
+                return; // valid, we found something.
+            }
+        }
+    }
+    // Last resort, search for a progression event parameter in *all* quest scripts to see if anyone can make the magic we want.
+    $escapedMagic = escapeSqlString($magic);
+    // search for the magic name enclosed by single quotes, only progression event parameters should look like that.
+    $query = "SELECT script FROM quest_scripts WHERE script LIKE '%\'$escapedMagic\'%'";
+    $result = mysql_query2($query);
+    while ($row = fetchSqlAssoc($result))
+    {
+        if (validateMagicNameInProgressionScriptParam($row['script'], $magic))
+        {
+            return;
+        }
+    }
+    
+    // if we reach this point, complain.
+    append_log("Parse Error: could not find magic '$magic' in the magic database, or in any progression event at line $line_number");
+}
+
+// #winning in descriptive function names.
+// returns true if found, false if not.
+function validateMagicNameInProgressionScriptParam($questScript, $magic)
+{
+    $matches;
+    // We assume a correct script here. 
+    // Search for somethign that looks like: Run script give_quest_timeout <<'Red Way staff repair timer',10>>
+    $pattern = '/Run script [^\n]*<<[^>]*\''.$magic.'\'[^>]*>>/';
+    // preg_match_all stores all results in an *array* in element 0 of the $matches array. So the first result is actually $matches[0][0].
+    preg_match_all($pattern, $questScript, $matches);
+    foreach ($matches[0] as $match)
+    {
+        // remove "run script" at the start and everything after << as well.
+        $eventName = trim(substr($match, 10, strpos($match, '<<') - 10));
+        // make an array with each param.
+        $params = explode(',', trim(substr($match, strpos($match, '<<') + 2, strpos($match, '>>') - (strpos($match, '<<') +2))));
+        $paramIndex = 0; // determine the index, notice that is is always found at some position or we would not be here.
+        foreach ($params as $index => $param)
+        {
+            if (strcmp(trim($param, "'"), $magic) === 0) // check param without '' against magic name. 
+            {
+                $paramIndex = $index;
+                break;
+            }
+        }
+        $query = sprintf("SELECT event_script FROM progression_events WHERE name = '%s'", escapeSqlString($eventName));
+        $result = mysql_query2($query);
+        $row = fetchSqlAssoc($result);
+        $eventScript = $row['event_script'];
+        
+        $doc = new DOMDocument();
+        @$doc->loadXML($eventScript); // load script as XML, suppressing any errors.
+        $lets = $doc->getElementsByTagName('let'); // find all <let> tags
+        foreach ($lets as $let)  // Notice that <let> tags can be nested in theory, we assume they are not.
+        {
+            $alias = array('Param'.$paramIndex);
+            $vars = explode(';', $let->getAttribute('vars'));
+            foreach ($vars as $var)
+            {
+                $explodedVar = explode('=', $var);
+                if (strcmp($explodedVar[1], $alias[0]) === 0) // if our ParamX got assigned to any variable, we want to track that variable too.
                 {
-                    $found = true;
+                    $alias[] = $explodedVar[0]; // save it as an alias
+                }
+            }
+            $applies = $let->getElementsByTagName('apply'); // find all apply tags inside the <let> tag
+            foreach ($applies as $apply)
+            {
+                // if name attribute is a known alias for our parameter, this script can apply the magic we need.
+                if (in_array($apply->getAttribute('name'), $alias) && ($apply->getAttribute('type') == 'buff' || $apply->getAttribute('type') ==  'debuff')) 
+                {
+                    return true;
                 }
             }
         }
-        if (!$found)
+        // if we're still here, we need to try an match any <apply> tags outside <let> tags. 
+        $applies = $doc->getElementsByTagName('apply'); // find all apply tags inside the document
+        foreach ($applies as $apply)
         {
-            append_log("Parse Error: could not find magic '$magic' in the magic database, or in any progression event at line $line_number");
+            // if name attribute is a known alias for our parameter, this script can apply the magic we need.
+            if (in_array($apply->getAttribute('name'), array('Param'.$paramIndex)) && ($apply->getAttribute('type') == 'buff' || $apply->getAttribute('type') ==  'debuff')) 
+            {
+                return true;
+            }
         }
     }
+    return false;
 }
 
 function validate_race($race_name)
