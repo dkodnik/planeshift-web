@@ -159,6 +159,31 @@ function npc_main()
     }
     else
     {
+        if ($_POST['char_type'] > 0) // Don't check for players
+        {
+            if ($_POST['npc_master_id'] != 0 && $_POST['npc_master_id'] != $_GET['npc_id'])
+            {
+                $npc_master_id = escapeSqlString($_POST['npc_master_id']);
+                $query = "SELECT id, npc_master_id, character_type FROM characters WHERE id = '$npc_master_id'";
+                $result = mysql_query2($query);
+                $row = fetchSqlAssoc($result);
+                if (sqlNumRows($result) < 1)
+                {
+                    echo '<p class="error">Invalid npc_master_id, no such id exists.</p>';
+                    return;
+                }
+                if ($row['npc_master_id'] != 0 && $row['id'] != $row['npc_master_id'])
+                {
+                    echo '<p class="error">Invalid npc_master_id, the target is refering to another master.</p>';
+                    return;
+                }
+                if ($row['character_type'] == 0)
+                {
+                    echo '<p class="error">Invalid npc_master_id, target is a player.</p>';
+                    return;
+                }
+            }
+        }
         $id = escapeSqlString($_GET['npc_id']);
         $query = "UPDATE characters SET ";
         $description = escapeSqlString($_POST['description']);
