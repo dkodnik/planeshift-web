@@ -218,16 +218,23 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
             $count = 0;
             $seen_npc_triggers = true;
             $temp_name = substr($line, 0, strpos($line, ':'));
-            if (stripos($npc_name, $temp_name) === false) // new npc name
+            if (strpos($npc_name, $temp_name) === false) // new npc name
             {
-                $npc_name = $temp_name;
-                if ($quest_id == -1 && $npc_name == 'general')
+                if (stripos($npc_name, $temp_name) !== false) // single letter, or shorthand in the wrong case.
                 {
-                    // valid situation, general means all npcs, does not exist in database.
+                    append_log("Parse Error: You used the wrong case for $temp_name check $npc_name for correct case at line $line_number");
                 }
-                elseif (validate_npc($npc_name) === false) 
+                else
                 {
-                    append_log("Parse Error: invalid NPC name: $npc_name at line $line_number");
+                    $npc_name = $temp_name;
+                    if ($quest_id == -1 && $npc_name == 'general')
+                    {
+                        // valid situation, general means all npcs, does not exist in database.
+                    }
+                    elseif (validate_npc($npc_name) === false) 
+                    {
+                        append_log("Parse Error: invalid NPC name: $npc_name at line $line_number");
+                    }
                 }
             }
             
@@ -536,10 +543,16 @@ function validate_npc($name)
     $split = explode(" ", trim($name));  // explode is faster than split if you don't use regex, returns input if pattern is not found.
     if (count($split) == 1) // single name npc
     {
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", escapeSqlString($split[0]));
+        $query = sprintf("SELECT id, name FROM characters WHERE name = '%s' AND lastname = '' AND npc_master_id != 0", escapeSqlString($split[0]));
         $result = mysql_query2($query);
         if(sqlNumRows($result) > 0) // we found a valid npc
         {
+            $row = fetchSqlAssoc($result);
+            if (strcmp($split[0], $row['name']) !== 0) // case check
+            {
+                append_log("Parse Error: NPC ({$split[0]}) has wrong case, should be '{$row['name']}' on line $line_number");
+                return false;
+            }
             return true;
         }
         $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '' AND character_type != 0 AND npc_master_id = 0", escapeSqlString($split[0]));
@@ -552,10 +565,16 @@ function validate_npc($name)
     }
     elseif (count($split) == 2) // dual name npc
     {
-        $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", escapeSqlString($split[0]), escapeSqlString($split[1]));
+        $query = sprintf("SELECT id, name, lastname FROM characters WHERE name = '%s' AND lastname = '%s' AND npc_master_id != 0", escapeSqlString($split[0]), escapeSqlString($split[1]));
         $result = mysql_query2($query);
         if(sqlNumRows($result) > 0) // we found a valid npc
         {
+            $row = fetchSqlAssoc($result);
+            if (strcmp($split[0].' '.$split[1], $row['name'].' '.$row['lastname']) !== 0) // case check
+            {
+                append_log("Parse Error: NPC ({$split[0]}  {$split[1]}) has wrong case, should be '{$row['name']} {$row['lastname']}' on line $line_number");
+                return false;
+            }
             return true;
         }
         $query = sprintf("SELECT id FROM characters WHERE name = '%s' AND lastname = '%s' AND character_type != 0 AND npc_master_id = 0", escapeSqlString($split[0]), escapeSqlString($split[1]));
