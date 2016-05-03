@@ -1769,6 +1769,10 @@ function validateMagicNameInProgressionScriptParam($questScript, $magic)
             $vars = explode(';', $let->getAttribute('vars'));
             foreach ($vars as $var)
             {
+                if (trim($var) == '') // last variable can have an additional ; at the end, ignore that.
+                {
+                    continue;
+                }
                 $explodedVar = explode('=', $var);
                 if (strcmp($explodedVar[1], $alias[0]) === 0) // if our ParamX got assigned to any variable, we want to track that variable too.
                 {
