@@ -298,7 +298,7 @@ function npc_main()
     }
 }
 
-function npc_skills()
+function npc_skills($masterId)
 {
     if (checkaccess('npcs', 'read'))
     {
@@ -346,6 +346,12 @@ function npc_skills()
             }
             else
             {
+                if ($masterId > 0)
+                {
+                    echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=skills">master NPC</a>, and ';
+                    echo 'receives its skills from that master.</p>';
+                    return;
+                }
                 $Skill_result = PrepSelect('skill');
                 while ($row = fetchSqlAssoc($Skill_result))
                 {
@@ -394,7 +400,7 @@ function npc_skills()
     }
 }
 
-function npc_traits(){
+function npc_traits($masterId){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = escapeSqlString($_GET['npc_id']);
@@ -415,6 +421,12 @@ function npc_traits(){
         echo '<p class="error">Update Successful</p>';
         npc_traits();
       }else{
+        if ($masterId > 0)
+        {
+            echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=traits">master NPC</a>, and ';
+            echo 'receives its traits from that master.</p>';
+            return;
+        }
         $query = "SELECT racegender_id FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
@@ -633,7 +645,7 @@ function npc_kas()
     }
 }
 
-function npc_items(){
+function npc_items($masterId){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = escapeSqlString($_GET['npc_id']);
@@ -679,6 +691,12 @@ function npc_items(){
         echo '<p class="error">Update Successful</p>';
         npc_items();
       }else{
+        if ($masterId > 0)
+        {
+            echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=items">master NPC</a>, and ';
+            echo 'receives its inventory from that master.</p>';
+            return;
+        }
         $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_quality, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
         $result = mysql_query2($query);
         if (sqlNumRows($result) > 0){
@@ -895,7 +913,7 @@ function npc_items(){
   }
 }
 
-function npc_training(){
+function npc_training($masterId){
   if (checkaccess('npcs', 'read')){
     if (isset($_GET['npc_id'])){
       $id = escapeSqlString($_GET['npc_id']);
@@ -920,6 +938,12 @@ function npc_training(){
         echo '<p class="error">Update Successful</p>';
         npc_training();
       }else{
+        if ($masterId > 0)
+        {
+            echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=training">master NPC</a>, and ';
+            echo 'receives its training status from that master.</p>';
+            return;
+        }
         $query = "SELECT t.skill_id, t.min_rank, t.max_rank, t.min_faction, s.name FROM trainer_skills AS t LEFT JOIN skills AS s ON t.skill_id=s.skill_id WHERE t.player_id='$id'";
         $result = mysql_query2($query);
         if (sqlNumRows($result) == 0){
@@ -958,56 +982,80 @@ function npc_training(){
   }
 }
 
-function npc_merchant(){
-  if (checkaccess('npcs', 'read')){
-    if (isset($_GET['npc_id'])){
-      $id = escapeSqlString($_GET['npc_id']);
-      // block unauthorized access
-      if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) {
-          echo '<p class="error">You are not authorized to edit NPCs</p>';
-          return;
-      }
-      if (isset($_POST['commit'])){
-        $category_id = escapeSqlString($_POST['category_id']);
-        if ($_POST['commit'] == 'Remove'){
-          $query = "DELETE FROM merchant_item_categories WHERE category_id = '$category_id' AND player_id = '$id'";
-        }else if ($_POST['commit'] == 'Add'){
-          $query = "INSERT INTO merchant_item_categories (player_id, category_id) VALUES ('$id', '$category_id')";
+function npc_merchant($masterId)
+{
+    if (checkaccess('npcs', 'read'))
+    {
+        if (isset($_GET['npc_id']))
+        {
+            $id = escapeSqlString($_GET['npc_id']);
+            // block unauthorized access
+            if (isset($_POST['commit']) && !checkaccess('npcs', 'edit')) 
+            {
+                echo '<p class="error">You are not authorized to edit NPCs</p>';
+                return;
+            }
+            if (isset($_POST['commit']))
+            {
+                $category_id = escapeSqlString($_POST['category_id']);
+                if ($_POST['commit'] == 'Remove')
+                {
+                    $query = "DELETE FROM merchant_item_categories WHERE category_id = '$category_id' AND player_id = '$id'";
+                }
+                else if ($_POST['commit'] == 'Add')
+                {
+                    $query = "INSERT INTO merchant_item_categories (player_id, category_id) VALUES ('$id', '$category_id')";
+                }
+                $result = mysql_query2($query);
+                unset($_POST);
+                echo '<p class="error">Update Successful</p>';
+                npc_merchant();
+            }
+            else
+            {
+                if ($masterId > 0)
+                {
+                    echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=merchant">master NPC</a>, and ';
+                    echo 'receives its merchant status from that master.</p>';
+                    return;
+                }
+                $query = "SELECT m.category_id, c.name FROM merchant_item_categories AS m LEFT JOIN item_categories AS c ON m.category_id = c.category_id WHERE m.player_id = '$id'";
+                $result = mysql_query2($query);
+                if (sqlNumRows($result) == 0)
+                {
+                    echo '<p class="error">This NPC is not currently a Merchant</p>';
+                }
+                else
+                {
+                    echo '<table border="1"><tr><th>Category</th><th>Actions</th></tr>';
+                    while ($row = fetchSqlAssoc($result))
+                    {
+                        echo '<tr>';
+                        echo '<td>'.$row['name'].'</td>';
+                        echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=merchant" method="post">';
+                        echo '<input type="hidden" name="category_id" value="'.$row['category_id'].'" />';
+                        echo '<input type="submit" name="commit" value="Remove" />';
+                        echo '</form></td>';
+                        echo '</tr>';
+                    }
+                    echo '</table>';
+                }
+                $Categories = PrepSelect('category');
+                echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=merchant" method="post"><p>Add a merchant category to this NPC:';
+                echo DrawSelectBox('category', $Categories, 'category_id', '');
+                echo '<input type="submit" name="commit" value="Add"/>';
+                echo '</p></form>';
+            }
         }
-        $result = mysql_query2($query);
-        unset($_POST);
-        echo '<p class="error">Update Successful</p>';
-        npc_merchant();
-      }else{
-        $query = "SELECT m.category_id, c.name FROM merchant_item_categories AS m LEFT JOIN item_categories AS c ON m.category_id = c.category_id WHERE m.player_id = '$id'";
-        $result = mysql_query2($query);
-        if (sqlNumRows($result) == 0){
-          echo '<p class="error">This NPC is not currently a Merchant</p>';
-        }else{
-          echo '<table border="1"><tr><th>Category</th><th>Actions</th></tr>';
-          while ($row = fetchSqlAssoc($result)){
-            echo '<tr>';
-            echo '<td>'.$row['name'].'</td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=merchant" method="post">';
-            echo '<input type="hidden" name="category_id" value="'.$row['category_id'].'" />';
-            echo '<input type="submit" name="commit" value="Remove" />';
-            echo '</form></td>';
-            echo '</tr>';
-          }
-          echo '</table>';
+        else
+        {
+            echo '<p class="error">Error: No npc id</p>';
         }
-        $Categories = PrepSelect('category');
-        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=merchant" method="post"><p>Add a merchant category to this NPC:';
-        echo DrawSelectBox('category', $Categories, 'category_id', '');
-        echo '<input type="submit" name="commit" value="Add"/>';
-        echo '</p></form>';
-      }
-    }else{
-      echo '<p class="error">Error: No npc id</p>';
     }
-  }else{
-    echo '<p class="error">You are not authorized to use these functions</p>';
-  }
+    else
+    {
+        echo '<p class="error">You are not authorized to use these functions</p>';
+    }
 }
 
 function npc_specific()
@@ -1020,10 +1068,12 @@ function npc_specific()
 function npcdetails(){
   if (checkaccess('npcs', 'read')){
     $uri_string = './index.php?do=npc_details';
+    // we will use this to tell the display functions if the NPC is using a master or not.
+    $masterId = -1;
     if (isset($_GET['npc_id'])){
       if (is_numeric($_GET['npc_id'])){
         $id = escapeSqlString($_GET['npc_id']);
-        $query = "SELECT name, lastname, character_type FROM characters WHERE id='$id'";
+        $query = "SELECT name, lastname, npc_master_id, character_type FROM characters WHERE id='$id'";
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
         //echo '<p class="bold">NPC: '.$id.' - '.$row['name'].' '.$row['lastname'].'</p>';
@@ -1039,7 +1089,11 @@ function npcdetails(){
             echo '</form>';
         }
         echo "<br/>\n";
-        $uri_string = $uri_string.'&amp;npc_id='.$_GET['npc_id'];
+        $uri_string = $uri_string.'&amp;npc_id='.$id;
+        if ($row['character_type'] > 0 && $row['npc_master_id'] != 0 && $row['npc_master_id'] != $id) // check if the npc is using a master, if so, set it.
+        {
+            $masterId = $row['npc_master_id'];
+        }
       }
     }
     echo '<div class="menu_npc">';
@@ -1068,28 +1122,28 @@ function npcdetails(){
           npc_factions();
           break;
         case 'variables':
-          npc_variables();
+          npc_variables($masterId);
           break;
         case 'main':
           npc_main();
           break;
         case 'skills':
-          npc_skills();
+          npc_skills($masterId);
           break;
         case 'traits':
-          npc_traits();
+          npc_traits($masterId);
           break;
         case 'kas':
           npc_kas();
           break;
         case 'items':
-          npc_items();
+          npc_items($masterId);
           break;
         case 'training';
-          npc_training();
+          npc_training($masterId);
           break;
         case 'merchant':
-          npc_merchant();
+          npc_merchant($masterId);
           break;
         case 'specific':
           npc_specific();
@@ -1192,7 +1246,7 @@ function npc_factions()
         echo '<p class="error">You are not authorized to use these functions</p>';
     }
 }
-function npc_variables()
+function npc_variables($masterId)
 {
     if (checkaccess('npcs', 'read'))
     {
@@ -1238,6 +1292,12 @@ function npc_variables()
             }
             else
             {
+                if ($masterId > 0)
+                {
+                    echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=variables">master NPC</a>, and ';
+                    echo 'receives its variables from that master.</p>';
+                    return;
+                }
                 $id = escapeSqlString($_GET['npc_id']);
                 $query = 'SELECT name, value FROM character_variables WHERE character_id='.$id.' ORDER BY name';
                 $result = mysql_query2($query);
