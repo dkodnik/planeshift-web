@@ -1839,12 +1839,21 @@ function validate_trait($tra)
     $name = trim($trait[0]);
     $location = trim($trait[1]);
     
-    $query = sprintf("SELECT id FROM traits WHERE name = '%s' AND location = '%s'", escapeSqlString($name), escapeSqlString($location));
+    $query = sprintf("SELECT name, location FROM traits WHERE name = '%s' AND location = '%s'", escapeSqlString($name), escapeSqlString($location));
     $result = mysql_query2($query);
     if (sqlNumRows($result) < 1)
     {
         append_log("Parse Error: could not find trait name ($name) for location ($location) in the database at line $line_number");
         return;
+    }
+    $row = fetchSqlAssoc($result);
+    if (strcmp($row['name'], $name) !== 0)
+    {
+        append_log("Parse Error: trait name is case sensitive, found '$name' instead of {$row['name']}' at line $line_number");
+    }
+    if (strcmp($row['location'], $location) !== 0)
+    {
+        append_log("Parse Error: trait location is case sensitive, found '$location' instead of {$row['location']}' at line $line_number");
     }
 }
 
