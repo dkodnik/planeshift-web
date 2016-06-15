@@ -378,6 +378,11 @@ function parseScript($quest_id, $script, $show_lines, $hideWarnings, $hideQNWarn
                 }
                 if(trim($commands[$i]) != '') 
                 {
+                    if(strncasecmp(trim($commands[$i]), 'require', 7) !== 0 && !$seen_npc_triggers)
+                    {
+                        append_log("Parse Error: found command '{$commands[$i]}' before any NPC: triggers in current step on line $line_number");
+                        continue;
+                    }
                     parse_command(trim($commands[$i]), $assigned, $quest_id, $total_steps, $quest_name, $variablesTracker);  // using totalsteps now, since we can both require and close future steps now.
                 }
                 else 
