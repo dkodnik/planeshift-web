@@ -689,7 +689,7 @@ function npc_items($masterId){
         unset($_POST);
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
-        npc_items();
+        npc_items($masterId);
       }else{
         if ($masterId > 0)
         {
