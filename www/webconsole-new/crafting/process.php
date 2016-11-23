@@ -227,7 +227,7 @@ function editsubprocess()
         echo '<table><tr><td class="bold">Field</td><td class="bold">Value</td></tr>';
         echo '<tr><td>Process ID:</td><td>'.$row['process_id'].'</td></tr>';
         echo '<tr><td>SubProcess ID:</td><td>'.$row['subprocess_number'].'</td></tr>';
-        echo '<tr><td>Name:</td><td><input type="hidden" name="name" value="'.htmlentities($row['name']).'" />'.htmlentities($row['name']).'</td></tr>';
+        echo '<tr><td>Name:</td><td><input type="text" name="name" value="'.htmlentities($row['name']).'" /></td></tr>';
         echo '<tr><td>Description:</td><td><input type="text" name="description" value="'.htmlentities($row['description']).'" /></td></tr>';
         echo '<tr><td>Animation:</td><td><input type="text" name="animation" value="'.$row['animation'].'" /></td></tr>';
         echo '<tr><td>Work Item:</td><td>'.DrawItemSelectBox('workitem_id', $row['workitem_id'], false, true).'</td></tr>';
