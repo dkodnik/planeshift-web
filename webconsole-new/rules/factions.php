@@ -4,10 +4,11 @@ function listfactions(){
     if (isset($_POST['commit']) && checkaccess('npcs', 'edit')){
       if ($_POST['commit'] == "Commit Edit"){
         $id = escapeSqlString($_POST['id']);
+        $faction_name = escapeSqlString($_POST['faction_name']);
         $faction_description = escapeSqlString($_POST['faction_description']);
         $faction_character = escapeSqlString($_POST['faction_character']);
         $faction_weight = escapeSqlString($_POST['faction_weight']);
-        $query = "UPDATE factions SET faction_description='$faction_description', faction_character='$faction_character', faction_weight='$faction_weight' WHERE id='$id'";
+        $query = "UPDATE factions SET faction_name='$faction_name', faction_description='$faction_description', faction_character='$faction_character', faction_weight='$faction_weight' WHERE id='$id'";
         $result = mysql_query2($query);
         unset($_POST);
         echo '<p class="error">Update Successful</p>';
@@ -26,14 +27,13 @@ function listfactions(){
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
         echo '<form action="./index.php?do=factions" method="post">';
-        echo '<input type="hidden" name="id" value="'.$id.'" />';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
-        echo '<tr><td>Name:</td><td>'.$row['faction_name'].'</td></tr>';
-        echo '<tr><td>Description:</td><td><textarea name="faction_description" row="4" cols="40">'.$row['faction_description'].'</textarea></td></tr>';
-        echo '<tr><td>Character:</td><td><textarea name="faction_character" row="4" cols="40">'.$row['faction_character'].'</textarea></td></tr>';
+        echo '<tr><td>Name:</td><td><input type="hidden" name="id" value="'.$id.'" /><input type="text" name="faction_name" value="'.$row['faction_name'].'" /></td></tr>';
+        echo '<tr><td>Description:</td><td><textarea name="faction_description" rows="4" cols="40">'.$row['faction_description'].'</textarea></td></tr>';
+        echo '<tr><td>Character:</td><td><textarea name="faction_character" rows="4" cols="40">'.$row['faction_character'].'</textarea></td></tr>';
         echo '<tr><td>Weight:</td><td><input type="text" name="faction_weight" value="'.$row['faction_weight'].'" /></td></tr>';
+        echo '<tr><td colspan="2"><input type="submit" name="commit" value="Commit Edit" /></td></tr>';
         echo '</table>';
-        echo '<input type="submit" name="commit" value="Commit Edit" />';
         echo '</form>';
       }else{
         echo '<p class="error">Bad Action, returning to listing</p>';
@@ -61,8 +61,8 @@ function listfactions(){
         if (checkaccess('npcs', 'edit')){
           echo '<td>';
           echo '<form action="./index.php?do=factions" method="post">';
-          echo '<input type="hidden" name="id" value="'.$row['id'].'"/>';
-          echo '<input type="submit" name="action" value="Edit" />';
+          echo '<div><input type="hidden" name="id" value="'.$row['id'].'"/>';
+          echo '<input type="submit" name="action" value="Edit" /></div>';
           echo '</form></td>';
         }
         echo '</tr>';
