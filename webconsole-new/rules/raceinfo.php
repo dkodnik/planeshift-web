@@ -10,7 +10,7 @@ function raceinfo(){
         $yrot = escapeSqlString($_POST['yrot']);
         $range = escapeSqlString($_POST['range']);
         $sec = escapeSqlString($_POST['sec']);
-        $query = "DELETE FROM race_spawns WHERE x='$x' AND y='$y' AND z='$z' AND yrot='$yrot' AND `range`='$range' AND sector_id='$sec' AND raceid='$raceid' LIMIT 1";
+        $query = "DELETE FROM race_spawns WHERE CAST(x AS DECIMAL)=CAST('$x' AS DECIMAL) AND CAST(z AS DECIMAL)=CAST('$z' AS DECIMAL) AND CAST(y AS DECIMAL)=CAST('$y' AS DECIMAL) AND CAST(yrot AS DECIMAL)=CAST('$yrot' AS DECIMAL) AND CAST(`range` AS DECIMAL)=CAST('$range' AS DECIMAL) AND sector_id='$sec' AND raceid='$raceid' LIMIT 1";
         $result = mysql_query2($query);
         echo '<p class="error">Update Successful</p>';
         unset($_POST);
@@ -69,13 +69,13 @@ function raceinfo(){
         $range = escapeSqlString($_POST['range']);
         $raceid = escapeSqlString($_POST['id']);
         $sec = escapeSqlString($_POST['sec']);
-        $query = "SELECT r.name, r.sex, p.x, p.y, p.z, s.name AS sector FROM race_spawns AS p LEFT JOIN race_info AS r ON r.id=p.raceid LEFT JOIN sectors AS s ON s.id=p.sector_id WHERE p.sector_id='$sec' AND p.raceid='$raceid' AND p.x='$x' AND p.z='$z' AND p.y='$y' AND p.yrot='$yrot' AND p.range='$range'";
+        $query = "SELECT r.name, r.sex, p.x, p.y, p.z, s.name AS sector FROM race_spawns AS p LEFT JOIN race_info AS r ON r.id=p.raceid LEFT JOIN sectors AS s ON s.id=p.sector_id WHERE p.sector_id='$sec' AND p.raceid='$raceid' AND CAST(p.x AS DECIMAL)=CAST('$x' AS DECIMAL) AND CAST(p.z AS DECIMAL)=CAST('$z' AS DECIMAL) AND CAST(p.y AS DECIMAL)=CAST('$y' AS DECIMAL) AND CAST(p.yrot AS DECIMAL)=CAST('$yrot' AS DECIMAL) AND CAST(p.range AS DECIMAL)=CAST('$range' AS DECIMAL)";
         $result = mysql_query2($query);
         if (sqlNumRows($result) > 0){
           $row = fetchSqlAssoc($result);
           echo 'You are about to delete the following Spawn-Point:<br/>'.$row['name'].' '.$row['sex'].': '.$row['x'].' / '.$row['y'].' / '.$row['z'].' / '.$row['sector'].' yrot: '.$yrot.' range: '.$range.'<br/>';
           echo '<form action="./index.php?do=raceinfo" method="post">';
-          echo '<input type="hidden" name="x" value="'.$x.'" />';
+          echo '<div><input type="hidden" name="x" value="'.$x.'" />';
           echo '<input type="hidden" name="y" value="'.$y.'" />';
           echo '<input type="hidden" name="z" value="'.$z.'" />';
           echo '<input type="hidden" name="yrot" value="'.$yrot.'" />';
@@ -83,23 +83,23 @@ function raceinfo(){
           echo '<input type="hidden" name="id" value="'.$raceid.'" />';
           echo '<input type="hidden" name="sec" value="'.$sec.'" />';
           echo '<input type="submit" name="commit" value="Confirm Spawn Point Delete" />';
-          echo '</form>';
+          echo '</div></form>';
         }
       }else if ($_POST['action'] == "Edit Values"){
         $id = escapeSqlString($_POST['id']);
         $query = "SELECT * FROM race_info WHERE id='$id'";
         $result = mysql_query2($query);
         $row = fetchSqlAssoc($result);
-        echo '<form action="./index.php?do=raceinfo" method="post"><input type="hidden" name="id" value="'.$id.'" />';
+        echo '<form action="./index.php?do=raceinfo" method="post">';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Race:</td><td><input type="text" name="name" value="'.$row['name'].'"/></td></tr>';
         echo '<tr><td>Sex:</td><td><select name="sex">';
         if ($row['sex'] == 'M'){
-          echo '<option value="M" selected="true">Male</option><option value="F">Female</option><option value="N">Neuter</option>';
+          echo '<option value="M" selected="selected">Male</option><option value="F">Female</option><option value="N">Neuter</option>';
         }else if ($row['sex'] == 'F'){
-          echo '<option value="M">Male</option><option value="F" selected="true">Female</option><option value="N">Neuter</option>';
+          echo '<option value="M">Male</option><option value="F" selected="selected">Female</option><option value="N">Neuter</option>';
         }else if ($row['sex'] == 'N'){
-          echo '<option value="M">Male</option><option value="F">Female</option><option value="N" selected="true">Neuter</option>';
+          echo '<option value="M">Male</option><option value="F">Female</option><option value="N" selected="selected">Neuter</option>';
         }
         echo '</select></td></tr>';
         echo '<tr><td>Size X:</td><td><input type="text" name="size_x" value="'.$row['size_x'].'"/></td></tr>';
@@ -124,12 +124,13 @@ function raceinfo(){
         echo '<tr><td>Cloak:</td><td><input type="text" name="cloak" value="'.$row['cloak'].'"/></td></tr>';
         echo '<tr><td>Speed modifier:</td><td><input type="text" name="speed_modifier" value="'.$row['speed_modifier'].'"/></td></tr>';
         echo '<tr><td>Scale:</td><td><input type="text" name="scale" value="'.$row['scale'].'"/></td></tr>';
-        echo '</table><input type="submit" name="commit" value="Confirm Update" />';
+        echo '<tr><td colspan="2"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Confirm Update" /></td></tr>';
+        echo '</table>';
         echo '</form>';
       }else if ($_POST['action'] == "Add Spawn Point"){
         $id = escapeSqlString($_POST['id']);
         $Sectors = PrepSelect('sectorid');
-        echo '<form action="./index.php?do=raceinfo" method="post"><input type="hidden" name="id" value="'.$id.'" />';
+        echo '<form action="./index.php?do=raceinfo" method="post">';
         echo '<table border="1"><tr><th>Field</th><th>Value</th></tr>';
         echo '<tr><td>Sector:</td><td>'.DrawSelectBox('sectorid', $Sectors, 'sector_id', '').'</td></tr>';
         echo '<tr><td>X:</td><td><input type="text" name="x"/></td></tr>';
@@ -137,7 +138,8 @@ function raceinfo(){
         echo '<tr><td>Z:</td><td><input type="text" name="z"/></td></tr>';
         echo '<tr><td>yrot:</td><td><input type="text" name="yrot"/></td></tr>';
         echo '<tr><td>Range:</td><td><input type="text" name="range"/></td></tr>';
-        echo '</table><input type="submit" name="commit" value="Add Spawn Point"/>';
+        echo '<tr><td colspan="2"><input type="hidden" name="id" value="'.$id.'" /><input type="submit" name="commit" value="Add Spawn Point"/></td></tr>';
+        echo '</table>';
         echo '</form>';
       }else{
       }
@@ -167,7 +169,7 @@ function raceinfo(){
       if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
-      echo '</tr>';
+      echo '</tr>'."\n";
       $Alt = FALSE;
       while ($row = fetchSqlAssoc($result)){
         $Alt = !$Alt;
@@ -213,11 +215,11 @@ function raceinfo(){
             $angle = ($spawn['yrot']*180)/3.14159;
             echo '<td>'.$angle.'</td>';
             echo '<td>'.$spawn['range'].'</td>';
-            echo '<td>'.$spawn['sector_name'].'</td>';
+            echo '<td>'.$spawn['sector_name'].'</td>'."\n";
             if (checkaccess('natres','edit')){
               echo '<td>';
               echo '<form action="./index.php?do=raceinfo" method="post">';
-              echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
+              echo '<div><input type="hidden" name="id" value="'.$row['id'].'" />';
               echo '<input type="hidden" name="x" value="'.$spawn['x'].'" />';
               echo '<input type="hidden" name="y" value="'.$spawn['y'].'" />';
               echo '<input type="hidden" name="z" value="'.$spawn['z'].'" />';
@@ -225,9 +227,9 @@ function raceinfo(){
               echo '<input type="hidden" name="range" value="'.$spawn['range'].'" />';
               echo '<input type="hidden" name="sec" value="'.$spawn['sector_id'].'" />';
               echo '<input type="submit" name="action" value="Delete" />';
-              echo '</form></td>';
+              echo '</div></form></td>'."\n";
             }
-            echo '</tr>';
+            echo '</tr>'."\n";
           }
           echo '</table>';
         }else{
@@ -237,14 +239,14 @@ function raceinfo(){
         if (checkaccess('natres', 'edit')){
           echo '<td>';
           echo '<form action="./index.php?do=raceinfo" method="post">';
-          echo '<input type="hidden" name="id" value="'.$row['id'].'" />';
+          echo '<div><input type="hidden" name="id" value="'.$row['id'].'" />';
           echo '<input type="submit" name="action" value="Edit Values" />';
           echo '<input type="submit" name="action" value="Add Spawn Point" />';
-          echo '</form></td>';
+          echo '</div></form></td>'."\n";
         }
         echo '</tr>';
       }
-      echo '</table>';
+      echo '</table>'."\n";
     }
   }else{
     echo '<p class="error">You are not authorized to use these functions</p>';
