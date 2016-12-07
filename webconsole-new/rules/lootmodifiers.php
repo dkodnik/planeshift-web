@@ -23,6 +23,9 @@ function listLootModifiers()
             case 'modifier_type':
                 $query .= ' ORDER BY modifier_type, name';
                 break;
+            case 'probability':
+                $query .= ' ORDER BY modifier_type, probability';
+                break;
             default:
                 $query .= ' ORDER BY modifier_type, name';
         }
@@ -33,7 +36,8 @@ function listLootModifiers()
     }
     $result = mysql_query2($query);
     echo '<table border="1"><tr><th>ID</th><th><a href="./index.php?do=listlootmodifiers&amp;sort=modifier_type">Modifier Type</a></th>';
-    echo '<th><a href="./index.php?do=listlootmodifiers&amp;sort=name">Name</a></th><th>Probability</th>';
+    echo '<th><a href="./index.php?do=listlootmodifiers&amp;sort=name">Name</a></th><th>';
+    echo '<a href="./index.php?do=listlootmodifiers&amp;sort=probability">Probability</a></th>';
     echo '<th>Cost Modifier</th><th>Mesh</th><th>Icon</th><th>Not Usable With</th><th>actions</th></tr>';
     while ($row = fetchSqlAssoc($result))
     {
