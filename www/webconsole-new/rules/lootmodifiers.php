@@ -32,19 +32,21 @@ function listLootModifiers()
         $query .= ' ORDER BY modifier_type, name';
     }
     $result = mysql_query2($query);
-    echo '<table border="1"><tr><th><a href="./index.php?do=listlootmodifiers&amp;sort=modifier_type">Modifier Type</a></th>';
+    echo '<table border="1"><tr><th>ID</th><th><a href="./index.php?do=listlootmodifiers&amp;sort=modifier_type">Modifier Type</a></th>';
     echo '<th><a href="./index.php?do=listlootmodifiers&amp;sort=name">Name</a></th><th>Probability</th>';
     echo '<th>Cost Modifier</th><th>Mesh</th><th>Icon</th><th>Not Usable With</th><th>actions</th></tr>';
     while ($row = fetchSqlAssoc($result))
     {
-        echo '<tr><td>'.$row['modifier_type'].'</td>';
+        echo '<tr>';
+        echo '<td>'.$row['id'].'</td>';
+        echo '<td>'.$row['modifier_type'].'</td>';
         echo '<td>'.$row['name'].'</td>';
         echo '<td>'.$row['probability'].'</td>';
         echo '<td>'.$row['cost_modifier'].'</td>';
         echo '<td>'.$row['mesh'].'</td>';
         echo '<td>'.$row['icon'].'</td>';
         echo '<td>'.$row['not_usable_with'].'</td>';
-        echo '<td><form action="./index.php?do=editlootmodifiers" method="post"><input type="hidden" name="id" value="'.$row['id'].'" />';
+        echo '<td><form action="./index.php?do=editlootmodifiers" method="post"><div><input type="hidden" name="id" value="'.$row['id'].'" />';
         if (checkaccess('crafting', 'edit')) 
         {
             echo '<input type="submit" name="action" value="Edit" />';
@@ -53,15 +55,16 @@ function listLootModifiers()
                 echo '<input type="submit" name="action" value="Delete" />';
             }
         }
-        echo '</form></td>';
+        echo '</div></form></td>';
         echo '</tr>';
     }
     echo '</table>';
-    echo '<hr>';
+    echo '<hr />';
     if (checkaccess('crafting', 'create')) 
     {
         echo '<h3> Add new loot modifier: </h3>';
-        echo '<table><form action="./index.php?do=editlootmodifiers" method="post">';
+        echo '<form action="./index.php?do=editlootmodifiers" method="post">';
+        echo '<table>';
         echo '<tr><td>Modifier Type: </td><td><select name="modifier_type"><option value="prefix">Prefix</option><option value="suffix">Suffix</option><option value="adjective">Adjective</option></select></td></tr>';
         echo '<tr><td>Name: </td><td><input type="text" name="name" /></td></tr>';
         echo '<tr><td>Effect: </td><td><textarea name="effect" cols="80" rows="5"></textarea></td></tr>';
@@ -73,7 +76,7 @@ function listLootModifiers()
         echo '<tr><td>Not Usable With: </td><td><input type="text" name="not_usable_with" /></td></tr>';
         echo '<tr><td>Equip Script: </td><td><textarea name="equip_script" cols="80" rows="5"></textarea></td></tr>';
         echo '<tr><td colspan="2"><input type="submit" name="action" value="Create" /></td></tr>';
-        echo '</form></table>';
+        echo '</table></form>';
     }
 }
 
