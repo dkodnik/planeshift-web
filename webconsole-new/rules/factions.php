@@ -47,13 +47,14 @@ function listfactions(){
       if (sqlNumRows($result) == 0 ){
         echo 'No Skills Found!';
       }
-      echo '<table border="1"><tr><th>Faction</th><th>Description</th><th>Character</th><th>Weight</th>';
+      echo '<table border="1"><tr><th>ID</th><th>Faction</th><th>Description</th><th>Character</th><th>Weight</th>';
       if (checkaccess('npcs', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
       while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
+        echo '<td>'.$row['id'].'</td>';
         echo '<td>'.$row['faction_name'].'</td>';
         echo '<td>'.$row['faction_description'].'</td>';
         echo '<td>'.$row['faction_character'].'</td>';
