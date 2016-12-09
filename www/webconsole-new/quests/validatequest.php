@@ -1381,10 +1381,6 @@ function parse_command($command, &$assigned, $quest_id, $step, $quest_name, &$va
                     append_log("Parse Error: No require variable name (check for double spaces) at line $line_number");
                     return;
                 }
-                if (strncmp($parameters[0], 'Quest_', 6) !== 0) // case sensitive check
-                {
-                    append_log("Warning: Variables for quests should start with 'Quest_' at line $line_number");
-                }
                 if (count($parameters) == 1)
                 {
                     return; // valid, we already checked empty/other cases above.
