@@ -12,19 +12,26 @@ function ka_scripts()
         $result = mysql_query2($query);
         echo '<table border="1">';
         echo '<tr><th>Name</th><th>Action</th></tr>';
+        $results = array();
         while ($row = fetchSqlAssoc($result))
         {
             $pos1 = strpos($row['script'], "\n")+1;
             $string = substr($row['script'], $pos1);
             $pos2 = strpos($string, ":");
-            $name = substr($string, 0, $pos2);   
-            echo '<tr><td>'.htmlentities($name).'</td>';
-            echo '<td><a href="./index.php?do=ka_scripts&amp;sub=Read&amp;areaid='.$row['id'].'">Read</a>';
-            echo '<br/><a href="./index.php?do=validatequest&amp;id=-1&amp;script_id='.$row['id'].'">Validate</a>';
+            $name = substr($string, 0, $pos2);
+            $results[$row['id']] = $name;
+        }
+        asort($results, SORT_NATURAL | SORT_FLAG_CASE); // sort results by value, asc.
+        foreach ($results as $rId => $rName)
+        {
+
+            echo '<tr><td>'.htmlentities($rName).'</td>';
+            echo '<td><a href="./index.php?do=ka_scripts&amp;sub=Read&amp;areaid='.$rId.'">Read</a>';
+            echo '<br/><a href="./index.php?do=validatequest&amp;id=-1&amp;script_id='.$rId.'">Validate</a>';
             if (checkaccess('npcs', 'edit'))
             {
-                echo '<br/><a href="./index.php?do=ka_scripts&amp;sub=Edit&amp;areaid='.$row['id'].'">Edit</a>';
-                echo '<br/><a href="./index.php?do=ka_scripts&amp;sub=Delete&amp;areaid='.$row['id'].'">Delete</a>';
+                echo '<br/><a href="./index.php?do=ka_scripts&amp;sub=Edit&amp;areaid='.$rId.'">Edit</a>';
+                echo '<br/><a href="./index.php?do=ka_scripts&amp;sub=Delete&amp;areaid='.$rId.'">Delete</a>';
             }
             echo '</td></tr>';
         }
