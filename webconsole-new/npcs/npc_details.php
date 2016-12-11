@@ -694,22 +694,30 @@ function npc_items($masterId){
         if ($masterId > 0)
         {
             echo '<p>This NPC is using this <a href="./index.php?do=npc_details&npc_id='.$masterId.'&sub=items">master NPC</a>, and ';
-            echo 'receives its inventory from that master.</p>';
+            echo 'receives its inventory from that master.</p>'."\n";
             return;
         }
-        $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_quality, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
+        $query = "SELECT i.id, i.location_in_parent, i.stack_count, i.item_name, i.item_quality, i.item_stats_id_standard, s.name, s.valid_slots FROM item_instances AS i LEFT JOIN item_stats as s ON s.id=i.item_stats_id_standard WHERE i.char_id_owner='$id' ORDER BY s.name";
         $result = mysql_query2($query);
         if (sqlNumRows($result) > 0){
-          echo '<table border=1><tr><th>Item</th><th>Location</th><th>Count/Quality</th><th>Functions</th></tr>';
+          echo '<table border="1"><tr><th>Item</th><th>Location</th><th>Count/Quality</th><th>Functions</th></tr>'."\n";
           while ($row = fetchSqlAssoc($result)){
             echo '<tr>';
-            echo '<td>'.$row['name'].'</td>';
-            echo '<td>'.LocationToString($row['location_in_parent']).'</td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><input type="text" name="stack_count" value="'.$row['stack_count'].'" size="3"/><input type="text" name="item_quality" value="'.$row['item_quality'].'" size="3"/><input type="hidden" name="id" value="'.$row['id'].'"/><input type="submit" name="commit" value="Update"/></form></td>';
-            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post">';
-            echo '<input type="hidden" name="id" value="'.$row['id'].'"/>';
-            echo '<input type="submit" name="commit" value="Remove" /><br/>';
-            echo '<input type="submit" name="commit" value="Change Location" />';
+            echo '<td>'.$row['name'];
+            if ($row['item_name'] != null && trim($row['item_name']) != '')
+            {
+                echo ' (Renamed to "'.htmlentities($row['item_name']).'")';
+            }
+            echo '</td>'."\n";
+            echo '<td>'.LocationToString($row['location_in_parent']).'</td>'."\n";
+            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><div>'."\n";
+            echo '<input type="text" name="stack_count" value="'.$row['stack_count'].'" size="3"/>'."\n";
+            echo '<input type="text" name="item_quality" value="'.$row['item_quality'].'" size="3"/><input type="hidden" name="id" value="'.$row['id'].'"/>'."\n";
+            echo '<input type="submit" name="commit" value="Update"/></div></form></td>'."\n";
+            echo '<td><form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><div>'."\n";
+            echo '<input type="hidden" name="id" value="'.$row['id'].'"/>'."\n";
+            echo '<input type="submit" name="commit" value="Remove" /><br/>'."\n";
+            echo '<input type="submit" name="commit" value="Change Location" />'."\n";
             echo '<select name="slot">';
             $slots = preg_split("/[\s,]+/", $row['valid_slots']);
             foreach ($slots AS $slot){
@@ -891,19 +899,19 @@ function npc_items($masterId){
                   break;
               }
             }
-            echo '</select>';
-            echo '</form></td>';
+            echo '</select>'."\n";
+            echo '</div></form></td>';
             echo '</tr>';
           }
-          echo '</table>';
+          echo '</table>'."\n";
         }else{
           echo '<p class="error">NPC Has no items in Inventory</p>';
         }
-        echo '<p>Add a new Item to this NPC</p>';
-        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post">';
+        echo '<p>Add a new Item to this NPC</p>'."\n";
+        echo '<form action="./index.php?do=npc_details&amp;npc_id='.$id.'&amp;sub=items" method="post"><div>';
         echo DrawItemSelectBox('item_id');
         echo '<input type="submit" name="commit" value="Add" />';
-        echo '</form>';
+        echo '</div></form>'."\n";
       }
     }else{
       echo '<p class="error">Error: No npc id</p>';
