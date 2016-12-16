@@ -899,6 +899,12 @@
         othermain();
         lifeeventrelations();
         break;
+      case 'servernews':
+        include('./other/othermain.php');
+        include('./other/servernews.php');
+        othermain();
+        serverNews();
+        break;
       case 'listguilds':
         include('./other/othermain.php');
         include('./other/guilds.php');
