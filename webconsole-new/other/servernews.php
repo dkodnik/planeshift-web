@@ -4,7 +4,7 @@ function serverNews()
 {
     if (!checkaccess('other', 'edit'))
     {
-        echo '<p class="error">You are not authorized to view Tribe details</p>';
+        echo '<p class="error">You are not authorized to view Server News</p>';
         return;
     }
     if (isset($_POST['submit']) && $_POST['submit'] == 'Update News')
