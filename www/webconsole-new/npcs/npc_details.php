@@ -17,6 +17,18 @@ function npc_main()
     }
     if (!isset($_POST['commit']))
     {
+        $enumCharType = array('NPC', 'MOUNT', 'PET');
+        $makeEnumDropdown = function ($name, $enumArray, $selected = -1) 
+        {
+            $output = '';
+            $output .= '<select name="'.$name.'">';
+            foreach ($enumArray as $key => $value)
+            { // +1 because we want to skip the real element 0 (players), which we don't want to be able to change to.
+                $output .= '<option value="'.($key + 1).'" '.(($key + 1) == $selected ? 'selected="selected"' : '').'>'.$value.'</option>';
+            }
+            $output .= '</select>';
+            return $output;
+        };
         $id = escapeSqlString($_GET['npc_id']);
         $query = 'SELECT name, lastname, description, description_ooc, creation_info, description_life, npc_master_id, character_type, loc_sector_id, loc_x, loc_y, loc_z, loc_instance, loc_yrot, racegender_id, base_hitpoints_max, base_mana_max, npc_impervious_ind, kill_exp, npc_spawn_rule, npc_addl_loot_category_id, creation_time, banker, statue FROM characters WHERE id='.$id;
         $result = mysql_query2($query);
@@ -62,6 +74,10 @@ function npc_main()
         echo '<td><input type="text" name="loc_instance" value="'.$row['loc_instance'].'" size="5"/></td></tr></table></td></tr>';
         $Races = PrepSelect('races');
         echo '<tr><td>Race/Gender: </td><td>'.DrawSelectBox('races', $Races, 'racegender_id', $row['racegender_id']).'</td></tr>';
+        if ($row['character_type'] > 0) // Don't show for players
+        {
+            echo '<tr><td>Character Type</td><td>'.$makeEnumDropdown('character_type', $enumCharType, $row['character_type']).'</td></tr>';
+        }
         echo '<tr><td>&nbsp;</td><td>&nbsp;</td></tr>';
         echo '<tr><td>Base HP (0 for auto-calc)</td><td><input type="text" name="base_hitpoints_max" value="'.$row['base_hitpoints_max'].'" size="18" /> ';
         echo '<input type="checkbox" name="base_hitpoints_null" onclick="changeHitpointsText()" /> Use Master Value.</td></tr>';
@@ -231,6 +247,11 @@ function npc_main()
         $query .= "loc_instance = '$loc_instance', ";
         $racegender_id = escapeSqlString($_POST['racegender_id']);
         $query .= "racegender_id = '$racegender_id', ";
+        if ($_POST['char_type'] > 0) // Don't update for players
+        {
+            $characterType = escapeSqlString($_POST['character_type']);
+            $query .= "character_type = $characterType, ";
+        }
         if (isset($_POST['base_hitpoints_null'])) 
         {
             $query .= "base_hitpoints_max = null, ";
