@@ -2,9 +2,11 @@
 /*
  * This script is designed to operate outside the regular context of the WC, the path mentioned below can be used to point it to its files.
  */
-$pathToWC = './../'; // this *must* end in a /, use ./ if the script is in the WC root, otherwise use an additional ../ for every directory it is below that.
+
+include('./../secure/db_config.php');
+// $pathToWC is defined in db_config.php
 include($pathToWC.'commonfunctions.php');
-include($pathToWC.'../secure/db_config.php');
+
 include($pathToWC.'quests/validatequest.php');
 
 SetUpDB($db_hostname, $db_username, $db_password, $db_name);
