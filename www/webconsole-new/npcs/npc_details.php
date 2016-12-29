@@ -17,7 +17,7 @@ function npc_main()
     }
     if (!isset($_POST['commit']))
     {
-        $enumCharType = array('NPC', 'MOUNT', 'PET');
+        $enumCharType = array('NPC', 'PET', 'MOUNT');
         $makeEnumDropdown = function ($name, $enumArray, $selected = -1) 
         {
             $output = '';
