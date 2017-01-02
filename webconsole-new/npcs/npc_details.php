@@ -363,7 +363,7 @@ function npc_skills($masterId)
                 $result = mysql_query2($query);
                 unset($_POST);
                 echo '<p class="error">Update Successful</p>';
-                npc_skills();
+                npc_skills($masterId);
             }
             else
             {
@@ -440,7 +440,7 @@ function npc_traits($masterId){
         mysql_query2($query);
         unset($_POST);
         echo '<p class="error">Update Successful</p>';
-        npc_traits();
+        npc_traits($masterId);
       }else{
         if ($masterId > 0)
         {
@@ -965,7 +965,7 @@ function npc_training($masterId){
         $result = mysql_query2($query);
         unset($_POST);
         echo '<p class="error">Update Successful</p>';
-        npc_training();
+        npc_training($masterId);
       }else{
         if ($masterId > 0)
         {
@@ -1038,7 +1038,7 @@ function npc_merchant($masterId)
                 $result = mysql_query2($query);
                 unset($_POST);
                 echo '<p class="error">Update Successful</p>';
-                npc_merchant();
+                npc_merchant($masterId);
             }
             else
             {
@@ -1317,7 +1317,7 @@ function npc_variables($masterId)
                 $result = mysql_query2($query);
                 unset($_POST);
                 echo '<p class="error">Update Successful</p>';
-                npc_variables();
+                npc_variables($masterId);
             }
             else
             {
