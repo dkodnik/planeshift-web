@@ -127,7 +127,7 @@ function ka_scripts()
                 echo '<p class="error">cannot create KA without a name.</p>';
                 return;
             }
-            $script = " \n"."$name:\n#This is a temporary Entry -Needs to be changed";
+            $script = " \nP: default \n$name: I am a default response, change me.\n#This is a temporary Entry -Needs to be changed";
             $query = "INSERT INTO quest_scripts (quest_id, script) VALUES ('-1', '$script')";
             $result = mysql_query2($query);
             unset($_GET);
