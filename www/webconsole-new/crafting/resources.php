@@ -148,13 +148,14 @@ function listresources(){
         }
       }
       $result = mysql_query2($query);
-      echo '<table border="1"><tr><th><a href="./index.php?do=resource&amp;sort=loc">Location</a></th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th><a href="./index.php?do=resource&amp;sort=skill">Skill</a></th><th>Skill Level</th><th><a href="./index.php?do=resource&amp;sort=tool">Tool Category</a></th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th><a href="./index.php?do=resource&amp;sort=item">Item</a></th><th>Resource "Nickname"</th><th>Amount (1)</th><th>Interval (2)</th><th>Max Random (3)</th>';
+      echo '<table border="1"><tr><th>ID</th><th><a href="./index.php?do=resource&amp;sort=loc">Location</a></th><th>Radius</th><th>Visible Radius</th><th>Probability</th><th><a href="./index.php?do=resource&amp;sort=skill">Skill</a></th><th>Skill Level</th><th><a href="./index.php?do=resource&amp;sort=tool">Tool Category</a></th><th>Item Quality</th><th>Animation</th><th>Animation Duration</th><th><a href="./index.php?do=resource&amp;sort=item">Item</a></th><th>Resource "Nickname"</th><th>Amount (1)</th><th>Interval (2)</th><th>Max Random (3)</th>';
       if (checkaccess('natres', 'edit')){
         echo '<th>Actions</th>';
       }
       echo '</tr>';
       while ($row = fetchSqlAssoc($result)){
         echo '<tr>';
+		echo '<td>'.$row['id'].'</td>';
         echo '<td>'.$row['sector'].'/'.$row['loc_x'].'/'.$row['loc_y'].'/'.$row['loc_z'].'</td>';
         echo '<td>'.$row['radius'].'</td>';
         echo '<td>'.$row['visible_radius'].'</td>';
