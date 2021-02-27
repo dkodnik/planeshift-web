@@ -118,13 +118,12 @@
 <?php
                                     $i = 0;
                                     foreach ($altChars as $altChar) {
-                                        if ($altChar->ID != $char->ID) {
-                                            $i++;
+                                       $i++;
                                             echo '<tr>';
                                             echo '<td style="text-align:right;">#' . $i . '</td>';
                                             echo '<td><a href="javascript:setCharId(\'' . $altChar->ID . '\');">' . $altChar->FirstName . ' ' . $altChar->LastName . '</a></td>';
                                             echo '</tr>';
-                                        }
+                                        
                                     }
 ?>
 								</table>

@@ -26,7 +26,7 @@ class PSGmEvents extends PSBaseClass {
             $append = '';
         }
         
-        $connection = PSBaseClass::S_GetConnection();
+        $conn = PSBaseClass::S_GetConnection();
         
         $finished = ($completed) ? " WHERE status = '2'" : " WHERE status != '2'";
         
@@ -34,11 +34,11 @@ class PSGmEvents extends PSBaseClass {
                 .'LEFT JOIN characters c ON c.id = gme.gm_id'; 
         $query .= $finished;
         $query .= $append;        
-        $result = mysql_query($query);
+        $result = mysqli_query($conn, $query);
     
         //Build list as an array
         $events = array();
-        while ($row = mysql_fetch_assoc($result)) 
+        while ($row = mysqli_fetch_assoc($result)) 
         {
             
             $average = $this->getVoteAverage($row['id']);
@@ -75,12 +75,12 @@ class PSGmEvents extends PSBaseClass {
     
     public function getVoteAverage($event_id)
     {
-        $connection = PSBaseClass::S_GetConnection();
+        $conn = PSBaseClass::S_GetConnection();
         
         //Get vote total and number of votes from db
-        $query = sprintf("SELECT SUM(vote), COUNT(player_id) FROM character_events WHERE vote IS NOT NULL AND event_id = '%s'", mysql_real_escape_string($event_id));
-        $result = mysql_query($query);
-        $row = mysql_fetch_assoc($result);
+        $query = sprintf("SELECT SUM(vote), COUNT(player_id) FROM character_events WHERE vote IS NOT NULL AND event_id = '%s'", mysqli_real_escape_string($conn, $event_id));
+        $result = mysqli_query($conn, $query);
+        $row = mysqli_fetch_assoc($result);
         
         //to avoid division by zero
         if ($row['COUNT(player_id)'] < 1) 
@@ -100,25 +100,25 @@ class PSGmEvents extends PSBaseClass {
     
     public function getEventDetails($event_id)
     {
-        $connection = PSBaseClass::S_GetConnection();
+        $conn = PSBaseClass::S_GetConnection();
         
         $query = sprintf("SELECT gme.name, gme.description, c.name AS gm_name, c.lastname AS gm_lastname, gme.id AS id FROM gm_events gme  
-                          LEFT JOIN characters c ON c.id = gme.gm_id WHERE gme.id ='%s'",  mysql_real_escape_string($event_id));
-        $result = mysql_query($query);
+                          LEFT JOIN characters c ON c.id = gme.gm_id WHERE gme.id ='%s'",  mysqli_real_escape_string($conn, $event_id));
+        $result = mysqli_query($conn, $query);
         
-        return mysql_fetch_assoc($result);
+        return mysqli_fetch_assoc($result);
     }
     
     public function getEventComments($event_id)
     {
-        $connection = PSBaseClass::S_GetConnection();
+        $conn = PSBaseClass::S_GetConnection();
         
         $query = sprintf("SELECT ce.comments, ce.vote, c.name, c.lastname FROM character_events ce 
-                        LEFT JOIN characters c ON ce.player_id = c.id WHERE ce.comments IS NOT NULL AND ce.event_id='%s'", mysql_real_escape_string($event_id));
-        $result = mysql_query($query);
+                        LEFT JOIN characters c ON ce.player_id = c.id WHERE ce.comments IS NOT NULL AND ce.event_id='%s'", mysqli_real_escape_string($conn, $event_id));
+        $result = mysqli_query($conn, $query);
     
         $comments = array();
-        while ($row = mysql_fetch_assoc($result)) 
+        while ($row = mysqli_fetch_assoc($result)) 
         {
             $comments[] = array('name'=>$row['name'] . ' ' . $row['lastname'], 'vote'=>$row['vote'], 'comment'=>$row['comments']);
         }
@@ -128,13 +128,13 @@ class PSGmEvents extends PSBaseClass {
     
     public function getNonVoters($event_id)
     {
-        $connection = PSBaseClass::S_GetConnection();
+        $conn = PSBaseClass::S_GetConnection();
         
-        $query = sprintf("SELECT c.name, c.lastname FROM characters c JOIN character_events ce ON ce.player_id = c.id WHERE ce.vote IS NULL AND ce.event_id = '%s'", mysql_real_escape_string($event_id));
-        $result = mysql_query($query);
+        $query = sprintf("SELECT c.name, c.lastname FROM characters c JOIN character_events ce ON ce.player_id = c.id WHERE ce.vote IS NULL AND ce.event_id = '%s'", mysqli_real_escape_string($conn, $event_id));
+        $result = mysqli_query($conn, $query);
         
         $non_voters = array();
-        while($row = mysql_fetch_assoc($result)) 
+        while($row = mysqli_fetch_assoc($result)) 
         {
             $non_voters[] = $row;
         }

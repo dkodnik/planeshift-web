@@ -19,26 +19,26 @@ class PSBan extends PSBaseClass {
     //
     // Constructor
     //
-    function PSBan() {
+    function __construct() {
     }
 
 
     //
     // Functions
     //
-    function S_GetBans() {
+    static function S_GetBans() {
         $conn = PSBaseClass::S_GetConnection();
 
 		// base query
         $sql = 'SELECT a.id, a.username, a.security_level, b.* FROM accounts a, bans b WHERE a.id = b.account order by end desc';
 
-        $res = mysql_query($sql, $conn);
+        $res = mysqli_query($conn, $sql);
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $bans = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $ban = new PSBan();
 
                 $ban->AccountID = $row['account'];

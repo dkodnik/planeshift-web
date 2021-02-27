@@ -18,31 +18,31 @@ class PSGMCommandLogEntry {
     //
     // Constructor
     //
-    function PSGMCommandLogEntry() {
+    function __construct() {
     }
 
 
     //
     // Functions
     //
-    function S_GetActionsOfGM($pGMID) {
+    static function S_GetActionsOfGM($pGMID) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT l.id, gm.id AS gm_id, gm.name AS gm_name, l.command, p.id AS player_id, p.name AS player_name, l.ex_time FROM gm_command_log l INNER JOIN characters gm ON gm.id = l.gm LEFT OUTER JOIN characters p ON p.id = l.player ';
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'gm', '=', $pGMID);
 
-        $res = mysql_query($sql . $where . ' ORDER BY ex_time DESC', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY ex_time DESC');
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $actions = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $action = new PSGMCommandLogEntry();
 
                 $action->ID = $row['id'];
-                $action->GMID = $row['gm'];
+                $action->GMID = $row['gm_id'];
                 $action->GMFirstName = $row['gm_name'];
                 $action->Command = $row['command'];
                 $action->TargetPlayerID = $row['player_id'];

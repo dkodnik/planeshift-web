@@ -22,14 +22,14 @@ class PSPetition extends PSBaseClass {
     //
     // Constructor
     //
-    function PSPetition() {
+    function __construct() {
     }
 
 
     //
     // Functions
     //
-    function S_GetPetitions($type = 1) {
+    static function S_GetPetitions($type = 1) {
         $conn = PSBaseClass::S_GetConnection();
 
 		// base query
@@ -43,13 +43,13 @@ class PSPetition extends PSBaseClass {
 		if ($type == 2)
            $sql .= 'IN (\'closed\')';
 
-        $res = mysql_query($sql . " ORDER BY created_date DESC LIMIT 100", $conn);
+        $res = mysqli_query($conn, $sql . " ORDER BY created_date DESC LIMIT 100");
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $petitions = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $petition = new PSPetition();
 
                 $petition->ID = $row['id'];

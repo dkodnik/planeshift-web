@@ -1,5 +1,5 @@
 <?php
-
+	require_once('classes/PSBaseClass.php');
     //
     // Settings to connect to the database
     //
@@ -32,4 +32,5 @@
 	
 	// set time/date
 	date_default_timezone_set('UTC');
+	
 ?>

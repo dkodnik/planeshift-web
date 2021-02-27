@@ -9,22 +9,35 @@ class PSBaseClass {
     var $__IsLoaded;
 	var $conn;
 
-    function PSBaseClass() {
+    function __construct() {
     }
 
-    function S_GetConnection()
+    static function S_GetConnection()
     {
         require('config.php');
+		$mysqli;
+		$mysqli = new mysqli($__DB_HOST, $__DB_USER, $__DB_PASS, $__DB_NAME);
+		
+		/* check connection */
+		if ($mysqli->connect_errno) //error code 0 means success, causing us to fail this if.
+		{
+			printf("Connect failed: %s\n", $mysqli->connect_error);
+			exit();
+		}
+		return $mysqli;
+		
+		/*require('config.php');
+				
 		//if ($conn==null) {
-	        $conn = mysql_connect($__DB_HOST, $__DB_USER, $__DB_PASS);
-	        mysql_select_db($__DB_NAME);
+	        $conn = mysqli_connect($__DB_HOST, $__DB_USER, $__DB_PASS);
+	        mysqli_select_db($__DB_NAME);
 			//echo "Opened a db connection.";
 		//}
 
-        return $conn;
+        return $conn;*/
     }
 
-    function S_AppendWhereCondition(&$where, $param, $op, $value) {
+    static function S_AppendWhereCondition(&$where, $param, $op, $value) {
         if (isset($value)) {
             if ($where == '') {
                 $where .= ' WHERE ';

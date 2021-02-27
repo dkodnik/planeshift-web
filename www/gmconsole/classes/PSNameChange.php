@@ -17,25 +17,25 @@ class PSNameChange extends PSBaseClass {
     //
     // Constructor
     //
-    function PSNameChange() {
+    function __construct() {
     }
 
 
-    function S_GetLatest($page = 0) {
+    static function S_GetLatest($page = 0) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT l.command, l.ex_time, gm.name FROM gm_command_log l INNER JOIN characters gm ON l.gm = gm.id';
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'command', 'LIKE', '/changename %');
 
-        $res = mysql_query($sql . $where . ' ORDER BY ex_time DESC LIMIT ' . ($page * 100) . ', 100', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY ex_time DESC LIMIT ' . ($page * 100) . ', 100');
         if (!$res) {
-            die($sql . $where . ' ORDER BY ex_time DESC LIMIT ' . ($page * 100) . ', 100<br/>' . mysql_error());
+            die($sql . $where . ' ORDER BY ex_time DESC LIMIT ' . ($page * 100) . ', 100<br/>' . mysqli_error($conn));
         }
         else {
             $namechanges = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $namechange = new PSNameChange();
 
                 // First, remove multiple space characters because they will cause trouble when splitting

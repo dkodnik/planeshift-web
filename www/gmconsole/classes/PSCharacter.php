@@ -39,7 +39,7 @@ class PSCharacter extends PSBaseClass {
     var $TimeConnectedInSeconds;
     var $ExperiencePoints;
     var $ProgressionPoints;
-    var $DuelPoints;
+    //var $DuelPoints;
     var $Description;
     var $CreationTime;
     var $LastLoginIP; // used only for guild display
@@ -48,38 +48,48 @@ class PSCharacter extends PSBaseClass {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Constructor
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    function PSCharacter($pID = 0) {
+   /* static function PSCharacter($pID = 0) {
         if ($pID > 0) {
             $this->ID = $pID;
             $this->Load();
         }
+    }*/
+	function __construct($pID = 0)
+	{
+        if ($pID > 0) 
+		{
+            $this->ID = $pID;
+            $this->Load($pID);
+        }
     }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Functions
+// functions
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    function Load() {
-        if (!$this->ID) {
+    function Load($pID) {
+		
+        if (!$pID) {
             die('Cannot load a character if the object trying to load it has an uninitialized property "ID"');
         }
+		
 
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM characters';
         $where = '';
-        PSBaseClass::S_AppendWhereCondition($where, 'id', '=', $this->ID);
+        PSBaseClass::S_AppendWhereCondition($where, 'id', '=', $pID);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . mysql_error());
-        } if (!mysql_num_rows($res)) {
+            die($sql . $where . mysqli_error($conn));
+        } if (!mysqli_num_rows($res)) {
           // the char ID does not exist aborting
             $this->FirstName = 'INVALID ID';
             return;
         } else {
             // since it's the ID, there's only one character
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
 
             $this->ID = $row['id'];
             $this->FirstName = $row['name'];
@@ -101,7 +111,7 @@ class PSCharacter extends PSBaseClass {
             $this->TimeConnectedInSeconds = $row['time_connected_sec'];
             $this->ExperiencePoints = $row['experience_points'];
             $this->ProgressionPoints = $row['progression_points'];
-            $this->DuelPoints = $row['duel_points'];
+           // $this->DuelPoints = $row['duel_points'];
             $this->Description = $row['description'];
             $this->CreationTime = $row['creation_time'];
 
@@ -112,12 +122,12 @@ class PSCharacter extends PSBaseClass {
         // extract stats/skills
         $sql = 'SELECT * FROM character_skills where character_id='.$this->ID;
 
-        $res = mysql_query($sql, $conn);
+        $res = mysqli_query($conn, $sql);
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
-          while($data = mysql_fetch_array($res)) {
+          while($data = mysqli_fetch_array($res)) {
 
             $stat = $data['skill_id'];
             //echo '--> '.$stat;
@@ -192,7 +202,7 @@ class PSCharacter extends PSBaseClass {
     //
     // Returns all GM actions that this character has done as an array of PSGMCommandLogEntry-objects.
     // The array is empty, if the character is no GM or has never issued any GM command.
-    // This function only makes sense if the character in question actually is a GM, or has ever been one.
+    // This static function only makes sense if the character in question actually is a GM, or has ever been one.
     //
     function GetGMCommandLog() {
         if (!$this->__IsLoaded) {
@@ -249,16 +259,16 @@ class PSCharacter extends PSBaseClass {
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Static Functions
+// Static static functions
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     //
     // Searches for characters that fulfill the given search parameters.
     // Returns an array of character objects ordered by name in ascending order. For performance reasons, a maximum of
     // 100 characters is returned. If no character match the search parameters, an empty yet initialized array is returned.
-    // This function can be called statically.
+    // This static function can be called statically.
     //
-    function S_Find($firstName, $lastName, $charType = -1, $lastIP = '') {
+    static function S_Find($firstName, $lastName, $charType = -1, $lastIP = '') {
         require_once('PSBaseClass.php');
         $conn = PSBaseClass::S_GetConnection();
 
@@ -281,14 +291,14 @@ class PSCharacter extends PSBaseClass {
             PSBaseClass::S_AppendWhereCondition($where, 'a.last_login_ip', '=', $lastIP);
         }
 
-        $res = mysql_query($sql . $where . ' ORDER BY name LIMIT 100', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY name LIMIT 100');
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             $characters = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $char = new PSCharacter();
             
                 $char->ID = $row['id'];
@@ -311,7 +321,7 @@ class PSCharacter extends PSBaseClass {
                 $char->TimeConnectedInSeconds = $row['time_connected_sec'];
                 $char->ExperiencePoints = $row['experience_points'];
                 $char->ProgressionPoints = $row['progression_points'];
-                $char->DuelPoints = $row['duel_points'];
+                //$char->DuelPoints = $row['duel_points'];
                 $char->Description = $row['description'];
                 $char->CreationTime = $row['creation_time'];
 
@@ -324,21 +334,21 @@ class PSCharacter extends PSBaseClass {
     }
 
 	// Searches characters owning a specific key
-	function Key_Find($keyField) {
+	static function Key_Find($keyField) {
         require_once('PSBaseClass.php');
         $conn = PSBaseClass::S_GetConnection();
 
 		// select name from item_instances s, characters c where c.id=s.char_id_owner and flags like '%key%' and openable_locks=35576198;
 		$sql = 'SELECT c.* FROM item_instances s, characters c where c.id=s.char_id_owner and openable_locks='.$keyField;
 
-        $res = mysql_query($sql . ' ORDER BY name LIMIT 100', $conn);
+        $res = mysqli_query($conn, $sql . ' ORDER BY name LIMIT 100');
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             $characters = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $char = new PSCharacter();
             
                 $char->ID = $row['id'];
@@ -361,7 +371,7 @@ class PSCharacter extends PSBaseClass {
                 $char->TimeConnectedInSeconds = $row['time_connected_sec'];
                 $char->ExperiencePoints = $row['experience_points'];
                 $char->ProgressionPoints = $row['progression_points'];
-                $char->DuelPoints = $row['duel_points'];
+               // $char->DuelPoints = $row['duel_points'];
                 $char->Description = $row['description'];
                 $char->CreationTime = $row['creation_time'];
 
@@ -377,9 +387,9 @@ class PSCharacter extends PSBaseClass {
     //
     // Returns the leader of a guild. If there's more than one leader (database inconsistency?), the first one read from the
     // database will be returned.
-    // This function is intended to be called statically.
+    // This static function is intended to be called statically.
     //
-    function S_GetLeaderOfGuild($guildId) {
+    static function S_GetLeaderOfGuild($guildId) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM characters';
@@ -387,13 +397,13 @@ class PSCharacter extends PSBaseClass {
         PSBaseClass::S_AppendWhereCondition($where, 'guild_member_of', '=', $guildId);
         PSBaseClass::S_AppendWhereCondition($where, 'guild_level', '=', 9);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             // In theory each guild has only one leader. If this is not the case (because of erroneous/incosistent data in the database,
             // we will simply return the first leader that is returned.
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
 
             $char = new PSCharacter();
 
@@ -415,7 +425,7 @@ class PSCharacter extends PSBaseClass {
             $char->TimeConnectedInSeconds = $row['time_connected_sec'];
             $char->ExperiencePoints = $row['experience_points'];
             $char->ProgressionPoints = $row['progression_points'];
-            $char->DuelPoints = $row['duel_points'];
+            //$char->DuelPoints = $row['duel_points'];
             $char->Description = $row['description'];
 
             $char->__IsLoaded = true;
@@ -428,22 +438,22 @@ class PSCharacter extends PSBaseClass {
     // Returns all members of a guild as PSCharacter-objects. They are sorted by guild level (descending), then first name (ascending)
     // If the guild has no members, an empty array is returned.
     //
-    function S_GetMembersOfGuild($guildId,$order) {
+    static function S_GetMembersOfGuild($guildId,$order) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM characters c , accounts a ';
         $where = 'where c.account_id=a.id ';
         PSBaseClass::S_AppendWhereCondition($where, 'guild_member_of', '=', $guildId);
         if ($order)
-          $res = mysql_query($sql . $where . ' ORDER BY last_login_ip ASC, name ASC', $conn);
+          $res = mysqli_query($conn, $sql . $where . ' ORDER BY last_login_ip ASC, name ASC');
         else
-          $res = mysql_query($sql . $where . ' ORDER BY guild_level DESC, name ASC', $conn);
+          $res = mysqli_query($conn, $sql . $where . ' ORDER BY guild_level DESC, name ASC');
 
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $chars = array();
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $char = new PSCharacter();
 
                 $char->ID = $row['id'];
@@ -465,7 +475,7 @@ class PSCharacter extends PSBaseClass {
                 $char->TimeConnectedInSeconds = $row['time_connected_sec'];
                 $char->ExperiencePoints = $row['experience_points'];
                 $char->ProgressionPoints = $row['progression_points'];
-                $char->DuelPoints = $row['duel_points'];
+               // $char->DuelPoints = $row['duel_points'];
                 $char->Description = $row['description'];
 
                 $char->__IsLoaded = true;
@@ -477,20 +487,20 @@ class PSCharacter extends PSBaseClass {
     }
 
 
-    function S_GetCharactersOfAccount($accountID) {
+    static function S_GetCharactersOfAccount($accountID) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM characters';
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'account_id', '=', $accountID);
 
-        $res = mysql_query($sql . $where . ' ORDER BY name ASC', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY name ASC');
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $chars = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $char = new PSCharacter();
 
                 $char->ID = $row['id'];
@@ -511,7 +521,7 @@ class PSCharacter extends PSBaseClass {
                 $char->TimeConnectedInSeconds = $row['time_connected_sec'];
                 $char->ExperiencePoints = $row['experience_points'];
                 $char->ProgressionPoints = $row['progression_points'];
-                $char->DuelPoints = $row['duel_points'];
+                //$char->DuelPoints = $row['duel_points'];
                 $char->Description = $row['description'];
 
                 $char->__IsLoaded = true;
