@@ -2,6 +2,7 @@
 
     require_once('config.php');
     require_once('classes/Navigation.php');
+	require_once('classes/PSBaseClass.php');
     require_once("classes/PSCharacter.php");
 
 	session_start();
@@ -14,6 +15,7 @@
 
 	// get variables
     $charId = $_POST["charId"];
+	$conn = PSBaseClass::S_GetConnection();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -235,8 +237,8 @@ if ($_SESSION["__SECURITY_LEVEL"] >= 22) {
 							</tr>
 <?php
 						$sel_var = 'SELECT name, value FROM character_variables WHERE character_id='.$charId.' ORDER BY name';
-						$var_sel = mysql_query($sel_var) or die ($sel_var . '<br>' . mysql_error());
-						while($var= mysql_fetch_array($var_sel))
+						$var_sel = mysqli_query($conn, $sel_var) or die ($sel_var . '<br>' . mysqli_error($conn));
+						while($var= mysqli_fetch_array($var_sel))
 						{
 							echo('<tr><td>' . $var['name'] . '</td><td>' . $var['value'] . '</td></tr>');
 						}

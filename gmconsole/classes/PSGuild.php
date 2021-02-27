@@ -22,7 +22,7 @@ class PSGuild extends PSBaseClass {
     //
     // Constructor
     //
-    function PSGuild($pID = 0) {
+    function __construct($pID = 0) {
         if ($pID > 0) {
             $this->ID = $pID;
             $this->Load();
@@ -44,13 +44,13 @@ class PSGuild extends PSBaseClass {
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'id', '=', $this->ID);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             // since it's the ID, there's only one character
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
 
             $this->Name = $row['name'];
             $this->FounderID = $row['char_id_founder'];
@@ -104,20 +104,20 @@ class PSGuild extends PSBaseClass {
     }
 
 
-    function S_Find($guildName) {
+    static function S_Find($guildName) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM guilds';
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'name', 'LIKE', $guildName);
 
-        $res = mysql_query($sql . $where . " ORDER BY name LIMIT 100", $conn);
+        $res = mysqli_query($conn, $sql . $where . " ORDER BY name LIMIT 100");
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         } else {
             $guilds = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $guild = new PSGuild();
 
                 $guild->ID = $row['id'];

@@ -32,7 +32,7 @@ class PSItem extends PSBaseClass {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Constructor
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    function PSItem($pID = 0) {
+    function __construct($pID = 0) {
         if ($pID > 0) {
             $this->ID = $pID;
             $this->Load();
@@ -59,13 +59,13 @@ class PSItem extends PSBaseClass {
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'inst.id', '=', $this->ID);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             // Only one item will be returned
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
 
             $this->ID = $row['inst_id'];
             $this->OwnerID = $row['inst_owner'];
@@ -187,7 +187,7 @@ class PSItem extends PSBaseClass {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Static Functions
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    function S_GetInventoryOfPlayer($playerID) {
+   static function S_GetInventoryOfPlayer($playerID) {
         if (!$playerID) {
             die('Cannot load the inventory of a player who does not exist.');
         }
@@ -202,14 +202,14 @@ class PSItem extends PSBaseClass {
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'char_id_owner', '=', $playerID);
 
-        $res = mysql_query($sql . $where . ' ORDER BY inst_location_in_parent ASC', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY inst_location_in_parent ASC');
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             $items = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $item = new PSItem();
 
                 $item->ID = $row['inst_id'];
@@ -217,9 +217,11 @@ class PSItem extends PSBaseClass {
 				$item->ParentItem = $row['parent_item_id'];
                 $item->LocationInParent = $row['inst_location_in_parent'];
                 $item->StackCount = $row['inst_stack_count'];
-                $this->CreatorID = $row['inst_creator_mark_id'];
+                //$this->CreatorID = $row['inst_creator_mark_id'];
+				$item->CreatorID = $row['inst_creator_mark_id'];
                 $item->ItemQuality = $row['inst_item_quality'];
-                $this->DecayResistance = $row['inst_decay_resistance'];
+                //$this->DecayResistance = $row['inst_decay_resistance'];
+				$item->DecayResistance = $row['inst_decay_resistance'];
                 $item->Name = $row['stats_name'];
                 $item->Weight = $row['stats_weight'];
                 $item->ValidSlots = $row['stats_valid_slots'];

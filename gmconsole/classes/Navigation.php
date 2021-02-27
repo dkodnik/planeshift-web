@@ -1,6 +1,6 @@
 <?php
 class Navigation {
-    function S_GetNavigation() {
+    static function S_GetNavigation() {
         return <<<NAV
             <table class="table" style="margin-right:20px">
                 <tr>

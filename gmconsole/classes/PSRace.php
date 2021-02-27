@@ -15,7 +15,7 @@ class PSRace extends PSBaseClass {
     //
     // Constructor
     //
-    function PSRace($pID = -1) {
+    function __construct($pID = -1) {
         if ($pID > -1) {
             $this->ID = $pID;
             $this->Load();
@@ -37,13 +37,13 @@ class PSRace extends PSBaseClass {
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'id', '=', $this->ID);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . mysql_error());
+            die($sql . $where . mysqli_error($conn));
         }
         else {
             // since it's the ID, there's only one character
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
 
             $this->Name = $row['name'];
             $this->Sex = $row['sex'];

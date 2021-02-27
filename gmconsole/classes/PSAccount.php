@@ -24,7 +24,7 @@ class PSAccount extends PSBaseClass {
     //
     // Constructor
     //
-    function PSAccount($pID = 0) {
+    function __construct($pID = 0) {
         if ($pID > 0) {
             $this->ID = $pID;
             $this->Load();
@@ -47,18 +47,18 @@ class PSAccount extends PSBaseClass {
 
         PSBaseClass::S_AppendWhereCondition($where, 'id', '=', $this->ID);
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . '<br>' . mysql_error());
+            die($sql . $where . '<br>' . mysqli_error($conn));
         } else {
             // since it's the ID, there's only one character
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
             
             $this->UserName = $row['username'];
             $this->LastLogin = $row['last_login'];
             $this->CreatedDate = $row['created_date'];
             $this->LastLoginIP = $row['last_login_ip'];
-            $this->LastLoginHostName = $row['last_login_hostname'];
+            //$this->LastLoginHostName = $row['last_login_hostname'];
             $this->SecurityLevel = $row['security_level'];
             $this->Country = $row['country'];
             $this->SpamPoints = $row['spam_points'];
@@ -111,7 +111,7 @@ class PSAccount extends PSBaseClass {
     //
     // Searches for an account by user name and password, used only at login from main page
     //
-    function S_FindOne($userName, $password) {
+    static function S_FindOne($userName, $password) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM accounts';
@@ -119,11 +119,11 @@ class PSAccount extends PSBaseClass {
 		PSBaseClass::S_AppendWhereCondition($where, 'username', '=', $userName);
 		PSBaseClass::S_AppendWhereCondition($where, 'password', '=', md5($password));
 
-        $res = mysql_query($sql . $where, $conn);
+        $res = mysqli_query($conn, $sql . $where);
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
-            $row = mysql_fetch_array($res);
+            $row = mysqli_fetch_array($res);
             if (!$row) {
                 // Authentication failed!
                 return null;
@@ -154,7 +154,7 @@ class PSAccount extends PSBaseClass {
     //
     // Searches for all accounts that match the given the criteria
     //
-    function S_Find($email, $lastIP) {
+    static function S_Find($email, $lastIP) {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM accounts';
@@ -166,15 +166,15 @@ class PSAccount extends PSBaseClass {
 
 		//echo "before query ".$sql . $where . ' ORDER BY username ASC LIMIT 100';
 		//echo time();
-        $res = mysql_query($sql . $where . ' ORDER BY username ASC LIMIT 100', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY username ASC LIMIT 100');
 		//echo "after query";
 		//echo time();
         if (!$res) {
-            die($sql . $where . "<br>" . mysql_error());
+            die($sql . $where . "<br>" . mysqli_error($conn));
         } else {
             $accounts = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {
+            while (($row = mysqli_fetch_array($res)) != null) {
                 $account = new PSAccount();
 
                 $account->ID = $row['id'];
@@ -182,7 +182,7 @@ class PSAccount extends PSBaseClass {
                 $account->LastLogin = $row['last_login'];
                 $account->CreatedDate = $row['created_date'];
                 $account->LastLoginIP = $row['last_login_ip'];
-                $account->LastLoginHostName = $row['last_login_hostname'];
+                //$account->LastLoginHostName = $row['last_login_hostname'];
                 $account->SecurityLevel = $row['security_level'];
                 $account->Country = $row['country'];
                 $account->SpamPoints = $row['spam_points'];
@@ -204,20 +204,20 @@ class PSAccount extends PSBaseClass {
     // Returns an array of character objects that are GMs, ordered by security leven and name in ascending order.
     // This function can be called statically.
     //
-    function S_GetGMs() {
+    static function S_GetGMs() {
         $conn = PSBaseClass::S_GetConnection();
 
         $sql = 'SELECT * FROM accounts';
         $where = '';
         PSBaseClass::S_AppendWhereCondition($where, 'security_level', '>=', 10);
 
-        $res = mysql_query($sql . $where . ' ORDER BY security_level DESC, username ASC', $conn);
+        $res = mysqli_query($conn, $sql . $where . ' ORDER BY security_level DESC, username ASC');
         if (!$res) {
-            die($sql . $where . '<br>' . mysql_error());
+            die($sql . $where . '<br>' . mysqli_error($conn));
         } else {
             $gmAccounts = array();
 
-            while (($row = mysql_fetch_array($res)) != null) {            
+            while (($row = mysqli_fetch_array($res)) != null) {            
                 $gmAccount = new PSAccount();
 
                 $gmAccount->ID = $row['id'];
@@ -225,7 +225,7 @@ class PSAccount extends PSBaseClass {
                 $gmAccount->LastLogin = $row['last_login'];
                 $gmAccount->CreatedDate = $row['created_date'];
                 $gmAccount->LastLoginIP = $row['last_login_ip'];
-                $gmAccount->LastLoginHostName = $row['last_login_hostname'];
+                //$gmAccount->LastLoginHostName = $row['last_login_hostname'];
                 $gmAccount->SecurityLevel = $row['security_level'];
                 $gmAccount->Country = $row['country'];
                 $gmAccount->SpamPoints = $row['spam_points'];

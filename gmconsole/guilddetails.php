@@ -13,10 +13,21 @@
 	}
 
 	// get variables
-	$guildId = $_POST['guildId'];
-  if (!isset($_POST['guildId']))
-    $guildId = $_GET['guildId'];
-  $order = $_GET['order'];
+	$guildId = null;
+	if(isset($_POST['guildId']))
+	{
+		$guildId = $_POST['guildId'];
+	}
+  	else
+	{
+    	$guildId = $_GET['guildId'];
+	}
+		
+	$order = null;
+	if(isset($_GET['order']))
+	{
+  		$order = $_GET['order'];
+	}
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,7 +64,7 @@
           $guild = new PSGuild($guildId);
           $founder = $guild->GetFounder();
           $guildLeader = $guild->GetLeader();
-          $orderbyIP = $_GET['order'] ? 1 : 0;
+          $orderbyIP = $order ? 1 : 0;
           $members = $guild->GetMembers($order);
 
 ?>
