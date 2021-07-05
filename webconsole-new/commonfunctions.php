@@ -553,6 +553,7 @@ function LocationToString($id)
     This method contains hardcoded coords and part of SQL statements. They are the sizes of each map, as well as which sectors they 
     span in the database. This data "should" be put in a database someday(TM), since right now you will need to edit this code
     every time a map gets added to the world. (This gets used for drawing maps.)
+	Coordinates are TOP LEFT of the map. X going positive from left to right, Y going positive from top to bottom.
 */
 function getDataFromArea($area) {
 
@@ -560,10 +561,10 @@ function getDataFromArea($area) {
   $data;
   if ($area=='hydlaa_plaza') {
       $data[0] = '(loc_sector_id=15 or loc_sector_id=52 or loc_sector_id=41 or loc_sector_id=42)';
-      $data[1] = 535;
-      $data[2] = 180;
-      $data[3] = 2.2;
-      $data[4] = 2.2;
+      $data[1] = 127000;
+      $data[2] = -381000;
+      $data[3] = 1;
+      $data[4] = 1;
       $data[5] = array('hydlaa_plaza', 'tavern_de_kadel', 'laanxentrance','laanxmain');
   } else if ($area=='hydlaa_jayose') {
       $data[0] = '(loc_sector_id=49 or loc_sector_id=40)';
@@ -602,15 +603,15 @@ function getDataFromArea($area) {
       $data[5] = array('hall', 'trans1', 'dngn', 'cntr', 'trans2', 'merc', 'upper', 'entr', 'outer', 'hycorr1', 'hycorr2');
   } else if ($area=='ojaroad1') {
       $data[0] = '(loc_sector_id=22)';
-      $data[1] = 603;
-      $data[2] = 600;
+      $data[1] = 254000;
+      $data[2] = -381000;
       $data[3] = 0.9;
       $data[4] = 0.9;
       $data[5] = array('ojaroad1');
   } else if ($area=="ojaroad2") {
       $data[0] = '(loc_sector_id=59)';
-      $data[1] = 632;
-      $data[2] = 625;
+      $data[1] = 381000;
+      $data[2] = -381000;
       $data[3] = 1;
       $data[4] = 1;
       $data[5] = array('ojaroad2');
@@ -623,15 +624,15 @@ function getDataFromArea($area) {
       $data[5] = array('ojapath', 'Akk-Central', 'Akk-East');
   } else if ($area=='bdroad1') {
       $data[0] = '(loc_sector_id=60)';
-      $data[1] = 491;
-      $data[2] = 493;
+      $data[1] = 127000;
+      $data[2] = -508000;
       $data[3] = 0.76;
       $data[4] = 0.76;
       $data[5] = array('bdroad1');
   } else if ($area=='bdroad2') {
       $data[0] = '(loc_sector_id=61)';
-      $data[1] = 669;
-      $data[2] = 667;
+      $data[1] = 127000;
+      $data[2] = -635000;
       $data[3] = 1.07;
       $data[4] = 1.07;
       $data[5] = array('bdroad2');
@@ -919,4 +920,39 @@ function CheckPassword($password)
     return ($result[0] == 1);
 }
 
+function OutputPSVersionDropdown($psversion)
+{
+	return "<select name=psversion id=psversion><option value=ab>Atomic Blue</option><option value=mb>Molecular Blue</option><option value=cbe>Crystal Blue Early</option><option value=cbl>Crystal Blue Late</option><option value=sb>Steel Blue Late</option><option value=ac>Azure Chrysalis</option><option value=az>Azure Spirit</option><option value=psu selected>PSUnreal</option></select>";
+}
+
+function generateWhereClauseByPSVersion($psversion)
+{
+	// PlaneShift Atomic Blue 						10 Feb 2002 - 06 March 2003
+	// PlaneShift Molecular Blue 					07 March 2003 - 23 Dec 2004
+	// PlaneShift Early Crystal Blue! 				24 Dec 2004 - 15 July 2006
+	// PlaneShift called Late Crystal Blue! 		16 July 2006 - 14 March 2008
+	// PlaneShift called Steel Blue!				15 March 2008 - 14 December 2009
+	// PlaneShift called Arcane Chrysalis			15 December 2009 - 14 November 2013
+	// PlaneShift called Azure Spirit				15 November 2013 - 19 May 2020
+	// PlaneShift PSUnreal Alpha 0.7.1				20 May 2020 - xx
+	
+	// express dates as YYYY-MM-DD
+	
+	if ($psversion == "ab")
+		return "last_login<= DATE(\"2003-03-06\")";
+	else if ($psversion == "mb")
+		return "last_login >= DATE(\"2003-03-07\") AND last_login<= DATE(\"2004-12-23\")";
+	else if ($psversion == "cbe")
+		return "last_login >= DATE(\"2004-12-24\") AND last_login<= DATE(\"2006-07-15\")";
+	else if ($psversion == "cbl")
+		return "last_login >= DATE(\"2006-07-16\") AND last_login<= DATE(\"2008-03-14\")";
+	else if ($psversion == "sb")
+		return "last_login >= DATE(\"2008-03-15\") AND last_login<= DATE(\"2009-12-14\")";
+	else if ($psversion == "ac")
+		return "last_login >= DATE(\"2009-12-15\") AND last_login<= DATE(\"2013-11-14\")";
+	else if ($psversion == "az")
+		return "last_login >= DATE(\"2013-11-15\") AND last_login<= DATE(\"2020-05-19\")";
+	else if ($psversion == "psu")
+		return "last_login >= DATE(\"2020-05-20\")";
+}
 ?>

@@ -140,10 +140,10 @@ echo "<div id=Layer2 style=\"position:relative; \">";
 //echo "<div id=Layer2 style=\"position:absolute; width:1968px; height:954px; z-index:1; left:0px; top:90px\">";
 
 if(!isset($_GET['live']))
-	echo "<img src=\"rules/draw_map.php?sector=$sector&type=waypoint,path,tribe,spawn\" >";
+	echo "<img src=\"rules/draw_map.php?sector=$sector&type=waypoint,path,tribe,spawn\" />";
 else
-	echo "<img src=\"rules/draw_map.php?sector=$sector&type=live\" >";
-
+	echo "<img src=\"rules/draw_map.php?sector=$sector&type=live\" />";
+    
 $data = getDataFromArea($sector);
 $sectors = $data[0];
 $centerx = $data[1];
@@ -155,10 +155,12 @@ if(!isset($_GET['live'])){
 	$query = "SELECT id,name,loc_x,loc_y,loc_z,loc_sector_id, npc_impervious_ind FROM characters WHERE npc_master_id>0 AND " . $sectors . " and npc_spawn_rule>0";
 	$res = mysql_query2($query);
 	
+	echo "<br/>NPC found: " . mysqli_num_rows($res) . "<br/>";
+	
 	$i=0;
     $result = '';
 	while ($line = fetchSqlRow($res)){
-	$elem = $line[0] . "|" . $line[1] . "|x|" . $line[2]  . "|" . $line[4]."|".$line[6];
+	$elem = $line[0] . "|" . $line[1] . "|x|" . $line[2]  . "|" . $line[3]."|".$line[6];
 	$result .= $elem . "\n";
 	}
 	// get each line
@@ -169,92 +171,94 @@ if(!isset($_GET['live'])){
 	   $tok = strtok("\n");
 	}
 
-	
-	// get all info for each line
-	foreach((array) $peoples as $people ) {
-	
-	   // skips commented lines
-	   $pos = strstr($people, '#');
-	
-	   if ($pos=="0") {
-		 $tok2 = strtok($people, '|');
-		 $infos[] = '';
-		 $count = 1;
-		 while ($tok2) {
-		  $tok2 = str_replace("\n", '', $tok2);
-		  $tok2 = str_replace("\r", '', $tok2);
-		  $infos[$count]=$tok2;
-		  $tok2 = strtok('|');
-		  $count++;
-		 }
-	
-	
-		 $x = $centerx+($infos[4]*$scalefactorx);
-		 $y = $centery-($infos[5]*$scalefactory);
-		 
-		 if ($infos[6] == 'Y') {
-		  $ball = 'img/ball01m.gif';
-		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-		 echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
-	
-		  } else {
-		  $ball = 'img/ball04m.gif';
-		 echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-		 echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
-		  }
-	
-		}
-	}
+    
+    // get all info for each line
+    foreach((array) $peoples as $people ) {
+    
+       // skips commented lines
+       $pos = strstr($people, '#');
+    
+       if ($pos=="0")
+       {
+         $tok2 = strtok($people, '|');
+         $infos[] = '';
+         $count = 1;
+         while ($tok2) {
+              $tok2 = str_replace("\n", '', $tok2);
+              $tok2 = str_replace("\r", '', $tok2);
+              $infos[$count]=$tok2;
+              $tok2 = strtok('|');
+              $count++;
+         }
+    
+    
+         $x = (($infos[4]-$centerx)*$scalefactorx)/100;
+         $y = (($infos[5]-$centery)*$scalefactory)/100;
+         
+         //echo "x:".$x." y:".$y;
+         
+         if ($infos[6] == 'Y') {
+             $ball = 'img/ball01m.gif';
+             echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+             echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=8 height=8></a></div>\n";
+    
+          } else {
+             $ball = 'img/ball04m.gif';
+             echo "<div id=Layer1 onMouseover=\"ddrivetip('$infos[1] $infos[2]')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+             echo "<A HREF=index.php?do=npc_details&sub=main&npc_id=$infos[1]><img border=0 src=$ball width=10 height=10></a></div>\n";
+          }
+       }
+    }
 }
 else
 {
-	// Get Live position data
-	$handle = @fopen($report,"r");
-	if($handle) {
-		while ( !feof($handle) )
-		{
-			$buffer = fgets($handle, 4096);
-			if(preg_match("/npc name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
-				$found = FALSE;
-				foreach($data[5] as $sectorname)
-				{
-					if($matches['sector'] === $sectorname)
-						$found = TRUE;
-				}
-				if($found)
-				{
-					$ball = 'img/ball01m.gif';
-					$x= $centerx+($matches['x']*$scalefactorx);
-					$y= $centery-($matches['z']*$scalefactory);
-					echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-					echo "<img border=0 src=$ball width=8 height=8></div>\n";
-				}
-			}
-			elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
-				$found = FALSE;
-				foreach($data[5] as $sectorname)
-				{
-					if($matches['sector'] === $sectorname)
-						$found = TRUE;
-				}
-				if($found)
-				{
-					$ball = 'img/ball04m.gif';
-					$x= $centerx+($matches['x']*$scalefactorx);
-					$y= $centery-($matches['z']*$scalefactory);
-					echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
-					echo "<img border=0 src=$ball width=10 height=10></div>\n";
-				}
-			}
-			
-		}
-	}
+    // Get Live position data
+    $handle = @fopen($report,"r");
+    if($handle) {
+        while ( !feof($handle) )
+        {
+            $buffer = fgets($handle, 4096);
+            if(preg_match("/npc name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+                $found = FALSE;
+                foreach($data[5] as $sectorname)
+                {
+                    if($matches['sector'] === $sectorname)
+                        $found = TRUE;
+                }
+                if($found)
+                {
+                    $ball = 'img/ball01m.gif';
+                    $x= $centerx+($matches['x']*$scalefactorx);
+                    $y= $centery-($matches['z']*$scalefactory);
+                    echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+                    echo "<img border=0 src=$ball width=8 height=8></div>\n";
+                }
+            }
+            elseif(preg_match("/player name=\"(?P<name>.*?)\".*pos_x=\"(?P<x>.*?)\".*pos_z=\"(?P<z>.*?)\" sector=\"(?P<sector>.*?)\"/", $buffer, $matches)) {
+                $found = FALSE;
+                foreach($data[5] as $sectorname)
+                {
+                    if($matches['sector'] === $sectorname)
+                        $found = TRUE;
+                }
+                if($found)
+                {
+                    $ball = 'img/ball04m.gif';
+                    $x= $centerx+($matches['x']*$scalefactorx);
+                    $y= $centery-($matches['z']*$scalefactory);
+                    echo "<div id=Layer1 onMouseover=\"ddrivetip('".$matches['name']."')\"; onMouseout=\"hideddrivetip()\" style=\"position:absolute; offsetTop:20px; width:10px; height:10px; z-index:2; left:".$x."px; top:".$y."px\">";
+                    echo "<img border=0 src=$ball width=10 height=10></div>\n";
+                }
+            }
+            
+        }
+    }
     else
     {
         echo '<p class="error">Could not open report.xml file in '.$report.'</p>';
     }
-	@fclose($handle);
-	
+    @fclose($handle);
+    
 }
 }
  $sectors_list = PrepSelect('sector');
