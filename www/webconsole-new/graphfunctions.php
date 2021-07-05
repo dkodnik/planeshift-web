@@ -3,7 +3,7 @@ function outputGraph ($result, $translate) {
 
 	$max = 0;
 	$total = 0;
-	while ($line = fetchSqlAssoc($result))
+	while ($line = mysqli_fetch_row($result))
   {
         $num = $line[2];
         $name = $line[1];

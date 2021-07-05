@@ -40,6 +40,7 @@ function natural_resources_draw()
     draw_map($sector, $type);
 }
 
+// THIS FUNCTION WILL WORK ONLY IF THE INCLUDE ABOVE DO NOT ADD ANY EXTRA SPACES TO THE PAGE
 function draw_map($sector, $type)
 {
     $image_name = '../img/'.$sector.'.gif';
@@ -120,8 +121,8 @@ function draw_natural_resources($im,$sectors,$centerx,$centery,$scalefactorx,$sc
         $radius      = $line[4];
         $vis_radius  = $line[5];
 
-	$ix = $centerx+($x*$scalefactorx);
-	$iy = $centery-($z*$scalefactory);
+        $ix = (($x-$centerx)*$scalefactorx)/100;
+        $iy = (($y-$centery)*$scalefactory)/100;
         $ir = $radius*$scalefactorx;
         imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
 
@@ -152,10 +153,10 @@ function draw_spawn($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
         $radius      = $line[7];
         $range_type  = $line[8];
 
-	$ix1 = $centerx+($x1*$scalefactorx);
-	$iy1 = $centery-($z1*$scalefactory);
-	$ix2 = $centerx+($x2*$scalefactorx);
-	$iy2 = $centery-($z2*$scalefactory);
+	$ix1 = (($x1-$centerx)*$scalefactorx)/100;
+	$iy1 = (($y1-$centery)*$scalefactory)/100;
+	$ix2 = (($x2-$centerx)*$scalefactorx)/100;
+	$iy2 = (($y2-$centery)*$scalefactory)/100;
         $ir = $radius*$scalefactorx;
         if ($range_type == "C") // Circle
         {
@@ -198,8 +199,8 @@ function draw_tribe($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
         $z           = $line[3];
         $radius      = $line[4];
 
-	$ix = $centerx+($x*$scalefactorx);
-	$iy = $centery-($z*$scalefactory);
+	$ix = (($x-$centerx)*$scalefactorx)/100;
+	$iy = (($y-$centery)*$scalefactory)/100;
         $ir = $radius*$scalefactorx;
         imagearc($im,$ix,$iy,2*$ir,2*$ir,0,360,$fg_color);
     }
@@ -224,8 +225,8 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         $radius  = $line[4];
         $flags   = $line[5];
 
-	$ix = $centerx+($x*$scalefactorx);
-	$iy = $centery-($z*$scalefactory);
+        $ix = (($x-$centerx)*$scalefactorx)/100;
+        $iy = (($y-$centery)*$scalefactory)/100;
         $ir = $radius*$scalefactorx;
 
         $style = array($fg_color,$fg_color,$fg_color);
@@ -292,10 +293,10 @@ function draw_waypoints($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
             $id1 = $line2[7];
             $id2 = $line2[8];
 
-            $ix1 = $centerx+($x1*$scalefactorx);
-            $iy1 = $centery-($z1*$scalefactory);
-            $ix2 = $centerx+($x2*$scalefactorx);
-            $iy2 = $centery-($z2*$scalefactory);
+            $ix1 = (($x1-$centerx)*$scalefactorx)/100;
+            $iy1 = (($y1-$centery)*$scalefactory)/100;
+            $ix2 = (($x2-$centerx)*$scalefactorx)/100;
+            $iy2 = (($y2-$centery)*$scalefactory)/100;
 
             if (stristr($flags, 'NO_WANDER') !== FALSE)
             {
@@ -365,14 +366,14 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
        // Get start point, from waypoint
        {
             // Draw from start wp to first point
-            $query2 = "select w.x,w.z from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp1 and wl.id=".$path_id;
+            $query2 = "select w.x,w.y from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp1 and wl.id=".$path_id;
             $res2=mysql_query2($query2);
             while ($line2 = fetchSqlRow($res2))
             {
                 $x1 = $line2[0];
-                $z1 = $line2[1];
-                $ix2 = $centerx+($x1*$scalefactorx);
-                $iy2 = $centery-($z1*$scalefactory);
+                $y1 = $line2[1];
+                $ix2 = (($x1-$centerx)*$scalefactorx)/100;
+                $iy2 = (($y1-$centery)*$scalefactory)/100;
             }
        }
        // Get path points and draw line from last point
@@ -383,7 +384,7 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
             {
                 $found = false;
 		// Draw from start wp to first point
-            	$query2 = "select id,x,z from sc_path_points where path_id=".$path_id." and prev_point=".$point_id;
+            	$query2 = "select id,x,y from sc_path_points where path_id=".$path_id." and prev_point=".$point_id;
             	$res2=mysql_query2($query2);
             	while ($line2 = fetchSqlRow($res2))
 	    	{
@@ -395,9 +396,9 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
 
 		    $point_id = $line2[0];
                     $x1 = $line2[1];
-                    $z1 = $line2[2];
-                    $ix2 = $centerx+($x1*$scalefactorx);
-                    $iy2 = $centery-($z1*$scalefactory);
+                    $y1 = $line2[2];
+                    $ix2 = (($x1-$centerx)*$scalefactorx)/100;
+                    $iy2 = (($y1-$centery)*$scalefactory)/100;
 
                     $ir = 3;
                     imageline($im,$ix1,$iy1,$ix2,$iy2,  IMG_COLOR_STYLED );
@@ -408,7 +409,7 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
             
         {
             // Draw from start wp to first point
-            $query2 = "select w.x,w.z  from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp2 and wl.id=".$path_id;
+            $query2 = "select w.x,w.y  from sc_waypoints w, sc_waypoint_links wl where w.id = wl.wp2 and wl.id=".$path_id;
             $res2=mysql_query2($query2);
             while ($line2 = fetchSqlRow($res2))
             {
@@ -417,9 +418,9 @@ function draw_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefactory,$
                 $iy1 = $iy2;
 
                 $x1 = $line2[0];
-                $z1 = $line2[1];
-                $ix2 = $centerx+($x1*$scalefactorx);
-                $iy2 = $centery-($z1*$scalefactory);
+                $y1 = $line2[1];
+                $ix2 = (($x1-$centerx)*$scalefactorx)/100;
+                $iy2 = (($y1-$centery)*$scalefactory)/100;
 
                 imageline($im, $ix1, $iy1, $ix2, $iy2, IMG_COLOR_STYLED );
             }
@@ -446,8 +447,8 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
         $radius  = $line[4];
         $id_prev = $line[5];
 
-        $ix1 = $centerx+($x*$scalefactorx);
-        $iy1 = $centery-($z*$scalefactory);
+        $ix1 = (($x-$centerx)*$scalefactorx)/100;
+        $iy1 = (($y-$centery)*$scalefactory)/100;
         $ir = $radius*$scalefactorx;
         imagearc($im,$ix1,$iy1,2*$ir,2*$ir,0,360,$fg_color);
 
@@ -461,8 +462,8 @@ function draw_locations($im,$sectors,$centerx,$centery,$scalefactorx,$scalefacto
                 $y2       = $line2[1];
                 $z2       = $line2[2];
  
-                $ix2 = $centerx+($x2*$scalefactorx);
-                $iy2 = $centery-($z2*$scalefactory);
+                $ix2 = (($x2-$centerx)*$scalefactorx)/100;
+                $iy2 = (($y2-$centery)*$scalefactory)/100;
                 imageline($im,$ix1,$iy1,$ix2,$iy2,$fg_color);
             }
         }
@@ -495,8 +496,8 @@ function draw_live_paths($im,$sectors,$centerx,$centery,$scalefactorx,$scalefact
 					if($found)
 					{
 		
-						$x = $centerx+($pieces[0]*$scalefactorx);
-						$y = $centery-($pieces[1]*$scalefactory);
+						$x = (($pieces[0]-$centerx)*$scalefactorx)/100;
+						$y = (($pieces[1]-$centery)*$scalefactory)/100;
 						if(!($prevx == 999.0 && $prevy == 999.0))
 						{
 							imageline($im,$prevx,$prevy,$x,$y,$colors[$colorindex]);

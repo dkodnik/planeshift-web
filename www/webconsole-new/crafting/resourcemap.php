@@ -152,13 +152,15 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
     $query = "SELECT id, loc_x, loc_y, loc_z, radius, visible_radius, probability, reward_nickname, amount from natural_resources where ".$sectors;
     //echo "query is $query";
     $res = mysql_query2($query);
+    
+    echo "<br/>Natural Resources found: " . mysqli_num_rows($res) . "<br/>";
 
     while ($line = fetchSqlRow($res)){
       if ($line[8]!=0)
         $amount = 2; // indicates this is also an hunt location
       else
         $amount = 1; // indicates this is only a natural res
-      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6]."|".$amount;
+      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[2]."|".$line[6]."|".$amount;
       $result .= ($elem . "\n");
     }
   }
@@ -168,9 +170,10 @@ echo "<img src=\"rules/draw_map.php?sector=$sector&type=resource\" >";
     $query = "SELECT h.id, h.x, h.y, h.z, h.`range`, h.`range`, 0, s.name from hunt_locations h, item_stats s where h.itemid=s.id and ".$hunt_sectors;
     //echo "query is $query";
     $res = mysql_query2($query);
+    echo "<br/>Hunt Locations found: " . mysqli_num_rows($res) . "<br/>";
 
     while ($line = fetchSqlRow($res)){
-      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[3]."|".$line[6]."|3|33";
+      $elem = $line[0] . "|R:" . $line[5] . " P:".$line[6]." I:".$line[7]."|x|" . $line[1]  . "|" . $line[2]."|".$line[6]."|3|33";
       $result .= ($elem . "\n");
     }
   }
@@ -207,8 +210,8 @@ foreach((array) $peoples as $people) {
     $scalefactorx = $data[3];
     $scalefactory = $data[4];
 
-    $x = $centerx+($infos[4]*$scalefactorx);
-    $y = $centery-($infos[5]*$scalefactory);
+    $x = (($infos[4]-$centerx)*$scalefactorx)/100;
+    $y = (($infos[5]-$centery)*$scalefactory)/100;
     
     // determine icon
     if ($infos[7] == 1) {
