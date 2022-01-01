@@ -1067,18 +1067,24 @@
         adminmain();
         editgm();
         break;
-      case 'events';
+      case 'events':
           include('./other/othermain.php');
           include('./other/events.php');
           othermain();
           listevents();
           break;
-      case 'viewevent';
+      case 'viewevent':
           include('./other/othermain.php');
           include('./other/events.php');
           othermain();
           viewevent();
           break;
+      case 'cleanupchars':
+          include('./admin/adminmain.php');
+          include('./admin/unusedchars.php');
+          adminmain();
+          unusedchars();
+          break;      
       default:
         echo '<p class="error">shouldn\'t reach this!</p>';
     }
